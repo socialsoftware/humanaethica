@@ -1,0 +1,96 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    command: postgres -c 'max_connections=50'
+    ports:
+      - 5433:5432
+    restart: unless-stopped
+    volumes:
+      - ./data/dumps:/dumps
+    env_file:
+      - ./data/env/database.dev.env
+      
+  backend:
+    build:
+      context: ./backend/
+      args:
+        PROFILE: dev
+    image: humanaethica-backend
+    container_name: backend
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    volumes:
+      - ./data/images:/images
+      - ./data/load:/load
+      - ./data/export:/export
+    env_file:
+      - ./data/env/backend.dev.env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hedb
+
+  frontend:
+    build:
+      context:  ./frontend/
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: dev
+    image: humanaethica-frontend                                                     
+    container_name: frontend
+    depends_on:
+      - backend
+    links:
+      - backend
+    ports:
+      - 8081:80
+    restart: unless-stopped
+    volumes:
+      - ./data/localhost-nginx.conf:/etc/nginx/nginx.conf
+      - ./data/error.log:/var/log/nginx/error.log
+      - ./data/access.log:/var/log/nginx/access.log
+
+  be-unit-tests:
+    image: maven:3
+    stop_signal: SIGKILL
+    stdin_open: true
+    tty: true
+    working_dir: $PWD/backend/
+    volumes:
+      - $PWD:$PWD
+      - ~/.m2:/root/.m2
+    command: mvn -Ptest test
+
+  integration-tests:
+    image: maven:3
+    stop_signal: SIGKILL
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hedb
+      - PSQL_INT_TEST_DB_USERNAME=engineer
+      - PSQL_INT_TEST_DB_PASSWORD=password
+    working_dir: $PWD/backend/
+    volumes:
+      - $PWD:$PWD
+      - ~/.m2:/root/.m2
+    command: mvn -Ptest-int integration-test
+
+  fe-unit-tests:
+    image: node:16.14.2-alpine3.15
+    stop_signal: SIGKILL
+    stdin_open: true
+    tty: true
+    working_dir: $PWD/frontend/
+    volumes:
+      - $PWD:$PWD
+    command: /bin/sh -c "npm install && npm run test:unit"
+
