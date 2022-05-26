@@ -4,6 +4,6 @@
   "integrationFolder": "tests/e2e/specs",
   "pluginsFile": "tests/e2e/plugins/index.js",
   "supportFile": "tests/e2e/support/index.js",
-  "projectId": "6y833w",
+  "projectId": "13dkbm",
   "videoCompression": false
 }

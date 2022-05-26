@@ -80,9 +80,8 @@ public class UserService {
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
     public RegisterUserDto registerUserTransactional(RegisterUserDto registerUserDto) {
-        AuthNormalUser authUser = getOrCreateUser(registerUserDto);
+        AuthNormalUser authUser = createAuthNormalUser(registerUserDto);
 
-        authUser.generateConfirmationToken();
         return new RegisterUserDto(authUser);
     }
 
@@ -111,14 +110,19 @@ public class UserService {
     }
 
 
-    private AuthNormalUser getOrCreateUser(RegisterUserDto registerUserDto) {
+    private AuthNormalUser createAuthNormalUser(RegisterUserDto registerUserDto) {
         if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().length() == 0) {
             throw new HEException(INVALID_AUTH_USERNAME, registerUserDto.getUsername());
+        }
+
+        if (registerUserDto.getRole() == null) {
+            throw new HEException(INVALID_ROLE, "null");
         }
 
         if (authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).isPresent()) {
             throw new HEException(USERNAME_ALREADY_EXIST, registerUserDto.getUsername());
         }
+
 
         User user;
         switch (registerUserDto.getRole()) {
@@ -135,7 +139,7 @@ public class UserService {
                         registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
                 break;
             default:
-                throw new HEException(INVALID_ROLE, registerUserDto.getRole() == null ? "null" : registerUserDto.getRole().name());
+                throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
         }
 
         userRepository.save(user);

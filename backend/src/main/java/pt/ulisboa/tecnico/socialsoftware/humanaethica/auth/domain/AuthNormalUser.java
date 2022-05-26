@@ -42,6 +42,7 @@ public class AuthNormalUser extends AuthUser {
         super(user, username, email);
         setActive(false);
         checkRole(isActive());
+        generateConfirmationToken();
     }
 
     public void setActive(boolean active) {

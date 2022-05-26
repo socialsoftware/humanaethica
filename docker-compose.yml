@@ -57,7 +57,7 @@ services:
       - ./data/access.log:/var/log/nginx/access.log
 
   be-unit-tests:
-    image: maven:3
+    image: maven:3-openjdk-17
     stop_signal: SIGKILL
     stdin_open: true
     tty: true
@@ -68,7 +68,7 @@ services:
     command: mvn -Ptest test
 
   integration-tests:
-    image: maven:3
+    image: maven:3-openjdk-17
     stop_signal: SIGKILL
     stdin_open: true
     tty: true
@@ -83,14 +83,4 @@ services:
       - $PWD:$PWD
       - ~/.m2:/root/.m2
     command: mvn -Ptest-int integration-test
-
-  fe-unit-tests:
-    image: node:16.14.2-alpine3.15
-    stop_signal: SIGKILL
-    stdin_open: true
-    tty: true
-    working_dir: $PWD/frontend/
-    volumes:
-      - $PWD:$PWD
-    command: /bin/sh -c "npm install && npm run test:unit"
 

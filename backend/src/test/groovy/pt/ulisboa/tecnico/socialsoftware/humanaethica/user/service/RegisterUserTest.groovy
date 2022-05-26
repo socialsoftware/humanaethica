@@ -20,13 +20,12 @@ import spock.mock.DetachedMockFactory
 @DataJpaTest
 class RegisterUserTest extends SpockTest {
     def userDto
-    def previousNumberUser
 
     @Autowired
     Mailer mailerMock
 
     def setup() {
-        previousNumberUser = userRepository.findAll().size()
+
     }
 
     def "the username does not exist, create the user"() {
@@ -40,41 +39,37 @@ class RegisterUserTest extends SpockTest {
         def result = userServiceApplicational.registerUser(userDto)
 
         then: "the user is saved in the database"
-        userRepository.findAll().size() == previousNumberUser + 1
+        authUserRepository.findAll().size() == 1
+        def authUser = (AuthNormalUser) authUserRepository.findAll().get(0)
+        authUser.getConfirmationToken() != null
         and: "checks if user data is correct"
         result.getUsername() == USER_1_USERNAME
         result.getEmail() == USER_1_EMAIL
-        !result.getActive()
-        and: "has confirmation tokem"
-        result.getConfirmationToken() != ""
+        !result.isActive()
         and: "a mail is sent"
         1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
     }
 
     def "the user exists"() {
-        given: "a user"
+        given:
         def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL)
         userRepository.save(user)
         ((AuthNormalUser) user.authUser).setActive(true)
-        and: "an user dto"
+        and:
         userDto = new RegisterUserDto()
         userDto.setUsername(USER_1_USERNAME)
         userDto.setEmail(USER_1_EMAIL)
         userDto.setRole(User.Role.VOLUNTEER)
 
         when:
-        def result = userServiceApplicational.registerUser(userDto)
+        userServiceApplicational.registerUser(userDto)
 
-        then: "the user is saved in the database"
-        userRepository.count() == previousNumberUser + 1
-        and: "checks if user data is correct"
-        result.getUsername() == USER_1_USERNAME
-        result.getEmail() == USER_1_EMAIL
-        result.getActive()
-        and: "has token"
-        result.getConfirmationToken() != ""
-
-        and: "no mail is sent"
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.USERNAME_ALREADY_EXIST
+        and:
+        userRepository.count() == 1
+        and:
         0 * mailerMock.sendSimpleMail(mailerUsername, _, _, _)
     }
 
@@ -93,7 +88,7 @@ class RegisterUserTest extends SpockTest {
         def error = thrown(HEException)
         error.getErrorMessage() == errorMessage
         and: "no user was created"
-        userRepository.count() == previousNumberUser
+        userRepository.count() == 0
         and: "no mail is sent"
         0 * mailerMock.sendSimpleMail(mailerUsername, _, _, _)
 
@@ -106,9 +101,6 @@ class RegisterUserTest extends SpockTest {
         USER_1_USERNAME | "test.mail.com" | User.Role.VOLUNTEER || ErrorMessage.INVALID_EMAIL
         USER_1_USERNAME | "test@"         | User.Role.VOLUNTEER || ErrorMessage.INVALID_EMAIL
         USER_1_USERNAME | USER_1_EMAIL    | null                || ErrorMessage.INVALID_ROLE
-        USER_1_USERNAME | USER_1_EMAIL    | User.Role.ADMIN     || ErrorMessage.INVALID_ROLE
-        USER_1_USERNAME | USER_1_EMAIL    | User.Role.ADMIN     || ErrorMessage.INVALID_ROLE
-
     }
 
     @TestConfiguration
