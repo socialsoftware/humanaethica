@@ -11,6 +11,7 @@ import NotFoundView from '@/views/NotFoundView.vue';
 import LoginView from '@/views/user/LoginView.vue';
 import UsersView from '@/views/admin/users/UsersView.vue';
 import AdminView from '@/views/admin/AdminView.vue';
+import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
 
 Vue.use(Router);
 
@@ -59,6 +60,15 @@ const router = new Router({
           },
         },
       ],
+    },
+    {
+      path: '/institution/register',
+      name: 'register-institution',
+      component: RegisterInstitutionView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Institution Registration',
+      },
     },
     {
       path: '**',

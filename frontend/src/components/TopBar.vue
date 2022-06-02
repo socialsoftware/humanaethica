@@ -55,6 +55,9 @@
       </v-toolbar-items>
 
       <v-toolbar-items class="hidden-sm-and-down" hide-details>
+        <v-btn v-if="!isLoggedIn" dark text @click="registerInstitution">
+          Create Institution
+        </v-btn>
         <v-btn v-if="!isLoggedIn" dark text @click="login">
           Login
           <v-icon>fas fa-sign-in-alt</v-icon>
@@ -169,6 +172,10 @@ export default class TopBar extends Vue {
 
   async login() {
     await this.$router.push({ name: 'login-user' }).catch(() => {});
+  }
+
+  async registerInstitution() {
+    await this.$router.push({ name: 'register-institution' }).catch(() => {});
   }
 
   async logout() {
