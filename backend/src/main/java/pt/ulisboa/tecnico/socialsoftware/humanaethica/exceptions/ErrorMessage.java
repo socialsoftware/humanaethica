@@ -3,12 +3,16 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions;
 public enum ErrorMessage {
     INVALID_TYPE_FOR_AUTH_USER("Invalid type for auth user"),
     INVALID_AUTH_USERNAME("Username: %s, belongs to a different authentication method"),
+    INVALID_INSTITUTION_NAME("Name: %s, is not valid"),
     USERNAME_ALREADY_EXIST("Username: %s, already exist"),
+    NIF_ALREADY_EXIST("Institution with NIF: %s, already exist"),
     INVALID_EMAIL("The mail %s is invalid."),
+    INVALID_NIF("The NIF %s is invalid."),
     INVALID_PASSWORD("The password %s is invalid."),
     INVALID_ROLE("The Role %s is invalid."),
     AUTHUSER_NOT_FOUND("AuthUser not found with id %d"),
     USER_NOT_FOUND("User not found with username %s"),
+    INSTITUTION_NOT_FOUND("Institution not found with name %s"),
     COURSE_NOT_FOUND("Course not found with name %s"),
     INVALID_COURSE("The course you are exporting from does not match the course you are importing to."
             + "If you want to import anyway, edit the .xml file and replace the second line to: %s"),
