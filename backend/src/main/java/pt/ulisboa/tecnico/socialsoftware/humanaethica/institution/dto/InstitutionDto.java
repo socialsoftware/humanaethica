@@ -13,13 +13,16 @@ public class InstitutionDto {
 
     private String name;
 
+    private String nif;
+
     public InstitutionDto(){
     }
 
     public InstitutionDto(Institution institution){
-        this.id = institution.getId();
-        this.email = institution.getEmail();
-        this.name = institution.getName();
+        setId(institution.getId());
+        setEmail(institution.getEmail());
+        setName(institution.getName());
+        setNif(institution.getNIF());
     }
 
     public Integer getId() {
@@ -40,5 +43,13 @@ public class InstitutionDto {
 
     public String getName() {
         return name;
+    }
+
+    public String getNif() {
+        return nif;
+    }
+
+    public void setNif(String nif) {
+        this.nif = nif;
     }
 }

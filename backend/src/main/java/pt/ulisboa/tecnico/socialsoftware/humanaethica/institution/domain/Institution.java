@@ -9,6 +9,7 @@ import org.springframework.security.crypto.keygen.KeyGenerators;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 @Entity
+@Table(name = "institutions")
 public class Institution {
     
     @Id
@@ -19,22 +20,21 @@ public class Institution {
 
     private String email;
 
+    private String nif;
+
     private boolean valid = false;
 
     private String confirmationToken = "";
 
     private LocalDateTime tokenGenerationDate;
 
-    public boolean isValid() {
-        return valid;
-    }
-
     public Institution(){
     }
 
-    public Institution(String name, String email){
+    public Institution(String name, String email, String nif){
         setEmail(email);
         setName(name);
+        setNIF(nif);
         generateConfirmationToken();
     }
 
@@ -63,8 +63,20 @@ public class Institution {
         this.id = id;
     }
 
+    public String getNIF() {
+        return nif;
+    }
+
+    public void setNIF(String nIF) {
+        nif = nIF;
+    }
+
     public void validate() {
         this.valid = true;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 
     public String getConfirmationToken() {
