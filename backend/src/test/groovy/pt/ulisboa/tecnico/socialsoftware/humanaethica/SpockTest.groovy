@@ -41,6 +41,7 @@ class SpockTest extends Specification {
 
     public static final String INSTITUTION_1_EMAIL = "institution1@mail.com"
     public static final String INSTITUTION_1_NAME = "institution1"
+    public static final String INSTITUTION_1_NIF = "123456789"
 
     public static final LocalDateTime LOCAL_DATE_BEFORE = DateHandler.now().minusDays(2)
     public static final LocalDateTime LOCAL_DATE_TODAY = DateHandler.now()
