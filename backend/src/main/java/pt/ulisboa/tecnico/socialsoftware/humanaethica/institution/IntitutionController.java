@@ -20,8 +20,14 @@ public class IntitutionController {
     private UserApplicationalService userApplicationalService;
 
     @PostMapping("/institutions/register")
-    public void registerProvisoryInstitution(@Valid @RequestBody InstitutionDto institutionDto, @Valid @RequestBody RegisterUserDto registerUserDto) {
+    public void registerInstitution(@Valid @RequestBody InstitutionDto institutionDto, @Valid @RequestBody RegisterUserDto registerUserDto) {
         institutionService.registerInstitution(institutionDto);
-        userApplicationalService.registerUser(registerUserDto);
+        userApplicationalService.registerPendentMember(registerUserDto);
+    }
+
+    @PostMapping("/institutions/{institutionId}/validate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void validateInstitution(@PathVariable int institutionId) {
+        institutionService.validateInstitution(institutionId);
     }
 }

@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
 
@@ -23,7 +25,7 @@ public class InstitutionService {
     @Autowired
     private Mailer mailer;
 
-    public static final String INSTITUTION_CONFIRMATION_MAIL_SUBJECT = "Institution Registration Confirmation";
+    public static final String PASSWORD_CONFIRMATION_MAIL_SUBJECT = "Password Confirmation";
 
     @Value("${spring.mail.username}")
     private String mailUsername;
@@ -61,15 +63,24 @@ public class InstitutionService {
     public void validateInstitution(int id){
         Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         institution.validate();
-        sendConfirmationEmailTo(institution.getName(), institution.getEmail(), institution.generateConfirmationToken());
+        Member member = institution.getMembers().get(0);
+        sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
-        mailer.sendSimpleMail(mailUsername, email, Mailer.QUIZZES_TUTOR_SUBJECT + INSTITUTION_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
+        mailer.sendSimpleMail(mailUsername, email, Mailer.QUIZZES_TUTOR_SUBJECT + PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
     }
 
-    private String buildMailBody(String name, String token) {
-        String msg = "To confirm the registration of the institution " + name + ", click the following link";
-        return String.format("%s: %s", msg, LinkHandler.createConfirmRegistrationLink(name, token));
+    private String buildMailBody(String username, String token) {
+        String msg = "To confirm your registration, as external user using username (" + username + ") click the following link";
+        return String.format("%s: %s", msg, LinkHandler.createConfirmRegistrationLink(username, token));
+    }
+
+    public Institution getDemoInstitution() {
+        return institutionRepository.findInstitutionByNif(DemoUtils.DEMO_INSTITUTION).orElseGet(() -> {
+            Institution institution = new Institution(DemoUtils.DEMO_INSTITUTION, "demo_institution@mail.com", DemoUtils.DEMO_INSTITUTION_NIF);
+            institutionRepository.save(institution);
+            return institution;
+        });
     }
 }
