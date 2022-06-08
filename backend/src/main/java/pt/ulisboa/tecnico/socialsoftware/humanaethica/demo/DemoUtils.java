@@ -9,12 +9,17 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 @Component
 public class DemoUtils {
     public static String DEMO = "DEMO";
+    public static String INSTITUTION = "INSTITUTION";
 
     public static String DEMO_VOLUNTEER = DEMO + "-" + User.UserTypes.VOLUNTEER;
 
     public static String DEMO_MEMBER = DEMO + "-" + User.UserTypes.MEMBER;
 
     public static String DEMO_ADMIN = DEMO + "-" + User.UserTypes.ADMIN;
+
+    public static String DEMO_INSTITUTION_NIF = "000000000";
+
+    public static String DEMO_INSTITUTION = "DEMO INSTITUTION";
 
     @Autowired
     Environment environment;

@@ -1,11 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 @Entity
@@ -25,6 +28,9 @@ public class Institution {
     private boolean valid = false;
 
     private String confirmationToken = "";
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true)
+    private List<Member> members = new ArrayList<>();
 
     private LocalDateTime tokenGenerationDate;
 
@@ -36,6 +42,14 @@ public class Institution {
         setName(name);
         setNIF(nif);
         generateConfirmationToken();
+    }
+
+    public void addMember(Member member){
+        this.members.add(member);
+    }
+
+    public List<Member> getMembers() {
+        return members;
     }
 
     

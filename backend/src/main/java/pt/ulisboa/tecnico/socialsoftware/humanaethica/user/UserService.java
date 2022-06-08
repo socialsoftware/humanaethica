@@ -12,6 +12,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
@@ -30,6 +32,9 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private InstitutionRepository institutionRepository;
 
     @Autowired
     private AuthUserRepository authUserRepository;
@@ -67,12 +72,12 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type) {
+    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type, Institution institution) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Member member = new Member(name, username, email, type);
+        Member member = new Member(name, username, email, type, institution);
         userRepository.save(member);
         return member.getAuthUser();
     }
@@ -131,8 +136,9 @@ public class UserService {
                         registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
                 break;
             case MEMBER:
+                Institution i = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
                 user = new Member(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, i);
                 break;
             case ADMIN:
                 user = new Admin(registerUserDto.getName(),

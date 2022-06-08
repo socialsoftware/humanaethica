@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 
 public class RegisterUserDto {
@@ -20,6 +21,8 @@ public class RegisterUserDto {
 
     private String confirmationToken;
 
+    private int institutionId;
+
     public RegisterUserDto() {
     }
 
@@ -30,6 +33,7 @@ public class RegisterUserDto {
         this.email = authUser.getEmail();
         this.password = authUser.getPassword();
         this.role = authUser.getUser().getRole();
+        this.institutionId = ((Member) authUser.getUser()).getInstitution().getId();
         this.active = authUser.isActive();
         this.confirmationToken = authUser.getConfirmationToken();
     }
@@ -100,5 +104,13 @@ public class RegisterUserDto {
 
     public void setConfirmationToken(String confirmationToken) {
         this.confirmationToken = confirmationToken;
+    }
+
+    public int getInstitutionId() {
+        return institutionId;
+    }
+
+    public void setInstitutionId(int institutionId) {
+        this.institutionId = institutionId;
     }
 }

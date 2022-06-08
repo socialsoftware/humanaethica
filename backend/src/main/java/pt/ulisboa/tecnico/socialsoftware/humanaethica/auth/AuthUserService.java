@@ -14,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRe
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.sql.SQLException;
@@ -26,6 +27,9 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 public class AuthUserService {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private InstitutionService institutionService;
 
     @Autowired
     private AuthUserRepository authUserRepository;
@@ -70,7 +74,7 @@ public class AuthUserService {
 
     private AuthUser getDemoMember() {
         return authUserRepository.findAuthUserByUsername(DemoUtils.DEMO_MEMBER).orElseGet(() -> {
-            AuthUser authUser = userService.createMemberWithAuth(DemoUtils.DEMO_MEMBER, DemoUtils.DEMO_MEMBER, "demo_member@mail.com", AuthUser.Type.DEMO);
+            AuthUser authUser = userService.createMemberWithAuth(DemoUtils.DEMO_MEMBER, DemoUtils.DEMO_MEMBER, "demo_member@mail.com", AuthUser.Type.DEMO, institutionService.getDemoInstitution());
             return authUser;
         });
     }
