@@ -38,6 +38,11 @@ public class UserApplicationalService {
         return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
     }
 
+    public UserDto registerPendentMember(RegisterUserDto registerUserDto) {
+        userService.registerUserTransactional(registerUserDto);
+        return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
+    }
+
     public RegisterUserDto confirmRegistration(RegisterUserDto registerUserDto) {
         RegisterUserDto user = userService.confirmRegistrationTransactional(registerUserDto);
         if (!user.isActive()) {

@@ -5,10 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institu
 public class InstitutionDto {
     private Integer id;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     private String email;
 
     private String name;
@@ -43,6 +39,10 @@ public class InstitutionDto {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getNif() {
