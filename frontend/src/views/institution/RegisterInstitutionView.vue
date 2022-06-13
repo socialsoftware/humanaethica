@@ -55,9 +55,12 @@ export default class RegisterInstitutionView extends Vue {
   async submit() {
     await this.$store.dispatch('loading');
     try {
-      let institution: Institution = await RemoteServices.RegisterUser({
+      let institution: Institution = await RemoteServices.registerInstitution({
         name: this.name,
         email: this.email,
+        nif: this.nif,
+        id: 1,
+        valid: true,
       });
       await this.$store.dispatch('institution', institution);
       await this.$router.push({

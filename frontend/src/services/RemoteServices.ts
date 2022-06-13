@@ -4,6 +4,7 @@ import TokenAuthUser from '@/models/user/TokenAuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
 import router from '@/router';
 import User from '@/models/user/User';
+import Institution from '@/models/institution/Institution';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -103,6 +104,17 @@ export default class RemoteServices {
       .post('/users/register', user)
       .then((response) => {
         return new User(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async registerInstitution(institution: Institution): Promise<Institution> {
+    return httpClient
+      .post('/institution/register', institution)
+      .then((response) => {
+        return new Institution(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
