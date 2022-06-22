@@ -62,9 +62,10 @@ public class InstitutionService {
 
     public void validateInstitution(int id){
         Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-        institution.validate();
         Member member = institution.getMembers().get(0);
-        sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
+        if (!institution.isValid())
+            sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
+        institution.validate();
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
