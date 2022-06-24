@@ -1,8 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 
 public class RegisterUserDto {
     private Integer id;
@@ -33,9 +35,16 @@ public class RegisterUserDto {
         this.email = authUser.getEmail();
         this.password = authUser.getPassword();
         this.role = authUser.getUser().getRole();
-        this.institutionId = ((Member) authUser.getUser()).getInstitution().getId();
+        if (this.role == Role.MEMBER)
+            this.institutionId = ((Member) authUser.getUser()).getInstitution().getId();
         this.active = authUser.isActive();
         this.confirmationToken = authUser.getConfirmationToken();
+    }
+
+    public RegisterUserDto(RegisterInstitutionDto registerInstitutionDto){
+        this.name = registerInstitutionDto.getMemberName();
+        this.username = registerInstitutionDto.getMemberUsername();
+        this.email = registerInstitutionDto.getMemberEmail();
     }
 
     public Integer getId() {

@@ -21,6 +21,12 @@ public class InstitutionDto {
         setNif(institution.getNIF());
     }
 
+    public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){
+        setEmail(registerInstitutionDto.getInstitutionEmail());
+        setName(registerInstitutionDto.getInstitutionName());
+        setNif(registerInstitutionDto.getInstitutionNif());
+    }
+
     public Integer getId() {
         return id;
     }
