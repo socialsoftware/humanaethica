@@ -44,7 +44,7 @@ class ValidateInstitutionTest extends SpockTest {
         userServiceApplicational.registerPendentMember(memberDto);
     }
 
-    def "validate institution"() {
+    def "validate institution with success"() {
         when:
         institutionService.validateInstitution(institution.getId())
 
@@ -64,34 +64,6 @@ class ValidateInstitutionTest extends SpockTest {
         and: "no email is sent"
         0 * mailerMock.sendSimpleMail(mailerUsername, _, _, _)
     }
-/*
-    @Unroll
-    def "invalid arguments: name=#name | email=#email | nif=#nif"() {
-        given: "an institution dto"
-        institutionDto = new InstitutionDto()
-        institutionDto.setName(name)
-        institutionDto.setEmail(email)
-        institutionDto.setNif(nif)
-
-        when:
-        institutionService.registerInstitution(institutionDto)
-
-        then:
-        def error = thrown(HEException)
-        error.getErrorMessage() == errorMessage
-        and: "no institution was created"
-        institutionRepository.count() == 0
-
-        where:
-        name                | email                  | nif                || errorMessage
-        null                | INSTITUTION_1_EMAIL    | INSTITUTION_1_NIF  || ErrorMessage.INVALID_INSTITUTION_NAME
-        "  "                | INSTITUTION_1_EMAIL    | INSTITUTION_1_NIF  || ErrorMessage.INVALID_INSTITUTION_NAME
-        INSTITUTION_1_NAME  | null                   | INSTITUTION_1_NIF  || ErrorMessage.INVALID_EMAIL
-        INSTITUTION_1_NAME  | ""                     | INSTITUTION_1_NIF  || ErrorMessage.INVALID_EMAIL
-        INSTITUTION_1_NAME  | "test.mail.com"        | INSTITUTION_1_NIF  || ErrorMessage.INVALID_EMAIL
-        INSTITUTION_1_NAME  | "test@"                | INSTITUTION_1_NIF  || ErrorMessage.INVALID_EMAIL
-        INSTITUTION_1_NAME  | INSTITUTION_1_EMAIL    | null               || ErrorMessage.INVALID_NIF
-    }*/
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {
