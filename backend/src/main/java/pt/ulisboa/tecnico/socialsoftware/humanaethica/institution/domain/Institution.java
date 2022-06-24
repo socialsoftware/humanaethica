@@ -29,7 +29,7 @@ public class Institution {
 
     private String confirmationToken = "";
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch= FetchType.EAGER)
     private List<Member> members = new ArrayList<>();
 
     private LocalDateTime tokenGenerationDate;
