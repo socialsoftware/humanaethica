@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto;
 
 public class RegisterInstitutionDto {
-    
+
     private String institutionEmail;
 
     private String institutionName;
@@ -14,6 +14,7 @@ public class RegisterInstitutionDto {
 
     private String memberName;
 
+    //porque e que tens duas funcoes com o mesmo nome?
     public RegisterInstitutionDto() {
     }
 

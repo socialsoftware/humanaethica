@@ -1,29 +1,31 @@
 <template>
   <div class="container">
+
+    <h2>Institution Registration</h2>
     <v-form ref="form" lazy-validation>
       <v-text-field
-        v-model="name"
+        v-model="institutionName"
         :counter="10"
-        label="Name"
+        label="Institution Name"
         required
-        @input="$v.name.$touch()"
-        @blur="$v.name.$touch()"
+        @input="$v.institutionName.$touch()"
+        @blur="$v.institutionName.$touch()"
       ></v-text-field>
 
       <v-text-field
-        v-model="email"
-        label="E-mail"
+        v-model="institutionEmail"
+        label="Institution E-mail"
         required
-        @input="$v.email.$touch()"
-        @blur="$v.email.$touch()"
+        @input="$v.institutionEmail.$touch()"
+        @blur="$v.institutionEmail.$touch()"
       ></v-text-field>
 
       <v-text-field
-        v-model="nif"
-        label="NIF"
+        v-model="institutionNif"
+        label="Institution NIF"
         required
-        @input="$v.nif.$touch()"
-        @blur="$v.nif.$touch()"
+        @input="$v.institutionNif.$touch()"
+        @blur="$v.institutionNif.$touch()"
       ></v-text-field>
 
       <v-file-input
@@ -32,6 +34,47 @@
         show-size
         truncate-length="7"
       ></v-file-input>
+
+      <v-divider class="divider"></v-divider>
+
+      <h2>Member Registration</h2>
+
+      <v-text-field
+        v-model="memberUsername"
+        :counter="10"
+        label="Member Username"
+        required
+        @input="$v.memberUsername.$touch()"
+        @blur="$v.memberUsername.$touch()"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="memberEmail"
+        label="Member E-mail"
+        required
+        @input="$v.memberEmail.$touch()"
+        @blur="$v.memberEmail.$touch()"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="memberName"
+        :counter="10"
+        label="Member Name"
+        required
+        @input="$v.memberName.$touch()"
+        @blur="$v.memberName.$touch()"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="password"
+        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+        :type="show1 ? 'text' : 'password'"
+        name="input-10-1"
+        label="Member Password"
+        hint="At least 8 characters"
+        counter
+        @click:append="show1 = !show1"
+      ></v-text-field>
 
       <v-btn class="mr-4" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
@@ -49,16 +92,21 @@ import RemoteServices from '@/services/RemoteServices';
   components: {},
 })
 export default class RegisterInstitutionView extends Vue {
-  name: string = '';
-  email: string = '';
-  nif: string = '';
+  institutionName: string = '';
+  institutionEmail: string = '';
+  institutionNif: string = '';
+  memberUsername: string = '';
+  memberEmail: string = '';
+  memberName: string = '';
+  memberPassword: string = '';
+
   async submit() {
     await this.$store.dispatch('loading');
     try {
       let institution: Institution = await RemoteServices.registerInstitution({
-        name: this.name,
-        email: this.email,
-        nif: this.nif,
+        name: this.institutionName,
+        email: this.institutionEmail,
+        nif: this.institutionNif,
         id: 1,
         valid: true,
       });
@@ -73,9 +121,12 @@ export default class RegisterInstitutionView extends Vue {
   }
 
   clear() {
-    this.name = '';
-    this.email = '';
-    this.nif = '';
+    this.institutionName = '';
+    this.institutionEmail = '';
+    this.institutionNif = '';
+    this.memberUsername = '';
+    this.memberEmail = '';
+    this.memberName = '';
   }
 }
 </script>
@@ -91,5 +142,21 @@ export default class RegisterInstitutionView extends Vue {
   align-items: stretch;
   align-content: center;
   background-color: rgba(255, 255, 255);
+}
+
+.divider {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+h2{
+  color: black;
+  opacity: 80%;
+  font-family: 'Open Sans', sans-serif;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 40px;
+  margin: 0 0 16px;
 }
 </style>
