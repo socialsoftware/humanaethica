@@ -6,7 +6,7 @@
       <v-text-field
         v-model="institutionName"
         :counter="10"
-        label="Institution Name"
+        label="Name"
         required
         @input="$v.institutionName.$touch()"
         @blur="$v.institutionName.$touch()"
@@ -14,7 +14,7 @@
 
       <v-text-field
         v-model="institutionEmail"
-        label="Institution E-mail"
+        label="E-mail"
         required
         @input="$v.institutionEmail.$touch()"
         @blur="$v.institutionEmail.$touch()"
@@ -22,7 +22,7 @@
 
       <v-text-field
         v-model="institutionNif"
-        label="Institution NIF"
+        label="NIF"
         required
         @input="$v.institutionNif.$touch()"
         @blur="$v.institutionNif.$touch()"
@@ -42,7 +42,7 @@
       <v-text-field
         v-model="memberUsername"
         :counter="10"
-        label="Member Username"
+        label="Username"
         required
         @input="$v.memberUsername.$touch()"
         @blur="$v.memberUsername.$touch()"
@@ -50,7 +50,7 @@
 
       <v-text-field
         v-model="memberEmail"
-        label="Member E-mail"
+        label="E-mail"
         required
         @input="$v.memberEmail.$touch()"
         @blur="$v.memberEmail.$touch()"
@@ -59,7 +59,7 @@
       <v-text-field
         v-model="memberName"
         :counter="10"
-        label="Member Name"
+        label="Name"
         required
         @input="$v.memberName.$touch()"
         @blur="$v.memberName.$touch()"
@@ -70,7 +70,7 @@
         :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
         :type="show1 ? 'text' : 'password'"
         name="input-10-1"
-        label="Member Password"
+        label="Password"
         hint="At least 8 characters"
         counter
         @click:append="show1 = !show1"
