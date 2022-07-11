@@ -41,4 +41,10 @@ public class UserController {
     public RegisterUserDto confirmRegistration(@RequestBody RegisterUserDto registerUserDto) {
         return userApplicationalService.confirmRegistration(registerUserDto);
     }
+
+    @PostMapping("/users/registerVolunteer")
+    public UserDto registerVolunteer(@Valid @RequestBody RegisterUserDto registerUserDto) {
+        return userApplicationalService.registerUser(registerUserDto);
+
+    }
 }
