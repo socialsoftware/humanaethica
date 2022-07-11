@@ -28,6 +28,9 @@ public class Institution {
     private boolean valid = false;
 
     private String confirmationToken = "";
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
+    private Document document;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch= FetchType.EAGER)
     private List<Member> members = new ArrayList<>();
@@ -107,6 +110,15 @@ public class Institution {
 
     public void setTokenGenerationDate(LocalDateTime tokenGenerationDate) {
         this.tokenGenerationDate = tokenGenerationDate;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+        document.setInstitution(this);
     }
 
     public String generateConfirmationToken() {

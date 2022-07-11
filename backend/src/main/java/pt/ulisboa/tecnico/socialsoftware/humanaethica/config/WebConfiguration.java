@@ -17,7 +17,7 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/questions/**").addResourceLocations("file:" + figuresDir);
+        registry.addResourceHandler("/documents/declarations**").addResourceLocations("file:" + figuresDir);
 
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.10.3/");

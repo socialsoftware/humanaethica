@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.DocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
 
@@ -23,6 +26,9 @@ public class InstitutionService {
     InstitutionRepository institutionRepository;
 
     @Autowired
+    DocumentRepository documentRepository;
+
+    @Autowired
     private Mailer mailer;
 
     public static final String PASSWORD_CONFIRMATION_MAIL_SUBJECT = "Password Confirmation";
@@ -30,7 +36,7 @@ public class InstitutionService {
     @Value("${spring.mail.username}")
     private String mailUsername;
 
-    public Institution registerInstitution(InstitutionDto institutionDto) {
+    public Institution registerInstitution(InstitutionDto institutionDto, String type) {
 
         if (institutionDto.getName() == null || institutionDto.getName().trim().length() == 0) {
             throw new HEException(INVALID_INSTITUTION_NAME, institutionDto.getName());
@@ -55,6 +61,12 @@ public class InstitutionService {
         }
 
         Institution institution = new Institution(institutionDto.getName(), institutionDto.getEmail(), institutionDto.getNif());
+        String documentName = institution.getName().replaceAll("\\s", "") +
+                "." + type;
+
+        Document document = new Document(documentName);
+        institution.setDocument(document);
+        documentRepository.save(document);
         institutionRepository.save(institution);
 
         return institution;
@@ -66,6 +78,7 @@ public class InstitutionService {
         if (!institution.isValid())
             sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
         institution.validate();
+        member.setState(State.APPROVED);
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
