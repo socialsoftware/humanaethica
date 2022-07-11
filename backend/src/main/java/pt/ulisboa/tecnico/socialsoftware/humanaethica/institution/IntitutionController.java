@@ -49,7 +49,7 @@ public class IntitutionController {
         RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
         registerUserDto.setInstitutionId(i.getId());
         registerUserDto.setRole(User.Role.MEMBER);
-        userApplicationalService.registerPendentMember(registerUserDto);
+        userApplicationalService.registerUser(registerUserDto);
     }
 
     @PostMapping("/institution/{institutionId}/validate")

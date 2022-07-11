@@ -3,9 +3,13 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
@@ -31,16 +35,8 @@ public class UserApplicationalService {
     private String mailUsername;
 
     public UserDto registerUser(RegisterUserDto registerUserDto) {
-        RegisterUserDto user = userService.registerUserTransactional(registerUserDto, State.APPROVED);
-        if (!user.isActive()) {
-            sendConfirmationEmailTo(user.getUsername(), user.getEmail(), user.getConfirmationToken());
-        }
-
-        return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
-    }
-
-    public UserDto registerPendentMember(RegisterUserDto registerUserDto) {
         userService.registerUserTransactional(registerUserDto, State.SUBMITTED);
+
         return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
     }
 
@@ -50,6 +46,16 @@ public class UserApplicationalService {
             sendConfirmationEmailTo(user.getUsername(), user.getEmail(), user.getConfirmationToken());
         }
         return user;
+    }
+
+    public void validateUser(Integer userId) {
+        AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        RegisterUserDto user = new RegisterUserDto(authUser);
+        if (!user.getActive())
+            sendConfirmationEmailTo(user.getUsername(), user.getEmail(), user.getConfirmationToken());
+        User u = authUser.getUser();
+        if (!u.getState().equals(User.State.ACTIVE))
+            u.setState(User.State.APPROVED);
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
