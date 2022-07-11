@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
@@ -30,7 +31,7 @@ public class UserApplicationalService {
     private String mailUsername;
 
     public UserDto registerUser(RegisterUserDto registerUserDto) {
-        RegisterUserDto user = userService.registerUserTransactional(registerUserDto);
+        RegisterUserDto user = userService.registerUserTransactional(registerUserDto, State.APPROVED);
         if (!user.isActive()) {
             sendConfirmationEmailTo(user.getUsername(), user.getEmail(), user.getConfirmationToken());
         }
@@ -39,7 +40,7 @@ public class UserApplicationalService {
     }
 
     public UserDto registerPendentMember(RegisterUserDto registerUserDto) {
-        userService.registerUserTransactional(registerUserDto);
+        userService.registerUserTransactional(registerUserDto, State.SUBMITTED);
         return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
     }
 
