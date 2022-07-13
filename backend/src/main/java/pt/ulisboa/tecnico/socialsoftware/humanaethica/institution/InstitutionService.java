@@ -3,6 +3,8 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -13,20 +15,29 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.Doc
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InstitutionService {
     
     @Autowired
     InstitutionRepository institutionRepository;
-
+    
     @Autowired
-    DocumentRepository documentRepository;
+    UserRepository userRepository;
+
+    /*@Autowired
+    DocumentRepository documentRepository;*/
 
     @Autowired
     private Mailer mailer;
@@ -36,7 +47,28 @@ public class InstitutionService {
     @Value("${spring.mail.username}")
     private String mailUsername;
 
-    public Institution registerInstitution(InstitutionDto institutionDto, String type) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<InstitutionDto> getInstitutions() {
+        return institutionRepository.findAll().stream()
+                .map(InstitutionDto::new)
+                .sorted(Comparator.comparing(InstitutionDto::getName))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void deleteInstitution(int institutionId) {
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+
+        institution.remove();
+
+        for (User user : institution.getMembers()){
+            userRepository.delete(user);
+        }
+
+        institutionRepository.delete(institution);
+    }
+
+    public Institution registerInstitution(InstitutionDto institutionDto/* , String type*/) {
 
         if (institutionDto.getName() == null || institutionDto.getName().trim().length() == 0) {
             throw new HEException(INVALID_INSTITUTION_NAME, institutionDto.getName());
@@ -61,12 +93,12 @@ public class InstitutionService {
         }
 
         Institution institution = new Institution(institutionDto.getName(), institutionDto.getEmail(), institutionDto.getNif());
-        String documentName = institution.getName().replaceAll("\\s", "") +
+        /*String documentName = institution.getName().replaceAll("\\s", "") +
                 "." + type;
 
         Document document = new Document(documentName);
         institution.setDocument(document);
-        documentRepository.save(document);
+        documentRepository.save(document);*/
         institutionRepository.save(institution);
 
         return institution;

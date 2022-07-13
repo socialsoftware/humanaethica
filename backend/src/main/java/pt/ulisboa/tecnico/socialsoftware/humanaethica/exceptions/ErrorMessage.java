@@ -20,6 +20,7 @@ public enum ErrorMessage {
             + "If you want to import anyway, edit the .xml file and replace the second line to: %s"),
     USER_ALREADY_ACTIVE("User is already active with username %s"),
     USER_IS_ACTIVE("User state is active: username %s"),
+    INSTITUTION_IS_ACTIVE("Institution state is active: name %s"),
     INVALID_CONFIRMATION_TOKEN("Invalid confirmation token"),
     EXPIRED_CONFIRMATION_TOKEN("Expired confirmation token"),
     INVALID_LOGIN_CREDENTIALS("Invalid login credentials"),

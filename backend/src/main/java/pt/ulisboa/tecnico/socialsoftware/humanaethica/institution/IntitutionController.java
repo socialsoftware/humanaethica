@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 
 import javax.validation.Valid;
@@ -34,17 +35,30 @@ public class IntitutionController {
     @Value("${figures.dir}")
     private String figuresDir;
 
+
+    @GetMapping("/institutions")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<InstitutionDto> getInstitutions() {
+        return institutionService.getInstitutions();
+    }
+
+    @DeleteMapping("/institutions/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void deleteInstitution(@PathVariable int institutionId) {
+        institutionService.deleteInstitution(institutionId);
+    }
+
     @PostMapping("/institution/register")
-    public void registerInstitution(@Valid @RequestBody RegisterInstitutionDto registerInstitutionDto, @RequestParam("file") MultipartFile doc) throws IOException{
-        int lastIndex = Objects.requireNonNull(doc.getContentType()).lastIndexOf('/');
-        String type = doc.getContentType().substring(lastIndex + 1);
+    public void registerInstitution(@Valid @RequestBody RegisterInstitutionDto registerInstitutionDto)/* , @RequestParam("file") MultipartFile doc) throws IOException*/{
+        /*int lastIndex = Objects.requireNonNull(doc.getContentType()).lastIndexOf('/');
+        String type = doc.getContentType().substring(lastIndex + 1);*/
 
         InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
-        Institution i = institutionService.registerInstitution(institutionDto, type);
+        Institution i = institutionService.registerInstitution(institutionDto/*  type*/);
 
-        String url = i.getDocument().getUrl();
+        /*String url = i.getDocument().getUrl();
 
-        Files.copy(doc.getInputStream(), getTargetLocation(url), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(doc.getInputStream(), getTargetLocation(url), StandardCopyOption.REPLACE_EXISTING);*/
 
         RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
         registerUserDto.setInstitutionId(i.getId());
