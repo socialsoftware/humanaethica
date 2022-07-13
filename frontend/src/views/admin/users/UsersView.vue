@@ -36,6 +36,19 @@
           </template>
           <span>Delete user</span>
         </v-tooltip>
+        <v-tooltip bottom v-if="item.state=='SUBMITTED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="green"
+              v-on="on"
+              data-cy="validateButton"
+              @click="validateUser(item)"
+              >mdi-check-bold</v-icon
+            >
+          </template>
+          <span>Validate user</span>
+        </v-tooltip>
       </template>
     </v-data-table>
 
@@ -86,6 +99,12 @@ export default class UsersView extends Vue {
     {
       text: 'Active',
       value: 'active',
+      align: 'center',
+      width: '5%',
+    },
+    {
+      text: 'State',
+      value: 'state',
       align: 'center',
       width: '5%',
     },
@@ -148,6 +167,20 @@ export default class UsersView extends Vue {
       try {
         await RemoteServices.deleteUser(userId);
         this.users = this.users.filter((user) => user.id != userId);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async validateUser(user: User) {
+    let userId = user.id;
+    if (
+      userId !== null &&
+      confirm('Are you sure you want to validate this user?')
+    ) {
+      try {
+        await RemoteServices.validateUser(userId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
