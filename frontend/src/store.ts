@@ -110,6 +110,13 @@ export default new Vuex.Store({
       const authResponse = await RemoteServices.demoMemberLogin();
       commit('login', authResponse);
     },
+    async arsAdminLogin({ commit }) {
+      const authResponse = await RemoteServices.userLogin(
+        'ars',
+        'ars'
+      );
+      commit('login', authResponse);
+    },
     logout({ commit }) {
       return new Promise<void>((resolve) => {
         commit('logout');
