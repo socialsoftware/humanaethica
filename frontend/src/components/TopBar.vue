@@ -50,6 +50,14 @@
                 <v-list-item-title>Manage Users</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/admin/institutions" data-cy="adminInstitutions">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Manage Institutions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar-items>
@@ -124,6 +132,14 @@
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Manage Users</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/admin/institutions">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Manage Institutions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
