@@ -50,12 +50,10 @@ public class UserApplicationalService {
 
     public void validateUser(Integer userId) {
         AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        RegisterUserDto user = new RegisterUserDto(authUser);
-        if (!user.getActive())
-            sendConfirmationEmailTo(user.getUsername(), user.getEmail(), user.getConfirmationToken());
-        User u = authUser.getUser();
-        if (!u.getState().equals(User.State.ACTIVE))
-            u.setState(User.State.APPROVED);
+        if (!authUser.isActive())
+            sendConfirmationEmailTo(authUser.getUsername(), authUser.getEmail(), authUser.getConfirmationToken());
+        if (!authUser.getUser().getState().equals(User.State.ACTIVE))
+            authUser.getUser().setState(User.State.APPROVED);
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
