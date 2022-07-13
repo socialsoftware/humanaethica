@@ -68,6 +68,7 @@ public class InstitutionService {
         institutionRepository.delete(institution);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Institution registerInstitution(InstitutionDto institutionDto/* , String type*/) {
 
         if (institutionDto.getName() == null || institutionDto.getName().trim().length() == 0) {
@@ -104,6 +105,7 @@ public class InstitutionService {
         return institution;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void validateInstitution(int id){
         Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         Member member = institution.getMembers().get(0);
@@ -122,6 +124,7 @@ public class InstitutionService {
         return String.format("%s: %s", msg, LinkHandler.createConfirmRegistrationLink(username, token));
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Institution getDemoInstitution() {
         return institutionRepository.findInstitutionByNif(DemoUtils.DEMO_INSTITUTION).orElseGet(() -> {
             Institution institution = new Institution(DemoUtils.DEMO_INSTITUTION, "demo_institution@mail.com", DemoUtils.DEMO_INSTITUTION_NIF);

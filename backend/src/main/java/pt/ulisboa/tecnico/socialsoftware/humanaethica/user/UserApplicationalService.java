@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -50,10 +49,10 @@ public class UserApplicationalService {
 
     public void validateUser(Integer userId) {
         AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        if (!authUser.isActive())
+        if (!authUser.isActive() && !authUser.getUser().getState().equals(User.State.ACTIVE)){
+            userService.validateUser(authUser);
             sendConfirmationEmailTo(authUser.getUsername(), authUser.getEmail(), authUser.getConfirmationToken());
-        if (!authUser.getUser().getState().equals(User.State.ACTIVE))
-            authUser.getUser().setState(User.State.APPROVED);
+        }
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {

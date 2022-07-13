@@ -164,4 +164,10 @@ public class UserService {
 
         userRepository.delete(user);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void validateUser(AuthNormalUser user) {
+        user.getUser().setState(User.State.APPROVED);
+        userRepository.save(user.getUser());
+    }
 }
