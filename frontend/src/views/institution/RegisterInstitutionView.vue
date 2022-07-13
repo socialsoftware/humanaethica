@@ -84,8 +84,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterUser from '@/models/institution/Institution';
-import Institution from '@/models/institution/Institution';
 import RemoteServices from '@/services/RemoteServices';
 
 @Component({
@@ -103,14 +101,14 @@ export default class RegisterInstitutionView extends Vue {
   async submit() {
     await this.$store.dispatch('loading');
     try {
-      let institution: Institution = await RemoteServices.registerInstitution({
-        name: this.institutionName,
-        email: this.institutionEmail,
-        nif: this.institutionNif,
-        id: 1,
-        valid: true,
-      });
-      await this.$store.dispatch('institution', institution);
+      await RemoteServices.registerInstitution({
+        institutionName: this.institutionName,
+        institutionEmail: this.institutionEmail,
+        institutionNif: this.institutionNif,
+        memberUsername: this.memberUsername,
+        memberEmail: this.memberEmail,
+        memberName: this.memberName,
+      }, );
       await this.$router.push({
         name: 'solve-quiz',
       });
