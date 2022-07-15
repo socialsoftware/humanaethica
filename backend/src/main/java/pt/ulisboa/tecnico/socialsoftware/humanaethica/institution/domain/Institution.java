@@ -29,15 +29,15 @@ public class Institution {
 
     private String nif;
 
-    private boolean valid = false;
+    private boolean active = false;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     private String confirmationToken = "";
 
-    /*@OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
-    private Document document;*/
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
+    private Document document;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch= FetchType.EAGER)
     private List<Member> members = new ArrayList<>();
@@ -97,11 +97,11 @@ public class Institution {
     }
 
     public void validate() {
-        this.valid = true;
+        this.active = true;
     }
 
-    public boolean isValid() {
-        return valid;
+    public boolean isActive() {
+        return active;
     }
 
     public String getConfirmationToken() {
@@ -128,14 +128,14 @@ public class Institution {
         this.tokenGenerationDate = tokenGenerationDate;
     }
 
-    /*public Document getDocument() {
+    public Document getDocument() {
         return document;
     }
 
     public void setDocument(Document document) {
         this.document = document;
         document.setInstitution(this);
-    }*/
+    }
 
     public String generateConfirmationToken() {
         String token = KeyGenerators.string().generateKey();
@@ -145,7 +145,7 @@ public class Institution {
     }
 
     public void remove() {
-        if (isValid()) {
+        if (isActive()) {
             throw new HEException(INSTITUTION_IS_ACTIVE, getName());
         }
     }
