@@ -1,12 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Objects;
 
 import javax.validation.Valid;
 
@@ -19,9 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.DocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 
 @RestController
 public class IntitutionController {
@@ -31,6 +28,9 @@ public class IntitutionController {
 
     @Autowired
     private UserApplicationalService userApplicationalService;
+
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @Value("${figures.dir}")
     private String figuresDir;
@@ -49,31 +49,32 @@ public class IntitutionController {
     }
 
     @PostMapping("/institution/register")
-    public void registerInstitution(@Valid @RequestBody RegisterInstitutionDto registerInstitutionDto)/* , @RequestParam("file") MultipartFile doc) throws IOException*/{
-        /*int lastIndex = Objects.requireNonNull(doc.getContentType()).lastIndexOf('/');
-        String type = doc.getContentType().substring(lastIndex + 1);*/
+    public int registerInstitution(@Valid @RequestBody RegisterInstitutionDto registerInstitutionDto) {
 
         InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
-        Institution i = institutionService.registerInstitution(institutionDto/*  type*/);
+        Institution i = institutionService.registerInstitution(institutionDto);
 
-        /*String url = i.getDocument().getUrl();
-
-        Files.copy(doc.getInputStream(), getTargetLocation(url), StandardCopyOption.REPLACE_EXISTING);*/
 
         RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
         registerUserDto.setInstitutionId(i.getId());
         registerUserDto.setRole(User.Role.MEMBER);
         userApplicationalService.registerUser(registerUserDto);
+
+        return i.getId();
+    }
+
+    @PutMapping("/institution/{institutionId}/document")
+    public void addDocument(@PathVariable Integer institutionId, @RequestParam(value="file") MultipartFile doc) throws IOException{
+        Document document = new Document();
+        document.setName(doc.getName());
+        document.setContent(doc.getBytes());
+        
+        institutionService.addDocument(institutionId, document);
     }
 
     @PostMapping("/institution/{institutionId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void validateInstitution(@PathVariable int institutionId) {
         institutionService.validateInstitution(institutionId);
-    }
-
-    private Path getTargetLocation(String url) {
-        String fileLocation = figuresDir + url;
-        return Paths.get(fileLocation);
     }
 }

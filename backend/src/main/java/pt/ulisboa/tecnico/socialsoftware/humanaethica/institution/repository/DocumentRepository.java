@@ -7,4 +7,4 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Documen
 
 @Repository
 @Transactional
-public interface DocumentRepository extends JpaRepository<Document, Integer> {}
+public interface DocumentRepository extends JpaRepository<Document, Long> {}

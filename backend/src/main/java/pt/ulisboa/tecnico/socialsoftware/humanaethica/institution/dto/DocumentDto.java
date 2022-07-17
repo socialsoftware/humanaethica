@@ -5,34 +5,30 @@ import java.io.Serializable;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 
 public class DocumentDto implements Serializable {
-    private Integer id;
-    private String url;
+    byte[] content;
+    String name;
 
     public DocumentDto() {
     }
 
     public DocumentDto(Document document) {
-        this.id = document.getId();
-        this.url = document.getUrl();
+        this.content = document.getContent();
+        this.name = document.getName();
     }
 
-    public Integer getId() {
-        return id;
+    public byte[] getContent() {
+        return content;
     }
 
-    public String getUrl() {
-        return url;
+    public void setContent(byte[] content) {
+        this.content = content;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String toString() {
-        return "DocumentDto{" +
-                "id=" + id +
-                ", url='" + url + '\'' +
-                '}';
+    public void setName(String name) {
+        this.name = name;
     }
 }

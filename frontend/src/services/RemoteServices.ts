@@ -132,12 +132,30 @@ export default class RemoteServices {
 
   // User Controller
 
-  static async registerInstitution(institution: RegisterInstitution) {
+  static async registerInstitution(institution: RegisterInstitution): Promise<number> {
     return httpClient
       .post('/institution/register', institution)
-      .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
+    .then((response) => {
+      return response.data;
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async addDocumentToInstitution(institutionId: number, doc: File) {
+    console.log(doc);
+    const formData = new FormData();
+    formData.append('file', doc);
+    return httpClient
+      .put(`/institution/${institutionId}/document`, formData,  {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   static async getInstitutions(): Promise<Institution[]> {
