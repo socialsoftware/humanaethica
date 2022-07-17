@@ -132,27 +132,25 @@ export default class RemoteServices {
 
   // User Controller
 
-  static async registerInstitution(institution: RegisterInstitution): Promise<number> {
-    return httpClient
-      .post('/institution/register', institution)
-    .then((response) => {
-      return response.data;
-    })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
-  }
-
-  static async addDocumentToInstitution(institutionId: number, doc: File) {
-    console.log(doc);
+  static async registerInstitution(institution: RegisterInstitution, doc: File) {
     const formData = new FormData();
     formData.append('file', doc);
+    formData.append('institution', new Blob([JSON.stringify({
+      'institutionEmail': institution.institutionEmail,
+      'institutionName': institution.institutionName,
+      'institutionNif': institution.institutionNif,
+      'memberEmail': institution.memberEmail,
+      'memberUsername': institution.memberUsername,
+      'memberName': institution.memberName,
+  })], {
+          type: 'application/json'
+      }));
     return httpClient
-      .put(`/institution/${institutionId}/document`, formData,  {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+    .post('/institution/register', formData,  {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+  })
     .catch(async (error) => {
       throw Error(await this.errorMessage(error));
     });

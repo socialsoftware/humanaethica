@@ -49,11 +49,15 @@ public class IntitutionController {
     }
 
     @PostMapping("/institution/register")
-    public int registerInstitution(@Valid @RequestBody RegisterInstitutionDto registerInstitutionDto) {
+    public int registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value="file") MultipartFile doc) throws IOException{
+        Document document = new Document();
+        document.setName(doc.getName());
+        document.setContent(doc.getBytes());
 
         InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
         Institution i = institutionService.registerInstitution(institutionDto);
 
+        institutionService.addDocument(i, document);
 
         RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
         registerUserDto.setInstitutionId(i.getId());
@@ -61,15 +65,6 @@ public class IntitutionController {
         userApplicationalService.registerUser(registerUserDto);
 
         return i.getId();
-    }
-
-    @PutMapping("/institution/{institutionId}/document")
-    public void addDocument(@PathVariable Integer institutionId, @RequestParam(value="file") MultipartFile doc) throws IOException{
-        Document document = new Document();
-        document.setName(doc.getName());
-        document.setContent(doc.getBytes());
-        
-        institutionService.addDocument(institutionId, document);
     }
 
     @PostMapping("/institution/{institutionId}/validate")

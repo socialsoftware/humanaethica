@@ -101,9 +101,7 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void addDocument(Integer institutionId, Document doc) {
-        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-
+    public void addDocument(Institution institution, Document doc) {
         institution.setDocument(doc);
         documentRepository.save(doc);
     }

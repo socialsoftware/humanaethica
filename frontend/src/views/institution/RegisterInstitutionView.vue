@@ -30,12 +30,12 @@
 
       <v-file-input
         counter
-        multiple
         show-size
         truncate-length="7"
         label="Declaration"
         required
-        accept="application/pdf"
+        dense
+        small-chips
         @change="handleFileUpload($event)"
       ></v-file-input>
 
@@ -106,14 +106,16 @@ export default class RegisterInstitutionView extends Vue {
   async submit() {
     await this.$store.dispatch('loading');
     try {
-      let institutionId: number = await RemoteServices.registerInstitution({
-        institutionName: this.institutionName,
-        institutionEmail: this.institutionEmail,
-        institutionNif: this.institutionNif,
-        memberUsername: this.memberUsername,
-        memberEmail: this.memberEmail,
-        memberName: this.memberName,
-      }, );
+      if (this.institutionDoc != null) {
+        await RemoteServices.registerInstitution({
+          institutionName: this.institutionName,
+          institutionEmail: this.institutionEmail,
+          institutionNif: this.institutionNif,
+          memberUsername: this.memberUsername,
+          memberEmail: this.memberEmail,
+          memberName: this.memberName,
+        }, this.institutionDoc);
+      }
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -121,11 +123,7 @@ export default class RegisterInstitutionView extends Vue {
   }
 
   async handleFileUpload(event: File) {
-    try {
-      await RemoteServices.addDocumentToInstitution(5, event);
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
+    this.institutionDoc = event;
   }
 
   clear() {
