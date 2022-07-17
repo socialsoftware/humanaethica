@@ -32,7 +32,7 @@
           </template>
           <span>Delete institution</span>
         </v-tooltip>
-        <v-tooltip bottom v-if="item.valid">
+        <v-tooltip bottom v-if="!item.active">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -78,7 +78,7 @@ export default class InstitutionsView extends Vue {
     },
     {
       text: 'Active',
-      value: 'valid',
+      value: 'active',
       align: 'center',
       width: '5%',
     },
