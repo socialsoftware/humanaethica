@@ -36,8 +36,8 @@ public class InstitutionService {
     @Autowired
     UserRepository userRepository;
 
-    /*@Autowired
-    DocumentRepository documentRepository;*/
+    @Autowired
+    DocumentRepository documentRepository;
 
     @Autowired
     private Mailer mailer;
@@ -69,7 +69,7 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Institution registerInstitution(InstitutionDto institutionDto/* , String type*/) {
+    public Institution registerInstitution(InstitutionDto institutionDto) {
 
         if (institutionDto.getName() == null || institutionDto.getName().trim().length() == 0) {
             throw new HEException(INVALID_INSTITUTION_NAME, institutionDto.getName());
@@ -94,22 +94,25 @@ public class InstitutionService {
         }
 
         Institution institution = new Institution(institutionDto.getName(), institutionDto.getEmail(), institutionDto.getNif());
-        /*String documentName = institution.getName().replaceAll("\\s", "") +
-                "." + type;
 
-        Document document = new Document(documentName);
-        institution.setDocument(document);
-        documentRepository.save(document);*/
         institutionRepository.save(institution);
 
         return institution;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void addDocument(Integer institutionId, Document doc) {
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+
+        institution.setDocument(doc);
+        documentRepository.save(doc);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void validateInstitution(int id){
         Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         Member member = institution.getMembers().get(0);
-        if (!institution.isValid())
+        if (!institution.isActive())
             sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
         institution.validate();
         member.setState(State.APPROVED);

@@ -33,6 +33,10 @@
         multiple
         show-size
         truncate-length="7"
+        label="Declaration"
+        required
+        accept="application/pdf"
+        @change="handleFileUpload($event)"
       ></v-file-input>
 
       <v-divider class="divider"></v-divider>
@@ -97,11 +101,12 @@ export default class RegisterInstitutionView extends Vue {
   memberEmail: string = '';
   memberName: string = '';
   memberPassword: string = '';
+  institutionDoc: File | null = null;
 
   async submit() {
     await this.$store.dispatch('loading');
     try {
-      await RemoteServices.registerInstitution({
+      let institutionId: number = await RemoteServices.registerInstitution({
         institutionName: this.institutionName,
         institutionEmail: this.institutionEmail,
         institutionNif: this.institutionNif,
@@ -109,13 +114,18 @@ export default class RegisterInstitutionView extends Vue {
         memberEmail: this.memberEmail,
         memberName: this.memberName,
       }, );
-      await this.$router.push({
-        name: 'solve-quiz',
-      });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async handleFileUpload(event: File) {
+    try {
+      await RemoteServices.addDocumentToInstitution(5, event);
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
   }
 
   clear() {
