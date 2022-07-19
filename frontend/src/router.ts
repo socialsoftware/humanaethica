@@ -13,6 +13,9 @@ import UsersView from '@/views/admin/users/UsersView.vue';
 import InstitutionsView from '@/views/admin/institutions/InstitutionsView.vue';
 import AdminView from '@/views/admin/AdminView.vue';
 import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
+import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
+import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
+
 
 Vue.use(Router);
 
@@ -85,6 +88,24 @@ const router = new Router({
       meta: {
         requiredAuth: 'None',
         title: APP_NAME + ' - Institution Registration',
+      },
+    },
+    {
+      path: '/volunteer/register',
+      name: 'register-volunteer',
+      component: RegisterVolunteerView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Volunteer Registration',
+      },
+    },
+    {
+      path: '/member/register',
+      name: 'register-member',
+      component: RegisterMemberView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Member Registration',
       },
     },
     {

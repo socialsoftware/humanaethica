@@ -18,8 +18,8 @@
       <v-toolbar-items class="hidden-sm-and-down" hide-details>
         <v-menu v-if="isMember" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn dark text v-on="on" data-cy="member">
-              Member
+            <v-btn dark text v-on="on" data-cy="member" @click="registerMember">
+              Create Member
               <v-icon>fas fa-user</v-icon>
             </v-btn>
           </template>
@@ -27,8 +27,8 @@
 
         <v-menu v-if="isVolunteer" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn dark text v-on="on" data-cy="volunteer">
-              Volunteer
+            <v-btn dark text v-on="on" data-cy="volunteer" @click="registerVolunteer">
+              Create Volunteer
               <v-icon>fas fa-user</v-icon>
             </v-btn>
           </template>
@@ -58,6 +58,14 @@
               <v-list-item-title>Manage Institutions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/admin/members" data-cy="adminMembers">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Manage Members</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar-items>
@@ -142,6 +150,14 @@
               <v-list-item-title>Manage Institutions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/admin/members" data-cy="adminMembers">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Manage Members</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
         </v-list-group>
       </v-list>
 
@@ -192,6 +208,14 @@ export default class TopBar extends Vue {
 
   async registerInstitution() {
     await this.$router.push({ name: 'register-institution' }).catch(() => {});
+  }
+
+  async registerVolunteer() {
+    await this.$router.push({ name: 'register-volunteer' }).catch(() => {});
+  }
+
+  async registerMember() {
+    await this.$router.push({ name: 'register-member' }).catch(() => {});
   }
 
   async logout() {
