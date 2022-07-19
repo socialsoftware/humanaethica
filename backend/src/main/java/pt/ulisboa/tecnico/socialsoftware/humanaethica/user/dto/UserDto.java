@@ -15,6 +15,8 @@ public class UserDto {
 
     private String role;
 
+    private String state;
+
     private boolean active;
 
     private String type;
@@ -31,6 +33,7 @@ public class UserDto {
         this.username = user.getUsername();
         this.name = user.getName();
         this.role = user.getRole().toString();
+        this.state = user.getState().toString();
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
         if (user.getAuthUser() != null) {
@@ -115,5 +118,13 @@ public class UserDto {
 
     public void setLastAccess(String lastAccess) {
         this.lastAccess = lastAccess;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

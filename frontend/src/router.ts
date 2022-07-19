@@ -10,6 +10,7 @@ import NotFoundView from '@/views/NotFoundView.vue';
 
 import LoginView from '@/views/user/LoginView.vue';
 import UsersView from '@/views/admin/users/UsersView.vue';
+import InstitutionsView from '@/views/admin/institutions/InstitutionsView.vue';
 import AdminView from '@/views/admin/AdminView.vue';
 import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
 
@@ -56,6 +57,22 @@ const router = new Router({
           component: UsersView,
           meta: {
             title: APP_NAME + ' - Manage Users',
+            requiredAuth: 'Admin',
+          },
+        },
+      ],
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
+      children: [
+        {
+          path: 'institutions',
+          name: 'institutionsAdmin',
+          component: InstitutionsView,
+          meta: {
+            title: APP_NAME + ' - Manage Institutions',
             requiredAuth: 'Admin',
           },
         },

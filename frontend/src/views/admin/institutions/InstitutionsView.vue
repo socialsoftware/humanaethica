@@ -2,7 +2,7 @@
   <v-card class="table">
     <v-data-table
       :headers="headers"
-      :items="users"
+      :items="institutions"
       :search="search"
       disable-pagination
       :hide-default-footer="true"
@@ -16,10 +16,6 @@
             label="Search"
             class="mx-2"
           />
-          <v-spacer />
-          <v-btn color="primary" dark @click="newUser" data-cy="createButton"
-            >New User</v-btn
-          >
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
@@ -30,59 +26,43 @@
               color="red"
               v-on="on"
               data-cy="deleteButton"
-              @click="deleteUser(item)"
+              @click="deleteInstitution(item)"
               >delete</v-icon
             >
           </template>
-          <span>Delete user</span>
+          <span>Delete institution</span>
         </v-tooltip>
-        <v-tooltip bottom v-if="item.state=='SUBMITTED'">
+        <v-tooltip bottom v-if="!item.active">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
               color="green"
               v-on="on"
               data-cy="validateButton"
-              @click="validateUser(item)"
+              @click="validateInstitution(item)"
               >mdi-check-bold</v-icon
             >
           </template>
-          <span>Validate user</span>
+          <span>Validate institution</span>
         </v-tooltip>
       </template>
     </v-data-table>
-
-    <add-user-dialog
-      v-if="addUserDialog"
-      v-model="addUserDialog"
-      v-on:user-created="onCreatedUser"
-      v-on:close-dialog="onCloseDialog"
-    />
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import AddUserDialog from '@/views/admin/users/AddUserDialog.vue';
-import User from '@/models/user/User';
+import Institution from '@/models/institution/Institution';
 
 @Component({
   components: {
-    'add-user-dialog': AddUserDialog,
   },
 })
-export default class UsersView extends Vue {
-  users: User[] = [];
-  addUserDialog: boolean = false;
+export default class InstitutionsView extends Vue {
+  institutions: Institution[] = [];
   search: string = '';
   headers: object = [
-    {
-      text: 'Username',
-      value: 'username',
-      align: 'left',
-      width: '10%',
-    },
     { text: 'Name', value: 'name', align: 'left', width: '25%' },
     {
       text: 'Email',
@@ -91,10 +71,10 @@ export default class UsersView extends Vue {
       width: '10%',
     },
     {
-      text: 'Role',
-      value: 'role',
+      text: 'NIF',
+      value: 'nif',
       align: 'left',
-      width: '5%',
+      width: '10%',
     },
     {
       text: 'Active',
@@ -103,26 +83,8 @@ export default class UsersView extends Vue {
       width: '5%',
     },
     {
-      text: 'State',
-      value: 'state',
-      align: 'center',
-      width: '5%',
-    },
-    {
-      text: 'Type',
-      value: 'type',
-      align: 'center',
-      width: '5%',
-    },
-    {
       text: 'Creation Date',
       value: 'creationDate',
-      align: 'center',
-      width: '10%',
-    },
-    {
-      text: 'Last Access',
-      value: 'lastAccess',
       align: 'center',
       width: '10%',
     },
@@ -138,49 +100,36 @@ export default class UsersView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.users = await RemoteServices.getUsers();
+      this.institutions = await RemoteServices.getInstitutions();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
   }
 
-  newUser() {
-    this.addUserDialog = true;
-  }
-
-  onCreatedUser(user: User) {
-    this.users.unshift(user);
-    this.addUserDialog = false;
-  }
-
-  onCloseDialog() {
-    this.addUserDialog = false;
-  }
-
-  async deleteUser(user: User) {
-    let userId = user.id;
+  async deleteInstitution(institution: Institution) {
+    let institutionId = institution.id;
     if (
-      userId !== null &&
-      confirm('Are you sure you want to delete the user?')
+      institutionId !== null &&
+      confirm('Are you sure you want to delete the institution?')
     ) {
       try {
-        await RemoteServices.deleteUser(userId);
-        this.users = this.users.filter((user) => user.id != userId);
+        await RemoteServices.deleteInstitution(institutionId);
+        this.institutions = this.institutions.filter((institution) => institution.id != institutionId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
     }
   }
 
-  async validateUser(user: User) {
-    let userId = user.id;
+  async validateInstitution(institution: Institution) {
+    let institutionId = institution.id;
     if (
-      userId !== null &&
-      confirm('Are you sure you want to validate this user?')
+      institutionId !== null &&
+      confirm('Are you sure you want to validate this institution?')
     ) {
       try {
-        await RemoteServices.validateUser(userId);
+        await RemoteServices.validateInstitution(institutionId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

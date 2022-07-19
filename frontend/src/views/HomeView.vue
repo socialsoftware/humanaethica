@@ -34,6 +34,15 @@
       >
         <i class="fa fa-graduation-cap" />Demo as member
       </v-btn>
+      <v-btn
+        depressed
+        small
+        color="primary"
+        @click="loginArsAdmin"
+        data-cy="arsAdminLoginButton"
+      >
+        <i class="fa fa-graduation-cap" />Login as ars
+      </v-btn>
     </div>
 
     <v-footer class="footer"> </v-footer>
@@ -66,6 +75,16 @@ export default class HomeView extends Vue {
     await this.$store.dispatch('loading');
     try {
       await this.$store.dispatch('demoMemberLogin');
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  async loginArsAdmin() {
+    await this.$store.dispatch('loading');
+    try {
+      await this.$store.dispatch('arsAdminLogin');
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

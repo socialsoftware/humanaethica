@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
@@ -61,31 +62,31 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createVolunteerWithAuth(String name, String username, String email, AuthUser.Type type) {
+    public AuthUser createVolunteerWithAuth(String name, String username, String email, AuthUser.Type type, State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Volunteer volunteer = new Volunteer(name, username, email, type);
+        Volunteer volunteer = new Volunteer(name, username, email, type, state);
         userRepository.save(volunteer);
         return volunteer.getAuthUser();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type, Institution institution) {
+    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type, Institution institution, State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Member member = new Member(name, username, email, type, institution);
+        Member member = new Member(name, username, email, type, institution, state);
         userRepository.save(member);
         return member.getAuthUser();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
-    public RegisterUserDto registerUserTransactional(RegisterUserDto registerUserDto) {
-        AuthNormalUser authUser = createAuthNormalUser(registerUserDto);
+    public RegisterUserDto registerUserTransactional(RegisterUserDto registerUserDto, State state) {
+        AuthNormalUser authUser = createAuthNormalUser(registerUserDto, state);
 
         return new RegisterUserDto(authUser);
     }
@@ -111,11 +112,12 @@ public class UserService {
             } else throw new HEException(e.getErrorMessage());
         }
 
+        authUser.getUser().setState(State.ACTIVE);
         return new RegisterUserDto(authUser);
     }
 
 
-    private AuthNormalUser createAuthNormalUser(RegisterUserDto registerUserDto) {
+    private AuthNormalUser createAuthNormalUser(RegisterUserDto registerUserDto, State state) {
         if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().length() == 0) {
             throw new HEException(INVALID_AUTH_USERNAME, registerUserDto.getUsername());
         }
@@ -133,16 +135,16 @@ public class UserService {
         switch (registerUserDto.getRole()) {
             case VOLUNTEER:
                 user = new Volunteer(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
                 break;
             case MEMBER:
                 Institution i = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
                 user = new Member(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, i);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, i, state);
                 break;
             case ADMIN:
                 user = new Admin(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
                 break;
             default:
                 throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
@@ -161,5 +163,11 @@ public class UserService {
         user.remove();
 
         userRepository.delete(user);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void validateUser(AuthNormalUser user) {
+        user.getUser().setState(User.State.APPROVED);
+        userRepository.save(user.getUser());
     }
 }

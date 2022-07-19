@@ -43,7 +43,7 @@ class RegisterInstitutionTest extends SpockTest {
         and: "checks if institution data is correct"
         result.getName() == INSTITUTION_1_NAME
         result.getEmail() == INSTITUTION_1_EMAIL
-        !result.isValid()
+        !result.isActive()
     }
 
     def "the institution exists"() {

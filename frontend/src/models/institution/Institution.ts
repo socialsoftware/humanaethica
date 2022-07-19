@@ -1,9 +1,14 @@
+import { ISOtoString } from '@/services/ConvertDateService';
+import Document from '../management/Document';
+
 export default class Institution {
   id: number | null = null;
   name!: string;
   email!: string;
-  valid!: boolean;
+  active!: boolean;
   nif!: string;
+  creationDate!: string;
+  doc!: Document;
 
   constructor(jsonObj?: Institution) {
     if (jsonObj) {
@@ -11,7 +16,9 @@ export default class Institution {
       this.name = jsonObj.name;
       this.email = jsonObj.email;
       this.nif = jsonObj.nif;
-      this.valid = jsonObj.valid;
+      this.active = jsonObj.active;
+      this.creationDate = ISOtoString(jsonObj.creationDate);
+      this.doc = jsonObj.doc;
     }
   }
 }

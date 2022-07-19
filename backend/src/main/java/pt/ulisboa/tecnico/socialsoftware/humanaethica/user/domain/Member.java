@@ -17,8 +17,8 @@ public class Member extends User {
     public Member() {
     }
 
-    public Member(String name, String username, String email, AuthUser.Type type, Institution institution) {
-        super(name, username, email, Role.MEMBER, type);
+    public Member(String name, String username, String email, AuthUser.Type type, Institution institution, State state) {
+        super(name, username, email, Role.MEMBER, type, state);
         setInstitution(institution);
         institution.addMember(this);
     }

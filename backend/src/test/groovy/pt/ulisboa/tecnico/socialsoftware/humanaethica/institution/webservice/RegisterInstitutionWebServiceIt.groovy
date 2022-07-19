@@ -57,7 +57,7 @@ class RegisterInstitutionWebserviceIT extends SpockTest {
         user.getRole() == User.Role.MEMBER
         user.getInstitution().getId() == institution.getId()
         institution.getMembers().size() == 1
-        !institution.isValid()
+        !institution.isActive()
         def authUser = (AuthNormalUser) authUserRepository.findAll().get(0)
         !authUser.isActive()
     }

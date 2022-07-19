@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_ROLE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_STATE;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USER_IS_ACTIVE;
 
 @Entity
@@ -16,6 +17,8 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 @DiscriminatorColumn(name = "user_type",
         discriminatorType = DiscriminatorType.STRING)
 public abstract class User {
+    public enum State {SUBMITTED, APPROVED, ACTIVE}
+
     public enum Role {VOLUNTEER, MEMBER, ADMIN}
 
     public static class UserTypes {
@@ -37,6 +40,9 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private State state;
+
     private String name;
 
     @Column(name = "creation_date")
@@ -48,16 +54,18 @@ public abstract class User {
     protected User() {
     }
 
-    protected User(String name, String username, String email, Role role, AuthUser.Type type) {
+    protected User(String name, String username, String email, Role role, AuthUser.Type type, State state) {
         setName(name);
         setRole(role);
+        setState(state);
         setAuthUser(AuthUser.createAuthUser(this, username, email, type));
         setCreationDate(DateHandler.now());
     }
 
-    protected User(String name, User.Role role) {
+    protected User(String name, User.Role role, State state) {
         setName(name);
         setRole(role);
+        setState(state);
         setCreationDate(DateHandler.now());
     }
 
@@ -93,6 +101,16 @@ public abstract class User {
             throw new HEException(INVALID_ROLE);
 
         this.role = role;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        if (role == null)
+            throw new HEException(INVALID_STATE);
+        this.state = state;
     }
 
     public LocalDateTime getCreationDate() {

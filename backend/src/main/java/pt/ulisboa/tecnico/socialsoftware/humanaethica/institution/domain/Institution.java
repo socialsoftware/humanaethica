@@ -8,8 +8,12 @@ import javax.persistence.*;
 
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
+
+
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INSTITUTION_IS_ACTIVE;
 
 @Entity
 @Table(name = "institutions")
@@ -25,9 +29,15 @@ public class Institution {
 
     private String nif;
 
-    private boolean valid = false;
+    private boolean active = false;
+
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
 
     private String confirmationToken = "";
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
+    private Document document;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch= FetchType.EAGER)
     private List<Member> members = new ArrayList<>();
@@ -42,6 +52,7 @@ public class Institution {
         setName(name);
         setNIF(nif);
         generateConfirmationToken();
+        setCreationDate(DateHandler.now());
     }
 
     public void addMember(Member member){
@@ -86,11 +97,11 @@ public class Institution {
     }
 
     public void validate() {
-        this.valid = true;
+        this.active = true;
     }
 
-    public boolean isValid() {
-        return valid;
+    public boolean isActive() {
+        return active;
     }
 
     public String getConfirmationToken() {
@@ -101,6 +112,14 @@ public class Institution {
         this.confirmationToken = confirmationToken;
     }
 
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public LocalDateTime getTokenGenerationDate() {
         return tokenGenerationDate;
     }
@@ -109,10 +128,25 @@ public class Institution {
         this.tokenGenerationDate = tokenGenerationDate;
     }
 
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+        document.setInstitution(this);
+    }
+
     public String generateConfirmationToken() {
         String token = KeyGenerators.string().generateKey();
         setTokenGenerationDate(DateHandler.now());
         setConfirmationToken(token);
         return token;
+    }
+
+    public void remove() {
+        if (isActive()) {
+            throw new HEException(INSTITUTION_IS_ACTIVE, getName());
+        }
     }
 }

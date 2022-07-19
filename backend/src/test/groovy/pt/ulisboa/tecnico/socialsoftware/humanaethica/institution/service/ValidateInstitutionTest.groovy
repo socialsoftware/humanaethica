@@ -41,7 +41,7 @@ class ValidateInstitutionTest extends SpockTest {
         memberDto.setRole(User.Role.MEMBER)
         memberDto.setInstitutionId(institution.getId())
 
-        userServiceApplicational.registerPendentMember(memberDto);
+        userServiceApplicational.registerUser(memberDto);
     }
 
     def "validate institution with success"() {
@@ -49,7 +49,7 @@ class ValidateInstitutionTest extends SpockTest {
         institutionService.validateInstitution(institution.getId())
 
         then: "the institution is validated"
-        institution.isValid()
+        institution.isActive()
         and: "an email is sent"
         1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
     }

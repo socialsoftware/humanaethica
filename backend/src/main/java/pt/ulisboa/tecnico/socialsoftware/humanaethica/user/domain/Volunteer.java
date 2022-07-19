@@ -12,11 +12,11 @@ public class Volunteer extends User {
     public Volunteer() {
     }
 
-    public Volunteer(String name, String username, String email, AuthUser.Type type) {
-        super(name, username, email, Role.VOLUNTEER, type);
+    public Volunteer(String name, String username, String email, AuthUser.Type type, State state) {
+        super(name, username, email, Role.VOLUNTEER, type, state);
     }
 
-    public Volunteer(String name) {
-        super(name, Role.VOLUNTEER);
+    public Volunteer(String name, State state) {
+        super(name, Role.VOLUNTEER, state);
     }
 }

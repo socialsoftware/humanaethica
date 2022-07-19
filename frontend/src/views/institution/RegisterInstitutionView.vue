@@ -29,9 +29,13 @@
 
       <v-file-input
         counter
-        multiple
         show-size
         truncate-length="7"
+        label="Declaration"
+        required
+        dense
+        small-chips
+        @change="handleFileUpload($event)"
       ></v-file-input>
 
       <v-divider class="divider"></v-divider>
@@ -85,26 +89,30 @@ export default class RegisterInstitutionView extends Vue {
   memberEmail: string = '';
   memberName: string = '';
   memberPassword: string = '';
+  institutionDoc: File | null = null;
 
   async submit() {
     await this.$store.dispatch('loading');
 
     try {
-      await RemoteServices.registerInstitution({
-        institutionName: this.institutionName,
-        institutionEmail: this.institutionEmail,
-        institutionNif: this.institutionNif,
-        memberName: this.memberName,
-        memberUsername: this.memberUsername,
-        memberEmail: this.memberEmail
-      });
-      await this.$router.push({
-        name: 'solve-quiz',
-      });
+      if (this.institutionDoc != null) {
+        await RemoteServices.registerInstitution({
+          institutionName: this.institutionName,
+          institutionEmail: this.institutionEmail,
+          institutionNif: this.institutionNif,
+          memberUsername: this.memberUsername,
+          memberEmail: this.memberEmail,
+          memberName: this.memberName,
+        }, this.institutionDoc);
+      }
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async handleFileUpload(event: File) {
+    this.institutionDoc = event;
   }
 
   clear() {

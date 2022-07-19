@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class InstitutionDto {
     private Integer id;
@@ -11,6 +13,10 @@ public class InstitutionDto {
 
     private String nif;
 
+    private String creationDate;
+
+    private Document document;
+
     public InstitutionDto(){
     }
 
@@ -19,6 +25,8 @@ public class InstitutionDto {
         setEmail(institution.getEmail());
         setName(institution.getName());
         setNif(institution.getNIF());
+        setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
+        setDocument(institution.getDocument());
     }
 
     public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){
@@ -57,5 +65,21 @@ public class InstitutionDto {
 
     public void setNif(String nif) {
         this.nif = nif;
+    }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
     }
 }

@@ -100,20 +100,18 @@ export default class RemoteServices {
     });
   }
 
+  static async validateUser(userId: number) {
+    return httpClient.post(`/users/${userId}/validate`).catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   static async registerUser(user: User): Promise<User> {
     return httpClient
       .post('/users/register', user)
       .then((response) => {
         return new User(response.data);
       })
-      .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
-  static async registerInstitution(institution: RegisterInstitution) {
-    return httpClient
-      .post('/institution/register', institution)
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
@@ -130,6 +128,57 @@ export default class RemoteServices {
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  // User Controller
+
+  static async registerInstitution(institution: RegisterInstitution, doc: File) {
+    const formData = new FormData();
+    formData.append('file', doc);
+    formData.append('institution', new Blob([JSON.stringify({
+      'institutionEmail': institution.institutionEmail,
+      'institutionName': institution.institutionName,
+      'institutionNif': institution.institutionNif,
+      'memberEmail': institution.memberEmail,
+      'memberUsername': institution.memberUsername,
+      'memberName': institution.memberName,
+  })], {
+          type: 'application/json'
+      }));
+    return httpClient
+    .post('/institution/register', formData,  {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+  })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async getInstitutions(): Promise<Institution[]> {
+    return httpClient
+      .get('/institutions')
+      .then((response) => {
+        return response.data.map((institution: any) => {
+          return new Institution(institution);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteInstitution(institutionId: number) {
+    return httpClient.delete(`/institutions/${institutionId}`).catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async validateInstitution(institutionId: number) {
+    return httpClient.post(`/institutions/${institutionId}/validate`).catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   // Error
