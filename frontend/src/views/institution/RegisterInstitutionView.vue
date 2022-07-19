@@ -5,7 +5,6 @@
     <v-form ref="form" lazy-validation>
       <v-text-field
         v-model="institutionName"
-        :counter="10"
         label="Name"
         required
         @input="$v.institutionName.$touch()"
@@ -58,22 +57,10 @@
 
       <v-text-field
         v-model="memberName"
-        :counter="10"
         label="Name"
         required
         @input="$v.memberName.$touch()"
         @blur="$v.memberName.$touch()"
-      ></v-text-field>
-
-      <v-text-field
-        v-model="password"
-        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-        :type="show1 ? 'text' : 'password'"
-        name="input-10-1"
-        label="Password"
-        hint="At least 8 characters"
-        counter
-        @click:append="show1 = !show1"
       ></v-text-field>
 
       <v-btn class="mr-4" @click="submit"> submit </v-btn>
@@ -84,8 +71,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterUser from '@/models/institution/Institution';
-import Institution from '@/models/institution/Institution';
+import RegisterInstitution from '@/models/institution/RegisterInstitution';
 import RemoteServices from '@/services/RemoteServices';
 
 @Component({
@@ -102,15 +88,16 @@ export default class RegisterInstitutionView extends Vue {
 
   async submit() {
     await this.$store.dispatch('loading');
+
     try {
-      let institution: Institution = await RemoteServices.registerInstitution({
-        name: this.institutionName,
-        email: this.institutionEmail,
-        nif: this.institutionNif,
-        id: 1,
-        valid: true,
+      await RemoteServices.registerInstitution({
+        institutionName: this.institutionName,
+        institutionEmail: this.institutionEmail,
+        institutionNif: this.institutionNif,
+        memberName: this.memberName,
+        memberUsername: this.memberUsername,
+        memberEmail: this.memberEmail
       });
-      await this.$store.dispatch('institution', institution);
       await this.$router.push({
         name: 'solve-quiz',
       });

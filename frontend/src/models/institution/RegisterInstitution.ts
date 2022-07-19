@@ -1,13 +1,12 @@
-export default class Institution {
+export default class RegisterInstitution {
   institutionEmail!: string;
   institutionName!: string;
   institutionNif!: string;
   memberUsername!: string;
   memberEmail!: string;
   memberName!: string;
-  memberPassword!: string;
 
-  constructor(jsonObj?: Institution) {
+  constructor(jsonObj?: RegisterInstitution) {
     if (jsonObj) {
       this.institutionEmail = jsonObj.institutionEmail;
       this.institutionName = jsonObj.institutionName;
@@ -15,7 +14,6 @@ export default class Institution {
       this.memberUsername = jsonObj.memberUsername;
       this.memberEmail = jsonObj.memberEmail;
       this.memberName = jsonObj.memberName;
-      this.memberPassword = jsonObj.memberPassword;
     }
   }
 }
