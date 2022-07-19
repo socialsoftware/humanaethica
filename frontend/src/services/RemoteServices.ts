@@ -6,6 +6,8 @@ import router from '@/router';
 import User from '@/models/user/User';
 import Institution from '@/models/institution/Institution';
 import RegisterInstitution from '@/models/institution/RegisterInstitution';
+import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
+import RegisterMember from '@/models/member/RegisterMember';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -147,6 +149,48 @@ export default class RemoteServices {
       }));
     return httpClient
     .post('/institution/register', formData,  {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+  })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async registerVolunteer(volunteer: RegisterVolunteer, doc: File) {
+    const formData = new FormData();
+    formData.append('file', doc);
+    formData.append('volunteer', new Blob([JSON.stringify({
+      'volunteerEmail': volunteer.volunteerEmail,
+      'volunteerName': volunteer.volunteerName,
+      'volunteerUsername': volunteer.volunteerUsername,
+  })], {
+          type: 'application/json'
+      }));
+    return httpClient
+    .post('/volunteer/register', formData,  {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+  })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async registerMember(member: RegisterMember, doc: File) {
+    const formData = new FormData();
+    formData.append('file', doc);
+    formData.append('member', new Blob([JSON.stringify({
+      'memberEmail': member.memberEmail,
+      'memberName': member.memberName,
+      'memberUsername': member.memberUsername,
+  })], {
+          type: 'application/json'
+      }));
+    return httpClient
+    .post('/member/register', formData,  {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
