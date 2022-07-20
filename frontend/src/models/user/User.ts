@@ -8,6 +8,7 @@ export default class User {
   role!: string;
   state!: string;
   active!: boolean;
+  institutionName!: string;
   type!: string;
   creationDate!: string;
   lastAccess!: string;
@@ -24,6 +25,7 @@ export default class User {
       this.type = jsonObj.type;
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.lastAccess = ISOtoString(jsonObj.lastAccess);
+      this.institutionName = jsonObj.institutionName;
     }
   }
 }
