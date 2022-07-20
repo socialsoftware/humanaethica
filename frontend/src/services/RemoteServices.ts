@@ -176,7 +176,7 @@ export default class RemoteServices {
   }
 
   static async validateInstitution(institutionId: number) {
-    return httpClient.post(`/institutions/${institutionId}/validate`).catch(async (error) => {
+    return httpClient.post(`/institution/${institutionId}/validate`).catch(async (error) => {
       throw Error(await this.errorMessage(error));
     });
   }
