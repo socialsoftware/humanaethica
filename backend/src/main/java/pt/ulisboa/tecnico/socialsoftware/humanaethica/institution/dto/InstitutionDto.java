@@ -13,6 +13,8 @@ public class InstitutionDto {
 
     private String nif;
 
+    private boolean active;
+
     private String creationDate;
 
     private Document document;
@@ -25,6 +27,7 @@ public class InstitutionDto {
         setEmail(institution.getEmail());
         setName(institution.getName());
         setNif(institution.getNIF());
+        setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
         setDocument(institution.getDocument());
     }
@@ -57,6 +60,14 @@ public class InstitutionDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getNif() {
