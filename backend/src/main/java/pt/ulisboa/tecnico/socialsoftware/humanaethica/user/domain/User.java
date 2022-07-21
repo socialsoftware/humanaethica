@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import javax.persistence.*;
@@ -145,9 +146,16 @@ public abstract class User {
                 '}';
     }
 
-    public void remove() {
+    public Institution remove() {
         if (getAuthUser() != null && !getAuthUser().isDemo() && getAuthUser().isActive()) {
             throw new HEException(USER_IS_ACTIVE, getUsername());
         }
+        else if (this.role.equals(Role.MEMBER)){
+            Institution i = ((Member) this).getInstitution();
+            i.getMembers().remove(this);
+            return i;
+        }
+        else
+            return null;
     }
 }
