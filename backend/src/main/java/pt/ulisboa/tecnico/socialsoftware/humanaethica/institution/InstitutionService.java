@@ -61,6 +61,11 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Document getInstitutionDocument(Integer id) {
+        return (institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND))).getDocument();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteInstitution(int institutionId) {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 

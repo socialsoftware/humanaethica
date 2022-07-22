@@ -7,6 +7,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +53,16 @@ public class IntitutionController {
         registerUserDto.setRole(User.Role.MEMBER);
         
         institutionService.registerInstitutionMemberPair(institutionDto, document, registerUserDto);
+    }
+
+    @GetMapping("/institution/{institutionId}/document")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<byte[]> getInstitutionDocument(@PathVariable int institutionId) {
+        Document doc = institutionService.getInstitutionDocument(institutionId);
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.APPLICATION_PDF;
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachement; filename=\"" + doc.getName() + "\"");
+        return ResponseEntity.ok().contentType(type).headers(headers).body(doc.getContent());
     }
 
     @PostMapping("/institution/{institutionId}/validate")
