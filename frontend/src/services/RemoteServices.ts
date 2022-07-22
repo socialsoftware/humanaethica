@@ -181,6 +181,27 @@ export default class RemoteServices {
     });
   }
 
+  static async getInstitutionDocument(institutionId: number) {
+    return httpClient.get(`/institution/${institutionId}/document`, {
+      responseType: "blob",
+    })
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Document.pdf');
+      document.body.appendChild(link);
+      link.click();
+      if (link.parentNode != null){
+        console.log('fsfr');
+        link.parentNode.removeChild(link);
+      }
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   // Error
 
   static async errorMessage(error: any): Promise<string> {
