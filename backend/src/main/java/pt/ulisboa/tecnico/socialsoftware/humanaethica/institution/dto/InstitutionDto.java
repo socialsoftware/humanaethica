@@ -17,8 +17,6 @@ public class InstitutionDto {
 
     private String creationDate;
 
-    private Document document;
-
     public InstitutionDto(){
     }
 
@@ -29,7 +27,6 @@ public class InstitutionDto {
         setNif(institution.getNIF());
         setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
-        setDocument(institution.getDocument());
     }
 
     public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){
@@ -84,13 +81,5 @@ public class InstitutionDto {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public void setDocument(Document document) {
-        this.document = document;
     }
 }
