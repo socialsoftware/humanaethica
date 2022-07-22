@@ -160,7 +160,9 @@ public class UserService {
     public void deleteUser(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
 
-        user.remove();
+        Institution i = user.remove();
+        if (i != null)
+            institutionRepository.save(i);
 
         userRepository.delete(user);
     }
