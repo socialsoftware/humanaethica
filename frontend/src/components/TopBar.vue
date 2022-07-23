@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar clipped-left color="primary">
+    <v-app-bar clipped-left color="white">
       <v-app-bar-nav-icon
         aria-label="Menu"
         class="hidden-md-and-up"
@@ -8,27 +8,23 @@
       />
 
       <v-toolbar-title data-cy="homeLink">
-        <v-btn active-class="no-active" dark text tile to="/">
-          {{ appName }}
+        <v-btn class="logo" active-class="no-active" tile to="/">
         </v-btn>
       </v-toolbar-title>
 
       <v-spacer />
 
       <v-toolbar-items class="hidden-sm-and-down" hide-details>
-        <v-menu v-if="isMember" offset-y open-on-hover>
+        <v-menu v-if="isMember" offset-y sopen-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn dark text v-on="on" data-cy="member" @click="registerMember">
+            <v-btn
+              text
+              color="orange"
+              v-on="on"
+              data-cy="member"
+              @click="registerMember"
+            >
               Create Member
-              <v-icon>fas fa-user</v-icon>
-            </v-btn>
-          </template>
-        </v-menu>
-
-        <v-menu v-if="isVolunteer" offset-y open-on-hover>
-          <template v-slot:activator="{ on }">
-            <v-btn dark text v-on="on" data-cy="volunteer" @click="registerVolunteer">
-              Create Volunteer
               <v-icon>fas fa-user</v-icon>
             </v-btn>
           </template>
@@ -71,19 +67,26 @@
       </v-toolbar-items>
 
       <v-toolbar-items class="hidden-sm-and-down" hide-details>
-        <v-btn v-if="!isLoggedIn" dark text @click="registerInstitution">
+        <v-btn v-if="!isLoggedIn" text
+              color="orange" @click="registerInstitution">
           Create Institution
         </v-btn>
-        <v-btn v-if="!isLoggedIn" dark text @click="login">
+        <v-btn v-if="!isLoggedIn" text
+              color="orange" @click="registerVolunteer">
+          Create VOlunteer
+        </v-btn>
+        <v-btn v-if="!isLoggedIn" text
+              color="orange" @click="login">
           Login
           <v-icon>fas fa-sign-in-alt</v-icon>
         </v-btn>
 
         <v-btn
           v-if="isLoggedIn"
-          dark
-          data-cy="logoutButton"
           text
+              color="orange"
+          data-cy="logoutButton"
+
           @click="logout"
         >
           Logout
