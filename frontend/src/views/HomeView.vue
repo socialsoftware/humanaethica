@@ -1,14 +1,13 @@
 <template>
   <div class="container">
     <h1 id="home-title" class="display-2 font-weight-thin mb-3">
-      {{ appName }}
     </h1>
 
     <div class="horizontal-btn-container" v-if="!isLoggedIn">
       <v-btn
         href="./login/user"
         depressed
-        color="primary"
+        color="blue accent-1"
         data-cy="userLoginButton"
       >
         User Login <v-icon>fas fa-sign-in-alt</v-icon>
@@ -18,8 +17,7 @@
     <div class="horizontal-btn-container" v-if="!isLoggedIn">
       <v-btn
         depressed
-        small
-        color="primary"
+        color="blue accent-1"
         @click="demoVolunteer"
         data-cy="demoVolunteerLoginButton"
       >
@@ -27,8 +25,7 @@
       </v-btn>
       <v-btn
         depressed
-        small
-        color="primary"
+        color="blue accent-1"
         @click="demoMember"
         data-cy="demoMemberLoginButton"
       >
@@ -36,8 +33,7 @@
       </v-btn>
       <v-btn
         depressed
-        small
-        color="primary"
+        color="blue accent-1"
         @click="loginArsAdmin"
         data-cy="arsAdminLoginButton"
       >
@@ -103,6 +99,7 @@ export default class HomeView extends Vue {
   align-items: center;
 
   #home-title {
+    background-image: url('img/horizontal.jpg');
     box-sizing: border-box;
     color: rgb(255, 255, 255);
     min-height: auto;
@@ -115,8 +112,6 @@ export default class HomeView extends Vue {
     perspective-origin: 229.922px 34px;
     transform-origin: 229.922px 34px;
     caret-color: rgb(255, 255, 255);
-    background: rgba(0, 0, 0, 0.75) none no-repeat scroll 0 0 / auto padding-box
-      border-box;
     border: 0 none rgb(255, 255, 255);
     font: normal normal 100 normal 45px / 48px Roboto, sans-serif !important;
     margin-bottom: 70px !important;
