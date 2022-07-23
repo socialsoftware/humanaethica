@@ -7,6 +7,7 @@
         v-model="volunteerName"
         label="Name"
         required
+        :rules="[(v) => !!v || 'Volunteer name is required']"
         @input="$v.volunteerName.$touch()"
         @blur="$v.volunteerName.$touch()"
       ></v-text-field>
@@ -15,6 +16,7 @@
         v-model="volunteerEmail"
         label="E-mail"
         required
+        :rules="[(v) => !!v || 'Volunteer email is required']"
         @input="$v.volunteerEmail.$touch()"
         @blur="$v.volunteerEmail.$touch()"
       ></v-text-field>
@@ -23,6 +25,7 @@
         v-model="volunteerUsername"
         label="Username"
         required
+        :rules="[(v) => !!v || 'Volunteer username is required']"
         @input="$v.volunteerUsername.$touch()"
         @blur="$v.volunteerUsername.$touch()"
       ></v-text-field>
@@ -38,7 +41,7 @@
         @change="handleFileUpload($event)"
       ></v-file-input>
 
-      <v-btn class="mr-4" @click="submit"> submit </v-btn>
+      <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </div>
@@ -59,10 +62,16 @@ export default class RegisterVolunteerView extends Vue {
   volunteerDoc: File | null = null;
 
   async submit() {
-    await this.$store.dispatch('loading');
-
     try {
-      if (this.volunteerDoc != null) {
+      if (this.volunteerName.length == 0 || this.volunteerEmail.length == 0 ||
+      this.volunteerUsername.length == 0) {
+        await this.$store.dispatch(
+        'error',
+        'Missing information, please check the form again'
+      );
+      return;
+      }
+      else if (this.volunteerDoc != null) {
         await RemoteServices.registerVolunteer({
           volunteerName: this.volunteerName,
           volunteerEmail: this.volunteerEmail,

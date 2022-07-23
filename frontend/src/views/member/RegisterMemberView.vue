@@ -7,6 +7,7 @@
         v-model="memberName"
         label="Name"
         required
+        :rules="[(v) => !!v || 'Member name is required']"
         @input="$v.memberName.$touch()"
         @blur="$v.memberName.$touch()"
       ></v-text-field>
@@ -15,6 +16,7 @@
         v-model="memberEmail"
         label="E-mail"
         required
+        :rules="[(v) => !!v || 'Member email is required']"
         @input="$v.memberEmail.$touch()"
         @blur="$v.memberEmail.$touch()"
       ></v-text-field>
@@ -23,6 +25,7 @@
         v-model="memberUsername"
         label="Username"
         required
+        :rules="[(v) => !!v || 'Member username is required']"
         @input="$v.memberUsername.$touch()"
         @blur="$v.memberUsername.$touch()"
       ></v-text-field>
@@ -38,7 +41,7 @@
         @change="handleFileUpload($event)"
       ></v-file-input>
 
-      <v-btn class="mr-4" @click="submit"> submit </v-btn>
+      <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </div>
@@ -59,10 +62,15 @@ export default class RegisterMemberView extends Vue {
   memberDoc: File | null = null;
 
   async submit() {
-    await this.$store.dispatch('loading');
-
     try {
-      if (this.memberDoc != null) {
+       if (this.memberName.length == 0 || this.memberEmail.length == 0 ||
+      this.memberUsername.length == 0) {
+        await this.$store.dispatch(
+        'error',
+        'Missing information, please check the form again'
+      )
+      }
+      else if (this.memberDoc != null) {
         await RemoteServices.registerMember({
           memberName: this.memberName,
           memberEmail: this.memberEmail,

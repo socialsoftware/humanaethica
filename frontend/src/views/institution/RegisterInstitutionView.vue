@@ -7,6 +7,7 @@
         v-model="institutionName"
         label="Name"
         required
+        :rules="[(v) => !!v || 'Intitution name is required']"
         @input="$v.institutionName.$touch()"
         @blur="$v.institutionName.$touch()"
       ></v-text-field>
@@ -14,6 +15,7 @@
       <v-text-field
         v-model="institutionEmail"
         label="E-mail"
+        :rules="[(v) => !!v || 'Intitution email is required']"
         required
         @input="$v.institutionEmail.$touch()"
         @blur="$v.institutionEmail.$touch()"
@@ -23,6 +25,7 @@
         v-model="institutionNif"
         label="NIF"
         required
+        :rules="[(v) => !!v || 'Intitution NIF is required']"
         @input="$v.institutionNif.$touch()"
         @blur="$v.institutionNif.$touch()"
       ></v-text-field>
@@ -44,9 +47,11 @@
 
       <v-text-field
         v-model="memberUsername"
+        :error-messages="nameErrors"
         :counter="10"
         label="Username"
         required
+        :rules="[(v) => !!v || 'Member username is required']"
         @input="$v.memberUsername.$touch()"
         @blur="$v.memberUsername.$touch()"
       ></v-text-field>
@@ -55,6 +60,7 @@
         v-model="memberEmail"
         label="E-mail"
         required
+        :rules="[(v) => !!v || 'Member email is required']"
         @input="$v.memberEmail.$touch()"
         @blur="$v.memberEmail.$touch()"
       ></v-text-field>
@@ -63,11 +69,23 @@
         v-model="memberName"
         label="Name"
         required
+        :rules="[(v) => !!v || 'Member name is required']"
         @input="$v.memberName.$touch()"
         @blur="$v.memberName.$touch()"
       ></v-text-field>
 
-      <v-btn class="mr-4" @click="submit"> submit </v-btn>
+      <v-file-input
+        counter
+        show-size
+        truncate-length="7"
+        label="Declaration"
+        required
+        dense
+        small-chips
+        @change="handleFileUpload($event)"
+      ></v-file-input>
+
+      <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </div>
@@ -88,14 +106,21 @@ export default class RegisterInstitutionView extends Vue {
   memberUsername: string = '';
   memberEmail: string = '';
   memberName: string = '';
-  memberPassword: string = '';
   institutionDoc: File | null = null;
+  memberDoc: File | null = null;
 
   async submit() {
-    await this.$store.dispatch('loading');
-
     try {
-      if (this.institutionDoc != null) {
+      if (this.institutionName.length == 0 || this.institutionEmail.length == 0 ||
+      this.institutionNif.length == 0 || this.memberUsername.length == 0 ||
+      this.memberEmail.length == 0 || this.memberName.length == 0) {
+        await this.$store.dispatch(
+        'error',
+        'Missing information, please check the form again'
+      );
+      return;
+      }
+      else if (this.institutionDoc != null && this.memberDoc != null) {
         await RemoteServices.registerInstitution({
           institutionName: this.institutionName,
           institutionEmail: this.institutionEmail,
@@ -116,6 +141,7 @@ export default class RegisterInstitutionView extends Vue {
     this.institutionDoc = event;
   }
 
+
   clear() {
     this.institutionName = '';
     this.institutionEmail = '';
@@ -124,7 +150,6 @@ export default class RegisterInstitutionView extends Vue {
     this.memberEmail = '';
     this.memberName = '';
   }
-}
 </script>
 
 <style lang="scss" scoped>
