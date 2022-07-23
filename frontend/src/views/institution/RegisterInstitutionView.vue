@@ -35,6 +35,7 @@
         required
         dense
         small-chips
+        accept=".pdf"
         @change="handleFileUpload($event)"
       ></v-file-input>
 
