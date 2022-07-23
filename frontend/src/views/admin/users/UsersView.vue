@@ -23,7 +23,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.state != 'DELETED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -36,7 +36,7 @@
           </template>
           <span>Delete user</span>
         </v-tooltip>
-        <v-tooltip bottom v-if="item.state=='SUBMITTED'">
+        <v-tooltip bottom v-if="item.state=='SUBMITTED' || item.state == 'DELETED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -175,8 +175,7 @@ export default class UsersView extends Vue {
       confirm('Are you sure you want to delete the user?')
     ) {
       try {
-        await RemoteServices.deleteUser(userId);
-        this.users = this.users.filter((user) => user.id != userId);
+        this.users = await RemoteServices.deleteUser(userId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
