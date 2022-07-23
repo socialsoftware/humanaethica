@@ -15,6 +15,7 @@ public enum ErrorMessage {
     AUTHUSER_NOT_FOUND("AuthUser not found with id %d"),
     USER_NOT_FOUND("User not found with username %s"),
     INSTITUTION_NOT_FOUND("Institution not found with name %s"),
+    USER_NOT_APPROVED("The member of this institution is not yet approved"),
     COURSE_NOT_FOUND("Course not found with name %s"),
     INVALID_COURSE("The course you are exporting from does not match the course you are importing to."
             + "If you want to import anyway, edit the .xml file and replace the second line to: %s"),

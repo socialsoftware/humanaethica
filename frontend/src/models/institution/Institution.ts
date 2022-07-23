@@ -8,7 +8,6 @@ export default class Institution {
   active!: boolean;
   nif!: string;
   creationDate!: string;
-  doc!: Document;
 
   constructor(jsonObj?: Institution) {
     if (jsonObj) {
@@ -18,7 +17,6 @@ export default class Institution {
       this.nif = jsonObj.nif;
       this.active = jsonObj.active;
       this.creationDate = ISOtoString(jsonObj.creationDate);
-      this.doc = jsonObj.doc;
     }
   }
 }

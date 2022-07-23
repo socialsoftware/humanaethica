@@ -81,9 +81,9 @@ export default class UsersView extends Vue {
       text: 'Username',
       value: 'username',
       align: 'left',
-      width: '10%',
+      width: '15%',
     },
-    { text: 'Name', value: 'name', align: 'left', width: '25%' },
+    { text: 'Name', value: 'name', align: 'left', width: '15%' },
     {
       text: 'Email',
       value: 'email',
@@ -97,39 +97,45 @@ export default class UsersView extends Vue {
       width: '5%',
     },
     {
+      text: 'Institution',
+      value: 'institutionName',
+      align: 'left',
+      width: '15%',
+    },
+    {
       text: 'Active',
       value: 'active',
-      align: 'center',
-      width: '5%',
+      align: 'left',
+      width: '15%',
     },
     {
       text: 'State',
       value: 'state',
-      align: 'center',
-      width: '5%',
+      align: 'left',
+      width: '10%',
     },
     {
       text: 'Type',
       value: 'type',
-      align: 'center',
-      width: '5%',
+      align: 'left',
+      width: '10%',
     },
     {
       text: 'Creation Date',
       value: 'creationDate',
-      align: 'center',
+      align: 'left',
       width: '10%',
     },
     {
       text: 'Last Access',
       value: 'lastAccess',
-      align: 'center',
-      width: '10%',
+      align: 'left',
+      width: '30%',
     },
     {
       text: 'Delete',
       value: 'action',
-      align: 'center',
+      align: 'left',
       sortable: false,
       width: '5%',
     },
@@ -139,6 +145,10 @@ export default class UsersView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.users = await RemoteServices.getUsers();
+      this.users.forEach(user => { 
+        if (user.institutionName == null) 
+          user.institutionName = 'None';  
+      })
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -181,6 +191,7 @@ export default class UsersView extends Vue {
     ) {
       try {
         await RemoteServices.validateUser(userId);
+        this.users = await RemoteServices.getUsers();
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

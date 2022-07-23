@@ -32,6 +32,19 @@
           </template>
           <span>Delete institution</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="black"
+              v-on="on"
+              data-cy="documentButton"
+              @click="getDocument(item)"
+              >delete</v-icon
+            >
+          </template>
+          <span>See document</span>
+        </v-tooltip>
         <v-tooltip bottom v-if="!item.active">
           <template v-slot:activator="{ on }">
             <v-icon
@@ -130,6 +143,19 @@ export default class InstitutionsView extends Vue {
     ) {
       try {
         await RemoteServices.validateInstitution(institutionId);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async getDocument(institution: Institution) {
+    let institutionId = institution.id;
+    if (
+      institutionId !== null
+    ) {
+      try {
+        await RemoteServices.getInstitutionDocument(institutionId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

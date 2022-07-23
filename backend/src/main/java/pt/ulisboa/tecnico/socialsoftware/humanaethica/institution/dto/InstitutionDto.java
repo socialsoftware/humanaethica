@@ -13,9 +13,9 @@ public class InstitutionDto {
 
     private String nif;
 
-    private String creationDate;
+    private boolean active;
 
-    private Document document;
+    private String creationDate;
 
     public InstitutionDto(){
     }
@@ -25,8 +25,8 @@ public class InstitutionDto {
         setEmail(institution.getEmail());
         setName(institution.getName());
         setNif(institution.getNIF());
+        setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
-        setDocument(institution.getDocument());
     }
 
     public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){
@@ -59,6 +59,14 @@ public class InstitutionDto {
         this.name = name;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public String getNif() {
         return nif;
     }
@@ -73,13 +81,5 @@ public class InstitutionDto {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public void setDocument(Document document) {
-        this.document = document;
     }
 }

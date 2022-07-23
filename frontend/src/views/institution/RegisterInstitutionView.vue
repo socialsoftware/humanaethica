@@ -104,6 +104,7 @@ export default class RegisterInstitutionView extends Vue {
           memberEmail: this.memberEmail,
           memberName: this.memberName,
         }, this.institutionDoc);
+        await this.$router.push({name: 'home'});
       }
     } catch (error) {
       await this.$store.dispatch('error', error);

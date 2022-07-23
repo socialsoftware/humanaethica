@@ -13,10 +13,12 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institu
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.DocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
@@ -38,6 +40,9 @@ public class InstitutionService {
 
     @Autowired
     DocumentRepository documentRepository;
+    
+    @Autowired
+    private UserApplicationalService userApplicationalService;
 
     @Autowired
     private Mailer mailer;
@@ -56,6 +61,11 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Document getInstitutionDocument(Integer id) {
+        return (institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND))).getDocument();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteInstitution(int institutionId) {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 
@@ -66,6 +76,15 @@ public class InstitutionService {
         }
 
         institutionRepository.delete(institution);
+    }
+    
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void registerInstitutionMemberPair(InstitutionDto institutionDto, Document document, RegisterUserDto registerUserDto){
+        Institution i = registerInstitution(institutionDto);
+        addDocument(i, document);
+
+        registerUserDto.setInstitutionId(i.getId());
+        userApplicationalService.registerUser(registerUserDto);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -110,6 +129,8 @@ public class InstitutionService {
     public void validateInstitution(int id){
         Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         Member member = institution.getMembers().get(0);
+        if (member.getState().equals(State.SUBMITTED))
+            throw new HEException(USER_NOT_APPROVED);
         if (!institution.isActive())
             sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
         institution.validate();
