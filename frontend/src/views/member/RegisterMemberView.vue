@@ -63,7 +63,7 @@ export default class RegisterMemberView extends Vue {
 
     try {
       if (this.memberDoc != null) {
-        await RemoteServices.registerVolunteer({
+        await RemoteServices.registerMember({
           memberName: this.memberName,
           memberEmail: this.memberEmail,
           memberUsername: this.memberUsername,
