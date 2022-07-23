@@ -100,6 +100,10 @@ public class Institution {
         this.active = true;
     }
 
+    public void delete() {
+        this.active = false;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -142,11 +146,5 @@ public class Institution {
         setTokenGenerationDate(DateHandler.now());
         setConfirmationToken(token);
         return token;
-    }
-
-    public void remove() {
-        if (isActive()) {
-            throw new HEException(INSTITUTION_IS_ACTIVE, getName());
-        }
     }
 }

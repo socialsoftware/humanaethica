@@ -27,8 +27,9 @@ public class UserController {
 
     @DeleteMapping("/users/{userId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteUser(@PathVariable int userId) {
+    public List<UserDto> deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
+        return userService.getUsers();
     }
 
     // vale a pena ter este metodo

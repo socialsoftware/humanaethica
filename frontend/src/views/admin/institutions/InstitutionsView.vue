@@ -40,7 +40,7 @@
               v-on="on"
               data-cy="documentButton"
               @click="getDocument(item)"
-              >delete</v-icon
+              >description</v-icon
             >
           </template>
           <span>See document</span>
@@ -127,8 +127,7 @@ export default class InstitutionsView extends Vue {
       confirm('Are you sure you want to delete the institution?')
     ) {
       try {
-        await RemoteServices.deleteInstitution(institutionId);
-        this.institutions = this.institutions.filter((institution) => institution.id != institutionId);
+        this.institutions = await RemoteServices.deleteInstitution(institutionId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

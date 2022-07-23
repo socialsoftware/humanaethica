@@ -96,8 +96,14 @@ export default class RemoteServices {
       });
   }
 
-  static async deleteUser(userId: number) {
-    return httpClient.delete(`/users/${userId}`).catch(async (error) => {
+  static async deleteUser(userId: number): Promise<User[]> {
+    return httpClient.delete(`/users/${userId}`)
+    .then((response) => {
+      return response.data.map((user: any) => {
+        return new User(user);
+      });
+    })
+    .catch(async (error) => {
       throw Error(await this.errorMessage(error));
     });
   }
@@ -117,45 +123,6 @@ export default class RemoteServices {
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
-  }
-
-  static async confirmRegistration(
-    registerUser: RegisterUser
-  ): Promise<RegisterUser> {
-    return httpClient
-      .post('/users/register/confirm', registerUser)
-      .then((response) => {
-        return new RegisterUser(response.data);
-      })
-      .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
-  // User Controller
-
-  static async registerInstitution(institution: RegisterInstitution, doc: File) {
-    const formData = new FormData();
-    formData.append('file', doc);
-    formData.append('institution', new Blob([JSON.stringify({
-      'institutionEmail': institution.institutionEmail,
-      'institutionName': institution.institutionName,
-      'institutionNif': institution.institutionNif,
-      'memberEmail': institution.memberEmail,
-      'memberUsername': institution.memberUsername,
-      'memberName': institution.memberName,
-  })], {
-          type: 'application/json'
-      }));
-    return httpClient
-    .post('/institution/register', formData,  {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-  })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
   }
 
   static async registerVolunteer(volunteer: RegisterVolunteer, doc: File) {
@@ -200,6 +167,45 @@ export default class RemoteServices {
     });
   }
 
+  static async confirmRegistration(
+    registerUser: RegisterUser
+  ): Promise<RegisterUser> {
+    return httpClient
+      .post('/users/register/confirm', registerUser)
+      .then((response) => {
+        return new RegisterUser(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  // Institution Controller
+
+  static async registerInstitution(institution: RegisterInstitution, doc: File) {
+    const formData = new FormData();
+    formData.append('file', doc);
+    formData.append('institution', new Blob([JSON.stringify({
+      'institutionEmail': institution.institutionEmail,
+      'institutionName': institution.institutionName,
+      'institutionNif': institution.institutionNif,
+      'memberEmail': institution.memberEmail,
+      'memberUsername': institution.memberUsername,
+      'memberName': institution.memberName,
+  })], {
+          type: 'application/json'
+      }));
+    return httpClient
+    .post('/institution/register', formData,  {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+  })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   static async getInstitutions(): Promise<Institution[]> {
     return httpClient
       .get('/institutions')
@@ -213,8 +219,14 @@ export default class RemoteServices {
       });
   }
 
-  static async deleteInstitution(institutionId: number) {
-    return httpClient.delete(`/institutions/${institutionId}`).catch(async (error) => {
+  static async deleteInstitution(institutionId: number): Promise<Institution[]> {
+    return httpClient.delete(`/institutions/${institutionId}`)
+    .then((response) => {
+      return response.data.map((institution: any) => {
+        return new Institution(institution);
+      });
+    })
+    .catch(async (error) => {
       throw Error(await this.errorMessage(error));
     });
   }
@@ -227,7 +239,7 @@ export default class RemoteServices {
 
   static async getInstitutionDocument(institutionId: number) {
     return httpClient.get(`/institution/${institutionId}/document`, {
-      responseType: "blob",
+      responseType: 'blob',
     })
     .then(response => {
       const url = window.URL.createObjectURL(new Blob([response.data]));

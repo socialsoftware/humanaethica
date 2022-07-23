@@ -32,7 +32,8 @@
 
         <v-menu v-if="isAdmin" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn dark text v-on="on" data-cy="admin">
+            <v-btn 
+              color="orange" text v-on="on" data-cy="admin">
               Administration
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
