@@ -18,7 +18,7 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 @DiscriminatorColumn(name = "user_type",
         discriminatorType = DiscriminatorType.STRING)
 public abstract class User {
-    public enum State {SUBMITTED, APPROVED, ACTIVE}
+    public enum State {SUBMITTED, APPROVED, ACTIVE, DELETED}
 
     public enum Role {VOLUNTEER, MEMBER, ADMIN}
 
@@ -147,13 +147,10 @@ public abstract class User {
     }
 
     public Institution remove() {
-        if (getAuthUser() != null && !getAuthUser().isDemo() && getAuthUser().isActive()) {
-            throw new HEException(USER_IS_ACTIVE, getUsername());
-        }
-        else if (this.role.equals(Role.MEMBER)){
-            Institution i = ((Member) this).getInstitution();
-            i.getMembers().remove(this);
-            return i;
+        this.setState(State.DELETED);
+        this.getAuthUser().setActive(false);
+        if (this.role.equals(Role.MEMBER)){
+            return ((Member) this).getInstitution();
         }
         else
             return null;

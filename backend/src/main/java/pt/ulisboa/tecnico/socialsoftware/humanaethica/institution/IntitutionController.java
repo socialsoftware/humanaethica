@@ -38,8 +38,9 @@ public class IntitutionController {
 
     @DeleteMapping("/institutions/{institutionId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteInstitution(@PathVariable int institutionId) {
+    public List<InstitutionDto> deleteInstitution(@PathVariable int institutionId) {
         institutionService.deleteInstitution(institutionId);
+        return institutionService.getInstitutions();
     }
 
     @PostMapping("/institution/register")

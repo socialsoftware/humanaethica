@@ -69,13 +69,11 @@ public class InstitutionService {
     public void deleteInstitution(int institutionId) {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 
-        institution.remove();
+        institution.delete();
 
         for (User user : institution.getMembers()){
-            userRepository.delete(user);
+            user.remove();
         }
-
-        institutionRepository.delete(institution);
     }
     
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -128,13 +126,12 @@ public class InstitutionService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void validateInstitution(int id){
         Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-        Member member = institution.getMembers().get(0);
-        if (member.getState().equals(State.SUBMITTED))
+        Member member = institution.getMembers().isEmpty() ? null : institution.getMembers().get(0);
+        if (member != null && member.getState().equals(State.SUBMITTED))
             throw new HEException(USER_NOT_APPROVED);
-        if (!institution.isActive())
+        if (member != null && !institution.isActive())
             sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
         institution.validate();
-        member.setState(State.APPROVED);
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {

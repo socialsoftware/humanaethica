@@ -163,8 +163,6 @@ public class UserService {
         Institution i = user.remove();
         if (i != null)
             institutionRepository.save(i);
-
-        userRepository.delete(user);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
