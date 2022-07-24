@@ -2,6 +2,15 @@
   <div class="container">
     <h1 id="home-title" class="display-2 font-weight-thin mb-3">
     </h1>
+  <div class="image">
+    <v-img
+      contain
+      src="../assets/img/logo_vertical.png"
+      height='500'
+      width='350'
+    />
+  </div>
+
 
     <div class="horizontal-btn-container" v-if="!isLoggedIn">
       <v-btn

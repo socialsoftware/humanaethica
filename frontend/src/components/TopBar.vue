@@ -7,11 +7,15 @@
         @click.stop="drawer = !drawer"
       />
 
-      
       <v-toolbar-title data-cy="homeLink">
-        <v-btn class="logo" active-class="no-active" tile to="/">
-          <v-img src="../assets/img/Logo_Vertical.png" height='35' width='310'/>
-        </v-btn>
+        <a href="/">
+          <v-img
+            contain
+            src="../assets/img/logo_horizontal.png"
+            height='40'
+            width='350'
+          />
+        </a>
       </v-toolbar-title>
 
       <v-spacer />
@@ -34,7 +38,7 @@
 
         <v-menu v-if="isAdmin" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn 
+            <v-btn
               color="orange" text v-on="on" data-cy="admin">
               Administration
               <v-icon>fas fa-file-alt</v-icon>
@@ -229,6 +233,6 @@ export default class TopBar extends Vue {
 }
 
 nav {
-  z-index: 300;
+  z-index: 400;
 }
 </style>
