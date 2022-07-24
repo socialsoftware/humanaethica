@@ -41,7 +41,10 @@
         @change="handleFileUpload($event)"
       ></v-file-input>
 
-      <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
+      <v-btn class="mr-4" color="orange" @click="submit"
+      :disabled="!(memberUsername !== ''
+      && memberEmail !== '' && memberName !== '')"
+      > submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </v-card>

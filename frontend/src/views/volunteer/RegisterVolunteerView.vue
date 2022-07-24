@@ -42,7 +42,9 @@
         @change="handleFileUpload($event)"
       ></v-file-input>
 
-      <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
+      <v-btn class="mr-4" color="orange" @click="submit"
+      :disabled="!(volunteerUsername !== ''
+      && volunteerEmail !== '' && volunteerName !== '')"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </v-card>
@@ -75,8 +77,9 @@ export default class RegisterVolunteerView extends Vue {
       else if (this.volunteerDoc != null) {
         await RemoteServices.registerVolunteer({
           volunteerName: this.volunteerName,
-          volunteerUsername: this.volunteerUsername,
           volunteerEmail: this.volunteerEmail,
+          volunteerUsername: this.volunteerUsername,
+
         }, this.volunteerDoc);
         await this.$router.push({name: 'home'});
       }

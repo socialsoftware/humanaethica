@@ -19,8 +19,8 @@
           data-cy="passwordField"
         ></v-text-field>
         <v-btn
-          color="blue darken-1"
           class="white--text"
+          color="orange"
           :disabled="!(username !== '' && password !== '')"
           @click="submit"
           data-cy="submitButton"
