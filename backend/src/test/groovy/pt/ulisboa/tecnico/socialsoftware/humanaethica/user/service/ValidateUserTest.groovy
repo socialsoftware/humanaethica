@@ -16,13 +16,13 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 import spock.mock.DetachedMockFactory
 import spock.lang.Unroll
 
-
 @DataJpaTest
-class ValidateInstitutionTest extends SpockTest {
+class ValidateUserTest extends SpockTest {
     def institutionDto
-    def memberDto
     def institution
+    def memberDto
     def member
+    def volunteerDto
 
     @Autowired
     Mailer mailerMock
@@ -45,36 +45,59 @@ class ValidateInstitutionTest extends SpockTest {
         member = userServiceApplicational.registerUser(memberDto);
     }
 
-    def "validate institution with success"() {
+    def "validate member of not active institution"() {
         when:
         userServiceApplicational.validateUser(member.getId())
-        institutionService.validateInstitution(institution.getId())
 
         then: "the institution and member are validated"
-        institution.isActive()
-        and: "an email is sent"
-        1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
-    }
-
-    def "the institution doesn't exist"() {
-        when:
-        institutionService.validateInstitution(institution.getId() + 1)
-
-        then:
-        def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.INSTITUTION_NOT_FOUND
+        def user = userRepository.findAll().get(0)
+        user.getState().equals(User.State.APPROVED)
         and: "no email is sent"
         0 * mailerMock.sendSimpleMail(mailerUsername, _, _, _)
     }
 
-    def "the user haven't yet been approved"() {
+    def "validate member of active institution"() {
+        given:
+        institution.validate()
+        
         when:
-        institutionService.validateInstitution(institution.getId())
-        member.setState(User.State.SUBMITTED)
+        userServiceApplicational.validateUser(member.getId())
+
+        then: "the institution and member are validated"
+        def user = userRepository.findAll().get(0)
+        user.getState().equals(User.State.APPROVED)
+        and: "an email is sent"
+        1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
+    }
+
+    def "validate volunteer with success"() {
+        given:
+        volunteerDto = new RegisterUserDto()
+        volunteerDto.setEmail(USER_2_EMAIL)
+        volunteerDto.setUsername(USER_2_EMAIL)
+        volunteerDto.setConfirmationToken(USER_2_TOKEN)
+        volunteerDto.setRole(User.Role.VOLUNTEER)
+
+        def volunteer = userServiceApplicational.registerUser(volunteerDto);
+
+        when:
+        userServiceApplicational.validateUser(volunteer.getId())
+
+        then: "the volunteer is validated"
+        def user = userRepository.findAll().get(1)
+        user.getId() == volunteer.getId()
+        user.getState().equals(User.State.APPROVED)
+        and: "an email is sent"
+        1 * mailerMock.sendSimpleMail(mailerUsername, USER_2_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
+    }
+
+    def "the user doesn't exist"() {
+        when:
+        userServiceApplicational.validateUser(member.getId() + 2)
 
         then:
         def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.USER_NOT_APPROVED
+        error.getErrorMessage() == ErrorMessage.AUTHUSER_NOT_FOUND
         and: "no email is sent"
         0 * mailerMock.sendSimpleMail(mailerUsername, _, _, _)
     }

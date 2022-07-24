@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import spock.lang.Unroll
 
 @DataJpaTest
@@ -13,7 +14,7 @@ class CreateAuthUserTest extends SpockTest {
     def authUser
 
     def setup() {
-        user = new Volunteer(USER_1_NAME)
+        user = new Volunteer(USER_1_NAME, User.State.SUBMITTED)
         userRepository.save(user)
     }
 

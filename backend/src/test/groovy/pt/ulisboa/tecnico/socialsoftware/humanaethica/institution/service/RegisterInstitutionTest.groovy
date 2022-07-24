@@ -46,7 +46,7 @@ class RegisterInstitutionTest extends SpockTest {
         !result.isActive()
     }
 
-    def "the institution exists"() {
+    def "this institution already exists"() {
         given:
         def institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(institution)
