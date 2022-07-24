@@ -12,6 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 
@@ -51,6 +52,11 @@ class BeanConfiguration {
     @Bean
     UserApplicationalService userServiceApplicational() {
         return new UserApplicationalService()
+    }
+
+    @Bean
+    InstitutionService institutionService() {
+        return new InstitutionService()
     }
 
     @Bean

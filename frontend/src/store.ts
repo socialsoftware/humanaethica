@@ -8,6 +8,7 @@ import RegisterUser from '@/models/user/RegisterUser';
 interface State {
   token: string;
   user: AuthUser | null;
+  institutionId: number | null;
   error: boolean;
   errorMessage: string;
   notification: boolean;
@@ -18,6 +19,7 @@ interface State {
 const state: State = {
   token: '',
   user: null,
+  institutionId: null,
   error: false,
   errorMessage: '',
   notification: false,
@@ -110,6 +112,13 @@ export default new Vuex.Store({
       const authResponse = await RemoteServices.demoMemberLogin();
       commit('login', authResponse);
     },
+    async arsAdminLogin({ commit }) {
+      const authResponse = await RemoteServices.userLogin(
+        'ars',
+        'ars'
+      );
+      commit('login', authResponse);
+    },
     logout({ commit }) {
       return new Promise<void>((resolve) => {
         commit('logout');
@@ -155,5 +164,11 @@ export default new Vuex.Store({
     getLoading(state): boolean {
       return state.loading;
     },
+    getInstitutionId(state): number | null{
+      if (state.user != null)
+        return state.user.id;
+      else
+        return null
+    }
   },
 });

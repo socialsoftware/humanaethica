@@ -11,6 +11,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 import spock.lang.Specification
@@ -37,6 +39,10 @@ class SpockTest extends Specification {
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
 
+    public static final String INSTITUTION_1_EMAIL = "institution1@mail.com"
+    public static final String INSTITUTION_1_NAME = "institution1"
+    public static final String INSTITUTION_1_NIF = "123456789"
+
     public static final LocalDateTime LOCAL_DATE_BEFORE = DateHandler.now().minusDays(2)
     public static final LocalDateTime LOCAL_DATE_TODAY = DateHandler.now()
     
@@ -58,7 +64,13 @@ class SpockTest extends Specification {
     AuthUserRepository authUserRepository
 
     @Autowired
-    UserApplicationalService userServiceApplicational
+    UserApplicationalService userServiceApplicational    
+
+    @Autowired
+    InstitutionService institutionService    
+
+    @Autowired
+    InstitutionRepository institutionRepository
 
     @Autowired
     DemoService demoService;
@@ -103,6 +115,7 @@ class SpockTest extends Specification {
     def deleteAll() {
         authUserRepository.deleteAll()
         userRepository.deleteAll()
+        institutionRepository.deleteAll()
     }
 
 

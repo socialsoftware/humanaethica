@@ -12,12 +12,17 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserDocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.util.Comparator;
@@ -32,7 +37,13 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private InstitutionRepository institutionRepository;
+
+    @Autowired
     private AuthUserRepository authUserRepository;
+
+    @Autowired
+    private UserDocumentRepository userDocumentRepository;
 
     @Autowired
     public AuthUserService authUserService;
@@ -56,31 +67,31 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createVolunteerWithAuth(String name, String username, String email, AuthUser.Type type) {
+    public AuthUser createVolunteerWithAuth(String name, String username, String email, AuthUser.Type type, State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Volunteer volunteer = new Volunteer(name, username, email, type);
+        Volunteer volunteer = new Volunteer(name, username, email, type, state);
         userRepository.save(volunteer);
         return volunteer.getAuthUser();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type) {
+    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type, Institution institution, State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Member member = new Member(name, username, email, type);
+        Member member = new Member(name, username, email, type, institution, state);
         userRepository.save(member);
         return member.getAuthUser();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
-    public RegisterUserDto registerUserTransactional(RegisterUserDto registerUserDto) {
-        AuthNormalUser authUser = createAuthNormalUser(registerUserDto);
+    public RegisterUserDto registerUserTransactional(RegisterUserDto registerUserDto, State state) {
+        AuthNormalUser authUser = createAuthNormalUser(registerUserDto, state);
 
         return new RegisterUserDto(authUser);
     }
@@ -106,11 +117,12 @@ public class UserService {
             } else throw new HEException(e.getErrorMessage());
         }
 
+        authUser.getUser().setState(State.ACTIVE);
         return new RegisterUserDto(authUser);
     }
 
 
-    private AuthNormalUser createAuthNormalUser(RegisterUserDto registerUserDto) {
+    private AuthNormalUser createAuthNormalUser(RegisterUserDto registerUserDto, State state) {
         if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().length() == 0) {
             throw new HEException(INVALID_AUTH_USERNAME, registerUserDto.getUsername());
         }
@@ -128,15 +140,16 @@ public class UserService {
         switch (registerUserDto.getRole()) {
             case VOLUNTEER:
                 user = new Volunteer(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
                 break;
             case MEMBER:
+                Institution i = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
                 user = new Member(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, i, state);
                 break;
             case ADMIN:
                 user = new Admin(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
                 break;
             default:
                 throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
@@ -152,8 +165,30 @@ public class UserService {
     public void deleteUser(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
 
-        user.remove();
+        Institution i = user.remove();
+        if (i != null)
+            institutionRepository.save(i);
+    }
 
-        userRepository.delete(user);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void addDoc(User u, UserDocument doc) {
+        u.setDocument(doc);
+        userDocumentRepository.save(doc);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void setInstitutionFromMember(Member u, Institution institution) {
+        u.setInstitution(institution);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public UserDocument getDoc(Integer id) {
+        return (userRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND))).getDocument();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void validateUser(AuthNormalUser user) {
+        user.getUser().setState(User.State.APPROVED);
+        userRepository.save(user.getUser());
     }
 }

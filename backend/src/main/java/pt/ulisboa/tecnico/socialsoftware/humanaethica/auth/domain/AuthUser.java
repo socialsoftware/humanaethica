@@ -34,6 +34,8 @@ public abstract class AuthUser implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private boolean active = true;
+
     @OneToOne
     private User user;
 
@@ -121,7 +123,11 @@ public abstract class AuthUser implements UserDetails {
     }
 
     public boolean isActive() {
-        return true;
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void checkRole(boolean isActive) {

@@ -1,7 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class UserDto {
@@ -15,13 +17,19 @@ public class UserDto {
 
     private String role;
 
+    private String state;
+
     private boolean active;
+
+    private String institutionName;
 
     private String type;
 
     private String creationDate;
 
     private String lastAccess;
+    
+
 
     public UserDto() {
     }
@@ -31,6 +39,7 @@ public class UserDto {
         this.username = user.getUsername();
         this.name = user.getName();
         this.role = user.getRole().toString();
+        this.state = user.getState().toString();
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
         if (user.getAuthUser() != null) {
@@ -39,6 +48,12 @@ public class UserDto {
             this.email = user.getAuthUser().getEmail();
             this.lastAccess = DateHandler.toISOString(user.getAuthUser().getLastAccess());
         }
+
+        if (user.getRole().equals(Role.MEMBER)){
+            this.institutionName = ((Member) user).getInstitution().getName();
+        }
+        else
+            this.institutionName = null;
     }
 
     public UserDto(AuthUser authUser) {
@@ -115,5 +130,21 @@ public class UserDto {
 
     public void setLastAccess(String lastAccess) {
         this.lastAccess = lastAccess;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getInstitutionName() {
+        return institutionName;
+    }
+
+    public void setInstitutionName(String institutionName) {
+        this.institutionName = institutionName;
     }
 }

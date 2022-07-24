@@ -2,12 +2,14 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_ROLE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_STATE;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USER_IS_ACTIVE;
 
 @Entity
@@ -16,6 +18,8 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 @DiscriminatorColumn(name = "user_type",
         discriminatorType = DiscriminatorType.STRING)
 public abstract class User {
+    public enum State {SUBMITTED, APPROVED, ACTIVE, DELETED}
+
     public enum Role {VOLUNTEER, MEMBER, ADMIN}
 
     public static class UserTypes {
@@ -37,6 +41,9 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private State state;
+
     private String name;
 
     @Column(name = "creation_date")
@@ -45,19 +52,24 @@ public abstract class User {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     public AuthUser authUser;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
+    private UserDocument document;
+
     protected User() {
     }
 
-    protected User(String name, String username, String email, Role role, AuthUser.Type type) {
+    protected User(String name, String username, String email, Role role, AuthUser.Type type, State state) {
         setName(name);
         setRole(role);
+        setState(state);
         setAuthUser(AuthUser.createAuthUser(this, username, email, type));
         setCreationDate(DateHandler.now());
     }
 
-    protected User(String name, User.Role role) {
+    protected User(String name, User.Role role, State state) {
         setName(name);
         setRole(role);
+        setState(state);
         setCreationDate(DateHandler.now());
     }
 
@@ -95,6 +107,16 @@ public abstract class User {
         this.role = role;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        if (role == null)
+            throw new HEException(INVALID_STATE);
+        this.state = state;
+    }
+
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
@@ -115,6 +137,15 @@ public abstract class User {
         this.authUser = authUser;
     }
 
+    public UserDocument getDocument() {
+        return document;
+    }
+
+    public void setDocument(UserDocument document) {
+        this.document = document;
+        document.setUser(this);
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -127,9 +158,13 @@ public abstract class User {
                 '}';
     }
 
-    public void remove() {
-        if (getAuthUser() != null && !getAuthUser().isDemo() && getAuthUser().isActive()) {
-            throw new HEException(USER_IS_ACTIVE, getUsername());
+    public Institution remove() {
+        this.setState(State.DELETED);
+        this.getAuthUser().setActive(false);
+        if (this.role.equals(Role.MEMBER)){
+            return ((Member) this).getInstitution();
         }
+        else
+            return null;
     }
 }

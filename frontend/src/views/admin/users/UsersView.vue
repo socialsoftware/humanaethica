@@ -23,7 +23,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.state != 'DELETED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -35,6 +35,32 @@
             >
           </template>
           <span>Delete user</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="black"
+              v-on="on"
+              data-cy="documentButton"
+              @click="getDocument(item)"
+              >description</v-icon
+            >
+          </template>
+          <span>See document</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="item.state=='SUBMITTED' || item.state == 'DELETED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="green"
+              v-on="on"
+              data-cy="validateButton"
+              @click="validateUser(item)"
+              >mdi-check-bold</v-icon
+            >
+          </template>
+          <span>Validate user</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -68,9 +94,9 @@ export default class UsersView extends Vue {
       text: 'Username',
       value: 'username',
       align: 'left',
-      width: '10%',
+      width: '15%',
     },
-    { text: 'Name', value: 'name', align: 'left', width: '25%' },
+    { text: 'Name', value: 'name', align: 'left', width: '15%' },
     {
       text: 'Email',
       value: 'email',
@@ -84,33 +110,45 @@ export default class UsersView extends Vue {
       width: '5%',
     },
     {
+      text: 'Institution',
+      value: 'institutionName',
+      align: 'left',
+      width: '15%',
+    },
+    {
       text: 'Active',
       value: 'active',
-      align: 'center',
-      width: '5%',
+      align: 'left',
+      width: '15%',
+    },
+    {
+      text: 'State',
+      value: 'state',
+      align: 'left',
+      width: '10%',
     },
     {
       text: 'Type',
       value: 'type',
-      align: 'center',
-      width: '5%',
+      align: 'left',
+      width: '10%',
     },
     {
       text: 'Creation Date',
       value: 'creationDate',
-      align: 'center',
+      align: 'left',
       width: '10%',
     },
     {
       text: 'Last Access',
       value: 'lastAccess',
-      align: 'center',
-      width: '10%',
+      align: 'left',
+      width: '30%',
     },
     {
       text: 'Delete',
       value: 'action',
-      align: 'center',
+      align: 'left',
       sortable: false,
       width: '5%',
     },
@@ -120,6 +158,10 @@ export default class UsersView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.users = await RemoteServices.getUsers();
+      this.users.forEach(user => { 
+        if (user.institutionName == null) 
+          user.institutionName = 'None';  
+      })
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -146,8 +188,35 @@ export default class UsersView extends Vue {
       confirm('Are you sure you want to delete the user?')
     ) {
       try {
-        await RemoteServices.deleteUser(userId);
-        this.users = this.users.filter((user) => user.id != userId);
+        this.users = await RemoteServices.deleteUser(userId);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async getDocument(user: User) {
+    let userId = user.id;
+    if (
+      userId !== null
+    ) {
+      try {
+        await RemoteServices.getUserDocument(userId);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async validateUser(user: User) {
+    let userId = user.id;
+    if (
+      userId !== null &&
+      confirm('Are you sure you want to validate this user?')
+    ) {
+      try {
+        await RemoteServices.validateUser(userId);
+        this.users = await RemoteServices.getUsers();
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

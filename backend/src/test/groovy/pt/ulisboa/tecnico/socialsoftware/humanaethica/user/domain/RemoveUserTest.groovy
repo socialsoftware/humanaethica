@@ -13,20 +13,19 @@ class RemoveUserTest extends SpockTest {
     def user
 
     def setup() {
-        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL)
+        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(user)
     }
 
-    def "cannot remove normal active user"() {
+    def "remove normal active user"() {
         given:
         user.getAuthUser().setActive(true)
 
         when:
-        user.remove()
+        userService.deleteUser(user.getId())
 
         then:
-        def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.USER_IS_ACTIVE
+        user.getState() == User.State.DELETED
         and:
         userRepository.findAll().size() == 1
     }

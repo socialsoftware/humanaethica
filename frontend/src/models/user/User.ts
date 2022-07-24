@@ -6,7 +6,9 @@ export default class User {
   username!: string;
   email!: string;
   role!: string;
+  state!: string;
   active!: boolean;
+  institutionName!: string;
   type!: string;
   creationDate!: string;
   lastAccess!: string;
@@ -18,10 +20,12 @@ export default class User {
       this.username = jsonObj.username;
       this.email = jsonObj.email;
       this.role = jsonObj.role;
+      this.state = jsonObj.state;
       this.active = jsonObj.active;
       this.type = jsonObj.type;
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.lastAccess = ISOtoString(jsonObj.lastAccess);
+      this.institutionName = jsonObj.institutionName;
     }
   }
 }

@@ -4,6 +4,6 @@
 
 scripts
 
-backend/src/main/resources/static/images/questions/
+backend/src/main/resources/static/documents/declarations
 data/
 frontend/cypress.env.json

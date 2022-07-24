@@ -11,11 +11,11 @@ public class Admin extends User {
     public Admin() {
     }
 
-    public Admin(String name, String username, String email, AuthUser.Type type) {
-        super(name, username, email, Role.ADMIN, type);
+    public Admin(String name, String username, String email, AuthUser.Type type, State state) {
+        super(name, username, email, Role.ADMIN, type, state);
     }
 
-    public Admin(String name) {
-        super(name, Role.ADMIN);
+    public Admin(String name, State state) {
+        super(name, Role.ADMIN, state);
     }
 }

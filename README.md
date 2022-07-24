@@ -1,4 +1,4 @@
-<h1 align="center">HumanaEthica</h1>
+<h1 align="center">Humana Ética</h1>
 
 <p align="center">
   <a href="#about">About</a> •

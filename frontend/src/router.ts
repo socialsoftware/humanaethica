@@ -10,7 +10,12 @@ import NotFoundView from '@/views/NotFoundView.vue';
 
 import LoginView from '@/views/user/LoginView.vue';
 import UsersView from '@/views/admin/users/UsersView.vue';
+import InstitutionsView from '@/views/admin/institutions/InstitutionsView.vue';
 import AdminView from '@/views/admin/AdminView.vue';
+import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
+import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
+import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
+
 
 Vue.use(Router);
 
@@ -59,6 +64,49 @@ const router = new Router({
           },
         },
       ],
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
+      children: [
+        {
+          path: 'institutions',
+          name: 'institutionsAdmin',
+          component: InstitutionsView,
+          meta: {
+            title: APP_NAME + ' - Manage Institutions',
+            requiredAuth: 'Admin',
+          },
+        },
+      ],
+    },
+    {
+      path: '/institution/register',
+      name: 'register-institution',
+      component: RegisterInstitutionView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Institution Registration',
+      },
+    },
+    {
+      path: '/volunteer/register',
+      name: 'register-volunteer',
+      component: RegisterVolunteerView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Volunteer Registration',
+      },
+    },
+    {
+      path: '/member/register',
+      name: 'register-member',
+      component: RegisterMemberView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Member Registration',
+      },
     },
     {
       path: '**',
