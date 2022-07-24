@@ -8,7 +8,6 @@
       />
 
       <v-toolbar-title data-cy="homeLink">
-<<<<<<< HEAD
         <a href="/">
           <v-img
             contain
@@ -17,11 +16,6 @@
             width='350'
           />
         </a>
-=======
-        <v-btn class="logo" active-class="no-active" tile to="/">
-          <v-img src="../assets/img/logo_horizontal.png" height='35' width='310'/>
-        </v-btn>
->>>>>>> 0820453eea21c90c53d2f5d08df22b03ad772758
       </v-toolbar-title>
 
       <v-spacer />
