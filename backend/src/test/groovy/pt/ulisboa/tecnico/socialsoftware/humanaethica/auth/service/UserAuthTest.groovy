@@ -18,7 +18,7 @@ class UserAuthTest extends SpockTest {
 
 
     def setup() {
-        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL)
+        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         user.getAuthUser().setActive(true)
         userRepository.save(user)
         user.getAuthUser().setPassword(passwordEncoder.encode(USER_1_PASSWORD))

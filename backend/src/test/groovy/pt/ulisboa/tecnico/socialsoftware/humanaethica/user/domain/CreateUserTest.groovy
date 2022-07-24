@@ -14,7 +14,7 @@ class CreateUserTest extends SpockTest {
 
     def "create User: name, username, email, role, state, admin"() {
         when:
-        def result = new Volunteer(USER_1_NAME)
+        def result = new Volunteer(USER_1_NAME, User.State.SUBMITTED)
 
         then:
         result.getName() == USER_1_NAME
@@ -23,7 +23,7 @@ class CreateUserTest extends SpockTest {
 
     def "create External User: name, username, email, role, state, admin"() {
         when:
-        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL)
+        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
 
         then:
         result.getName() == USER_1_NAME
@@ -38,7 +38,7 @@ class CreateUserTest extends SpockTest {
 
     def "create Demo User: name, username, email, role, state, admin"() {
         when:
-        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.DEMO)
+        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
 
         then:
         result.getName() == USER_1_NAME

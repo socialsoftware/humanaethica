@@ -47,12 +47,12 @@ class RegisterUserTest extends SpockTest {
         result.getEmail() == USER_1_EMAIL
         !result.isActive()
         and: "a mail is sent"
-        1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
+        0 * mailerMock.sendSimpleMail(mailerUsername, _, _, _)
     }
 
     def "the user exists"() {
         given:
-        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(user)
         ((AuthNormalUser) user.authUser).setActive(true)
         and:
