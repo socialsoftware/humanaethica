@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
@@ -38,6 +40,26 @@ public class UserApplicationalService {
         userService.registerUserTransactional(registerUserDto, State.SUBMITTED);
 
         return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
+    }
+
+    public void addDocument(UserDto userDto, UserDocument doc) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
+        userService.addDoc(user, doc);
+    }
+
+    public void setInstitutionFromMember(RegisterUserDto userDto, int memberId){
+        AuthUser member = authUserRepository.findById(memberId).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
+        userDto.setInstitutionId(((Member) member.getUser()).getInstitution().getId());
+    }
+
+    public int getInstitutionId(int memberId){
+        AuthUser user = authUserRepository.findById(memberId).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
+        System.out.println(((Member) user.getUser()).getInstitution().getId());
+        return ((Member) user.getUser()).getInstitution().getId();
+    }
+
+    public UserDocument getUserDocument(Integer id) {
+        return userService.getDoc(id);
     }
 
     public RegisterUserDto confirmRegistration(RegisterUserDto registerUserDto) {

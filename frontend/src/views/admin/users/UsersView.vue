@@ -36,6 +36,19 @@
           </template>
           <span>Delete user</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="black"
+              v-on="on"
+              data-cy="documentButton"
+              @click="getDocument(item)"
+              >description</v-icon
+            >
+          </template>
+          <span>See document</span>
+        </v-tooltip>
         <v-tooltip bottom v-if="item.state=='SUBMITTED' || item.state == 'DELETED'">
           <template v-slot:activator="{ on }">
             <v-icon
@@ -176,6 +189,19 @@ export default class UsersView extends Vue {
     ) {
       try {
         this.users = await RemoteServices.deleteUser(userId);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async getDocument(user: User) {
+    let userId = user.id;
+    if (
+      userId !== null
+    ) {
+      try {
+        await RemoteServices.getUserDocument(userId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

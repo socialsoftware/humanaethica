@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 
@@ -44,16 +45,20 @@ public class IntitutionController {
     }
 
     @PostMapping("/institution/register")
-    public void registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value="file") MultipartFile doc) throws IOException{
+    public void registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value="institutionDoc") MultipartFile institutionDoc, @RequestParam(value="memberDoc") MultipartFile memberDoc) throws IOException{
         Document document = new Document();
-        document.setName(doc.getName());
-        document.setContent(doc.getBytes());
+        document.setName(institutionDoc.getName());
+        document.setContent(institutionDoc.getBytes());
+
+        UserDocument memberDocument = new UserDocument();
+        memberDocument.setName(memberDoc.getName());
+        memberDocument.setContent(memberDoc.getBytes());
 
         InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
         RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
         registerUserDto.setRole(User.Role.MEMBER);
         
-        institutionService.registerInstitutionMemberPair(institutionDto, document, registerUserDto);
+        institutionService.registerInstitutionMemberPair(institutionDto, document, registerUserDto, memberDocument);
     }
 
     @GetMapping("/institution/{institutionId}/document")

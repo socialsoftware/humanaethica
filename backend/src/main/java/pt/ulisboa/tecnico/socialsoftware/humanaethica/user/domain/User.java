@@ -52,6 +52,9 @@ public abstract class User {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     public AuthUser authUser;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
+    private UserDocument document;
+
     protected User() {
     }
 
@@ -132,6 +135,15 @@ public abstract class User {
 
     public void setAuthUser(AuthUser authUser) {
         this.authUser = authUser;
+    }
+
+    public UserDocument getDocument() {
+        return document;
+    }
+
+    public void setDocument(UserDocument document) {
+        this.document = document;
+        document.setUser(this);
     }
 
     @Override

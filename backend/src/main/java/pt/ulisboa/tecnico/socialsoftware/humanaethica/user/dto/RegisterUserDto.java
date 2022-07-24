@@ -28,6 +28,12 @@ public class RegisterUserDto {
     public RegisterUserDto() {
     }
 
+    public RegisterUserDto(String name, String username, String email){
+        this.name = name;
+        this.username = username;
+        this.email = email;
+    }
+
     public RegisterUserDto(AuthNormalUser authUser) {
         this.id = authUser.getId();
         this.name = authUser.getUser().getName();
