@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <v-card class="container" elevation="11">
 
     <h2>Institution Registration</h2>
     <v-form ref="form" lazy-validation>
@@ -89,7 +89,7 @@
       <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">

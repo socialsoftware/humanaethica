@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <v-card class="container" elevation="11">
 
     <h2>Volunteer Registration</h2>
     <v-form ref="form" lazy-validation>
@@ -44,7 +44,7 @@
       <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -98,6 +98,7 @@ export default class RegisterVolunteerView extends Vue {
 
 <style lang="scss" scoped>
 .container {
+  background-color: grey;
   margin-top: 2rem !important;
   padding: 3rem !important;
   width: 60%;
