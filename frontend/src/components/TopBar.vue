@@ -10,7 +10,7 @@
       
       <v-toolbar-title data-cy="homeLink">
         <v-btn class="logo" active-class="no-active" tile to="/">
-          <v-img src="../assets/img/Logo_Vertical.png" height='35' width='310'/>
+          <v-img src="../assets/img/logo_horizontal.png" height='35' width='310'/>
         </v-btn>
       </v-toolbar-title>
 
