@@ -39,7 +39,7 @@
         dense
         small-chips
         accept=".pdf"
-        @change="handleFileUpload($event)"
+        @change="handleInstitutionFileUpload($event)"
       ></v-file-input>
 
       <v-divider class="divider"></v-divider>
@@ -83,7 +83,8 @@
         required
         dense
         small-chips
-        @change="handleFileUpload($event)"
+        accept=".pdf"
+        @change="handleMemberFileUpload($event)"
       ></v-file-input>
 
       <v-btn class="mr-4" color="orange" @click="submit"> submit </v-btn>
@@ -129,7 +130,7 @@ export default class RegisterInstitutionView extends Vue {
           memberUsername: this.memberUsername,
           memberEmail: this.memberEmail,
           memberName: this.memberName,
-        }, this.institutionDoc);
+        }, this.institutionDoc, this.memberDoc);
         await this.$router.push({name: 'home'});
       }
     } catch (error) {
@@ -138,7 +139,11 @@ export default class RegisterInstitutionView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async handleFileUpload(event: File) {
+  async handleMemberFileUpload(event: File) {
+    this.memberDoc = event;
+  }
+
+  async handleInstitutionFileUpload(event: File) {
     this.institutionDoc = event;
   }
 
@@ -151,6 +156,7 @@ export default class RegisterInstitutionView extends Vue {
     this.memberEmail = '';
     this.memberName = '';
   }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -38,6 +38,7 @@
         required
         dense
         small-chips
+        accept='.pdf'
         @change="handleFileUpload($event)"
       ></v-file-input>
 
@@ -74,9 +75,10 @@ export default class RegisterVolunteerView extends Vue {
       else if (this.volunteerDoc != null) {
         await RemoteServices.registerVolunteer({
           volunteerName: this.volunteerName,
-          volunteerEmail: this.volunteerEmail,
           volunteerUsername: this.volunteerUsername,
+          volunteerEmail: this.volunteerEmail,
         }, this.volunteerDoc);
+        await this.$router.push({name: 'home'});
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
