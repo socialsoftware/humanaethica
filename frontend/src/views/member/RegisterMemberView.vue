@@ -75,7 +75,8 @@ export default class RegisterMemberView extends Vue {
           memberName: this.memberName,
           memberEmail: this.memberEmail,
           memberUsername: this.memberUsername,
-        }, this.memberDoc);
+        }, this.memberDoc, this.$store.getters.getInstitutionId);
+        await this.$router.push({name: 'home'});
       }
     } catch (error) {
       await this.$store.dispatch('error', error);

@@ -17,10 +17,12 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.Ins
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserDocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.util.Comparator;
@@ -39,6 +41,9 @@ public class UserService {
 
     @Autowired
     private AuthUserRepository authUserRepository;
+
+    @Autowired
+    private UserDocumentRepository userDocumentRepository;
 
     @Autowired
     public AuthUserService authUserService;
@@ -163,6 +168,22 @@ public class UserService {
         Institution i = user.remove();
         if (i != null)
             institutionRepository.save(i);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void addDoc(User u, UserDocument doc) {
+        u.setDocument(doc);
+        userDocumentRepository.save(doc);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void setInstitutionFromMember(Member u, Institution institution) {
+        u.setInstitution(institution);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public UserDocument getDoc(Integer id) {
+        return (userRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND))).getDocument();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

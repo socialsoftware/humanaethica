@@ -17,8 +17,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalServ
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
@@ -77,12 +79,13 @@ public class InstitutionService {
     }
     
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void registerInstitutionMemberPair(InstitutionDto institutionDto, Document document, RegisterUserDto registerUserDto){
+    public void registerInstitutionMemberPair(InstitutionDto institutionDto, Document document, RegisterUserDto registerUserDto, UserDocument memberDocument){
         Institution i = registerInstitution(institutionDto);
         addDocument(i, document);
 
         registerUserDto.setInstitutionId(i.getId());
-        userApplicationalService.registerUser(registerUserDto);
+        UserDto userDto = userApplicationalService.registerUser(registerUserDto);
+        userApplicationalService.addDocument(userDto, memberDocument);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

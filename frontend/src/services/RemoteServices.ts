@@ -129,14 +129,14 @@ export default class RemoteServices {
     const formData = new FormData();
     formData.append('file', doc);
     formData.append('volunteer', new Blob([JSON.stringify({
-      'volunteerEmail': volunteer.volunteerEmail,
-      'volunteerName': volunteer.volunteerName,
-      'volunteerUsername': volunteer.volunteerUsername,
+      'name': volunteer.volunteerName,
+      'username': volunteer.volunteerUsername,
+      'email': volunteer.volunteerEmail,
   })], {
           type: 'application/json'
       }));
     return httpClient
-    .post('/volunteer/register', formData,  {
+    .post('/users/registerVolunteer', formData,  {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -146,18 +146,18 @@ export default class RemoteServices {
     });
   }
 
-  static async registerMember(member: RegisterMember, doc: File) {
+  static async registerMember(member: RegisterMember, doc: File, memberId: number) {
     const formData = new FormData();
     formData.append('file', doc);
     formData.append('member', new Blob([JSON.stringify({
-      'memberEmail': member.memberEmail,
-      'memberName': member.memberName,
-      'memberUsername': member.memberUsername,
+      'name': member.memberName,
+      'username': member.memberUsername,
+      'email': member.memberEmail,
   })], {
           type: 'application/json'
       }));
     return httpClient
-    .post('/member/register', formData,  {
+    .post(`/users/${memberId}/registerMember`, formData,  {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -180,11 +180,32 @@ export default class RemoteServices {
       });
   }
 
+  static async getUserDocument(userId: number) {
+    return httpClient.get(`/user/${userId}/document`, {
+      responseType: 'blob',
+    })
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Document.pdf');
+      document.body.appendChild(link);
+      link.click();
+      if (link.parentNode != null){
+        link.parentNode.removeChild(link);
+      }
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   // Institution Controller
 
-  static async registerInstitution(institution: RegisterInstitution, doc: File) {
+  static async registerInstitution(institution: RegisterInstitution, institutionDoc: File, memberDoc: File) {
     const formData = new FormData();
-    formData.append('file', doc);
+    formData.append('institutionDoc', institutionDoc);
+    formData.append('memberDoc', memberDoc);
     formData.append('institution', new Blob([JSON.stringify({
       'institutionEmail': institution.institutionEmail,
       'institutionName': institution.institutionName,
@@ -249,7 +270,6 @@ export default class RemoteServices {
       document.body.appendChild(link);
       link.click();
       if (link.parentNode != null){
-        console.log('fsfr');
         link.parentNode.removeChild(link);
       }
     })
