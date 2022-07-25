@@ -6,6 +6,7 @@ import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterUserWebServiceIT extends SpockTest {
@@ -19,7 +20,7 @@ class RegisterUserWebServiceIT extends SpockTest {
 
         restClient = new RESTClient("http://localhost:" + port)
 
-        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.DEMO)
+        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
         admin.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
         userRepository.save(admin)
 

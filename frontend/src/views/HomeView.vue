@@ -5,7 +5,7 @@
   <div class="image">
     <v-img
       contain
-      src="../assets/img/logo_vertical.png"
+      src="../assets/img/Logo_Vertical.png"
       height='500'
       width='350'
     />
