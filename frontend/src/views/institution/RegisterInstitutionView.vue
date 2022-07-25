@@ -45,6 +45,7 @@
       <v-divider class="divider"></v-divider>
 
       <h2>Member Registration</h2>
+      <v-btn @click="readFile"> Download Document </v-btn>
 
       <v-text-field
         v-model="memberUsername"
@@ -148,6 +149,10 @@ export default class RegisterInstitutionView extends Vue {
 
   async handleInstitutionFileUpload(event: File) {
     this.institutionDoc = event;
+  }
+
+  readFile() {
+    RemoteServices.getForm();
   }
 
 

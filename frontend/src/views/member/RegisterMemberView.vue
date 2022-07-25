@@ -2,6 +2,7 @@
   <v-card class="container" elevation="11">
 
     <h2>Member Registration</h2>
+    <v-btn @click="readFile"> Download Document </v-btn>
     <v-form ref="form" lazy-validation>
       <v-text-field
         v-model="memberName"
@@ -89,6 +90,10 @@ export default class RegisterMemberView extends Vue {
 
   async handleFileUpload(event: File) {
     this.memberDoc = event;
+  }
+
+  readFile() {
+    RemoteServices.getForm();
   }
 
   clear() {
