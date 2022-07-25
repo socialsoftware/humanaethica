@@ -24,6 +24,7 @@ class RegisterInstitutionWebserviceIT extends SpockTest {
         restClient = new RESTClient("http://localhost:" + port)
     }
 
+    // Nao passa porque nao leva o documento no body
     def "create new institution"() {
         when:
         response = restClient.post(
