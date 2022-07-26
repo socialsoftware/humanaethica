@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -69,6 +71,16 @@ public class IntitutionController {
         MediaType type = MediaType.APPLICATION_PDF;
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachement; filename=\"" + doc.getName() + "\"");
         return ResponseEntity.ok().contentType(type).headers(headers).body(doc.getContent());
+    }
+
+    @GetMapping("/document/form")
+    public ResponseEntity<byte[]> getForm() throws IOException {
+        File f = new File(System.getProperty("user.dir") + "/src/main/resources/termo_responsabildade.pdf");
+        byte[] b = Files.readAllBytes(f.toPath());
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.APPLICATION_PDF;
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachement; filename=\"" + f.getName() + "\"");
+        return ResponseEntity.ok().contentType(type).headers(headers).body(b);
     }
 
     @PostMapping("/institution/{institutionId}/validate")

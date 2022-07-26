@@ -2,6 +2,8 @@
   <v-card class="container" elevation="11">
 
     <h2>Volunteer Registration</h2>
+
+    <v-btn @click="readFile"> Download Document </v-btn>
     <v-form ref="form" lazy-validation>
       <v-text-field
         v-model="volunteerName"
@@ -41,6 +43,7 @@
         accept='.pdf'
         @change="handleFileUpload($event)"
       ></v-file-input>
+
 
       <v-btn class="mr-4" color="orange" @click="submit"
       :disabled="!(volunteerUsername !== ''
@@ -91,6 +94,10 @@ export default class RegisterVolunteerView extends Vue {
 
   async handleFileUpload(event: File) {
     this.volunteerDoc = event;
+  }
+
+  readFile() {
+    RemoteServices.getForm();
   }
 
   clear() {

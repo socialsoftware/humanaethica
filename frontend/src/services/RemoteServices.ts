@@ -200,6 +200,26 @@ export default class RemoteServices {
     });
   }
 
+  static async getForm() {
+    return httpClient.get('/document/form', {
+      responseType: 'blob',
+    })
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Form.pdf');
+      document.body.appendChild(link);
+      link.click();
+      if (link.parentNode != null){
+        link.parentNode.removeChild(link);
+      }
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   // Institution Controller
 
   static async registerInstitution(institution: RegisterInstitution, institutionDoc: File, memberDoc: File) {
