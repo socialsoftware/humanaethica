@@ -1,16 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
+import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_ROLE;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_STATE;
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USER_IS_ACTIVE;
 
 @Entity
 @Table(name = "users")
@@ -161,10 +160,9 @@ public abstract class User {
     public Institution remove() {
         this.setState(State.DELETED);
         this.getAuthUser().setActive(false);
-        if (this.role.equals(Role.MEMBER)){
+        if (this.role.equals(Role.MEMBER)) {
             return ((Member) this).getInstitution();
-        }
-        else
+        } else
             return null;
     }
 }

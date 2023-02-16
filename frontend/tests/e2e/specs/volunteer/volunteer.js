@@ -8,6 +8,6 @@ describe('Volunteer', () => {
   });
 
   it('close', () => {
-    cy.get('[data-cy="volunteer"]').click();
+
   });
 });

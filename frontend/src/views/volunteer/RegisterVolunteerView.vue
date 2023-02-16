@@ -1,6 +1,5 @@
 <template>
   <v-card class="container" elevation="11">
-
     <h2>Volunteer Registration</h2>
 
     <v-btn @click="readFile"> Download Document </v-btn>
@@ -40,14 +39,24 @@
         required
         dense
         small-chips
-        accept='.pdf'
+        accept=".pdf"
         @change="handleFileUpload($event)"
       ></v-file-input>
 
-
-      <v-btn class="mr-4" color="orange" @click="submit"
-      :disabled="!(volunteerUsername !== ''
-      && volunteerEmail !== '' && volunteerName !== '')"> submit </v-btn>
+      <v-btn
+        class="mr-4"
+        color="orange"
+        @click="submit"
+        :disabled="
+          !(
+            volunteerUsername !== '' &&
+            volunteerEmail !== '' &&
+            volunteerName !== ''
+          )
+        "
+      >
+        submit
+      </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </v-card>
@@ -69,22 +78,26 @@ export default class RegisterVolunteerView extends Vue {
 
   async submit() {
     try {
-      if (this.volunteerName.length == 0 || this.volunteerEmail.length == 0 ||
-      this.volunteerUsername.length == 0) {
+      if (
+        this.volunteerName.length == 0 ||
+        this.volunteerEmail.length == 0 ||
+        this.volunteerUsername.length == 0
+      ) {
         await this.$store.dispatch(
-        'error',
-        'Missing information, please check the form again'
-      );
-      return;
-      }
-      else if (this.volunteerDoc != null) {
-        await RemoteServices.registerVolunteer({
-          volunteerName: this.volunteerName,
-          volunteerEmail: this.volunteerEmail,
-          volunteerUsername: this.volunteerUsername,
-
-        }, this.volunteerDoc);
-        await this.$router.push({name: 'home'});
+          'error',
+          'Missing information, please check the form again'
+        );
+        return;
+      } else if (this.volunteerDoc != null) {
+        await RemoteServices.registerVolunteer(
+          {
+            volunteerName: this.volunteerName,
+            volunteerEmail: this.volunteerEmail,
+            volunteerUsername: this.volunteerUsername,
+          },
+          this.volunteerDoc
+        );
+        await this.$router.push({ name: 'home' });
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -127,7 +140,7 @@ export default class RegisterVolunteerView extends Vue {
   margin-bottom: 2rem !important;
 }
 
-h2{
+h2 {
   color: black;
   opacity: 80%;
   font-family: 'Open Sans', sans-serif;

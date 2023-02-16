@@ -1,6 +1,5 @@
 <template>
   <v-card class="container" elevation="11">
-
     <h2>Member Registration</h2>
     <v-btn @click="readFile"> Download Document </v-btn>
     <v-form ref="form" lazy-validation>
@@ -42,10 +41,16 @@
         @change="handleFileUpload($event)"
       ></v-file-input>
 
-      <v-btn class="mr-4" color="orange" @click="submit"
-      :disabled="!(memberUsername !== ''
-      && memberEmail !== '' && memberName !== '')"
-      > submit </v-btn>
+      <v-btn
+        class="mr-4"
+        color="orange"
+        @click="submit"
+        :disabled="
+          !(memberUsername !== '' && memberEmail !== '' && memberName !== '')
+        "
+      >
+        submit
+      </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </v-card>
@@ -67,20 +72,26 @@ export default class RegisterMemberView extends Vue {
 
   async submit() {
     try {
-       if (this.memberName.length == 0 || this.memberEmail.length == 0 ||
-      this.memberUsername.length == 0) {
+      if (
+        this.memberName.length == 0 ||
+        this.memberEmail.length == 0 ||
+        this.memberUsername.length == 0
+      ) {
         await this.$store.dispatch(
-        'error',
-        'Missing information, please check the form again'
-      )
-      }
-      else if (this.memberDoc != null) {
-        await RemoteServices.registerMember({
-          memberName: this.memberName,
-          memberEmail: this.memberEmail,
-          memberUsername: this.memberUsername,
-        }, this.memberDoc, this.$store.getters.getInstitutionId);
-        await this.$router.push({name: 'home'});
+          'error',
+          'Missing information, please check the form again'
+        );
+      } else if (this.memberDoc != null) {
+        await RemoteServices.registerMember(
+          {
+            memberName: this.memberName,
+            memberEmail: this.memberEmail,
+            memberUsername: this.memberUsername,
+          },
+          this.memberDoc,
+          this.$store.getters.getInstitutionId
+        );
+        await this.$router.push({ name: 'home' });
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -122,7 +133,7 @@ export default class RegisterMemberView extends Vue {
   margin-bottom: 2rem !important;
 }
 
-h2{
+h2 {
   color: black;
   opacity: 80%;
   font-family: 'Open Sans', sans-serif;

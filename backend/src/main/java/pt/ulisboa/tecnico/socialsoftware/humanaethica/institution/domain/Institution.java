@@ -1,24 +1,17 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
+import jakarta.persistence.*;
+import org.springframework.security.crypto.keygen.KeyGenerators;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
-
-import org.springframework.security.crypto.keygen.KeyGenerators;
-
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
-
-
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INSTITUTION_IS_ACTIVE;
-
 @Entity
 @Table(name = "institutions")
 public class Institution {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -38,16 +31,16 @@ public class Institution {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
     private Document document;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch= FetchType.EAGER)
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Member> members = new ArrayList<>();
 
     private LocalDateTime tokenGenerationDate;
 
-    public Institution(){
+    public Institution() {
     }
 
-    public Institution(String name, String email, String nif){
+    public Institution(String name, String email, String nif) {
         setEmail(email);
         setName(name);
         setNIF(nif);
@@ -55,7 +48,7 @@ public class Institution {
         setCreationDate(DateHandler.now());
     }
 
-    public void addMember(Member member){
+    public void addMember(Member member) {
         this.members.add(member);
     }
 
@@ -63,7 +56,7 @@ public class Institution {
         return members;
     }
 
-    
+
     public String getName() {
         return name;
     }

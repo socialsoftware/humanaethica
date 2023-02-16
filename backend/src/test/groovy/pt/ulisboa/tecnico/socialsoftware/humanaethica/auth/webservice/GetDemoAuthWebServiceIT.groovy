@@ -2,14 +2,13 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.webservice
 
 import groovyx.net.http.RESTClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GetDemoAuthWebServiceIT extends SpockTest {
-
     @LocalServerPort
     private int port
 

@@ -1,9 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("DEMO")

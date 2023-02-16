@@ -12,8 +12,8 @@
           <v-img
             contain
             src="../assets/img/logo_horizontal.png"
-            height='40'
-            width='350'
+            height="40"
+            width="350"
           />
         </a>
       </v-toolbar-title>
@@ -38,8 +38,7 @@
 
         <v-menu v-if="isAdmin" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn
-              color="orange" text v-on="on" data-cy="admin">
+            <v-btn color="orange" text v-on="on" data-cy="admin">
               Administration
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -54,28 +53,35 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/admin/institutions" data-cy="adminInstitutions">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Manage Institutions</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Manage Institutions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar-items>
 
       <v-toolbar-items class="hidden-sm-and-down" hide-details>
-        <v-btn v-if="!isLoggedIn" text
-              color="orange" @click="registerInstitution">
+        <v-btn
+          v-if="!isLoggedIn"
+          text
+          color="orange"
+          @click="registerInstitution"
+        >
           Create Institution
         </v-btn>
-        <v-btn v-if="!isLoggedIn" text
-              color="orange" @click="registerVolunteer">
+        <v-btn
+          v-if="!isLoggedIn"
+          text
+          color="orange"
+          @click="registerVolunteer"
+        >
           Create VOlunteer
         </v-btn>
-        <v-btn v-if="!isLoggedIn" text
-              color="orange" @click="login">
+        <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
           Login
           <v-icon>fas fa-sign-in-alt</v-icon>
         </v-btn>
@@ -83,9 +89,8 @@
         <v-btn
           v-if="isLoggedIn"
           text
-              color="orange"
+          color="orange"
           data-cy="logoutButton"
-
           @click="logout"
         >
           Logout
@@ -153,13 +158,13 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/admin/members" data-cy="adminMembers">
-              <v-list-item-action>
-                <v-icon>fas fa-users</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>Manage Members</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Manage Members</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
       </v-list>
 

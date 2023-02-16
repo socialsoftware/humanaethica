@@ -42,7 +42,7 @@ class ValidateInstitutionTest extends SpockTest {
         memberDto.setRole(User.Role.MEMBER)
         memberDto.setInstitutionId(institution.getId())
 
-        member = userServiceApplicational.registerUser(memberDto);
+        member = userService.registerUser(memberDto);
     }
 
     def "validate institution with success"() {

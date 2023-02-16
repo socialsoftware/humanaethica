@@ -1,11 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 
 @Entity
 @DiscriminatorValue(User.UserTypes.MEMBER)

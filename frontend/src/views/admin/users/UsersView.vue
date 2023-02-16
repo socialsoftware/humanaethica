@@ -49,7 +49,10 @@
           </template>
           <span>See document</span>
         </v-tooltip>
-        <v-tooltip bottom v-if="item.state=='SUBMITTED' || item.state == 'DELETED'">
+        <v-tooltip
+          bottom
+          v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
+        >
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -158,10 +161,9 @@ export default class UsersView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.users = await RemoteServices.getUsers();
-      this.users.forEach(user => { 
-        if (user.institutionName == null) 
-          user.institutionName = 'None';  
-      })
+      this.users.forEach((user) => {
+        if (user.institutionName == null) user.institutionName = 'None';
+      });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -197,9 +199,7 @@ export default class UsersView extends Vue {
 
   async getDocument(user: User) {
     let userId = user.id;
-    if (
-      userId !== null
-    ) {
+    if (userId !== null) {
       try {
         await RemoteServices.getUserDocument(userId);
       } catch (error) {

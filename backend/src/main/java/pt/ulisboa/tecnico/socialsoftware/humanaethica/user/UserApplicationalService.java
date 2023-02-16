@@ -36,17 +36,6 @@ public class UserApplicationalService {
     @Value("${spring.mail.username}")
     private String mailUsername;
 
-    public UserDto registerUser(RegisterUserDto registerUserDto) {
-        userService.registerUserTransactional(registerUserDto, State.SUBMITTED);
-
-        return new UserDto(authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND)));
-    }
-
-    public void addDocument(UserDto userDto, UserDocument doc) {
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
-        userService.addDoc(user, doc);
-    }
-
     public void setInstitutionFromMember(RegisterUserDto userDto, int memberId){
         AuthUser member = authUserRepository.findById(memberId).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
         userDto.setInstitutionId(((Member) member.getUser()).getInstitution().getId());
@@ -54,7 +43,6 @@ public class UserApplicationalService {
 
     public int getInstitutionId(int memberId){
         AuthUser user = authUserRepository.findById(memberId).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
-        System.out.println(((Member) user.getUser()).getInstitution().getId());
         return ((Member) user.getUser()).getInstitution().getId();
     }
 

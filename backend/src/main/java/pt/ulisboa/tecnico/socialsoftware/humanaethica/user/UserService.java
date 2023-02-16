@@ -90,10 +90,10 @@ public class UserService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
-    public RegisterUserDto registerUserTransactional(RegisterUserDto registerUserDto, State state) {
-        AuthNormalUser authUser = createAuthNormalUser(registerUserDto, state);
+    public UserDto registerUser(RegisterUserDto registerUserDto) {
+        AuthNormalUser authUser = createAuthNormalUser(registerUserDto, State.SUBMITTED);
 
-        return new RegisterUserDto(authUser);
+        return new UserDto(authUser);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -171,9 +171,11 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void addDoc(User u, UserDocument doc) {
-        u.setDocument(doc);
-        userDocumentRepository.save(doc);
+    public void addDocument(UserDto userDto, UserDocument userDocument) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
+
+        user.setDocument(userDocument);
+        userDocumentRepository.save(userDocument);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

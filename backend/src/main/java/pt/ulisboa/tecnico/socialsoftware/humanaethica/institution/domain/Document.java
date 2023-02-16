@@ -1,9 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 @Entity
-public class Document{
+public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -14,7 +15,7 @@ public class Document{
     String name;
 
     @OneToOne
-    @JoinColumn(name="institution_id")
+    @JoinColumn(name = "institution_id")
     private Institution institution;
 
     public byte[] getContent() {

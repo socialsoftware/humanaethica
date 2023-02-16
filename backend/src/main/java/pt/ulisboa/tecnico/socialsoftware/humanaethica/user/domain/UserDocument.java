@@ -1,8 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 @Entity
-public class UserDocument{
+public class UserDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -13,7 +14,7 @@ public class UserDocument{
     String name;
 
     @OneToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public byte[] getContent() {

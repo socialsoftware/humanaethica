@@ -1,12 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -15,23 +9,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 
 @RestController
-public class IntitutionController {
-    
+public class InstitutionController {
     @Autowired
     private InstitutionService institutionService;
-
     @Value("${figures.dir}")
     private String figuresDir;
-
 
     @GetMapping("/institutions")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -47,7 +42,7 @@ public class IntitutionController {
     }
 
     @PostMapping("/institution/register")
-    public void registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value="institutionDoc") MultipartFile institutionDoc, @RequestParam(value="memberDoc") MultipartFile memberDoc) throws IOException{
+    public void registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value = "institutionDoc") MultipartFile institutionDoc, @RequestParam(value = "memberDoc") MultipartFile memberDoc) throws IOException {
         Document document = new Document();
         document.setName(institutionDoc.getName());
         document.setContent(institutionDoc.getBytes());
@@ -59,7 +54,7 @@ public class IntitutionController {
         InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
         RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
         registerUserDto.setRole(User.Role.MEMBER);
-        
+
         institutionService.registerInstitutionMemberPair(institutionDto, document, registerUserDto, memberDocument);
     }
 

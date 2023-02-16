@@ -1,6 +1,5 @@
 <template>
   <v-card class="container" elevation="11">
-
     <h2>Institution Registration</h2>
     <v-form ref="form" lazy-validation>
       <v-text-field
@@ -88,10 +87,23 @@
         @change="handleMemberFileUpload($event)"
       ></v-file-input>
 
-      <v-btn class="mr-4" color="orange" @click="submit"
-      :disabled="!(institutionName !== '' && institutionEmail !== '' && institutionNif !== '' && memberUsername !== ''
-      && memberEmail !== '' && memberName !== '')"
-      > submit </v-btn>
+      <v-btn
+        class="mr-4"
+        color="orange"
+        @click="submit"
+        :disabled="
+          !(
+            institutionName !== '' &&
+            institutionEmail !== '' &&
+            institutionNif !== '' &&
+            memberUsername !== '' &&
+            memberEmail !== '' &&
+            memberName !== ''
+          )
+        "
+      >
+        submit
+      </v-btn>
       <v-btn @click="clear"> clear </v-btn>
     </v-form>
   </v-card>
@@ -117,25 +129,33 @@ export default class RegisterInstitutionView extends Vue {
 
   async submit() {
     try {
-      if (this.institutionName.length == 0 || this.institutionEmail.length == 0 ||
-      this.institutionNif.length == 0 || this.memberUsername.length == 0 ||
-      this.memberEmail.length == 0 || this.memberName.length == 0) {
+      if (
+        this.institutionName.length == 0 ||
+        this.institutionEmail.length == 0 ||
+        this.institutionNif.length == 0 ||
+        this.memberUsername.length == 0 ||
+        this.memberEmail.length == 0 ||
+        this.memberName.length == 0
+      ) {
         await this.$store.dispatch(
-        'error',
-        'Missing information, please check the form again'
-      );
-      return;
-      }
-      else if (this.institutionDoc != null && this.memberDoc != null) {
-        await RemoteServices.registerInstitution({
-          institutionName: this.institutionName,
-          institutionEmail: this.institutionEmail,
-          institutionNif: this.institutionNif,
-          memberUsername: this.memberUsername,
-          memberEmail: this.memberEmail,
-          memberName: this.memberName,
-        }, this.institutionDoc, this.memberDoc);
-        await this.$router.push({name: 'home'});
+          'error',
+          'Missing information, please check the form again'
+        );
+        return;
+      } else if (this.institutionDoc != null && this.memberDoc != null) {
+        await RemoteServices.registerInstitution(
+          {
+            institutionName: this.institutionName,
+            institutionEmail: this.institutionEmail,
+            institutionNif: this.institutionNif,
+            memberUsername: this.memberUsername,
+            memberEmail: this.memberEmail,
+            memberName: this.memberName,
+          },
+          this.institutionDoc,
+          this.memberDoc
+        );
+        await this.$router.push({ name: 'home' });
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -154,7 +174,6 @@ export default class RegisterInstitutionView extends Vue {
   readFile() {
     RemoteServices.getForm();
   }
-
 
   clear() {
     this.institutionName = '';
@@ -185,7 +204,7 @@ export default class RegisterInstitutionView extends Vue {
   margin-bottom: 2rem !important;
 }
 
-h2{
+h2 {
   color: black;
   opacity: 80%;
   font-family: 'Open Sans', sans-serif;

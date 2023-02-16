@@ -16,7 +16,6 @@ import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
 
-
 Vue.use(Router);
 
 const APP_NAME = process.env.VUE_APP_NAME || '';

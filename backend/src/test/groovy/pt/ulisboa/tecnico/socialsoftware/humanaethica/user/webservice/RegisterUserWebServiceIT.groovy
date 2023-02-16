@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.webservice
 
 import groovyx.net.http.RESTClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
@@ -30,7 +30,7 @@ class RegisterUserWebServiceIT extends SpockTest {
     def "login as admin, and create a user"() {
         when:
         response = restClient.post(
-                path: '/users/register/',
+                path: '/users/register',
                 body: [
                         admin   : false,
                         username: USER_1_USERNAME,

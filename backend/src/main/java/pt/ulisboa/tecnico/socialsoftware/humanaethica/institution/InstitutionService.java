@@ -33,19 +33,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class InstitutionService {
-    
     @Autowired
     InstitutionRepository institutionRepository;
-    
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     DocumentRepository documentRepository;
-    
     @Autowired
     private UserApplicationalService userApplicationalService;
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private Mailer mailer;
 
@@ -59,7 +56,7 @@ public class InstitutionService {
         return institutionRepository.findAll().stream()
                 .map(InstitutionDto::new)
                 .sorted(Comparator.comparing(InstitutionDto::getName))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -80,12 +77,12 @@ public class InstitutionService {
     
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void registerInstitutionMemberPair(InstitutionDto institutionDto, Document document, RegisterUserDto registerUserDto, UserDocument memberDocument){
-        Institution i = registerInstitution(institutionDto);
-        addDocument(i, document);
+        Institution institution = registerInstitution(institutionDto);
+        addDocument(institution, document);
 
-        registerUserDto.setInstitutionId(i.getId());
-        UserDto userDto = userApplicationalService.registerUser(registerUserDto);
-        userApplicationalService.addDocument(userDto, memberDocument);
+        registerUserDto.setInstitutionId(institution.getId());
+        UserDto userDto = userService.registerUser(registerUserDto);
+        userService.addDocument(userDto, memberDocument);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -127,8 +124,8 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void validateInstitution(int id){
-        Institution institution = institutionRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+    public void validateInstitution(int institutionId) {
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND, institutionId));
         Member member = institution.getMembers().isEmpty() ? null : institution.getMembers().get(0);
         if (member != null && member.getState().equals(State.SUBMITTED))
             throw new HEException(USER_NOT_APPROVED);

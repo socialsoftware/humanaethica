@@ -113,10 +113,7 @@ export default new Vuex.Store({
       commit('login', authResponse);
     },
     async arsAdminLogin({ commit }) {
-      const authResponse = await RemoteServices.userLogin(
-        'ars',
-        'ars'
-      );
+      const authResponse = await RemoteServices.userLogin('ars', 'ars');
       commit('login', authResponse);
     },
     logout({ commit }) {
@@ -164,11 +161,9 @@ export default new Vuex.Store({
     getLoading(state): boolean {
       return state.loading;
     },
-    getInstitutionId(state): number | null{
-      if (state.user != null)
-        return state.user.id;
-      else
-        return null
-    }
+    getInstitutionId(state): number | null {
+      if (state.user != null) return state.user.id;
+      else return null;
+    },
   },
 });

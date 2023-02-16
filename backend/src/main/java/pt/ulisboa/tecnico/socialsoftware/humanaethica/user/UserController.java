@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -7,13 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
-
-import javax.validation.Valid;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,7 +51,7 @@ public class UserController {
     @PostMapping("/users/register")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserDto registerUser(@Valid @RequestBody RegisterUserDto registerUserDto) {
-        return userApplicationalService.registerUser(registerUserDto);
+        return userService.registerUser(registerUserDto);
 
     }
 
@@ -63,7 +61,7 @@ public class UserController {
     }
 
     @PostMapping("/users/{memberId}/registerMember")
-    public void registerMember(@PathVariable int memberId, @Valid @RequestPart(value="member") RegisterUserDto registerUserDto, @RequestParam(value="file") MultipartFile doc) throws IOException {
+    public void registerMember(@PathVariable int memberId, @Valid @RequestPart(value = "member") RegisterUserDto registerUserDto, @RequestParam(value = "file") MultipartFile doc) throws IOException {
         registerUserDto.setRole(Role.MEMBER);
 
         UserDocument document = new UserDocument();
@@ -71,20 +69,20 @@ public class UserController {
         document.setContent(doc.getBytes());
         userApplicationalService.setInstitutionFromMember(registerUserDto, memberId);
 
-        UserDto userDto = userApplicationalService.registerUser(registerUserDto);
-        userApplicationalService.addDocument(userDto, document);
+        UserDto userDto = userService.registerUser(registerUserDto);
+        userService.addDocument(userDto, document);
     }
 
     @PostMapping("/users/registerVolunteer")
-    public void registerVolunteer(@Valid @RequestPart("volunteer") RegisterUserDto registerUserDto, @RequestParam(value="file") MultipartFile doc) throws IOException {
+    public void registerVolunteer(@Valid @RequestPart("volunteer") RegisterUserDto registerUserDto, @RequestParam(value = "file") MultipartFile doc) throws IOException {
         registerUserDto.setRole(Role.VOLUNTEER);
 
         UserDocument document = new UserDocument();
         document.setName(doc.getName());
         document.setContent(doc.getBytes());
 
-        UserDto userDto = userApplicationalService.registerUser(registerUserDto);
-        userApplicationalService.addDocument(userDto, document);
+        UserDto userDto = userService.registerUser(registerUserDto);
+        userService.addDocument(userDto, document);
 
     }
 

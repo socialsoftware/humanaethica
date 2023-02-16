@@ -69,8 +69,7 @@ import RemoteServices from '@/services/RemoteServices';
 import Institution from '@/models/institution/Institution';
 
 @Component({
-  components: {
-  },
+  components: {},
 })
 export default class InstitutionsView extends Vue {
   institutions: Institution[] = [];
@@ -127,7 +126,9 @@ export default class InstitutionsView extends Vue {
       confirm('Are you sure you want to delete the institution?')
     ) {
       try {
-        this.institutions = await RemoteServices.deleteInstitution(institutionId);
+        this.institutions = await RemoteServices.deleteInstitution(
+          institutionId
+        );
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -150,9 +151,7 @@ export default class InstitutionsView extends Vue {
 
   async getDocument(institution: Institution) {
     let institutionId = institution.id;
-    if (
-      institutionId !== null
-    ) {
+    if (institutionId !== null) {
       try {
         await RemoteServices.getInstitutionDocument(institutionId);
       } catch (error) {

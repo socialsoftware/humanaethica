@@ -2,13 +2,10 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.webservice
 
 import groovyx.net.http.RESTClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
-
-
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterInstitutionWebserviceIT extends SpockTest {
@@ -24,18 +21,18 @@ class RegisterInstitutionWebserviceIT extends SpockTest {
         restClient = new RESTClient("http://localhost:" + port)
     }
 
-    // Nao passa porque nao leva o documento no body
     def "create new institution"() {
         when:
         response = restClient.post(
                 path: '/institution/register',
                 body: [
-                        institutionEmail           : INSTITUTION_1_EMAIL,
-                        institutionName            : INSTITUTION_1_NAME,
-                        institutionNif             : INSTITUTION_1_NIF,
-                        memberUsername             : USER_1_USERNAME,
-                        memberEmail                : USER_1_EMAIL,
-                        memberName                 : USER_1_NAME
+                        institutionEmail: INSTITUTION_1_EMAIL,
+                        institutionName : INSTITUTION_1_NAME,
+                        institutionNif  : INSTITUTION_1_NIF,
+                        memberUsername  : USER_1_USERNAME,
+                        memberEmail     : USER_1_EMAIL,
+                        memberName      : USER_1_NAME,
+
                 ],
                 requestContentType: 'application/json'
         )

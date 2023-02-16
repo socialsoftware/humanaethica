@@ -2,15 +2,13 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.webservice
 
 import groovyx.net.http.RESTClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
-
-
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ValidateInstitutionWebserviceIT extends SpockTest {
@@ -23,6 +21,8 @@ class ValidateInstitutionWebserviceIT extends SpockTest {
     def setup() {
         deleteAll()
 
+        def post = new URL("https://jira/rest/api/latest/issue").openConnection();
+
         restClient = new RESTClient("http://localhost:" + port)
 
         def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
@@ -31,11 +31,14 @@ class ValidateInstitutionWebserviceIT extends SpockTest {
 
         normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
     }
-    
+
     def "validate institution"() {
         given: "one institution"
-        institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
-        institutionRepository.save(institution)
+        def institutionDto = new InstitutionDto()
+        institutionDto.setName(INSTITUTION_1_NAME)
+        institutionDto.setEmail(INSTITUTION_1_EMAIL)
+        institutionDto.setNif(INSTITUTION_1_NIF)
+        institution = institutionService.registerInstitution(institutionDto)
 
         when:
         response = restClient.post(

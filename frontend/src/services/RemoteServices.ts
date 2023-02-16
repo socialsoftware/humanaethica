@@ -97,15 +97,16 @@ export default class RemoteServices {
   }
 
   static async deleteUser(userId: number): Promise<User[]> {
-    return httpClient.delete(`/users/${userId}`)
-    .then((response) => {
-      return response.data.map((user: any) => {
-        return new User(user);
+    return httpClient
+      .delete(`/users/${userId}`)
+      .then((response) => {
+        return response.data.map((user: any) => {
+          return new User(user);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
       });
-    })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
   }
 
   static async validateUser(userId: number) {
@@ -128,43 +129,63 @@ export default class RemoteServices {
   static async registerVolunteer(volunteer: RegisterVolunteer, doc: File) {
     const formData = new FormData();
     formData.append('file', doc);
-    formData.append('volunteer', new Blob([JSON.stringify({
-      'name': volunteer.volunteerName,
-      'username': volunteer.volunteerUsername,
-      'email': volunteer.volunteerEmail,
-  })], {
-          type: 'application/json'
-      }));
+    formData.append(
+      'volunteer',
+      new Blob(
+        [
+          JSON.stringify({
+            name: volunteer.volunteerName,
+            username: volunteer.volunteerUsername,
+            email: volunteer.volunteerEmail,
+          }),
+        ],
+        {
+          type: 'application/json',
+        }
+      )
+    );
     return httpClient
-    .post('/users/registerVolunteer', formData,  {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-  })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+      .post('/users/registerVolunteer', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
-  static async registerMember(member: RegisterMember, doc: File, memberId: number) {
+  static async registerMember(
+    member: RegisterMember,
+    doc: File,
+    memberId: number
+  ) {
     const formData = new FormData();
     formData.append('file', doc);
-    formData.append('member', new Blob([JSON.stringify({
-      'name': member.memberName,
-      'username': member.memberUsername,
-      'email': member.memberEmail,
-  })], {
-          type: 'application/json'
-      }));
+    formData.append(
+      'member',
+      new Blob(
+        [
+          JSON.stringify({
+            name: member.memberName,
+            username: member.memberUsername,
+            email: member.memberEmail,
+          }),
+        ],
+        {
+          type: 'application/json',
+        }
+      )
+    );
     return httpClient
-    .post(`/users/${memberId}/registerMember`, formData,  {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-  })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+      .post(`/users/${memberId}/registerMember`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async confirmRegistration(
@@ -181,70 +202,84 @@ export default class RemoteServices {
   }
 
   static async getUserDocument(userId: number) {
-    return httpClient.get(`/user/${userId}/document`, {
-      responseType: 'blob',
-    })
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Document.pdf');
-      document.body.appendChild(link);
-      link.click();
-      if (link.parentNode != null){
-        link.parentNode.removeChild(link);
-      }
-    })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+    return httpClient
+      .get(`/user/${userId}/document`, {
+        responseType: 'blob',
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Document.pdf');
+        document.body.appendChild(link);
+        link.click();
+        if (link.parentNode != null) {
+          link.parentNode.removeChild(link);
+        }
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getForm() {
-    return httpClient.get('/document/form', {
-      responseType: 'blob',
-    })
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Form.pdf');
-      document.body.appendChild(link);
-      link.click();
-      if (link.parentNode != null){
-        link.parentNode.removeChild(link);
-      }
-    })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+    return httpClient
+      .get('/document/form', {
+        responseType: 'blob',
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Form.pdf');
+        document.body.appendChild(link);
+        link.click();
+        if (link.parentNode != null) {
+          link.parentNode.removeChild(link);
+        }
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   // Institution Controller
 
-  static async registerInstitution(institution: RegisterInstitution, institutionDoc: File, memberDoc: File) {
+  static async registerInstitution(
+    institution: RegisterInstitution,
+    institutionDoc: File,
+    memberDoc: File
+  ) {
     const formData = new FormData();
     formData.append('institutionDoc', institutionDoc);
     formData.append('memberDoc', memberDoc);
-    formData.append('institution', new Blob([JSON.stringify({
-      'institutionEmail': institution.institutionEmail,
-      'institutionName': institution.institutionName,
-      'institutionNif': institution.institutionNif,
-      'memberEmail': institution.memberEmail,
-      'memberUsername': institution.memberUsername,
-      'memberName': institution.memberName,
-  })], {
-          type: 'application/json'
-      }));
+    formData.append(
+      'institution',
+      new Blob(
+        [
+          JSON.stringify({
+            institutionEmail: institution.institutionEmail,
+            institutionName: institution.institutionName,
+            institutionNif: institution.institutionNif,
+            memberEmail: institution.memberEmail,
+            memberUsername: institution.memberUsername,
+            memberName: institution.memberName,
+          }),
+        ],
+        {
+          type: 'application/json',
+        }
+      )
+    );
     return httpClient
-    .post('/institution/register', formData,  {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-  })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+      .post('/institution/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getInstitutions(): Promise<Institution[]> {
@@ -260,42 +295,48 @@ export default class RemoteServices {
       });
   }
 
-  static async deleteInstitution(institutionId: number): Promise<Institution[]> {
-    return httpClient.delete(`/institutions/${institutionId}`)
-    .then((response) => {
-      return response.data.map((institution: any) => {
-        return new Institution(institution);
+  static async deleteInstitution(
+    institutionId: number
+  ): Promise<Institution[]> {
+    return httpClient
+      .delete(`/institutions/${institutionId}`)
+      .then((response) => {
+        return response.data.map((institution: any) => {
+          return new Institution(institution);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
       });
-    })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
   }
 
   static async validateInstitution(institutionId: number) {
-    return httpClient.post(`/institution/${institutionId}/validate`).catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+    return httpClient
+      .post(`/institution/${institutionId}/validate`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getInstitutionDocument(institutionId: number) {
-    return httpClient.get(`/institution/${institutionId}/document`, {
-      responseType: 'blob',
-    })
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Document.pdf');
-      document.body.appendChild(link);
-      link.click();
-      if (link.parentNode != null){
-        link.parentNode.removeChild(link);
-      }
-    })
-    .catch(async (error) => {
-      throw Error(await this.errorMessage(error));
-    });
+    return httpClient
+      .get(`/institution/${institutionId}/document`, {
+        responseType: 'blob',
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Document.pdf');
+        document.body.appendChild(link);
+        link.click();
+        if (link.parentNode != null) {
+          link.parentNode.removeChild(link);
+        }
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   // Error
