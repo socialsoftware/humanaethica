@@ -6,30 +6,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.DocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class InstitutionService {
@@ -65,7 +65,7 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void deleteInstitution(int institutionId) {
+    public List<InstitutionDto> deleteInstitution(int institutionId) {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 
         institution.delete();
@@ -73,16 +73,27 @@ public class InstitutionService {
         for (User user : institution.getMembers()){
             user.remove();
         }
+
+        return getInstitutions();
     }
     
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void registerInstitutionMemberPair(InstitutionDto institutionDto, Document document, RegisterUserDto registerUserDto, UserDocument memberDocument){
+    public void registerInstitutionAndMember(RegisterInstitutionDto registerInstitutionDto, MultipartFile institutionDocument, MultipartFile memberDocument) throws IOException {
+        Document document = new Document();
+        document.setName(institutionDocument.getName());
+        document.setContent(institutionDocument.getBytes());
+
+        InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
+
         Institution institution = registerInstitution(institutionDto);
         addDocument(institution, document);
 
+
+        RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
+        registerUserDto.setRole(User.Role.MEMBER);
+
         registerUserDto.setInstitutionId(institution.getId());
-        UserDto userDto = userService.registerUser(registerUserDto);
-        userService.addDocument(userDto, memberDocument);
+        userService.registerUser(registerUserDto, memberDocument);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

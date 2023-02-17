@@ -23,9 +23,7 @@ public abstract class User {
 
     public static class UserTypes {
         public static final String VOLUNTEER = "VOLUNTEER";
-
         public static final String MEMBER = "MEMBER";
-
         public static final String ADMIN = "ADMIN";
 
         private UserTypes() {

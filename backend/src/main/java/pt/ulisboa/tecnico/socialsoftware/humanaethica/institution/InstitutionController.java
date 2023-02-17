@@ -12,9 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,25 +34,12 @@ public class InstitutionController {
     @DeleteMapping("/institutions/{institutionId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<InstitutionDto> deleteInstitution(@PathVariable int institutionId) {
-        institutionService.deleteInstitution(institutionId);
-        return institutionService.getInstitutions();
+        return institutionService.deleteInstitution(institutionId);
     }
 
     @PostMapping("/institution/register")
-    public void registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value = "institutionDoc") MultipartFile institutionDoc, @RequestParam(value = "memberDoc") MultipartFile memberDoc) throws IOException {
-        Document document = new Document();
-        document.setName(institutionDoc.getName());
-        document.setContent(institutionDoc.getBytes());
-
-        UserDocument memberDocument = new UserDocument();
-        memberDocument.setName(memberDoc.getName());
-        memberDocument.setContent(memberDoc.getBytes());
-
-        InstitutionDto institutionDto = new InstitutionDto(registerInstitutionDto);
-        RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
-        registerUserDto.setRole(User.Role.MEMBER);
-
-        institutionService.registerInstitutionMemberPair(institutionDto, document, registerUserDto, memberDocument);
+    public void registerInstitution(@Valid @RequestPart("institution") RegisterInstitutionDto registerInstitutionDto, @RequestParam(value = "institutionDocument") MultipartFile institutionDocument, @RequestParam(value = "memberDocument") MultipartFile memberDocument) throws IOException {
+        institutionService.registerInstitutionAndMember(registerInstitutionDto, institutionDocument, memberDocument);
     }
 
     @GetMapping("/institution/{institutionId}/document")

@@ -1,18 +1,17 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 
 public class AuthUserDto {
     private Integer id;
-
     private String name;
-
     private String username;
-
     private String email;
-
     private User.Role role;
+
 
     public AuthUserDto(AuthUser authUser) {
         this.id = authUser.getUser().getId();

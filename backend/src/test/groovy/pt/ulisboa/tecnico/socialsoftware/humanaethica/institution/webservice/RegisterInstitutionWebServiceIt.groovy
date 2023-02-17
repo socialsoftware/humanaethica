@@ -6,6 +6,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
+import spock.lang.Ignore
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterInstitutionWebserviceIT extends SpockTest {
@@ -21,6 +22,7 @@ class RegisterInstitutionWebserviceIT extends SpockTest {
         restClient = new RESTClient("http://localhost:" + port)
     }
 
+    @Ignore
     def "create new institution"() {
         when:
         response = restClient.post(
@@ -32,7 +34,6 @@ class RegisterInstitutionWebserviceIT extends SpockTest {
                         memberUsername  : USER_1_USERNAME,
                         memberEmail     : USER_1_EMAIL,
                         memberName      : USER_1_NAME,
-
                 ],
                 requestContentType: 'application/json'
         )

@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -25,6 +27,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserDocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,14 +93,23 @@ public class UserService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
-    public UserDto registerUser(RegisterUserDto registerUserDto) {
+    public UserDto registerUser(RegisterUserDto registerUserDto, MultipartFile document) throws IOException {
         AuthNormalUser authUser = createAuthNormalUser(registerUserDto, State.SUBMITTED);
+
+        if (document != null) {
+            UserDocument userDocument = new UserDocument();
+            userDocument.setName(document.getName());
+            userDocument.setContent(document.getBytes());
+
+            authUser.getUser().setDocument(userDocument);
+            userDocumentRepository.save(userDocument);
+        }
 
         return new UserDto(authUser);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public RegisterUserDto confirmRegistrationTransactional(RegisterUserDto registerUserDto) {
+    public RegisterUserDto confirmRegistration(RegisterUserDto registerUserDto) {
         AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElse(null);
 
         if (authUser == null) {
@@ -143,9 +155,9 @@ public class UserService {
                         registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
                 break;
             case MEMBER:
-                Institution i = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+                Institution institution = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
                 user = new Member(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, i, state);
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, institution, state);
                 break;
             case ADMIN:
                 user = new Admin(registerUserDto.getName(),
@@ -162,35 +174,30 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void deleteUser(int userId) {
+    public List<UserDto> deleteUser(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
 
         Institution i = user.remove();
         if (i != null)
             institutionRepository.save(i);
+
+        return getUsers();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void addDocument(UserDto userDto, UserDocument userDocument) {
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
-
-        user.setDocument(userDocument);
-        userDocumentRepository.save(userDocument);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void setInstitutionFromMember(Member u, Institution institution) {
-        u.setInstitution(institution);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserDocument getDoc(Integer id) {
+    public UserDocument getDocument(Integer id) {
         return (userRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND))).getDocument();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void validateUser(AuthNormalUser user) {
-        user.getUser().setState(User.State.APPROVED);
-        userRepository.save(user.getUser());
+    public RegisterUserDto validateUser(Integer userId) {
+        AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        if (authUser.isActive() || authUser.getUser().getState().equals(User.State.ACTIVE)){
+            throw new HEException(ErrorMessage.USER_ALREADY_ACTIVE, authUser.getUsername());
+        }
+
+        authUser.getUser().setState(User.State.APPROVED);
+
+        return new RegisterUserDto(authUser);
     }
 }

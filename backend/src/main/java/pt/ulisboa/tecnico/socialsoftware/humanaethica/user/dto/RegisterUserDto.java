@@ -8,30 +8,17 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 
 public class RegisterUserDto {
     private Integer id;
-
     private String name;
-
     private String username;
-
     private String email;
-
     private String password;
-
     private User.Role role;
-
     private boolean active;
-
+    private boolean isInstitutionActive;
     private String confirmationToken;
-
     private int institutionId;
 
     public RegisterUserDto() {
-    }
-
-    public RegisterUserDto(String name, String username, String email){
-        this.name = name;
-        this.username = username;
-        this.email = email;
     }
 
     public RegisterUserDto(AuthNormalUser authUser) {
@@ -44,6 +31,9 @@ public class RegisterUserDto {
         if (this.role == Role.MEMBER)
             this.institutionId = ((Member) authUser.getUser()).getInstitution().getId();
         this.active = authUser.isActive();
+        if (authUser.getUser() instanceof Member member) {
+            this.isInstitutionActive = member.getInstitution().isActive();
+        }
         this.confirmationToken = authUser.getConfirmationToken();
     }
 
@@ -111,6 +101,14 @@ public class RegisterUserDto {
 
     public boolean isActive() {
         return this.active;
+    }
+
+    public boolean isInstitutionActive() {
+        return isInstitutionActive;
+    }
+
+    public void setInstitutionActive(boolean institutionActive) {
+        isInstitutionActive = institutionActive;
     }
 
     public String getConfirmationToken() {

@@ -42,7 +42,7 @@ class ValidateUserTest extends SpockTest {
         memberDto.setRole(User.Role.MEMBER)
         memberDto.setInstitutionId(institution.getId())
 
-        member = userService.registerUser(memberDto);
+        member = userService.registerUser(memberDto, null);
     }
 
     def "validate member of not active institution"() {
@@ -78,7 +78,7 @@ class ValidateUserTest extends SpockTest {
         volunteerDto.setConfirmationToken(USER_2_TOKEN)
         volunteerDto.setRole(User.Role.VOLUNTEER)
 
-        def volunteer = userService.registerUser(volunteerDto);
+        def volunteer = userService.registerUser(volunteerDto, null);
 
         when:
         userServiceApplicational.validateUser(volunteer.getId())

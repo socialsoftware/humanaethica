@@ -45,7 +45,7 @@ public class JwtTokenFilter extends GenericFilterBean {
             logger.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
             logger.error("JWT claims string is empty");
-        } catch (SignatureException ex) {
+        } catch (SecurityException ex) {
             logger.error("JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted");
         }
 

@@ -36,7 +36,7 @@ class RegisterUserTest extends SpockTest {
         userDto.setRole(User.Role.VOLUNTEER)
 
         when:
-        def result = userService.registerUser(userDto)
+        def result = userService.registerUser(userDto, null)
 
         then: "the user is saved in the database"
         authUserRepository.findAll().size() == 1
@@ -62,7 +62,7 @@ class RegisterUserTest extends SpockTest {
         userDto.setRole(User.Role.VOLUNTEER)
 
         when:
-        userService.registerUser(userDto)
+        userService.registerUser(userDto, null)
 
         then:
         def error = thrown(HEException)
@@ -82,7 +82,7 @@ class RegisterUserTest extends SpockTest {
         userDto.setRole(role)
 
         when:
-        userService.registerUser(userDto)
+        userService.registerUser(userDto, null)
 
         then:
         def error = thrown(HEException)
