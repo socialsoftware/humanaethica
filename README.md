@@ -16,7 +16,7 @@
 
 * Require download
   * [Postgres >= 10](https://www.postgresql.org/)
-  * [Java 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
+  * Java 17+
   * [Maven](https://maven.apache.org/download.cgi)
   * [Node 16.14](https://nodejs.org/en/) ([Node Version Manager](https://github.com/nvm-sh/nvm) recommended)
   * [Docker](https://www.docker.com/)
