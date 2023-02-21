@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica
 
+import groovy.json.JsonOutput
 import groovyx.net.http.RESTClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
@@ -101,12 +103,9 @@ class SpockTest extends Specification {
     }
 
     def normalUserLogin(username, password) {
-        def loggedUser = restClient.get(
+        def loggedUser = restClient.post(
                 path: '/auth/user',
-                query: [
-                        username: username,
-                        password: password,
-                ],
+                body: JsonOutput.toJson(new AuthPasswordDto(username, password)),
                 requestContentType: 'application/json'
         )
         restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token

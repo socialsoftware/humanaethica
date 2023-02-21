@@ -1,7 +1,7 @@
 Cypress.Commands.add('userLogin', (username, password) => {
   cy.visit('/');
 
-  cy.intercept('GET', '/auth/user*').as(
+  cy.intercept('POST', '/auth/user*').as(
     'userLogin'
   );
 

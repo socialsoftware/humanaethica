@@ -68,10 +68,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    static MethodSecurityExpressionHandler createExpressionHandler() {
+    static MethodSecurityExpressionHandler createExpressionHandler(HEPermissionEvaluator hePermissionEvaluator) {
         DefaultMethodSecurityExpressionHandler expressionHandler =
                 new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(new HEPermissionEvaluator());
+        expressionHandler.setPermissionEvaluator(hePermissionEvaluator);
         return expressionHandler;
     }
 

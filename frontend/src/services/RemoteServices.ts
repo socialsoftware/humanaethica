@@ -8,6 +8,7 @@ import Institution from '@/models/institution/Institution';
 import RegisterInstitution from '@/models/institution/RegisterInstitution';
 import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
 import RegisterMember from '@/models/member/RegisterMember';
+import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -50,7 +51,7 @@ export default class RemoteServices {
     password: string
   ): Promise<TokenAuthUser> {
     return httpClient
-      .get(`/auth/user?username=${username}&password=${password}`)
+      .post('/auth/user', new AuthPasswordDto(username, password))
       .then((response) => {
         return new TokenAuthUser(response.data);
       })

@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.webservice
 
+import groovy.json.JsonOutput
 import groovyx.net.http.RESTClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 
@@ -28,12 +30,9 @@ class GetUserAuthWebServiceIT extends SpockTest {
         userRepository.save(user)
 
         when:
-        def response = restClient.get(
+        def response = restClient.post(
                 path: '/auth/user',
-                query: [
-                        username: USER_1_USERNAME,
-                        password: USER_1_PASSWORD,
-                ],
+                body: JsonOutput.toJson(new AuthPasswordDto(USER_1_USERNAME, USER_1_PASSWORD)),
                 requestContentType: 'application/json'
         )
 

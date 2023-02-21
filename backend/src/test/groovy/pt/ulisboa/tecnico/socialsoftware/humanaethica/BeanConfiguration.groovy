@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.config.HEPermissionEvaluator
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
@@ -62,6 +63,11 @@ class BeanConfiguration {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder()
+    }
+
+    @Bean
+    HEPermissionEvaluator hePermissionEvaluator() {
+        return new HEPermissionEvaluator();
     }
 
     @Bean

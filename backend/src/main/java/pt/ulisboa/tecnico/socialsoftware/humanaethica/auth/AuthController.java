@@ -1,10 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.auth;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_LOGIN_CREDENTIALS;
@@ -14,10 +14,10 @@ public class AuthController {
     @Autowired
     private AuthUserService authUserService;
 
-    @GetMapping("/auth/user")
-    public AuthDto loginUserAuth(@RequestParam String username, @RequestParam String password) {
+    @PostMapping("/auth/user")
+    public AuthDto loginUserAuth(@Valid @RequestBody AuthPasswordDto authUsernameDto) {
         try {
-            return authUserService.loginUserAuth(username, password);
+            return authUserService.loginUserAuth(authUsernameDto.getUsername(), authUsernameDto.getPassword());
         } catch (HEException e) {
             throw new HEException(INVALID_LOGIN_CREDENTIALS);
         }
