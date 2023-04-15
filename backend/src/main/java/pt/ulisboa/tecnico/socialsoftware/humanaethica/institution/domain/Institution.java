@@ -37,6 +37,8 @@ public class Institution {
 
     private LocalDateTime tokenGenerationDate;
 
+    private List<Theme> themes = new ArrayList<>();
+
     public Institution() {
     }
 
@@ -132,6 +134,14 @@ public class Institution {
     public void setDocument(Document document) {
         this.document = document;
         document.setInstitution(this);
+    }
+
+    public List<Theme> getThemes() {
+        return themes;
+    }
+
+    public void setThemes(List<Theme> themes) {
+        this.themes = themes;
     }
 
     public String generateConfirmationToken() {
