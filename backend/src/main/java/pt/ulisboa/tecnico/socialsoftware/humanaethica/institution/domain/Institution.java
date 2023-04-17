@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
 import jakarta.persistence.*;
 import org.springframework.security.crypto.keygen.KeyGenerators;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
@@ -37,6 +38,7 @@ public class Institution {
 
     private LocalDateTime tokenGenerationDate;
 
+    @ManyToMany
     private List<Theme> themes = new ArrayList<>();
 
     public Institution() {
@@ -136,13 +138,13 @@ public class Institution {
         document.setInstitution(this);
     }
 
-    public List<Theme> getThemes() {
+    /*public List<Theme> getThemes() {
         return themes;
-    }
+    }*/
 
-    public void setThemes(List<Theme> themes) {
+    /*public void setThemes(List<Theme> themes) {
         this.themes = themes;
-    }
+    }*/
 
     public String generateConfirmationToken() {
         String token = KeyGenerators.string().generateKey();
