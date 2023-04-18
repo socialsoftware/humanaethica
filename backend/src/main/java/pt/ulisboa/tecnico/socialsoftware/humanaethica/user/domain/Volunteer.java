@@ -1,12 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DiscriminatorValue(User.UserTypes.VOLUNTEER)
 public class Volunteer extends User {
+
+    @ManyToOne
+    private Activity activity;
 
     public Volunteer() {
     }
