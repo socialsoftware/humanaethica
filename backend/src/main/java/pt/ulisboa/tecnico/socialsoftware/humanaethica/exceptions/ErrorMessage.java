@@ -4,6 +4,8 @@ public enum ErrorMessage {
     INVALID_TYPE_FOR_AUTH_USER("Invalid type for auth user"),
     INVALID_AUTH_USERNAME("Username: %s, belongs to a different authentication method"),
     INVALID_INSTITUTION_NAME("Name: %s, is not valid"),
+    INVALID_ACTIVITY_NAME("Name: %s, is not valid"),
+    INVALID_REGION_NAME("Name: %s, is not valid"),
     USERNAME_ALREADY_EXIST("Username: %s, already exist"),
     NIF_ALREADY_EXIST("Institution with NIF: %s, already exist"),
     INVALID_EMAIL("The mail %s is invalid."),
@@ -15,6 +17,7 @@ public enum ErrorMessage {
     AUTHUSER_NOT_FOUND("AuthUser not found with id %d"),
     USER_NOT_FOUND("User not found with username %s"),
     INSTITUTION_NOT_FOUND("Institution not found with id %d"),
+    ACTIVITY_NOT_FOUND("Activity not found with id %d"),
     USER_NOT_APPROVED("The member of this institution is not yet approved"),
     COURSE_NOT_FOUND("Course not found with name %s"),
     INVALID_COURSE("The course you are exporting from does not match the course you are importing to."
