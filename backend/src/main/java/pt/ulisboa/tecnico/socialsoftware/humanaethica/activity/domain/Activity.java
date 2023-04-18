@@ -81,4 +81,16 @@ public class Activity {
         return volunteers;
     }
 
+    public void addVolunteer (Volunteer volunteer) {
+        this.volunteers.add(volunteer);
+    }
+
+    public void removeVolunteer (int volunteerId) {
+        for (int i = 0; i < volunteers.size(); i++) {
+            if (volunteers.get(i).getId() == volunteerId) {
+                volunteers.remove(i);
+                return;
+            }
+        }
+    }
 }
