@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,11 @@ public class ThemeDto {
 
     }
 
-    public ThemeDto(Integer id, String name, /*ArrayList<Activity> activities,*/ ArrayList<Institution> institutions) {
-        setId(id);
-        setName(name);
+    public ThemeDto(Theme theme) {
+        setId(theme.getId());
+        setName(theme.getName());
         //setActivities(activities);
-        setInstitutions(institutions);
+        setInstitutions((ArrayList<Institution>) theme.getInstitutions());
     }
 
     public Integer getId() {return id;}

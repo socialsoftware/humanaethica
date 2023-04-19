@@ -26,6 +26,8 @@ public enum ErrorMessage {
     EXPIRED_CONFIRMATION_TOKEN("Expired confirmation token"),
     INVALID_LOGIN_CREDENTIALS("Invalid login credentials"),
     DUPLICATE_USER("Duplicate user: %s"),
+    INVALID_THEME_NAME("Name: %s, is not valid"),
+    THEME_NOT_FOUND("Theme not found with id %d"),
     ACCESS_DENIED("You do not have permission to view this resource");
 
     public final String label;

@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class InstitutionDto {
@@ -16,6 +17,8 @@ public class InstitutionDto {
     private boolean active;
 
     private String creationDate;
+
+    private ThemeDto themeDto;
 
     public InstitutionDto(){
     }
@@ -81,5 +84,13 @@ public class InstitutionDto {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public ThemeDto getThemes() {
+        return themeDto;
+    }
+
+    public void setThemes(ThemeDto themeDto) {
+        this.themeDto = themeDto;
     }
 }

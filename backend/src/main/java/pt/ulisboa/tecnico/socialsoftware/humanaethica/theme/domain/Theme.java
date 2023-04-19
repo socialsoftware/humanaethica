@@ -16,16 +16,18 @@ public class Theme{
     private Integer id;
     private String name;
 
+    private boolean state;
+
     //private List<Activity> activities = new ArrayList<>();
-    @ManyToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "themes", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Institution> institutions = new ArrayList<>();
+
+    public Theme() {
+    }
 
     public Theme(String name) {
         setName(name);
-    }
-
-    public Theme() {
-
+        setState(true);
     }
 
     public Integer getId() {return id;}
@@ -52,5 +54,21 @@ public class Theme{
 
     public void setInstitutions(List<Institution> institutions) {
         this.institutions = institutions;
+    }
+
+    public void addInstitution (Institution institution){ institutions.add(institution);}
+
+    public void deleteInstitution(Institution institution){institutions.remove(institution);}
+
+    public boolean isActive() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    public void delete() {
+        setState(false);
     }
 }
