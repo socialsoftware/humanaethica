@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "themes")
+@Table(name = "theme")
 public class Theme{
 
     @Id
@@ -19,7 +19,7 @@ public class Theme{
     private boolean state;
 
     //private List<Activity> activities = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "themes", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "theme", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Institution> institutions = new ArrayList<>();
 
     public Theme() {
@@ -69,6 +69,8 @@ public class Theme{
     }
 
     public void delete() {
-        setState(false);
+        if (institutions.size() == 0){
+            setState(false);
+        }
     }
 }
