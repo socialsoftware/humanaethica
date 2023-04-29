@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
 import org.springframework.security.crypto.keygen.KeyGenerators;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -21,18 +22,19 @@ public class Activity {
     private boolean state;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activity", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Volunteer> volunteers = new ArrayList<>();
-    /*
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
+
+    @ManyToOne
     private Theme theme;
-    */
+
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     public Activity() {
     }
-    public Activity(String name, String region) {
+    public Activity(String name, String region, Theme theme) {
         setName(name);
         setRegion(region);
+        setTheme(theme);
         setState(true);
         setCreationDate(DateHandler.now());
     }
@@ -79,6 +81,14 @@ public class Activity {
 
     public List<Volunteer> getVolunteers() {
         return volunteers;
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public void addVolunteer (Volunteer volunteer) {

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
@@ -20,6 +21,8 @@ public class ActivityDto {
 
     private List<Volunteer> volunteers;
 
+    private Theme theme;
+
     public ActivityDto(){
     }
 
@@ -27,9 +30,18 @@ public class ActivityDto {
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
+        setTheme(activity.getTheme());
         setState(activity.isActive());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
         setVolunteers(activity.getVolunteers());
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public Integer getId() {
@@ -65,4 +77,6 @@ public class ActivityDto {
     }
 
     public void setVolunteers(List<Volunteer> volunteers) { this.volunteers = volunteers; }
+
+    public List<Volunteer> getVolunteers() { return volunteers; }
 }

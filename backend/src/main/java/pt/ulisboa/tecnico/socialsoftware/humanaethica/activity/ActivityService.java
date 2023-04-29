@@ -41,7 +41,7 @@ public class ActivityService {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion());
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getTheme());
         activityRepository.save(activity);
     }
 

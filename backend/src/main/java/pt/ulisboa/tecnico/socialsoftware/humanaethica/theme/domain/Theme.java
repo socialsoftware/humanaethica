@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import jakarta.persistence.*;
@@ -18,7 +19,8 @@ public class Theme{
 
     private boolean state;
 
-    //private List<Activity> activities = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "theme", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Activity> activities = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "theme", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Institution> institutions = new ArrayList<>();
 
