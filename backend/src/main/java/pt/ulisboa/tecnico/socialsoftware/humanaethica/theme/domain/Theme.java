@@ -4,6 +4,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import jakarta.persistence.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +44,26 @@ public class Theme{
         this.name = name;
     }
 
-    /*public List<Activity> getActivities() {
+    public List<Activity> getActivities() {
         return activities;
-    }*/
+    }
 
-    /*public void setActivities(ArrayList<Activity> activities){
+    public void setActivities(ArrayList<Activity> activities){
         this.activities = activities;
-    }*/
+    }
+
+    public void addActivity (Activity activity) {
+        this.activities.add(activity);
+    }
+
+    public void removeActivity (int activityId) {
+        for (int i = 0; i < activities.size(); i++) {
+            if (activities.get(i).getId() == activityId) {
+                activities.remove(i);
+                return;
+            }
+        }
+    }
 
     public List<Institution> getInstitutions() {
         return institutions;

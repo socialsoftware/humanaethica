@@ -24,4 +24,11 @@ public class Volunteer extends User {
     public Volunteer(String name, State state) {
         super(name, Role.VOLUNTEER, state);
     }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+    public Activity getActivity() {
+        return activity;
+    }
 }

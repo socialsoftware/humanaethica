@@ -37,7 +37,7 @@ public class ActivityService {
             throw new HEException(INVALID_ACTIVITY_NAME, activityDto.getName());
         }
 
-        if (activityDto.getRegion() == null) {
+        if (activityDto.getRegion() == null || activityDto.getRegion().trim().length() == 0) {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 

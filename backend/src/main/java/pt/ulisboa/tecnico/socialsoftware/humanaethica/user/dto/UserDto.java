@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class UserDto {
@@ -22,6 +24,8 @@ public class UserDto {
     private boolean active;
 
     private String institutionName;
+
+    private Activity activity;
 
     private String type;
 
@@ -52,6 +56,11 @@ public class UserDto {
         if (user.getRole().equals(Role.MEMBER)){
             this.institutionName = ((Member) user).getInstitution().getName();
         }
+
+        if (user.getRole().equals(Role.VOLUNTEER)){
+           this.activity = ((Volunteer) user).getActivity();
+        }
+
         else
             this.institutionName = null;
     }
@@ -146,5 +155,12 @@ public class UserDto {
 
     public void setInstitutionName(String institutionName) {
         this.institutionName = institutionName;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+    public Activity getActivity() {
+        return activity;
     }
 }
