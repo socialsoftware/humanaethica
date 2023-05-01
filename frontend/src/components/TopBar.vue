@@ -79,7 +79,15 @@
           color="orange"
           @click="registerVolunteer"
         >
-          Create VOlunteer
+          Create Volunteer
+        </v-btn>
+        <v-btn
+          v-if="!isLoggedIn"
+          text
+          color="orange"
+          @click="registerActivity"
+        >
+          Create Activity
         </v-btn>
         <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
           Login
@@ -219,6 +227,9 @@ export default class TopBar extends Vue {
 
   async registerVolunteer() {
     await this.$router.push({ name: 'register-volunteer' }).catch(() => {});
+  }
+  async registerActivity() {
+    await this.$router.push({ name: 'register-activity' }).catch(() => {});
   }
 
   async registerMember() {

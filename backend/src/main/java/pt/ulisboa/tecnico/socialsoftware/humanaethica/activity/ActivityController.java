@@ -26,7 +26,6 @@ public class ActivityController {
     }
 
     @PostMapping("/activity/register")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void registerActivity(@Valid @RequestPart("activity") ActivityDto activityDto){
         activityService.registerActivity(activityDto);
     }

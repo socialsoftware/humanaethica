@@ -5,9 +5,11 @@ import RegisterUser from '@/models/user/RegisterUser';
 import router from '@/router';
 import User from '@/models/user/User';
 import Institution from '@/models/institution/Institution';
+import Activity from '@/models/activity/Activity';
 import RegisterInstitution from '@/models/institution/RegisterInstitution';
 import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
 import RegisterMember from '@/models/member/RegisterMember';
+import RegisterActivity from '@/models/activity/RegisterActivity';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 
 const httpClient = axios.create();
@@ -335,6 +337,57 @@ export default class RemoteServices {
           link.parentNode.removeChild(link);
         }
       })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async registerActivity(
+    activity: RegisterActivity,
+  ) {
+    const formData = new FormData();
+    formData.append(
+      'activity',
+      new Blob(
+        [
+          JSON.stringify({
+            activityName: activity.activityName,
+            activityRegion: activity.activityRegion,
+            activityTheme: activity.activityTheme,
+          }),
+        ],
+        {
+          type: 'application/json',
+        }
+      )
+    );
+    return httpClient
+      .post('/activity/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getActivities(): Promise<Activity[]> {
+    return httpClient
+      .get('/activities')
+      .then((response) => {
+        return response.data.map((activity: any) => {
+          return new Activity(activity);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async validateActivity(activityId: number) {
+    return httpClient
+      .post(`/activity/${activityId}/validate`)
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });

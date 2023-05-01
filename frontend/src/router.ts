@@ -15,6 +15,8 @@ import AdminView from '@/views/admin/AdminView.vue';
 import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
+import RegisterActivityView from '@/views/activity/RegisterActivityView.vue';
+import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
 
 Vue.use(Router);
 
@@ -81,6 +83,22 @@ const router = new Router({
       ],
     },
     {
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
+      children: [
+        {
+          path: 'activities',
+          name: 'activitiesAdmin',
+          component: ActivitiesView,
+          meta: {
+            title: APP_NAME + ' - Manage Activities',
+            requiredAuth: 'Admin',
+          },
+        },
+      ],
+    },
+    {
       path: '/institution/register',
       name: 'register-institution',
       component: RegisterInstitutionView,
@@ -96,6 +114,15 @@ const router = new Router({
       meta: {
         requiredAuth: 'None',
         title: APP_NAME + ' - Volunteer Registration',
+      },
+    },
+    {
+      path: '/activity/register',
+      name: 'register-activity',
+      component: RegisterActivityView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Activity Registration',
       },
     },
     {
