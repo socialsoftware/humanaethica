@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.RegisterActivityDto;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ActivityController {
     }
 
     @PostMapping("/activity/register")
-    public void registerActivity(@Valid @RequestPart("activity") ActivityDto activityDto){
-        activityService.registerActivity(activityDto);
+    public void registerActivity(@Valid @RequestPart("activity") RegisterActivityDto registerActivityDto){
+        activityService.registerActivity(registerActivityDto);
     }
 }

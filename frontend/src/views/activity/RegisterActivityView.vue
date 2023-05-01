@@ -6,7 +6,7 @@
         v-model="activityName"
         label="Name"
         required
-        :rules="[(v) => !!v || 'Activity name is required']"
+        :rules="[(v) => !!v || 'Activity Name is required']"
         @input="$v.activityName.$touch()"
         @blur="$v.activityName.$touch()"
       ></v-text-field>
@@ -14,8 +14,8 @@
       <v-text-field
         v-model="activityRegion"
         label="Region"
-        :rules="[(v) => !!v || 'Activity region is required']"
         required
+        :rules="[(v) => !!v || 'Activity Region is required']"
         @input="$v.activityRegion.$touch()"
         @blur="$v.activityRegion.$touch()"
       ></v-text-field>
@@ -24,7 +24,7 @@
         v-model="activityTheme"
         label="Theme"
         required
-        :rules="[(v) => !!v || 'Activity theme is required']"
+        :rules="[(v) => !!v || 'Activity Theme is required']"
         @input="$v.activityTheme.$touch()"
         @blur="$v.activityTheme.$touch()"
       ></v-text-field>
@@ -84,7 +84,6 @@ export default class RegisterActivityView extends Vue {
     }
     await this.$store.dispatch('clearLoading');
   }
-
   readFile() {
     RemoteServices.getForm();
   }
@@ -99,6 +98,7 @@ export default class RegisterActivityView extends Vue {
 
 <style lang="scss" scoped>
 .container {
+  background-color: grey;
   margin-top: 2rem !important;
   padding: 3rem !important;
   width: 60%;

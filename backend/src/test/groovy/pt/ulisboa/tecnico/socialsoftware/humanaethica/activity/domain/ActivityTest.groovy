@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 
 @DataJpaTest
-class CreateActivityTest extends SpockTest {
+class ActivityTest extends SpockTest {
     def volunteer
     def theme
     def institution

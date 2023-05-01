@@ -342,9 +342,7 @@ export default class RemoteServices {
       });
   }
 
-  static async registerActivity(
-    activity: RegisterActivity,
-  ) {
+  static async registerActivity(activity: RegisterActivity) {
     const formData = new FormData();
     formData.append(
       'activity',
