@@ -32,7 +32,9 @@ public enum ErrorMessage {
     INVALID_THEME_NAME("Name: %s, is not valid"),
     THEME_NOT_FOUND("Theme not found with id %d"),
     ACCESS_DENIED("You do not have permission to view this resource"),
-    ACTIVITY_ALREADY_EXISTS("Activity already exists in database");
+    ACTIVITY_ALREADY_EXISTS("Activity already exists in database"),
+    THEME_NOT_APPROVED("Theme is not yet approved"),
+    ACTIVITY_ALREADY_ACTIVE("Activity state is already active with name %s");
 
     public final String label;
 

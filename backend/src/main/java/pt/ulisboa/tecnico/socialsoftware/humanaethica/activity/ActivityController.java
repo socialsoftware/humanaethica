@@ -30,4 +30,10 @@ public class ActivityController {
     public void registerActivity(@Valid @RequestPart("activity") RegisterActivityDto registerActivityDto){
         activityService.registerActivity(registerActivityDto);
     }
+
+    @PostMapping("/activity/{activityId}/validate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void validateInstitution(@PathVariable int activityId) {
+        activityService.validateActivity(activityId);
+    }
 }

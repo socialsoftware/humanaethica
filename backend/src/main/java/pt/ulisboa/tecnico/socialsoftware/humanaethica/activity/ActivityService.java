@@ -8,9 +8,16 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.RegisterActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
+
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
 import java.util.Comparator;
@@ -86,5 +93,17 @@ public class ActivityService {
         activityRepository.delete(activity);
         activity.delete();
         return getActivities();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void validateActivity(int activityId) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
+        Theme theme = activity.getTheme();
+        /*if (theme != null && !theme.isActive())
+            throw new HEException(THEME_NOT_APPROVED);*/
+        if (activity.isActive()) {
+            throw new HEException(ACTIVITY_ALREADY_ACTIVE, activity.getName());
+        }
+        activity.validate();
     }
 }

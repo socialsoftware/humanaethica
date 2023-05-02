@@ -19,7 +19,7 @@ public class Activity {
     private Integer id;
     private String name;
     private String region;
-    private boolean state;
+    private boolean state = false;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activity", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Volunteer> volunteers = new ArrayList<>();
 
@@ -35,7 +35,6 @@ public class Activity {
         setName(name);
         setRegion(region);
         setTheme(theme);
-        setState(true);
         setCreationDate(DateHandler.now());
     }
 
@@ -63,12 +62,16 @@ public class Activity {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void validate(boolean state) {
         this.state = state;
     }
 
     public void delete() {
-        setState(false);
+        this.state = false;
+    }
+
+    public void validate() {
+        this.state = true;
     }
 
     public LocalDateTime getCreationDate() {
