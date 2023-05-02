@@ -31,7 +31,8 @@ public enum ErrorMessage {
     DUPLICATE_USER("Duplicate user: %s"),
     INVALID_THEME_NAME("Name: %s, is not valid"),
     THEME_NOT_FOUND("Theme not found with id %d"),
-    ACCESS_DENIED("You do not have permission to view this resource");
+    ACCESS_DENIED("You do not have permission to view this resource"),
+    ACTIVITY_ALREADY_EXISTS("Activity already exists in database");
 
     public final String label;
 

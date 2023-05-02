@@ -35,16 +35,22 @@ public class ActivityService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Activity registerActivity(RegisterActivityDto registerActivityDto) {
 
-        if (registerActivityDto.getActivityName() == null) {
+        if (registerActivityDto.getActivityName() == null || registerActivityDto.getActivityName().trim().length() == 0) {
             throw new HEException(INVALID_ACTIVITY_NAME, registerActivityDto.getActivityName());
         }
 
-        if (registerActivityDto.getActivityRegion() == null) {
+        if (registerActivityDto.getActivityRegion() == null || registerActivityDto.getActivityRegion().trim().length() == 0) {
             throw new HEException(INVALID_REGION_NAME, registerActivityDto.getActivityRegion());
         }
 
-        if (registerActivityDto.getActivityTheme() == null) {
-            throw new HEException(INVALID_REGION_NAME, registerActivityDto.getActivityRegion());
+        if (registerActivityDto.getActivityTheme() == null || registerActivityDto.getActivityTheme().trim().length() == 0) {
+            throw new HEException(INVALID_THEME_NAME, registerActivityDto.getActivityTheme());
+        }
+
+        for (Activity act : activityRepository.findAll()) {
+            if (act.getName().equals(registerActivityDto.getActivityName())) {
+                throw new HEException(ACTIVITY_ALREADY_EXISTS);
+            }
         }
 
         Theme existentTheme = null;
@@ -71,9 +77,13 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<ActivityDto> deleteActivity(int activityId) {
+    public List<ActivityDto> deleteActivity(Integer activityId) {
+        if (activityId == null) {
+            throw new HEException(ACTIVITY_NOT_FOUND);
+        }
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND));
 
+        activityRepository.delete(activity);
         activity.delete();
         return getActivities();
     }
