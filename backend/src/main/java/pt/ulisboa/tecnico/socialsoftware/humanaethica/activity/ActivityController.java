@@ -6,6 +6,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.RegisterActivityDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -13,6 +15,8 @@ import java.util.List;
 public class ActivityController {
     @Autowired
     private ActivityService activityService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
     @GetMapping("/activities")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -27,7 +31,8 @@ public class ActivityController {
     }
 
     @PostMapping("/activity/register")
-    public void registerActivity(@Valid @RequestPart("activity") RegisterActivityDto registerActivityDto){
+    public void registerActivity(@Valid @RequestBody RegisterActivityDto registerActivityDto){
+        logger.debug("estou aqui");
         activityService.registerActivity(registerActivityDto);
     }
 

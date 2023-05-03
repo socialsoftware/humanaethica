@@ -71,12 +71,14 @@ public class ActivityService {
         if (existentTheme == null) {
             Theme theme = new Theme(registerActivityDto.getActivityTheme());
             themeRepository.save(theme);
+            ActivityDto activityDto = new ActivityDto(registerActivityDto, theme);
             activity = new Activity(registerActivityDto.getActivityName(), registerActivityDto.getActivityRegion(), theme);
             theme.addActivity(activity);
             activityRepository.save(activity);
         }
         else {
-            activity = new Activity(registerActivityDto.getActivityName(), registerActivityDto.getActivityRegion(), existentTheme);
+            ActivityDto activityDto = new ActivityDto(registerActivityDto, existentTheme);
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getTheme());
             existentTheme.addActivity(activity);
             activityRepository.save(activity);
         }

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.RegisterActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -34,6 +35,12 @@ public class ActivityDto {
         setState(activity.isActive());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
         setVolunteers(activity.getVolunteers());
+    }
+
+    public ActivityDto(RegisterActivityDto registerActivityDto, Theme theme){
+        setName(registerActivityDto.getActivityName());
+        setRegion(registerActivityDto.getActivityRegion());
+        setTheme(theme);
     }
 
     public void setTheme(Theme theme) {
