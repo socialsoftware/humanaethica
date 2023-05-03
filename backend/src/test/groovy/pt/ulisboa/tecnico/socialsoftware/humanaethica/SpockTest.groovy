@@ -15,6 +15,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.ThemeService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 import spock.lang.Specification
@@ -73,6 +75,12 @@ class SpockTest extends Specification {
 
     @Autowired
     InstitutionRepository institutionRepository
+
+    @Autowired
+    ThemeService themeService
+
+    @Autowired
+    ThemeRepository themeRepository
 
     @Autowired
     DemoService demoService;

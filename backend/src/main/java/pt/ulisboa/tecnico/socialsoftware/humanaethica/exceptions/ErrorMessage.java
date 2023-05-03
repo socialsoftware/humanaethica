@@ -28,7 +28,8 @@ public enum ErrorMessage {
     DUPLICATE_USER("Duplicate user: %s"),
     INVALID_THEME_NAME("Name: %s, is not valid"),
     THEME_NOT_FOUND("Theme not found with id %d"),
-    ACCESS_DENIED("You do not have permission to view this resource");
+    ACCESS_DENIED("You do not have permission to view this resource"),
+    THEME_HAS_INSTITUTIONS("This theme can not be removed because it has institutions associated");
 
     public final String label;
 

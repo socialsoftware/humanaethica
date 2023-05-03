@@ -144,6 +144,7 @@ public class Institution {
 
     public void setThemes(Theme theme) {
         this.theme = theme;
+        this.theme.addInstitution(this);
     }
 
     public String generateConfirmationToken() {
