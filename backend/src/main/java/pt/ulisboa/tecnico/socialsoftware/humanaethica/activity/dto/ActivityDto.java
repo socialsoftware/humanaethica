@@ -15,13 +15,13 @@ public class ActivityDto {
 
     private String region;
 
-    private boolean state;
+    private String state;
 
     private String creationDate;
 
     private List<Volunteer> volunteers;
 
-    private Theme theme;
+    private List<Theme> themes;
 
     public ActivityDto(){
     }
@@ -30,18 +30,18 @@ public class ActivityDto {
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
-        setTheme(activity.getTheme());
-        setState(activity.isActive());
+        setThemes(activity.getThemes());
+        setState(activity.getState().toString());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
         setVolunteers(activity.getVolunteers());
     }
 
-    public void setTheme(Theme theme) {
-        this.theme = theme;
+    public void setThemes(List<Theme> themes) {
+        this.themes = themes;
     }
 
-    public Theme getTheme() {
-        return theme;
+    public List<Theme> getThemes() {
+        return themes;
     }
 
     public Integer getId() {
@@ -64,9 +64,13 @@ public class ActivityDto {
 
     public void setRegion(String region) { this.region = region; }
 
-    public boolean isActive() { return state; }
+    public String getState() {
+        return state;
+    }
 
-    public void setState(boolean state) { this.state = state; }
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getCreationDate() {
         return creationDate;

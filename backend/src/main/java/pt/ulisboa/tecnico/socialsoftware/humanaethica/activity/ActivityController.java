@@ -15,25 +15,25 @@ public class ActivityController {
     private ActivityService activityService;
 
     @GetMapping("/activities")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityDto> getActivities() {
         return activityService.getActivities();
     }
 
     @DeleteMapping("/activity/{activityId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<ActivityDto> deleteActivity(@PathVariable int activityId) {
-        return activityService.deleteActivity(activityId);
+    public List<ActivityDto> suspendActivity(@PathVariable Integer activityId) {
+        return activityService.suspendActivity(activityId);
     }
 
     @PostMapping("/activity/register")
-    public void registerActivity(@Valid @RequestPart("activity") RegisterActivityDto registerActivityDto){
-        activityService.registerActivity(registerActivityDto);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void registerActivity(@Valid @RequestPart("activity") ActivityDto activityDto){
+        activityService.registerActivity(activityDto);
     }
 
     @PostMapping("/activity/{activityId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void validateInstitution(@PathVariable int activityId) {
+    public void validateActivity(@PathVariable Integer activityId) {
         activityService.validateActivity(activityId);
     }
 }

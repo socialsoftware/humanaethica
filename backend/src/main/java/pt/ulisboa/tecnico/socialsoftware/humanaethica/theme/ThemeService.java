@@ -36,7 +36,7 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void registerTheme(ThemeDto themeDto) {
+    public Theme registerTheme(ThemeDto themeDto) {
 
         if (themeDto.getName() == null || themeDto.getName().trim().length() == 0) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
@@ -44,6 +44,8 @@ public class ThemeService {
 
         Theme theme = new Theme(themeDto.getName());
         themeRepository.save(theme);
+
+        return theme;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
