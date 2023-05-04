@@ -1,17 +1,16 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.service
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.RegisterActivityDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import spock.lang.Unroll
-import spock.mock.DetachedMockFactory
+
 
 @DataJpaTest
 class RegisterActivityTest extends SpockTest {
@@ -23,10 +22,12 @@ class RegisterActivityTest extends SpockTest {
         given: "an activity dto"
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
-        activityDto = new RegisterActivityDto()
-        activityDto.setActivityName("ACTIVITY_1_NAME")
-        activityDto.setActivityRegion("ACTIVITY_1_REGION")
-        activityDto.setActivityTheme("THEME_1_NAME")
+        List<Theme> themes = new ArrayList<>()
+        themes.add(theme)
+        activityDto = new ActivityDto()
+        activityDto.setName("ACTIVITY_1_NAME")
+        activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setThemes(themes)
 
         when:
         def result = activityService.registerActivity(activityDto)
@@ -36,27 +37,8 @@ class RegisterActivityTest extends SpockTest {
         and: "checks if user data is correct"
         result.getName() == "ACTIVITY_1_NAME"
         result.getRegion() == "ACTIVITY_1_REGION"
-        result.getTheme().getName() == "THEME_1_NAME"
-
-    }
-
-    def "the activity and the theme does not exist, create the activity"() {
-        given: "an activity dto"
-        activityDto = new RegisterActivityDto()
-        activityDto.setActivityName("ACTIVITY_1_NAME")
-        activityDto.setActivityRegion("ACTIVITY_1_REGION")
-        activityDto.setActivityTheme("THEME_1_NAME")
-
-        when:
-        def result = activityService.registerActivity(activityDto)
-
-        then: "the activity and the theme are saved in the database"
-        activityRepository.findAll().size() == 1
-        themeRepository.findAll().size() == 1
-        and: "checks if activity data is correct"
-        result.getName() == "ACTIVITY_1_NAME"
-        result.getRegion() == "ACTIVITY_1_REGION"
-        result.getTheme().getName() == "THEME_1_NAME"
+        result.getThemes().get(0).getName() == "THEME_1_NAME"
+        result.getState() == Activity.State.SUBMITTED
 
     }
 
@@ -64,13 +46,15 @@ class RegisterActivityTest extends SpockTest {
         given:
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", theme)
+        List<Theme> themes = new ArrayList<>()
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
+        activity.addTheme(theme)
         activityRepository.save(activity)
         and:
-        activityDto = new RegisterActivityDto()
-        activityDto.setActivityName("ACTIVITY_1_NAME")
-        activityDto.setActivityRegion("ACTIVITY_1_REGION")
-        activityDto.setActivityTheme("THEME_1_NAME")
+        activityDto = new ActivityDto()
+        activityDto.setName("ACTIVITY_1_NAME")
+        activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setThemes(themes)
 
         when:
         activityService.registerActivity(activityDto)
@@ -83,12 +67,15 @@ class RegisterActivityTest extends SpockTest {
     }
 
     @Unroll
-    def "invalid arguments: name=#name | region=#region | themeName=#themeName"() {
+    def "invalid arguments: name=#name | region=#region"() {
         given: "an activity dto"
-        activityDto = new RegisterActivityDto()
-        activityDto.setActivityName(name)
-        activityDto.setActivityRegion(region)
-        activityDto.setActivityTheme(themeName)
+        theme = new Theme("THEME_1_NAME")
+        themeRepository.save(theme)
+        List<Theme> themes = new ArrayList<>()
+        activityDto = new ActivityDto()
+        activityDto.setName(name)
+        activityDto.setRegion(region)
+        activityDto.setThemes(themes)
 
         when:
         activityService.registerActivity(activityDto)
@@ -100,14 +87,12 @@ class RegisterActivityTest extends SpockTest {
         activityRepository.count() == 0
 
         where:
-        name               | region               | themeName           || errorMessage
-        null               | "ACTIVITY_1_REGION"  | "ACTIVITY_1_THEME"  || ErrorMessage.INVALID_ACTIVITY_NAME
-        ""                 | "ACTIVITY_1_REGION"  | "ACTIVITY_1_THEME"  || ErrorMessage.INVALID_ACTIVITY_NAME
-        "ACTIVITY_1_NAME"  | null                 | "ACTIVITY_1_THEME"  || ErrorMessage.INVALID_REGION_NAME
-        "ACTIVITY_1_NAME"  | ""                   | "ACTIVITY_1_THEME"  || ErrorMessage.INVALID_REGION_NAME
-        "ACTIVITY_1_NAME"  | "ACTIVITY_1_REGION"  | null                || ErrorMessage.INVALID_THEME_NAME
-        "ACTIVITY_1_NAME"  | "ACTIVITY_1_REGION"  | ""                  || ErrorMessage.INVALID_THEME_NAME
-    }
+        name               | region               || errorMessage
+        null               | "ACTIVITY_1_REGION"  || ErrorMessage.INVALID_ACTIVITY_NAME
+        ""                 | "ACTIVITY_1_REGION"  || ErrorMessage.INVALID_ACTIVITY_NAME
+        "ACTIVITY_1_NAME"  | null                 || ErrorMessage.INVALID_REGION_NAME
+        "ACTIVITY_1_NAME"  | ""                   || ErrorMessage.INVALID_REGION_NAME
+  }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

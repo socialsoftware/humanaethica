@@ -24,8 +24,8 @@ public class ActivityController {
 
     @DeleteMapping("/activity/{activityId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<ActivityDto> deleteActivity(@PathVariable int activityId) {
-        return activityService.deleteActivity(activityId);
+    public List<ActivityDto> suspendActivity(@PathVariable Integer activityId) {
+        return activityService.suspendActivity(activityId);
     }
 
     @PostMapping("/activity/register")
@@ -35,7 +35,7 @@ public class ActivityController {
 
     @PostMapping("/activity/{activityId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void validateInstitution(@PathVariable int activityId) {
+    public void validateActivity(@PathVariable Integer activityId) {
         activityService.validateActivity(activityId);
     }
 }

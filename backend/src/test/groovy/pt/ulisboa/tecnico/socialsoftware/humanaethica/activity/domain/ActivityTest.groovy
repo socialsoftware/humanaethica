@@ -8,7 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 
 @DataJpaTest
 class ActivityTest extends SpockTest {
@@ -18,10 +18,12 @@ class ActivityTest extends SpockTest {
     def activity
 
     def "create empty activity"() {
-        when: "empty theme and empty activity are created"
+        when: "empty activity are created"
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
-        activity = new Activity("","",theme)
+        List<Theme> themes = new ArrayList<>()
+        activity = new Activity("","",themes,Activity.State.SUBMITTED)
+        activity.addTheme(theme)
         theme.addActivity(activity)
         activityRepository.save(activity)
 
@@ -29,7 +31,7 @@ class ActivityTest extends SpockTest {
         activityRepository.count() == 1L
         def result = activityRepository.findAll().get(0)
         result.getId() != 0
-        result.getTheme().getId() == theme.getId()
+        result.getThemes().get(0).getId() == theme.getId()
         result.getVolunteers().size() == 0
 
         and: "the theme has a reference for the activity"
@@ -38,17 +40,17 @@ class ActivityTest extends SpockTest {
     }
 
     def "create activity and persists"() {
-        given: "a institution, a theme and a volunteer"
-        institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
-        institutionRepository.save(institution)
+        given: "a theme and a volunteer"
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
+        List<Theme> themes = new ArrayList<>()
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
 
         when: "activity is created"
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", theme)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
         activity.addVolunteer(volunteer)
+        activity.addTheme(theme)
         theme.addActivity(activity)
         activityRepository.save(activity)
 
@@ -60,8 +62,7 @@ class ActivityTest extends SpockTest {
         result.getId() != 0
         result.getName() == "ACTIVITY_1_NAME"
         result.getRegion() == "ACTIVITY_1_REGION"
-        result.isActive()
-        result.getTheme().getName() == "THEME_1_NAME"
+        result.getThemes().get(0).getName() == "THEME_1_NAME"
         result.getVolunteers().size() == 1
         result.getVolunteers().get(0).getName() == USER_1_NAME
         result.getVolunteers().get(0).getUsername() == USER_1_USERNAME
@@ -73,51 +74,49 @@ class ActivityTest extends SpockTest {
         theme.getActivities().contains(result)
     }
 
-    def "remove a voluntary from activity"() {
-        given: "a institution, a theme, a volunteer and a activity"
-        institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
-        institutionRepository.save(institution)
+    def "remove a voluntary and a theme from activity"() {
+        given: "a theme, a volunteer and a activity"
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
+        List<Theme> themes = new ArrayList<>()
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", theme)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
         activity.addVolunteer(volunteer)
+        activity.addTheme(theme)
         activityRepository.save(activity)
 
-        when: "the voluntary is removed"
+        when: "the voluntary and theme are removed"
         activity.getVolunteers().size() == 1
         activity.removeVolunteer(volunteer.getId())
+        activity.removeTheme(theme.getId())
 
-        then: "the voluntary is no longer persisted in the activity"
+        then: "the voluntary and theme are no longer persisted in the activity"
         activityRepository.count() == 1L
         def result = activityRepository.findAll().get(0)
-        result.getVolunteers().size == 0
+        result.getVolunteers().size() == 0
+        result.getThemes().size() == 0
     }
 
-    def "remove activity"() {
-        given: "a institution, a theme, a volunteer and a activity"
-        institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
-        institutionRepository.save(institution)
+    def "suspend activity"() {
+        given: "a theme, a volunteer and a activity"
         theme = new Theme("THEME_1_NAME")
+        List<Theme> themes = new ArrayList<>()
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", theme)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
         activity.addVolunteer(volunteer)
-        theme.addActivity(activity)
+        activity.addTheme(theme)
         activityRepository.save(activity)
 
-        when: "the activity is removed"
-        activity.delete()
-        theme.removeActivity(activity.getId())
-        activity.removeVolunteer(volunteer.getId())
-        activityRepository.delete(activity)
+        when: "the activity is suspended"
+        activity.suspend()
 
         then: "the activity is no longer persisted"
-        activityRepository.count() == 0L
-        volunteer.getActivity() == null
-        theme.getActivities().size() == 0
+        activityRepository.count() == 1L
+        def result = activityRepository.findAll().get(0)
+        result.getState() == Activity.State.SUSPENDED
     }
 
     @TestConfiguration

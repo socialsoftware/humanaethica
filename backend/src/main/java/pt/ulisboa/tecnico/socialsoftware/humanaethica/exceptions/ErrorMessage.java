@@ -34,7 +34,7 @@ public enum ErrorMessage {
     ACCESS_DENIED("You do not have permission to view this resource"),
     ACTIVITY_ALREADY_EXISTS("Activity already exists in database"),
     THEME_NOT_APPROVED("Theme is not yet approved"),
-    ACTIVITY_ALREADY_ACTIVE("Activity state is already active with name %s");
+    ACTIVITY_ALREADY_APPROVED("Activity state is already active with name %s");
 
     public final String label;
 
