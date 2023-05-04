@@ -385,7 +385,7 @@ export default class RemoteServices {
 
   static async validateActivity(activityId: number) {
     return httpClient
-      .post(`/activity/${activityId}/validate`)
+      .post('/activity/${activityId}/validate')
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });

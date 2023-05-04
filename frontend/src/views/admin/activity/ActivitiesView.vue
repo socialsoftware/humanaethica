@@ -27,7 +27,7 @@
               v-on="on"
               data-cy="validateButton"
               @click="validateActivity(item)"
-            >mdi-check-bold</v-icon
+              >mdi-check-bold</v-icon
             >
           </template>
           <span>Validate activity</span>
@@ -67,13 +67,6 @@ export default class ActivitiesView extends Vue {
       value: 'creationDate',
       align: 'center',
       width: '10%',
-    },
-    {
-      text: 'Delete',
-      value: 'action',
-      align: 'center',
-      sortable: false,
-      width: '5%',
     },
   ];
 
