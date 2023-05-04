@@ -13,7 +13,7 @@ public class ThemeController {
     private ThemeService themeService;
 
     @GetMapping("/themes")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ThemeDto> getThemes() {
         return themeService.getThemes();
     }

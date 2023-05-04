@@ -21,8 +21,6 @@ public class ThemeDto {
     public ThemeDto(Theme theme) {
         setId(theme.getId());
         setName(theme.getName());
-        //setActivities(activities);
-        setInstitutions((ArrayList<Institution>) theme.getInstitutions());
     }
 
     public Integer getId() {return id;}

@@ -40,22 +40,22 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Activity registerActivity(RegisterActivityDto registerActivityDto) {
+    public Activity registerActivity(ActivityDto activityDto) {
 
-        if (registerActivityDto.getActivityName() == null || registerActivityDto.getActivityName().trim().length() == 0) {
-            throw new HEException(INVALID_ACTIVITY_NAME, registerActivityDto.getActivityName());
+        if (activityDto.getName() == null || activityDto.getName().trim().length() == 0) {
+            throw new HEException(INVALID_ACTIVITY_NAME, activityDto.getName());
         }
 
-        if (registerActivityDto.getActivityRegion() == null || registerActivityDto.getActivityRegion().trim().length() == 0) {
-            throw new HEException(INVALID_REGION_NAME, registerActivityDto.getActivityRegion());
+        if (activityDto.getRegion() == null || activityDto.getRegion().trim().length() == 0) {
+            throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
-        if (registerActivityDto.getActivityTheme() == null || registerActivityDto.getActivityTheme().trim().length() == 0) {
-            throw new HEException(INVALID_THEME_NAME, registerActivityDto.getActivityTheme());
+        if (activityDto.getTheme() == null || activityDto.getTheme().getName().length() == 0) {
+            throw new HEException(INVALID_THEME_NAME, activityDto.getTheme().getName());
         }
 
         for (Activity act : activityRepository.findAll()) {
-            if (act.getName().equals(registerActivityDto.getActivityName())) {
+            if (act.getName().equals(activityDto.getName())) {
                 throw new HEException(ACTIVITY_ALREADY_EXISTS);
             }
         }
@@ -64,21 +64,19 @@ public class ActivityService {
         Activity activity = null;
 
         for (Theme theme : themeRepository.findAll()) {
-            if (theme.getName().equals(registerActivityDto.getActivityTheme())) {
+            if (theme.getName().equals(activityDto.getTheme().getName())) {
                 existentTheme = theme;
             }
         }
         if (existentTheme == null) {
-            Theme theme = new Theme(registerActivityDto.getActivityTheme());
+            Theme theme = new Theme(activityDto.getTheme().getName());
             themeRepository.save(theme);
-            ActivityDto activityDto = new ActivityDto(registerActivityDto, theme);
-            activity = new Activity(registerActivityDto.getActivityName(), registerActivityDto.getActivityRegion(), theme);
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), theme);
             theme.addActivity(activity);
             activityRepository.save(activity);
         }
         else {
-            ActivityDto activityDto = new ActivityDto(registerActivityDto, existentTheme);
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getTheme());
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), existentTheme);
             existentTheme.addActivity(activity);
             activityRepository.save(activity);
         }

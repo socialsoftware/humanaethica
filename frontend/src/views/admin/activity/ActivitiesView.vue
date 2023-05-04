@@ -81,7 +81,7 @@ export default class ActivitiesView extends Vue {
   }
 
   async validateActivity(activity: Activity) {
-    let activityId = activity.id;
+    let activityId = null;
     if (
       activityId !== null &&
       confirm('Are you sure you want to validate this activity?')
