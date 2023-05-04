@@ -9,6 +9,8 @@ import RegisterInstitution from '@/models/institution/RegisterInstitution';
 import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
 import RegisterMember from '@/models/member/RegisterMember';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
+import Theme from '@/models/theme/Theme';
+import RegisterTheme from '@/models/theme/RegisterTheme';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -339,6 +341,50 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  // Theme Controler
+
+  static async registerTheme(
+      theme: RegisterTheme,
+  ) {
+    const formData = new FormData();
+    formData.append(
+        'theme',
+        new Blob(
+            [
+              JSON.stringify({
+                themeName: theme.themeName,
+              }),
+            ],
+            {
+              type: 'application/json',
+            }
+        )
+    );
+    return httpClient
+        .post('/admin/rtheme', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async getThemes(): Promise<Theme[]> {
+    return httpClient
+        .get('/theme')
+        .then((response) => {
+          return response.data.map((theme: any) => {
+            return new Theme(theme);
+          });
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
 
   // Error
 

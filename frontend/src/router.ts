@@ -11,10 +11,12 @@ import NotFoundView from '@/views/NotFoundView.vue';
 import LoginView from '@/views/user/LoginView.vue';
 import UsersView from '@/views/admin/users/UsersView.vue';
 import InstitutionsView from '@/views/admin/institutions/InstitutionsView.vue';
+import ThemesView from '@/views/admin/manageTheme/ThemesView.vue';
 import AdminView from '@/views/admin/AdminView.vue';
 import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
+import RegisterThemeView from '@/views/admin/registerTheme/RegisterThemeView.vue';
 
 Vue.use(Router);
 
@@ -75,6 +77,38 @@ const router = new Router({
           component: InstitutionsView,
           meta: {
             title: APP_NAME + ' - Manage Institutions',
+            requiredAuth: 'Admin',
+          },
+        },
+      ],
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
+      children: [
+        {
+          path: 'registerTheme',
+          name: 'registerThemeAdmin',
+          component: RegisterThemeView,
+          meta: {
+            title: APP_NAME + ' - Register Theme',
+            requiredAuth: 'Admin',
+          },
+        },
+      ],
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
+      children: [
+        {
+          path: 'manageTheme',
+          name: 'manageThemeAdmin',
+          component: ThemesView,
+          meta: {
+            title: APP_NAME + ' - Manage Theme',
             requiredAuth: 'Admin',
           },
         },
