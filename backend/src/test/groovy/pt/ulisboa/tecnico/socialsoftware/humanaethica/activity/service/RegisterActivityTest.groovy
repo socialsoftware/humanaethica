@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import spock.lang.Unroll
 
 
@@ -42,7 +43,7 @@ class RegisterActivityTest extends SpockTest {
 
     }
 
-    def "the activity exists"() {
+    def "the activity already exists"() {
         given:
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
@@ -64,6 +65,24 @@ class RegisterActivityTest extends SpockTest {
         error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_EXISTS
         and:
         activityRepository.count() == 1
+    }
+
+    def "add theme to an activity"() {
+        given:
+        List<Theme> themes = new ArrayList<>()
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
+        activityRepository.save(activity)
+
+        when:
+        activity.getThemes().size() == 0
+        theme = new Theme("THEME_1_NAME")
+        themeRepository.save(theme)
+        themes.add(theme)
+        activityService.addTheme(activity.getId(), themes)
+
+        then: "the activity is associated with the theme"
+        activity.getThemes().size() == 1
+        activity.getThemes().get(0).getName() == "THEME_1_NAME"
     }
 
     @Unroll

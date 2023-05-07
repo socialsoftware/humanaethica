@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
 import java.util.List;
 
@@ -38,4 +39,11 @@ public class ActivityController {
     public void validateActivity(@PathVariable Integer activityId) {
         activityService.validateActivity(activityId);
     }
+
+    @PostMapping("/activity/{activityId}/addTheme")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void addTheme(@PathVariable Integer activityId, List<Theme> themes) {
+        activityService.addTheme(activityId, themes);
+    }
+
 }
