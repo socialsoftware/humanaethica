@@ -38,8 +38,8 @@ public class Institution {
 
     private LocalDateTime tokenGenerationDate;
 
-    @ManyToOne
-    private Theme theme;
+    @ManyToMany
+    private List<Theme> themes = new ArrayList<>();
 
     public Institution() {
     }
@@ -138,13 +138,13 @@ public class Institution {
         document.setInstitution(this);
     }
 
-    public Theme getThemes() {
-        return theme;
+    public List<Theme> getThemes() {
+        return this.themes;
     }
 
-    public void setThemes(Theme theme) {
-        this.theme = theme;
-        this.theme.addInstitution(this);
+    public void addTheme(Theme theme) {
+        this.themes.add( theme);
+        theme.addInstitution(this);
     }
 
     public String generateConfirmationToken() {

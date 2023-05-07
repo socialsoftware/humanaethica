@@ -1,8 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import org.springframework.security.crypto.keygen.KeyGenerators;
 import jakarta.persistence.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,23 +11,27 @@ import java.util.List;
 @Table(name = "theme")
 public class Theme{
 
+    public enum State {SUBMITTED, APPROVED, DELETED}
+
+    @Enumerated(EnumType.STRING)
+    private Theme.State state;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
 
-    private boolean state;
 
     //private List<Activity> activities = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "theme", orphanRemoval = true, fetch = FetchType.LAZY)
+    @ManyToMany
     private List<Institution> institutions = new ArrayList<>();
 
     public Theme() {
     }
 
-    public Theme(String name) {
+    public Theme(String name, State state) {
         setName(name);
-        setState(true);
+        setState(state);
     }
 
     public Integer getId() {return id;}
@@ -39,14 +43,6 @@ public class Theme{
     public void setName(String name) {
         this.name = name;
     }
-
-    /*public List<Activity> getActivities() {
-        return activities;
-    }*/
-
-    /*public void setActivities(ArrayList<Activity> activities){
-        this.activities = activities;
-    }*/
 
     public List<Institution> getInstitutions() {
         return institutions;
@@ -61,16 +57,18 @@ public class Theme{
     public void deleteInstitution(Institution institution){institutions.remove(institution);}
 
     public boolean isActive() {
-        return state;
+        return state.equals(State.APPROVED);
     }
 
-    public void setState(boolean state) {
+    public void setState(Theme.State state) {
         this.state = state;
     }
 
+    public Theme.State getState(){return this.state;}
+
     public void delete() {
         if (institutions.size() == 0){
-            setState(false);
+            setState(State.DELETED);
         }
     }
 }

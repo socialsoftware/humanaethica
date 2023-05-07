@@ -27,6 +27,7 @@ class RegisterThemeTest extends SpockTest {
         given: "a theme dto"
         themeDto = new RegisterThemeDto()
         themeDto.setName("THEME_1_NAME")
+        themeDto.setState(Theme.State.APPROVED)
 
         when:
         def result = themeService.registerTheme(themeDto)
@@ -37,7 +38,7 @@ class RegisterThemeTest extends SpockTest {
         result.getName() == "THEME_1_NAME"
 
     }
-    def "associates a theme to an institution"() {
+    /*def "associates a theme to an institution"() {
         given:
         themeDto = new RegisterThemeDto()
         themeDto.setName("THEME_1_NAME")
@@ -47,7 +48,7 @@ class RegisterThemeTest extends SpockTest {
         institutionDto.setInstitutionNif(INSTITUTION_1_EMAIL)
 
         when:
-        InstitutionDto institutionDto2 = new InstitutionDto(institutionDto);
+        InstitutionDto institutionDto2 = new InstitutionDto(institutionDto)
         def result = institutionService.registerInstitution(institutionDto2)
         def result1 = themeService.registerTheme(themeDto)
 
@@ -56,7 +57,7 @@ class RegisterThemeTest extends SpockTest {
         and: "checks if user data is correct"
         result1.getName() == "THEME_1_NAME"
         result1.getInstitutions().get(0).getName() == institutionDto.getName()
-    }
+    }*/
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

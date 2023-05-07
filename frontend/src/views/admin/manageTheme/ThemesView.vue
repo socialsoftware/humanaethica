@@ -2,7 +2,7 @@
     <v-card class="table">
         <v-data-table
                 :headers="headers"
-                :items="theme"
+                :items="themes"
                 :search="search"
                 disable-pagination
                 :hide-default-footer="true"
@@ -18,20 +18,6 @@
                     />
                 </v-card-title>
             </template>
-            <template v-slot:[`item.action`]="{ item }">
-                <v-tooltip bottom v-if="!item.state">
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                                class="mr-2 action-button"
-                                color="green"
-                                v-on="on"
-                                data-cy="validateButton"
-                        >mdi-check-bold</v-icon
-                        >
-                    </template>
-                    <span>Validate theme</span>
-                </v-tooltip>
-            </template>
         </v-data-table>
     </v-card>
 </template>
@@ -44,7 +30,7 @@ import Theme from '@/models/theme/Theme';
     components: {},
 })
 export default class ThemesView extends Vue {
-    theme: Theme[] = [];
+    themes: Theme[] | [] = [];
     search: string = '';
     headers: object = [
         { text: 'Name', value: 'name', align: 'left', width: '25%' },
@@ -52,7 +38,7 @@ export default class ThemesView extends Vue {
     async created() {
         await this.$store.dispatch('loading');
         try {
-            this.theme = await RemoteServices.getThemes();
+            this.themes = await RemoteServices.getThemes();
         } catch (error) {
             await this.$store.dispatch('error', error);
         }

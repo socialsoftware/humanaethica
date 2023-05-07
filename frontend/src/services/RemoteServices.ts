@@ -344,46 +344,29 @@ export default class RemoteServices {
 
   // Theme Controler
 
-  static async registerTheme(
-      theme: RegisterTheme,
-  ) {
-    const formData = new FormData();
-    formData.append(
-        'theme',
-        new Blob(
-            [
-              JSON.stringify({
-                themeName: theme.themeName,
-              }),
-            ],
-            {
-              type: 'application/json',
-            }
-        )
-    );
-    return httpClient
-        .post('/admin/rtheme', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .catch(async (error) => {
-          throw Error(await this.errorMessage(error));
-        });
-  }
+    static async registerTheme(theme: Theme) {
+        return httpClient
+            .post('/themes/register', theme)
+            .then(() => {
+                return;
+            })
+            .catch(async (error) => {
+                throw Error(await this.errorMessage(error));
+            });
+    }
 
-  static async getThemes(): Promise<Theme[]> {
-    return httpClient
-        .get('/theme')
-        .then((response) => {
-          return response.data.map((theme: any) => {
-            return new Theme(theme);
-          });
-        })
-        .catch(async (error) => {
-          throw Error(await this.errorMessage(error));
-        });
-  }
+    static async getThemes(): Promise<Theme[]> {
+        return httpClient
+            .get('/themes')
+            .then((response) => {
+                return response.data.map((theme: any) => {
+                    return new Theme(theme);
+                });
+            })
+            .catch(async (error) => {
+                throw Error(await this.errorMessage(error));
+            });
+    }
 
 
   // Error

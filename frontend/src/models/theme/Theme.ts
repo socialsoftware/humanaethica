@@ -7,6 +7,7 @@ export default class Theme {
     id: number | null = null;
     name!: string;
     institutions: Institution[] = [];
+    //state?: string;
 
     constructor(jsonObj?: Theme) {
         if (jsonObj) {
@@ -17,6 +18,7 @@ export default class Theme {
                     return new Institution(institutions);
                 }
             );
+            //this.state = jsonObj.name;
         }
     }
 }

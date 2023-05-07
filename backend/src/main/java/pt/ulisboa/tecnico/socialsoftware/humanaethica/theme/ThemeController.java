@@ -14,7 +14,6 @@ public class ThemeController {
     private ThemeService themeService;
 
     @GetMapping("/themes")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ThemeDto> getThemes() {
         return themeService.getThemes();
     }
@@ -27,7 +26,7 @@ public class ThemeController {
 
     @PostMapping("/themes/register")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void registerTheme(@Valid @RequestPart("theme") RegisterThemeDto registerThemeDto){
-        themeService.registerTheme(registerThemeDto);
+    public void registerTheme(@Valid @RequestBody ThemeDto themeDto){
+        themeService.registerTheme(themeDto);
     }
 }

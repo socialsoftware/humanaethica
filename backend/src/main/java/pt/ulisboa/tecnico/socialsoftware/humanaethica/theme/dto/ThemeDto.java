@@ -11,7 +11,9 @@ public class ThemeDto {
     private Integer id;
     private String name;
     //private List<Activity> activities = new ArrayList<>();
-    private List<Institution> institutions = new ArrayList<>();
+
+    private String state;
+    private List<Institution> institutions;
 
     public ThemeDto(){
 
@@ -21,7 +23,8 @@ public class ThemeDto {
         setId(theme.getId());
         setName(theme.getName());
         //setActivities(activities);
-        setInstitutions((ArrayList<Institution>) theme.getInstitutions());
+        setInstitutions(theme.getInstitutions());
+        setState(theme.getState().toString());
     }
 
     public Integer getId() {return id;}
@@ -32,6 +35,14 @@ public class ThemeDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     /*public List<Activity> getActivities() {
@@ -46,7 +57,7 @@ public class ThemeDto {
         return institutions;
     }
 
-    public void setInstitutions(ArrayList<Institution> institutions) {
+    public void setInstitutions(List<Institution> institutions) {
         this.institutions = institutions;
     }
 }

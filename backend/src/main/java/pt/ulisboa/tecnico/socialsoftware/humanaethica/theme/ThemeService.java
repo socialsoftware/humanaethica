@@ -15,6 +15,7 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -37,13 +38,13 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Theme registerTheme(RegisterThemeDto registerThemeDto) {
+    public Theme registerTheme(ThemeDto themeDto) {
 
-        if (registerThemeDto.getName() == null) {
-            throw new HEException(INVALID_THEME_NAME, registerThemeDto.getName());
+        if (themeDto.getName() == null) {
+            throw new HEException(INVALID_THEME_NAME, themeDto.getName());
         }
 
-        Theme theme = new Theme(registerThemeDto.getName());
+        Theme theme = new Theme(themeDto.getName(), Theme.State.APPROVED);
         themeRepository.save(theme);
         return theme;
     }
