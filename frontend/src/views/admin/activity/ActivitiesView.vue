@@ -19,7 +19,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom v-if="!item.state">
+        <v-tooltip bottom v-if="item.state.equals('SUBMITTED')">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -46,7 +46,7 @@ import Activity from '@/models/activity/Activity';
   components: {},
 })
 export default class ActivitiesView extends Vue {
-  activities: Activity[] = [];
+  activities: Activity[] | [] = [];
   search: string = '';
   headers: object = [
     { text: 'Name', value: 'name', align: 'left', width: '25%' },
@@ -57,16 +57,10 @@ export default class ActivitiesView extends Vue {
       width: '10%',
     },
     {
-      text: 'Active',
+      text: 'State',
       value: 'state',
       align: 'center',
       width: '5%',
-    },
-    {
-      text: 'Creation Date',
-      value: 'creationDate',
-      align: 'center',
-      width: '10%',
     },
   ];
 
@@ -81,7 +75,7 @@ export default class ActivitiesView extends Vue {
   }
 
   async validateActivity(activity: Activity) {
-    let activityId = null;
+    let activityId = activity.id;
     if (
       activityId !== null &&
       confirm('Are you sure you want to validate this activity?')

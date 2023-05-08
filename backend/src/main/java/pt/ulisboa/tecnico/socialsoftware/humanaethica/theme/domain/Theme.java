@@ -21,7 +21,8 @@ public class Theme{
 
     private boolean state;
 
-    @ManyToMany private List<Activity> activities = new ArrayList<>();
+    @ManyToMany
+    private List<Activity> activities = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "theme", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Institution> institutions = new ArrayList<>();
 

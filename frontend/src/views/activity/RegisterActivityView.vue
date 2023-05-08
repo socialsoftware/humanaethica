@@ -44,7 +44,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterActivity from '@/models/activity/RegisterActivity';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
@@ -61,8 +60,8 @@ export default class RegisterActivityView extends Vue {
     console.log(this.themes[0].name);
   }
   async submit() {
-    console.log(this.themes.length);
-    console.log(this.themes[0].name);
+    console.log(this.activity.name);
+    console.log(this.activity.themes[0].name);
     try {
       await RemoteServices.registerActivity(this.activity);
       await this.$router.push({ name: 'home' });
