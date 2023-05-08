@@ -7,18 +7,18 @@ export default class Theme {
     id: number | null = null;
     name!: string;
     institutions: Institution[] = [];
-    //state?: string;
+    state?: string;
 
     constructor(jsonObj?: Theme) {
         if (jsonObj) {
             this.id = jsonObj.id;
             this.name = jsonObj.name;
-            this.institutions = jsonObj.institutions.map(
+            /*this.institutions = jsonObj.institutions.map(
                 (institutions: Institution) => {
                     return new Institution(institutions);
                 }
-            );
-            //this.state = jsonObj.name;
+            );*/
+            this.state = jsonObj.state;
         }
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.RegisterThemeDto;
+
 import java.util.List;
 
 @RestController

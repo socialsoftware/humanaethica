@@ -8,14 +8,12 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.Ins
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.RegisterThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -38,7 +36,7 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Theme registerTheme(ThemeDto themeDto) {
+    public void registerTheme(ThemeDto themeDto) {
 
         if (themeDto.getName() == null) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
@@ -46,7 +44,6 @@ public class ThemeService {
 
         Theme theme = new Theme(themeDto.getName(), Theme.State.APPROVED);
         themeRepository.save(theme);
-        return theme;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
