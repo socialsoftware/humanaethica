@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
@@ -16,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
@@ -199,5 +201,47 @@ public class UserService {
         authUser.getUser().setState(User.State.APPROVED);
 
         return new RegisterUserDto(authUser);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void subscribeActivity(Integer userId, List<Activity> activities) {
+        if (userId == null) {
+            throw new HEException(USER_NOT_FOUND);
+        }
+        if (activities.isEmpty()) {
+            throw new HEException(EMPTY_ACTIVITY_LIST);
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+        if (user.getRole() != User.Role.VOLUNTEER) {
+            throw new HEException(INVALID_ROLE, user.getRole().name());
+        }
+
+        Volunteer volunteer = (Volunteer) user;
+        for (int i=0; activities.size()<i; i++) {
+            volunteer.addActivities(activities.get(i));
+            activities.get(i).addVolunteer(volunteer);
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void unsubscribeActivity(Integer userId, List<Activity> activities) {
+        if (userId == null) {
+            throw new HEException(USER_NOT_FOUND);
+        }
+        if (activities.isEmpty()) {
+            throw new HEException(EMPTY_ACTIVITY_LIST);
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+        if (user.getRole() != User.Role.VOLUNTEER) {
+            throw new HEException(INVALID_ROLE, user.getRole().name());
+        }
+
+        Volunteer volunteer = (Volunteer) user;
+        for (int i=0; activities.size()<i; i++) {
+            volunteer.removeActivities(activities.get(i).getId());
+            activities.get(i).removeVolunteer(volunteer.getId());
+        }
     }
 }

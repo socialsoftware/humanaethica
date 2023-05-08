@@ -16,22 +16,19 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 @DataJpaTest
 class ValidateActivityTest extends SpockTest {
     def activityDto
-    def themeDto
-    def activity
     def theme
+    def activity
+    def newActivity
 
     def setup() {
-        themeDto = new ThemeDto()
-        themeDto.setName("THEME_1_NAME")
-
-        theme = themeService.registerTheme(themeDto);
-
+        theme = new Theme("THEME_1_NAME")
+        themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
-        activityDto = new ActivityDto()
-        activityDto.setName("ACTIVITY_1_NAME")
-        activityDto.setRegion("ACTIVITY_1_REGION")
-        activityDto.setThemes(themes)
+
+        newActivity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
+        newActivity.setThemes(themes)
+        activityDto = new ActivityDto(newActivity)
 
         activity = activityService.registerActivity(activityDto)
     }

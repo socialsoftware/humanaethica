@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
@@ -81,5 +83,17 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void validateUser(@PathVariable int userId) {
         userApplicationalService.validateUser(userId);
+    }
+
+    @PutMapping("/users/{userId}/subscribe")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public void subscribeActivity(@PathVariable int userId, List<Activity> activities) {
+        userService.subscribeActivity(userId, activities);
+    }
+
+    @DeleteMapping("/users/{userId}/unsubscribe")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public void unsubscribeActivity(@PathVariable int userId, List<Activity> activities) {
+        userService.unsubscribeActivity(userId, activities);
     }
 }

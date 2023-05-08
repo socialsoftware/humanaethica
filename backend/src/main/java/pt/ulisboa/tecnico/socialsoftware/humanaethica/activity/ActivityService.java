@@ -89,7 +89,7 @@ public class ActivityService {
         activity.setState(Activity.State.APPROVED);
     }
 
-    /*@Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void addTheme(Integer activityId, List<Theme> themes) {
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
@@ -99,9 +99,9 @@ public class ActivityService {
         }
 
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
-        for (int i=0; themes.size()<i; i++) {
-            activity.addTheme(themes.get(i));
-            themes.get(i).addActivity(activity);
+        for (Theme theme : themes) {
+            activity.addTheme(theme);
+            theme.addActivity(activity);
         }
     }
 
@@ -119,5 +119,5 @@ public class ActivityService {
             activity.removeTheme(themes.get(i).getId());
             themes.get(i).removeActivity(activity.getId());
         }
-    }*/
+    }
 }

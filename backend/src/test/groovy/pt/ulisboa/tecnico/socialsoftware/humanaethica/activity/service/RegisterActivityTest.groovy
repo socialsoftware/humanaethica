@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
@@ -16,6 +17,7 @@ import spock.lang.Unroll
 @DataJpaTest
 class RegisterActivityTest extends SpockTest {
     def activityDto
+    def themeDto
     def theme
     def activity
 
@@ -25,10 +27,10 @@ class RegisterActivityTest extends SpockTest {
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
-        activityDto = new ActivityDto()
-        activityDto.setName("ACTIVITY_1_NAME")
-        activityDto.setRegion("ACTIVITY_1_REGION")
-        activityDto.setThemes(themes)
+
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
+        activity.setThemes(themes)
+        activityDto = new ActivityDto(activity)
 
         when:
         def result = activityService.registerActivity(activityDto)
@@ -45,17 +47,13 @@ class RegisterActivityTest extends SpockTest {
 
     def "the activity already exists"() {
         given:
-        theme = new Theme("THEME_1_NAME")
-        themeRepository.save(theme)
-        List<Theme> themes = new ArrayList<>()
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
         activity.addTheme(theme)
         activityRepository.save(activity)
         and:
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
         activityDto.setRegion("ACTIVITY_1_REGION")
-        activityDto.setThemes(themes)
 
         when:
         activityService.registerActivity(activityDto)
@@ -69,32 +67,29 @@ class RegisterActivityTest extends SpockTest {
 
     def "add theme to an activity"() {
         given:
-        List<Theme> themes = new ArrayList<>()
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", themes, Activity.State.SUBMITTED)
-        activityRepository.save(activity)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
+        activityDto = new ActivityDto(activity)
+        def result = activityService.registerActivity(activityDto)
 
         when:
-        activity.getThemes().size() == 0
+        result.getThemes().size() == 0
         theme = new Theme("THEME_1_NAME")
         themeRepository.save(theme)
+        List<Theme> themes = new ArrayList<>()
         themes.add(theme)
-        activityService.addTheme(activity.getId(), themes)
+        activityService.addTheme(result.getId(), themes)
 
         then: "the activity is associated with the theme"
-        activity.getThemes().size() == 1
-        activity.getThemes().get(0).getName() == "THEME_1_NAME"
+        result.getThemes().size() == 1
+        result.getThemes().get(0).getName() == "THEME_1_NAME"
     }
 
     @Unroll
     def "invalid arguments: name=#name | region=#region"() {
         given: "an activity dto"
-        theme = new Theme("THEME_1_NAME")
-        themeRepository.save(theme)
-        List<Theme> themes = new ArrayList<>()
         activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
-        activityDto.setThemes(themes)
 
         when:
         activityService.registerActivity(activityDto)
