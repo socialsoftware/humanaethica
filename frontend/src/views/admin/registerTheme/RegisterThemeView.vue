@@ -28,7 +28,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterTheme from '@/models/theme/RegisterTheme';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
 @Component({

@@ -10,7 +10,6 @@ import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
 import RegisterMember from '@/models/member/RegisterMember';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 import Theme from '@/models/theme/Theme';
-import RegisterTheme from '@/models/theme/RegisterTheme';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;

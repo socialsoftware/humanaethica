@@ -13,11 +13,11 @@ export default class Theme {
         if (jsonObj) {
             this.id = jsonObj.id;
             this.name = jsonObj.name;
-            /*this.institutions = jsonObj.institutions.map(
+            this.institutions = jsonObj.institutions.map(
                 (institutions: Institution) => {
                     return new Institution(institutions);
                 }
-            );*/
+            );
             this.state = jsonObj.state;
         }
     }

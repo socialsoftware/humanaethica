@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ThemeDto {
 
@@ -14,7 +15,7 @@ public class ThemeDto {
     //private List<Activity> activities = new ArrayList<>();
 
     private String state;
-    //private List<InstitutionDto> institutions = new ArrayList<>();
+    private List<InstitutionDto> institutions;
 
     public ThemeDto(){
 
@@ -24,7 +25,9 @@ public class ThemeDto {
         setId(theme.getId());
         setName(theme.getName());
         //setActivities(activities);
-        //setInstitutions(theme.getInstitutions());
+        this.institutions = theme.getInstitutions().stream()
+                .map(InstitutionDto::new)
+                .collect(Collectors.toList());
         setState(theme.getState().toString());
     }
 
@@ -54,13 +57,11 @@ public class ThemeDto {
         this.activities = activities;
     }*/
 
-    /*public List<InstitutionDto> getInstitutions() {
+    public List<InstitutionDto> getInstitutions() {
         return institutions;
     }
 
-    public void setInstitutions(List<Institution> institutions) {
-        for (Institution x : institutions){
-            this.institutions.add(new InstitutionDto(x));
-        }
-    }*/
+    public void setInstitutions(List<InstitutionDto> institutions) {
+        this.institutions = institutions;
+    }
 }
