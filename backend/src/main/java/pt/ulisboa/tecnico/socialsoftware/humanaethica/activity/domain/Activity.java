@@ -24,7 +24,7 @@ public class Activity {
     @Enumerated(EnumType.STRING)
     private Activity.State state;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activity", orphanRemoval = true, fetch = FetchType.LAZY)
+    @ManyToMany
     private List<Volunteer> volunteers = new ArrayList<>();
 
     @ManyToMany
@@ -35,7 +35,7 @@ public class Activity {
 
     public Activity() {
     }
-    public Activity(String name, String region, List<Theme> themes, State state) {
+    public Activity(String name, String region, State state) {
         setName(name);
         setRegion(region);
         setThemes(themes);
@@ -100,9 +100,9 @@ public class Activity {
         this.themes.add(theme);
     }
 
-    public void removeTheme (int themeId) {
+    public void removeTheme (Integer themeId) {
         for (int i = 0; i < themes.size(); i++) {
-            if (themes.get(i).getId() == themeId) {
+            if (themes.get(i).getId().equals(themeId)) {
                 themes.remove(i);
                 return;
             }
@@ -113,9 +113,9 @@ public class Activity {
         this.volunteers.add(volunteer);
     }
 
-    public void removeVolunteer (int volunteerId) {
+    public void removeVolunteer (Integer volunteerId) {
         for (int i = 0; i < volunteers.size(); i++) {
-            if (volunteers.get(i).getId() == volunteerId) {
+            if (volunteers.get(i).getId().equals(volunteerId)) {
                 volunteers.remove(i);
                 return;
             }

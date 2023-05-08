@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
@@ -49,8 +50,10 @@ public class ActivityService {
             }
         }
 
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getThemes(), Activity.State.SUBMITTED);
-        for (Theme theme : activityDto.getThemes()) {
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.SUBMITTED);
+        for (ThemeDto themeDto : activityDto.getThemes()) {
+            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));;
+            activity.addTheme(theme);
             theme.addActivity(activity);
         }
         activityRepository.save(activity);
@@ -86,7 +89,7 @@ public class ActivityService {
         activity.setState(Activity.State.APPROVED);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    /*@Transactional(isolation = Isolation.READ_COMMITTED)
     public void addTheme(Integer activityId, List<Theme> themes) {
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
@@ -101,4 +104,20 @@ public class ActivityService {
             themes.get(i).addActivity(activity);
         }
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeTheme(Integer activityId, List<Theme> themes) {
+        if (activityId == null) {
+            throw new HEException(ACTIVITY_NOT_FOUND);
+        }
+        if (themes.isEmpty()) {
+            throw new HEException(EMPTY_THEME_LIST);
+        }
+
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
+        for (int i=0; themes.size()<i; i++) {
+            activity.removeTheme(themes.get(i).getId());
+            themes.get(i).removeActivity(activity.getId());
+        }
+    }*/
 }
