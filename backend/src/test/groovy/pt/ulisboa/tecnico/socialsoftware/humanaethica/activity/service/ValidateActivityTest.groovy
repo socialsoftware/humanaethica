@@ -26,11 +26,12 @@ class ValidateActivityTest extends SpockTest {
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
 
-        newActivity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
+        newActivity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.REPORTED)
         newActivity.setThemes(themes)
         activityDto = new ActivityDto(newActivity)
 
         activity = activityService.registerActivity(activityDto)
+        activityService.reportActivity(activity.getId())
     }
 
     def "validate activity with success"() {
