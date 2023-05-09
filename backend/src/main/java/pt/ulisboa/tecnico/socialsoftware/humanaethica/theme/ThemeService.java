@@ -11,6 +11,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 
 import java.util.Comparator;
 import java.util.List;
@@ -36,14 +38,20 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void registerTheme(ThemeDto themeDto) {
+    public Theme registerTheme(ThemeDto themeDto) {
 
         if (themeDto.getName() == null) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
         }
+        for (Theme the : themeRepository.findAll()) {
+            if (the.getName().equals(themeDto.getName())) {
+                throw new HEException(THEME_ALREADY_EXISTS);
+            }
+        }
 
         Theme theme = new Theme(themeDto.getName(), Theme.State.APPROVED);
         themeRepository.save(theme);
+        return theme;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -55,6 +63,34 @@ public class ThemeService {
         }
         else{
             throw new HEException(THEME_HAS_INSTITUTIONS, theme.getName());
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void addInstitution(Integer themeId, List<Institution> institutions) {
+        if (themeId == null) {
+            throw new HEException(THEME_NOT_FOUND);
+        }
+        if (institutions.isEmpty()) {
+            throw new HEException(EMPTY_INSTITUTION_LIST);
+        }
+        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
+        for (Institution institution : institutions) {
+            institution.addTheme(theme);
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeInstitution(Integer themeId, List<Institution> institutions) {
+        if (themeId == null) {
+            throw new HEException(THEME_NOT_FOUND);
+        }
+        if (institutions.isEmpty()) {
+            throw new HEException(EMPTY_INSTITUTION_LIST);
+        }
+        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
+        for(Institution institution : institutions) {
+            institution.removeTheme(theme);
         }
     }
 }

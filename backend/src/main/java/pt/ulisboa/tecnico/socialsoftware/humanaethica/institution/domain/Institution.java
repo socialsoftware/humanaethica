@@ -143,8 +143,13 @@ public class Institution {
     }
 
     public void addTheme(Theme theme) {
-        this.themes.add( theme);
+        this.themes.add(theme);
         theme.addInstitution(this);
+    }
+
+    public void removeTheme(Theme theme) {
+        this.themes.remove(theme);
+        theme.deleteInstitution(this);
     }
 
     public String generateConfirmationToken() {
