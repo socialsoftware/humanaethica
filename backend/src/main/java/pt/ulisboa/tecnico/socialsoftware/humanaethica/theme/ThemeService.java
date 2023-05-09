@@ -38,7 +38,7 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Theme registerTheme(ThemeDto themeDto) {
+    public Theme registerTheme(ThemeDto themeDto, boolean isAdmin) {
 
         if (themeDto.getName() == null) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
@@ -48,8 +48,15 @@ public class ThemeService {
                 throw new HEException(THEME_ALREADY_EXISTS);
             }
         }
+        Theme theme;
 
-        Theme theme = new Theme(themeDto.getName(), Theme.State.APPROVED);
+        if (isAdmin){
+            theme = new Theme(themeDto.getName(), Theme.State.APPROVED);
+        }
+        else{
+            theme = new Theme(themeDto.getName(), Theme.State.SUBMITTED);
+        }
+
         themeRepository.save(theme);
         return theme;
     }

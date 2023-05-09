@@ -28,7 +28,12 @@ public class ThemeController {
     @PostMapping("/themes/register")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void registerTheme(@Valid @RequestBody ThemeDto themeDto){
-        themeService.registerTheme(themeDto);
+        themeService.registerTheme(themeDto,true);
+    }
+
+    @PostMapping("/themes/registerInstitution")
+    public void registerThemeInstitution(@Valid @RequestBody ThemeDto themeDto){
+        themeService.registerTheme(themeDto,false);
     }
 
     @PutMapping("/theme/{themeId}/addInstitution")

@@ -354,6 +354,17 @@ export default class RemoteServices {
             });
     }
 
+    static async registerThemeInstitution(theme: Theme) {
+        return httpClient
+            .post('/themes/registerInstitution', theme)
+            .then(() => {
+                return;
+            })
+            .catch(async (error) => {
+                throw Error(await this.errorMessage(error));
+            });
+    }
+
     static async getThemes(): Promise<Theme[]> {
         return httpClient
             .get('/themes')
