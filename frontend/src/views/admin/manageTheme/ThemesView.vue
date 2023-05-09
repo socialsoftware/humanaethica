@@ -1,29 +1,35 @@
 <template>
-    <v-card class="table">
-        <v-data-table
-            :headers="headers"
-            :items="themes"
-            :search="search"
-            disable-pagination
-            :hide-default-footer="true"
-            :mobile-breakpoint="0"
-        >
-        </v-data-table>
-            <!--<template v-slot:top>
-                <v-card-title>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="search"
-                        label="Search"
-                        class="mx-2"
-                    />
-                    <v-spacer />
-                    <v-btn color="primary" dark @click="newUser" data-cy="createButton"
-                    >New Theme</v-btn
-                    >
-                </v-card-title>
-            </template>
-            <template v-slot:[`item.action`]="{ item }">
+  <v-card class="table">
+    <v-data-table
+      :headers="headers"
+      :items="themes"
+      :search="search"
+      disable-pagination
+      :hide-default-footer="true"
+      :mobile-breakpoint="0"
+    >
+      <template v-slot:top>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            class="mx-2"
+          />
+          <v-spacer />
+          <v-btn color="primary" dark @click="newTheme" data-cy="createButton"
+            >New Theme</v-btn
+          >
+        </v-card-title>
+      </template>
+    </v-data-table>
+    <add-theme
+      v-if="addTheme"
+      v-model="addTheme"
+      v-on:user-created="onCreatedTheme"
+      v-on:close-dialog="onCloseDialog"
+    />
+    <!--<template v-slot:[`item.action`]="{ item }">
                 <v-tooltip bottom v-if="item.state != 'DELETED'">
                     <template v-slot:activator="{ on }">
                         <v-icon
@@ -75,40 +81,37 @@
             v-on:user-created="onCreatedUser"
             v-on:close-dialog="onCloseDialog"
         />-->
-    </v-card>
+  </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import AddUserDialog from '@/views/admin/users/AddUserDialog.vue';
-import User from '@/models/user/User';
+import AddTheme from '@/views/admin/manageTheme/AddTheme.vue';
 import Theme from '@/models/theme/Theme';
 
 @Component({
-    components: {
-        'add-user-dialog': AddUserDialog,
-    },
+  components: { 'add-theme': AddTheme },
 })
-export default class UsersView extends Vue {
-    themes: Theme[] | [] = [];
-    addUserDialog: boolean = false;
-    search: string = '';
-    headers: object = [
-        {
-            text: 'Id',
-            value: 'id',
-            align: 'left',
-            width: '15%',
-        },
-        { text: 'Name', value: 'name', align: 'left', width: '15%' },
-        {
-            text: 'State',
-            value: 'state',
-            align: 'left',
-            width: '10%',
-        },
-        /*{
+export default class ThemeView extends Vue {
+  themes: Theme[] = [];
+  addTheme: boolean = false;
+  search: string = '';
+  headers: object = [
+    {
+      text: 'Id',
+       value: 'id',
+      align: 'left',
+      width: '15%',
+    },
+    { text: 'Name', value: 'name', align: 'left', width: '15%' },
+    {
+      text: 'State',
+      value: 'state',
+      align: 'left',
+      width: '10%',
+    },
+    /*{
             text: 'Role',
             value: 'role',
             align: 'left',
@@ -157,35 +160,32 @@ export default class UsersView extends Vue {
             sortable: false,
             width: '5%',
         },*/
-    ];
+  ];
 
-    async created() {
-        await this.$store.dispatch('loading');
-        try {
-            this.themes = await RemoteServices.getThemes();
-            /*this.themes.forEach((themes) => {
-                if (themes.name == null) user.institutionName = 'None';
-            });*/
-        } catch (error) {
-            await this.$store.dispatch('error', error);
-        }
-        await this.$store.dispatch('clearLoading');
+  async created() {
+    await this.$store.dispatch('loading');
+    try {
+      this.themes = await RemoteServices.getThemes();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
     }
+    await this.$store.dispatch('clearLoading');
+  }
 
-    newUser() {
-        this.addUserDialog = true;
-    }
+  newTheme() {
+    this.addTheme = true;
+  }
 
-    onCreatedUser(user: User) {
-        //this.users.unshift(user);
-        this.addUserDialog = false;
-    }
+  onCreatedTheme(theme: Theme) {
+    this.themes.unshift(theme);
+    this.addTheme = false;
+  }
 
-    onCloseDialog() {
-        this.addUserDialog = false;
-    }
+  onCloseDialog() {
+    this.addTheme = false;
+  }
 
-    async deleteUser(user: User) {
+  /*async deleteUser(user: User) {
         let userId = user.id;
         if (
             userId !== null &&
@@ -223,7 +223,7 @@ export default class UsersView extends Vue {
                 await this.$store.dispatch('error', error);
             }
         }
-    }
+    }*/
 }
 </script>
 

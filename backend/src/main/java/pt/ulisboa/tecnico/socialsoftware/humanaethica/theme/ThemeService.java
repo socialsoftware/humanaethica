@@ -33,7 +33,7 @@ public class ThemeService {
     public List<ThemeDto> getThemes() {
         return themeRepository.findAll().stream()
                 .map(ThemeDto::new)
-                .sorted(Comparator.comparing(ThemeDto::getName))
+                .sorted(Comparator.comparing(ThemeDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 

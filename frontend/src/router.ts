@@ -16,7 +16,6 @@ import AdminView from '@/views/admin/AdminView.vue';
 import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
-import RegisterThemeView from '@/views/admin/registerTheme/RegisterThemeView.vue';
 
 Vue.use(Router);
 
@@ -77,22 +76,6 @@ const router = new Router({
           component: InstitutionsView,
           meta: {
             title: APP_NAME + ' - Manage Institutions',
-            requiredAuth: 'Admin',
-          },
-        },
-      ],
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView,
-      children: [
-        {
-          path: 'registerTheme',
-          name: 'registerThemeAdmin',
-          component: RegisterThemeView,
-          meta: {
-            title: APP_NAME + ' - Register Theme',
             requiredAuth: 'Admin',
           },
         },

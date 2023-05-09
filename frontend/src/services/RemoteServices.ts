@@ -343,11 +343,11 @@ export default class RemoteServices {
 
   // Theme Controler
 
-    static async registerTheme(theme: Theme) {
+    static async registerTheme(theme: Theme): Promise<Theme> {
         return httpClient
             .post('/themes/register', theme)
-            .then(() => {
-                return;
+            .then((response) => {
+                return new Theme(response.data);
             })
             .catch(async (error) => {
                 throw Error(await this.errorMessage(error));
