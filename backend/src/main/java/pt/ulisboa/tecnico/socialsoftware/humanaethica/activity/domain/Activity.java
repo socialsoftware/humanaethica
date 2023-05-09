@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "activity")
 public class Activity {
 
-    public enum State {SUBMITTED, APPROVED, SUSPENDED}
+    public enum State {REPORTED, APPROVED, SUSPENDED}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

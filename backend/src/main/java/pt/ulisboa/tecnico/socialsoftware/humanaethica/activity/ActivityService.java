@@ -50,7 +50,7 @@ public class ActivityService {
             }
         }
 
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.SUBMITTED);
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));;
             activity.addTheme(theme);
@@ -61,14 +61,27 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<ActivityDto> suspendActivity(Integer activityId) {
+    public void suspendActivity(Integer activityId) {
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
         }
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND));
-
+        if (activity.getState() == Activity.State.SUSPENDED) {
+            throw new HEException(ACTIVITY_ALREADY_SUSPENDED, activity.getName());
+        }
         activity.suspend();
-        return getActivities();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void reportActivity(Integer activityId) {
+        if (activityId == null) {
+            throw new HEException(ACTIVITY_NOT_FOUND);
+        }
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND));
+        if (activity.getState() == Activity.State.REPORTED) {
+            throw new HEException(ACTIVITY_ALREADY_REPORTED, activity.getName());
+        }
+        activity.setState(Activity.State.REPORTED);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
