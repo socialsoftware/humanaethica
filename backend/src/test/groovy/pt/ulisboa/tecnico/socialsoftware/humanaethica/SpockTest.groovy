@@ -10,16 +10,15 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.ThemeService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.ThemeService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.ActivityService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.ThemeService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 import spock.lang.Specification
@@ -84,6 +83,9 @@ class SpockTest extends Specification {
 
     @Autowired
     ActivityRepository activityRepository
+
+    @Autowired
+    ActivityService activityService
 
     @Autowired
     ThemeService themeService

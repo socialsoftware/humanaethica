@@ -2,7 +2,9 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.util.List;
@@ -15,13 +17,13 @@ public class ActivityDto {
 
     private String region;
 
-    private boolean state;
+    private String state;
 
     private String creationDate;
 
-    private List<Volunteer> volunteers;
+    private List<UserDto> volunteers;
 
-    private Theme theme;
+    private List<ThemeDto> themes;
 
     public ActivityDto(){
     }
@@ -30,18 +32,22 @@ public class ActivityDto {
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
-        setTheme(activity.getTheme());
-        setState(activity.isActive());
+        this.themes = activity.getThemes().stream()
+                .map(ThemeDto::new)
+                .collect(Collectors.toList());
+        setState(activity.getState().toString());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
-        setVolunteers(activity.getVolunteers());
+        this.volunteers = activity.getVolunteers().stream()
+                .map(UserDto::new)
+                .collect(Collectors.toList());;
     }
 
-    public void setTheme(Theme theme) {
-        this.theme = theme;
+    public void setThemes(List<ThemeDto> themes) {
+        this.themes = themes;
     }
 
-    public Theme getTheme() {
-        return theme;
+    public List<ThemeDto> getThemes() {
+        return themes;
     }
 
     public Integer getId() {
@@ -64,9 +70,13 @@ public class ActivityDto {
 
     public void setRegion(String region) { this.region = region; }
 
-    public boolean isActive() { return state; }
+    public String getState() {
+        return state;
+    }
 
-    public void setState(boolean state) { this.state = state; }
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getCreationDate() {
         return creationDate;
@@ -76,7 +86,7 @@ public class ActivityDto {
         this.creationDate = creationDate;
     }
 
-    public void setVolunteers(List<Volunteer> volunteers) { this.volunteers = volunteers; }
+    public void setVolunteers(List<UserDto> volunteers) { this.volunteers = volunteers; }
 
-    public List<Volunteer> getVolunteers() { return volunteers; }
+    public List<UserDto> getVolunteers() { return volunteers; }
 }

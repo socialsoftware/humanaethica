@@ -11,8 +11,8 @@ import java.util.List;
 @DiscriminatorValue(User.UserTypes.VOLUNTEER)
 public class Volunteer extends User {
 
-    @ManyToOne
-    private Activity activity;
+    @ManyToMany
+    private List<Activity> activities;
 
     public Volunteer() {
     }
@@ -25,10 +25,24 @@ public class Volunteer extends User {
         super(name, Role.VOLUNTEER, state);
     }
 
-    public void setActivity(Activity activity) {
-        this.activity = activity;
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
-    public Activity getActivity() {
-        return activity;
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void addActivities (Activity activity) {
+        this.activities.add(activity);
+    }
+
+    public void removeActivities (Integer activityId) {
+        for (int i = 0; i < activities.size(); i++) {
+            if (activities.get(i).getId().equals(activityId)) {
+                activities.remove(i);
+                return;
+            }
+        }
     }
 }

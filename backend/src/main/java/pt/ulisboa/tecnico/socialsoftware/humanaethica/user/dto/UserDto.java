@@ -8,6 +8,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
+import java.util.List;
+
 public class UserDto {
     private Integer id;
 
@@ -25,7 +27,7 @@ public class UserDto {
 
     private String institutionName;
 
-    private Activity activity;
+    private List<Activity> activities;
 
     private String type;
 
@@ -58,7 +60,7 @@ public class UserDto {
         }
 
         if (user.getRole().equals(Role.VOLUNTEER)){
-           this.activity = ((Volunteer) user).getActivity();
+           setActivities(((Volunteer) user).getActivities());
         }
 
         else
@@ -157,10 +159,10 @@ public class UserDto {
         this.institutionName = institutionName;
     }
 
-    public void setActivity(Activity activity) {
-        this.activity = activity;
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
-    public Activity getActivity() {
-        return activity;
+    public List<Activity> getActivities() {
+        return activities;
     }
 }

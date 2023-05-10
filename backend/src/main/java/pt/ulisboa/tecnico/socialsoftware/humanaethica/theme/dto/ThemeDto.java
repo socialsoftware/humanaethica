@@ -14,7 +14,6 @@ public class ThemeDto {
     private Integer id;
     private String name;
     private List<Activity> activities = new ArrayList<>();
-
     private String state;
     private List<InstitutionDto> institutions;
 

@@ -1,104 +1,87 @@
 <template>
-  <v-card class="container" elevation="11">
-    <h2>Activity Registration</h2>
+  <v-card>
     <v-form ref="form" lazy-validation>
-      <v-text-field
-        v-model="activityName"
-        label="Name"
-        required
-        :rules="[(v) => !!v || 'Activity name is required']"
-        @input="$v.activityName.$touch()"
-        @blur="$v.activityName.$touch()"
-      ></v-text-field>
-
-      <v-text-field
-        v-model="activityRegion"
-        label="Region"
-        :rules="[(v) => !!v || 'Activity region is required']"
-        required
-        @input="$v.activityRegion.$touch()"
-        @blur="$v.activityRegion.$touch()"
-      ></v-text-field>
-
-      <v-text-field
-        v-model="activityTheme"
-        label="Theme"
-        required
-        :rules="[(v) => !!v || 'Activity theme is required']"
-        @input="$v.activityTheme.$touch()"
-        @blur="$v.activityTheme.$touch()"
-      ></v-text-field>
-      <v-btn
-        class="mr-4"
-        color="orange"
-        @click="submit"
-        :disabled="
-          !(
-            activityName !== '' &&
-            activityRegion !== '' &&
-            activityTheme !== ''
-          )
-        "
-      >
-        submit
-      </v-btn>
-      <v-btn @click="clear"> clear </v-btn>
+      <v-card-title>
+        <span class="headline">Create a new Activity</span>
+      </v-card-title>
+      <v-card-text class="text-left">
+        <v-text-field
+          v-model="activity.name"
+          label="Name"
+          data-cy="activityNameInput"
+          :rules="[(value) => !!value || 'Name is required']"
+          required
+        />
+        <v-text-field
+          v-model="activity.region"
+          label="Region"
+          data-cy="activityRegionInput"
+          :rules="[(value) => !!value || 'Region is required']"
+          required
+        />
+        <v-select
+          v-model="activity.themes"
+          :items="themes"
+          multiple
+          return-object
+          item-text="name"
+          item-value="name"
+          required
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn color="blue darken-1" @click="clear" data-cy="clearButton"
+          >Clear</v-btn
+        >
+        <v-btn color="blue darken-1" @click="submit" data-cy="submitButton"
+          >Add</v-btn
+        >
+      </v-card-actions>
     </v-form>
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterActivity from '@/models/activity/RegisterActivity';
 import RemoteServices from '@/services/RemoteServices';
+import Activity from '@/models/activity/Activity';
+import Theme from '@/models/theme/Theme';
 
 @Component({
   components: {},
 })
 export default class RegisterActivityView extends Vue {
-  activityName: string = '';
-  activityRegion: string = '';
-  activityTheme: string = '';
+  activity: Activity = new Activity();
+  themes: Theme[] | [] = [];
+  async created() {
+    this.themes = await RemoteServices.getThemes();
+    console.log(this.themes.length);
+    console.log(this.themes[0].name);
+  }
   async submit() {
+    console.log(this.activity.name);
+    console.log(this.activity.themes[0].name);
     try {
-      if (
-        this.activityName.length == 0 ||
-        this.activityRegion.length == 0 ||
-        this.activityTheme.length == 0
-      ) {
-        await this.$store.dispatch(
-          'error',
-          'Missing information, please check the form again'
-        );
-        return;
-      } else {
-        await RemoteServices.registerActivity({
-          activityName: this.activityName,
-          activityRegion: this.activityRegion,
-          activityTheme: this.activityTheme,
-        });
-        await this.$router.push({ name: 'home' });
-      }
+      await RemoteServices.registerActivity(this.activity);
+      await this.$router.push({ name: 'home' });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
   }
 
-  readFile() {
-    RemoteServices.getForm();
-  }
-
   clear() {
-    this.activityName = '';
-    this.activityRegion = '';
-    this.activityTheme = '';
+    this.activity.name = '';
+    this.activity.region = '';
+    this.activity.themes = [];
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .container {
+  background-color: grey;
   margin-top: 2rem !important;
   padding: 3rem !important;
   width: 60%;

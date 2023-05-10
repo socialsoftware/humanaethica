@@ -1,9 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
-import org.springframework.security.crypto.keygen.KeyGenerators;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
@@ -14,29 +12,36 @@ import java.util.List;
 @Entity
 @Table(name = "activity")
 public class Activity {
+
+    public enum State {REPORTED, APPROVED, SUSPENDED}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String region;
-    private boolean state;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activity", orphanRemoval = true, fetch = FetchType.LAZY)
+
+    @Enumerated(EnumType.STRING)
+    private Activity.State state;
+
+    @ManyToMany
     private List<Volunteer> volunteers = new ArrayList<>();
 
-    @ManyToOne
-    private Theme theme;
+    @ManyToMany
+    private List<Theme> themes = new ArrayList<>();
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     public Activity() {
     }
-    public Activity(String name, String region, Theme theme) {
+    public Activity(String name, String region, State state) {
         setName(name);
         setRegion(region);
-        setTheme(theme);
-        setState(true);
+        setThemes(themes);
+        setState(state);
         setCreationDate(DateHandler.now());
+
     }
 
     public Integer getId() {
@@ -59,16 +64,16 @@ public class Activity {
         this.region = region;
     }
 
-    public boolean isActive() {
+    public Activity.State getState() {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void setState(Activity.State state) {
         this.state = state;
     }
 
-    public void delete() {
-        setState(false);
+    public void suspend() {
+        this.setState(State.SUSPENDED);
     }
 
     public LocalDateTime getCreationDate() {
@@ -83,21 +88,34 @@ public class Activity {
         return volunteers;
     }
 
-    public void setTheme(Theme theme) {
-        this.theme = theme;
+    public void setThemes(List<Theme> themes) {
+        this.themes = themes;
     }
 
-    public Theme getTheme() {
-        return theme;
+    public List<Theme> getThemes() {
+        return themes;
+    }
+
+    public void addTheme (Theme theme) {
+        this.themes.add(theme);
+    }
+
+    public void removeTheme (Integer themeId) {
+        for (int i = 0; i < themes.size(); i++) {
+            if (themes.get(i).getId().equals(themeId)) {
+                themes.remove(i);
+                return;
+            }
+        }
     }
 
     public void addVolunteer (Volunteer volunteer) {
         this.volunteers.add(volunteer);
     }
 
-    public void removeVolunteer (int volunteerId) {
+    public void removeVolunteer (Integer volunteerId) {
         for (int i = 0; i < volunteers.size(); i++) {
-            if (volunteers.get(i).getId() == volunteerId) {
+            if (volunteers.get(i).getId().equals(volunteerId)) {
                 volunteers.remove(i);
                 return;
             }

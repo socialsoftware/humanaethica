@@ -9,7 +9,6 @@ import Activity from '@/models/activity/Activity';
 import RegisterInstitution from '@/models/institution/RegisterInstitution';
 import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
 import RegisterMember from '@/models/member/RegisterMember';
-import RegisterActivity from '@/models/activity/RegisterActivity';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 import Theme from '@/models/theme/Theme';
 
@@ -343,30 +342,11 @@ export default class RemoteServices {
       });
   }
 
-  static async registerActivity(
-    activity: RegisterActivity,
-  ) {
-    const formData = new FormData();
-    formData.append(
-      'activity',
-      new Blob(
-        [
-          JSON.stringify({
-            activityName: activity.activityName,
-            activityRegion: activity.activityRegion,
-            activityTheme: activity.activityTheme,
-          }),
-        ],
-        {
-          type: 'application/json',
-        }
-      )
-    );
+  static async registerActivity(activity: Activity) {
     return httpClient
-      .post('/activity/register', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      .post('/activity/register', activity)
+      .then((response) => {
+        return new Activity(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
@@ -388,7 +368,28 @@ export default class RemoteServices {
 
   static async validateActivity(activityId: number) {
     return httpClient
-      .post(`/activity/${activityId}/validate`)
+      .put(`/activity/${activityId}/validate`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async suspendActivity(activityId: number) {
+    return httpClient
+      .put(`/activity/${activityId}/suspend`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getThemes(): Promise<Theme[]> {
+    return httpClient
+      .get('/themes')
+      .then((response) => {
+        return response.data.map((theme: any) => {
+          return new Theme(theme);
+        });
+      })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });

@@ -27,7 +27,7 @@ public class Theme{
     private String name;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "theme", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ManyToMany
     private List<Activity> activities = new ArrayList<>();
 
     @ManyToMany
