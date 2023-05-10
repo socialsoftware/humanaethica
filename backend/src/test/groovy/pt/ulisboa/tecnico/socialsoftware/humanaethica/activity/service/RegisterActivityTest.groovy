@@ -27,8 +27,9 @@ class RegisterActivityTest extends SpockTest {
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
+        //themeService.validateTheme(theme.getId())
 
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
         activity.setThemes(themes)
         activityDto = new ActivityDto(activity)
 
@@ -41,14 +42,13 @@ class RegisterActivityTest extends SpockTest {
         result.getName() == "ACTIVITY_1_NAME"
         result.getRegion() == "ACTIVITY_1_REGION"
         result.getThemes().get(0).getName() == "THEME_1_NAME"
-        result.getState() == Activity.State.SUBMITTED
+        result.getState() == Activity.State.APPROVED
 
     }
 
     def "the activity already exists"() {
         given:
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
-        activity.addTheme(theme)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
         activityRepository.save(activity)
         and:
         activityDto = new ActivityDto()
@@ -67,7 +67,7 @@ class RegisterActivityTest extends SpockTest {
 
     def "add theme to an activity"() {
         given:
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.SUBMITTED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
         activityDto = new ActivityDto(activity)
         def result = activityService.registerActivity(activityDto)
 
@@ -77,6 +77,7 @@ class RegisterActivityTest extends SpockTest {
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
+        //themeService.validateTheme(theme.getId())
         activityService.addTheme(result.getId(), themes)
 
         then: "the activity is associated with the theme"

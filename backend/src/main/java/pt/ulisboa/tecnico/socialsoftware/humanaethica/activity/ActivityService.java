@@ -50,6 +50,12 @@ public class ActivityService {
             }
         }
 
+        /*for (Theme theme : themes) {
+            if (theme.getState() != Theme.State.APPROVED) {
+                throw new HEException(THEME_NOT_APPROVED);
+            }
+        }*/
+
         Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));;
@@ -110,6 +116,12 @@ public class ActivityService {
         if (themes.isEmpty()) {
             throw new HEException(EMPTY_THEME_LIST);
         }
+
+        /*for (Theme theme : themes) {
+            if (theme.getState() != Theme.State.APPROVED) {
+                throw new HEException(THEME_NOT_APPROVED);
+            }
+        }*/
 
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
         for (Theme theme : themes) {
