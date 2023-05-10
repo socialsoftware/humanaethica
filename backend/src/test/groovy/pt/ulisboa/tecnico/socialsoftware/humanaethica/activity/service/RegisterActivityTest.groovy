@@ -23,11 +23,10 @@ class RegisterActivityTest extends SpockTest {
 
     def "the activity does not exist, create the activity"() {
         given: "an activity dto"
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
-        //themeService.validateTheme(theme.getId())
 
         activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
         activity.setThemes(themes)
@@ -73,11 +72,10 @@ class RegisterActivityTest extends SpockTest {
 
         when:
         result.getThemes().size() == 0
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
-        //themeService.validateTheme(theme.getId())
         activityService.addTheme(result.getId(), themes)
 
         then: "the activity is associated with the theme"
