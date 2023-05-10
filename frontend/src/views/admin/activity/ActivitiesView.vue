@@ -87,7 +87,18 @@ export default class ActivitiesView extends Vue {
   search: string = '';
   addActivityDialog: boolean = false;
   headers: object = [
-    { text: 'Name', value: 'name', align: 'left', width: '5%' },
+    {
+      text: 'ID',
+      value: 'id',
+      align: 'left',
+      width: '1%',
+    },
+    {
+      text: 'Name',
+      value: 'name',
+      align: 'left',
+      width: '5%',
+    },
     {
       text: 'Region',
       value: 'region',

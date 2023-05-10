@@ -397,41 +397,27 @@ export default class RemoteServices {
 
   // Theme Controler
 
-    static async registerTheme(theme: Theme): Promise<Theme> {
-        return httpClient
-            .post('/themes/register', theme)
-            .then((response) => {
-                return new Theme(response.data);
-            })
-            .catch(async (error) => {
-                throw Error(await this.errorMessage(error));
-            });
-    }
+  static async registerTheme(theme: Theme): Promise<Theme> {
+    return httpClient
+      .post('/themes/register', theme)
+      .then((response) => {
+        return new Theme(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
 
-    static async registerThemeInstitution(theme: Theme) {
-        return httpClient
-            .post('/themes/registerInstitution', theme)
-            .then(() => {
-                return;
-            })
-            .catch(async (error) => {
-                throw Error(await this.errorMessage(error));
-            });
-    }
-
-    static async getThemes(): Promise<Theme[]> {
-        return httpClient
-            .get('/themes')
-            .then((response) => {
-                return response.data.map((theme: any) => {
-                    return new Theme(theme);
-                });
-            })
-            .catch(async (error) => {
-                throw Error(await this.errorMessage(error));
-            });
-    }
-
+  static async registerThemeInstitution(theme: Theme) {
+    return httpClient
+      .post('/themes/registerInstitution', theme)
+      .then(() => {
+        return;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
 
   // Error
 
