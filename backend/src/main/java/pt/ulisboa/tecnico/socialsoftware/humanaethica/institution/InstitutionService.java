@@ -22,6 +22,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
 
@@ -39,6 +41,8 @@ public class InstitutionService {
     UserRepository userRepository;
     @Autowired
     DocumentRepository documentRepository;
+    @Autowired
+    ThemeRepository themeRepository;
     @Autowired
     private UserApplicationalService userApplicationalService;
     @Autowired

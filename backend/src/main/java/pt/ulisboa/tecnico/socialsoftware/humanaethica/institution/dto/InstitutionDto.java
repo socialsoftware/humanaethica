@@ -5,6 +5,9 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institu
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InstitutionDto {
     private Integer id;
 
@@ -18,7 +21,7 @@ public class InstitutionDto {
 
     private String creationDate;
 
-    private ThemeDto themeDto;
+    private List<ThemeDto> themeDto = new ArrayList<>();
 
     public InstitutionDto(){
     }
@@ -86,11 +89,11 @@ public class InstitutionDto {
         this.creationDate = creationDate;
     }
 
-    public ThemeDto getThemes() {
+    public List<ThemeDto>getThemes() {
         return themeDto;
     }
 
-    public void setThemes(ThemeDto themeDto) {
+    public void setThemes(List<ThemeDto> themeDto) {
         this.themeDto = themeDto;
     }
 }

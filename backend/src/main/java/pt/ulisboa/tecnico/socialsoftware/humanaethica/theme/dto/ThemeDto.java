@@ -2,17 +2,21 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ThemeDto {
 
     private Integer id;
     private String name;
     private List<Activity> activities = new ArrayList<>();
-    private List<Institution> institutions = new ArrayList<>();
+
+    private String state;
+    private List<InstitutionDto> institutions;
 
     public ThemeDto(){
 
@@ -22,7 +26,10 @@ public class ThemeDto {
         setId(theme.getId());
         setName(theme.getName());
         //setActivities(activities);
-        setInstitutions((ArrayList<Institution>) theme.getInstitutions());
+        this.institutions = theme.getInstitutions().stream()
+                .map(InstitutionDto::new)
+                .collect(Collectors.toList());
+        setState(theme.getState().toString());
     }
 
     public Integer getId() {return id;}
@@ -43,11 +50,19 @@ public class ThemeDto {
         this.activities = activities;
     }
 
-    public List<Institution> getInstitutions() {
+    public List<InstitutionDto> getInstitutions() {
         return institutions;
     }
 
-    public void setInstitutions(ArrayList<Institution> institutions) {
+    public void setInstitutions(List<InstitutionDto> institutions) {
         this.institutions = institutions;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

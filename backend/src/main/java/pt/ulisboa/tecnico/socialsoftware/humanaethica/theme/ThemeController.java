@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+
 import java.util.List;
 
 @RestController
@@ -13,7 +15,6 @@ public class ThemeController {
     private ThemeService themeService;
 
     @GetMapping("/themes")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ThemeDto> getThemes() {
         return themeService.getThemes();
     }
@@ -26,7 +27,24 @@ public class ThemeController {
 
     @PostMapping("/themes/register")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void registerTheme(@Valid @RequestPart("theme") ThemeDto themeDto){
-        themeService.registerTheme(themeDto);
+    public void registerTheme(@Valid @RequestBody ThemeDto themeDto){
+        themeService.registerTheme(themeDto,true);
+    }
+
+    @PostMapping("/themes/registerInstitution")
+    public void registerThemeInstitution(@Valid @RequestBody ThemeDto themeDto){
+        themeService.registerTheme(themeDto,false);
+    }
+
+    @PutMapping("/theme/{themeId}/addInstitution")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void addInstitution(@PathVariable int themeId, List<Institution> institutions) {
+        themeService.addInstitution(themeId, institutions);
+    }
+
+    @PutMapping("/theme/{themeId}/removeInstitution")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void removeInstitution(@PathVariable int themeId, List<Institution> institutions) {
+        themeService.removeInstitution(themeId, institutions);
     }
 }

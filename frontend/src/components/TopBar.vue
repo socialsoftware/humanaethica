@@ -60,6 +60,14 @@
                 <v-list-item-title>Manage Institutions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+              <v-list-item to="/admin/manageTheme" data-cy="themeManageTheme">
+                  <v-list-item-action>
+                      <v-icon>fas fa-users</v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                      <v-list-item-title>Manage Theme</v-list-item-title>
+                  </v-list-item-content>
+              </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar-items>
