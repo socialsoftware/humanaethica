@@ -29,7 +29,7 @@ public class ActivityService {
     public List<ActivityDto> getActivities() {
         return activityRepository.findAll().stream()
                 .map(ActivityDto::new)
-                .sorted(Comparator.comparing(ActivityDto::getName))
+                .sorted(Comparator.comparing(ActivityDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 

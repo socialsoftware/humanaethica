@@ -8,7 +8,7 @@ export default class Activity {
   region!: string;
   themes: Theme[] = [];
   state!: string;
-  //creationDate!: string;
+  creationDate!: string;
 
   constructor(jsonObj?: Activity) {
     if (jsonObj) {
@@ -19,7 +19,7 @@ export default class Activity {
         return new Theme(themes);
       });
       this.state = jsonObj.state;
-      //this.creationDate = ISOtoString(jsonObj.creationDate);
+      this.creationDate = ISOtoString(jsonObj.creationDate);
     }
   }
 }
