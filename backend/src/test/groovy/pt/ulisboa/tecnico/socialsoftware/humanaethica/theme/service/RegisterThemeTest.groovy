@@ -30,7 +30,7 @@ class RegisterThemeTest extends SpockTest {
         themeDto = new ThemeDto(theme)
 
         when:
-        def result = themeService.registerTheme(themeDto)
+        def result = themeService.registerTheme(themeDto,true)
 
         then: "the theme is saved in the database"
         themeRepository.findAll().size() == 1
@@ -50,7 +50,7 @@ class RegisterThemeTest extends SpockTest {
         //themeDto.setState(Theme.State.APPROVED)
 
         when:
-        themeService.registerTheme(themeDto)
+        themeService.registerTheme(themeDto,true)
 
         then:
         def error = thrown(HEException)
@@ -63,7 +63,7 @@ class RegisterThemeTest extends SpockTest {
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         //theme.setState(Theme.State.APPROVED)
         themeDto = new ThemeDto(theme)
-        def result = themeService.registerTheme(themeDto)
+        def result = themeService.registerTheme(themeDto,true)
 
         when:
         result.getInstitutions().size() == 0
@@ -87,7 +87,7 @@ class RegisterThemeTest extends SpockTest {
         themeDto.setName(name)
 
         when:
-        themeService.registerTheme(themeDto)
+        themeService.registerTheme(themeDto,true)
 
         then:
         def error = thrown(HEException)
