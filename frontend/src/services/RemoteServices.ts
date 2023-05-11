@@ -254,8 +254,8 @@ export default class RemoteServices {
     memberDoc: File
   ) {
     const formData = new FormData();
-    formData.append('institutionDoc', institutionDoc);
-    formData.append('memberDoc', memberDoc);
+    formData.append('institutionDocument', institutionDoc);
+    formData.append('memberDocument', memberDoc);
     formData.append(
       'institution',
       new Blob(

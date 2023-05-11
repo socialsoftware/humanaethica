@@ -26,7 +26,11 @@
           >
         </v-card-title>
       </template>
-
+      <template v-slot:[`item.themes`]="{ item }">
+        <v-chip v-for="theme in item.themes">
+          {{ theme.name }}
+        </v-chip>
+      </template>
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip
           bottom
