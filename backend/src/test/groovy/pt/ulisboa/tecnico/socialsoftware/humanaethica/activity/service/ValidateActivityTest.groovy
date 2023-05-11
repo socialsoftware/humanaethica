@@ -21,7 +21,7 @@ class ValidateActivityTest extends SpockTest {
     def newActivity
 
     def setup() {
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         themes.add(theme)
@@ -36,7 +36,6 @@ class ValidateActivityTest extends SpockTest {
 
     def "validate activity with success"() {
         when:
-        //themeService.validateTheme(theme.getId())
         activityService.validateActivity(activity.getId())
 
         then: "the activity and theme are validated"
@@ -64,8 +63,10 @@ class ValidateActivityTest extends SpockTest {
 
     /*def "the theme haven't yet been approved"() {
         when:
+        theme.setState(Theme.State.SUBMITTED)
+        themes.add(theme)
+        activity.setThemes(themes)
         activityService.validateActivity(activity.getId())
-        theme.setState(Activity.State.SUBMITTED)
 
         then:
         def error = thrown(HEException)

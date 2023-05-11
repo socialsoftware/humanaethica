@@ -19,7 +19,7 @@ class ActivityTest extends SpockTest {
 
     def "create empty activity"() {
         when: "empty activity are created"
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         activity = new Activity("","",Activity.State.APPROVED)
@@ -41,7 +41,7 @@ class ActivityTest extends SpockTest {
 
     def "create activity and persists"() {
         given: "a theme and a volunteer"
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
@@ -76,7 +76,7 @@ class ActivityTest extends SpockTest {
 
     def "remove a voluntary and a theme from activity"() {
         given: "a theme, a volunteer and a activity"
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
@@ -100,7 +100,7 @@ class ActivityTest extends SpockTest {
 
     def "suspend activity"() {
         given: "a theme, a volunteer and a activity"
-        theme = new Theme("THEME_1_NAME")
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         List<Theme> themes = new ArrayList<>()
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
