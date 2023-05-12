@@ -20,10 +20,16 @@ public class ThemeController {
         return themeService.getThemes();
     }
 
-    @DeleteMapping("/themes/{themeId}")
+    @DeleteMapping("/themes/{themeId}/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ThemeDto> deleteTheme(@PathVariable int themeId) {
         return themeService.deleteTheme(themeId);
+    }
+
+    @PutMapping("/themes/{themeId}/validate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ThemeDto> validateTheme(@PathVariable int themeId) {
+        return themeService.validateTheme(themeId);
     }
 
     @PostMapping("/themes/register")
@@ -33,6 +39,7 @@ public class ThemeController {
     }
 
     @PostMapping("/themes/registerInstitution")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void registerThemeInstitution(@Valid @RequestBody ThemeDto themeDto){
         themeService.registerTheme(themeDto,false);
     }

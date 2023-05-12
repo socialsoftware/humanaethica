@@ -419,7 +419,28 @@ export default class RemoteServices {
       });
   }
 
-  // Error
+  static async validateTheme(themeId: number) {
+    return httpClient
+        .put(`/themes/${themeId}/validate`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteTheme(themeId: number): Promise<Theme[]> {
+    return httpClient
+        .delete(`/themes/${themeId}/delete`)
+        .then((response) => {
+          return response.data.map((theme: any) => {
+            return new Theme(theme);
+          });
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+    // Error
 
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {

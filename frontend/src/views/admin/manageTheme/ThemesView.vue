@@ -22,6 +22,38 @@
           >
         </v-card-title>
       </template>
+
+      <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom v-if="item.state == 'SUBMITTED' || item.state == 'APPROVED'">
+              <template v-slot:activator="{ on }">
+                  <v-icon
+                          class="mr-2 action-button"
+                          color="red"
+                          v-on="on"
+                          data-cy="deleteButton"
+                          @click="deleteTheme(item)"
+                  >delete</v-icon
+                  >
+              </template>
+              <span>Delete Theme</span>
+          </v-tooltip>
+          <v-tooltip
+                  bottom
+                  v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
+          >
+              <template v-slot:activator="{ on }">
+                  <v-icon
+                          class="mr-2 action-button"
+                          color="green"
+                          v-on="on"
+                          data-cy="validateButton"
+                          @click="validateTheme(item)"
+                  >mdi-check-bold</v-icon
+                  >
+              </template>
+              <span>Validate Theme</span>
+          </v-tooltip>
+      </template>
     </v-data-table>
     <add-theme
       v-if="addTheme"
@@ -29,58 +61,6 @@
       v-on:user-created="onCreatedTheme"
       v-on:close-dialog="onCloseDialog"
     />
-    <!--<template v-slot:[`item.action`]="{ item }">
-                <v-tooltip bottom v-if="item.state != 'DELETED'">
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                            class="mr-2 action-button"
-                            color="red"
-                            v-on="on"
-                            data-cy="deleteButton"
-                            @click="deleteUser(item)"
-                        >delete</v-icon
-                        >
-                    </template>
-                    <span>Delete user</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                            class="mr-2 action-button"
-                            color="black"
-                            v-on="on"
-                            data-cy="documentButton"
-                            @click="getDocument(item)"
-                        >description</v-icon
-                        >
-                    </template>
-                    <span>See document</span>
-                </v-tooltip>
-                <v-tooltip
-                    bottom
-                    v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
-                >
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                            class="mr-2 action-button"
-                            color="green"
-                            v-on="on"
-                            data-cy="validateButton"
-                            @click="validateUser(item)"
-                        >mdi-check-bold</v-icon
-                        >
-                    </template>
-                    <span>Validate user</span>
-                </v-tooltip>
-            </template>
-        </v-data-table>
-
-        <add-user-dialog
-            v-if="addUserDialog"
-            v-model="addUserDialog"
-            v-on:user-created="onCreatedUser"
-            v-on:close-dialog="onCloseDialog"
-        />-->
   </v-card>
 </template>
 
@@ -98,12 +78,6 @@ export default class ThemeView extends Vue {
   addTheme: boolean = false;
   search: string = '';
   headers: object = [
-    {
-      text: 'Id',
-       value: 'id',
-      align: 'left',
-      width: '15%',
-    },
     { text: 'Name', value: 'name', align: 'left', width: '15%' },
     {
       text: 'State',
@@ -111,56 +85,14 @@ export default class ThemeView extends Vue {
       align: 'left',
       width: '10%',
     },
-    /*{
-            text: 'Role',
-            value: 'role',
-            align: 'left',
-            width: '5%',
-        },
-        {
-            text: 'Institution',
-            value: 'institutionName',
-            align: 'left',
-            width: '15%',
-        },
-        {
-            text: 'Active',
-            value: 'active',
-            align: 'left',
-            width: '15%',
-        },
-        {
-            text: 'State',
-            value: 'state',
-            align: 'left',
-            width: '10%',
-        },
-        {
-            text: 'Type',
-            value: 'type',
-            align: 'left',
-            width: '10%',
-        },
-        {
-            text: 'Creation Date',
-            value: 'creationDate',
-            align: 'left',
-            width: '10%',
-        },
-        {
-            text: 'Last Access',
-            value: 'lastAccess',
-            align: 'left',
-            width: '30%',
-        },
-        {
-            text: 'Delete',
-            value: 'action',
-            align: 'left',
-            sortable: false,
-            width: '5%',
-        },*/
-  ];
+    {
+      text: 'Delete',
+      value: 'action',
+      align: 'left',
+      sortable: false,
+      width: '5%',
+    },
+];
 
   async created() {
     await this.$store.dispatch('loading');
@@ -185,45 +117,35 @@ export default class ThemeView extends Vue {
     this.addTheme = false;
   }
 
-  /*async deleteUser(user: User) {
-        let userId = user.id;
+  async deleteTheme(theme: Theme) {
+        let themeId = theme.id;
         if (
-            userId !== null &&
-            confirm('Are you sure you want to delete the user?')
+            themeId !== null &&
+            confirm('Are you sure you want to delete the theme?')
         ) {
             try {
-                //this.users = await RemoteServices.deleteUser(userId);
+                this.themes = await RemoteServices.deleteTheme(themeId);
             } catch (error) {
                 await this.$store.dispatch('error', error);
             }
         }
     }
 
-    async getDocument(user: User) {
-        let userId = user.id;
-        if (userId !== null) {
+
+    async validateTheme(theme: Theme) {
+        let themeId = theme.id;
+        if (
+            themeId !== null &&
+            confirm('Are you sure you want to validate this theme?')
+        ) {
             try {
-                await RemoteServices.getUserDocument(userId);
+                await RemoteServices.validateTheme(themeId);
+                this.themes = await RemoteServices.getThemes();
             } catch (error) {
                 await this.$store.dispatch('error', error);
             }
         }
     }
-
-    async validateUser(user: User) {
-        let userId = user.id;
-        if (
-            userId !== null &&
-            confirm('Are you sure you want to validate this user?')
-        ) {
-            try {
-                await RemoteServices.validateUser(userId);
-                //this.users = await RemoteServices.getUsers();
-            } catch (error) {
-                await this.$store.dispatch('error', error);
-            }
-        }
-    }*/
 }
 </script>
 

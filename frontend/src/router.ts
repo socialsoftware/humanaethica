@@ -18,6 +18,7 @@ import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
 import RegisterActivityView from '@/views/activity/RegisterActivityView.vue';
 import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
+import RegisterTheme from '@/views/member/RegisterTheme.vue';
 
 Vue.use(Router);
 
@@ -149,6 +150,15 @@ const router = new Router({
       meta: {
         requiredAuth: 'None',
         title: APP_NAME + ' - Member Registration',
+      },
+    },
+    {
+      path: '/member/registerTheme',
+      name: 'register-theme',
+      component: RegisterTheme,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Theme Registration',
       },
     },
     {
