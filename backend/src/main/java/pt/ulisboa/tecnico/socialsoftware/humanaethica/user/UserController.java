@@ -86,18 +86,4 @@ public class UserController {
     public void validateUser(@PathVariable int userId) {
         userApplicationalService.validateUser(userId);
     }
-
-    @PutMapping("/users/{activityId}/subscribe")
-    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public void subscribeActivity(Principal principal, @PathVariable int activityId) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        userService.subscribeActivity(userId, activityId);
-    }
-
-    @DeleteMapping("/users/{activityId}/unsubscribe")
-    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public void unsubscribeActivity(Principal principal, @PathVariable int activityId) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        userService.unsubscribeActivity(userId, activityId);
-    }
 }

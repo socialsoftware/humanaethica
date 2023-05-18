@@ -11,6 +11,9 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.Activi
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
@@ -24,11 +27,13 @@ public class ActivityService {
     ActivityRepository activityRepository;
     @Autowired
     ThemeRepository themeRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivityDto> getActivities() {
         return activityRepository.findAll().stream()
-                .map(ActivityDto::new)
+                .map(activity->new ActivityDto(activity,false))
                 .sorted(Comparator.comparing(ActivityDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
@@ -110,40 +115,88 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void addTheme(Integer activityId, List<Theme> themes) {
+    public Activity updateActivity(Integer activityId, ActivityDto activityDto) {
+
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
         }
-        if (themes.isEmpty()) {
-            throw new HEException(EMPTY_THEME_LIST);
+
+        if (activityDto.getName() == null || activityDto.getName().trim().length() == 0) {
+            throw new HEException(INVALID_ACTIVITY_NAME, activityDto.getName());
         }
 
-        /*for (Theme theme : themes) {
+        if (activityDto.getRegion() == null || activityDto.getRegion().trim().length() == 0) {
+            throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
+        }
+
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityDto.getId()));
+
+        /*for (ThemeDto themeDto : activityDto.getThemes()) {
+            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             if (theme.getState() != Theme.State.APPROVED) {
                 throw new HEException(THEME_NOT_APPROVED);
             }
         }*/
 
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
-        for (Theme theme : themes) {
-            activity.addTheme(theme);
-            theme.addActivity(activity);
+        for (ThemeDto themeDto : activityDto.getThemes()) {
+            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
+            if(!activity.getThemes().contains(theme)) {
+                activity.addTheme(theme);
+                theme.addActivity(activity);
+            }
         }
+
+        for (Theme theme : activity.getThemes()) {
+            Theme th = themeRepository.findById(theme.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
+            if(!activityDto.getThemes().contains(theme)) {
+                activity.removeTheme(theme.getId());
+                theme.removeActivity(activity.getId());
+            }
+        }
+
+        activityRepository.save(activity);
+        return activity;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void removeTheme(Integer activityId, List<Theme> themes) {
+    public void subscribeActivity(Integer userId, Integer activityId) {
+        if (userId == null) {
+            throw new HEException(USER_NOT_FOUND);
+        }
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
         }
-        if (themes.isEmpty()) {
-            throw new HEException(EMPTY_THEME_LIST);
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+        if (user.getRole() != User.Role.VOLUNTEER) {
+            throw new HEException(INVALID_ROLE, user.getRole().name());
         }
 
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
-        for (int i=0; themes.size()<i; i++) {
-            activity.removeTheme(themes.get(i).getId());
-            themes.get(i).removeActivity(activity.getId());
+        Volunteer volunteer = (Volunteer) user;
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
+
+        volunteer.addActivities(activity);
+        activity.addVolunteer(volunteer);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void unsubscribeActivity(Integer userId, Integer activityId) {
+        if (userId == null) {
+            throw new HEException(USER_NOT_FOUND);
         }
+        if (activityId == null) {
+            throw new HEException(ACTIVITY_NOT_FOUND);
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+        if (user.getRole() != User.Role.VOLUNTEER) {
+            throw new HEException(INVALID_ROLE, user.getRole().name());
+        }
+
+        Volunteer volunteer = (Volunteer) user;
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
+
+        volunteer.removeActivities(activity.getId());
+        activity.removeVolunteer(volunteer.getId());
     }
 }

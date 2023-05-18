@@ -70,7 +70,7 @@ public class UserService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<UserDto> getUsers() {
         return userRepository.findAll().stream()
-                .map(UserDto::new)
+                .map(user->new UserDto(user,false))
                 .sorted(Comparator.comparing(UserDto::getUsername))
                 .collect(Collectors.toList());
     }
@@ -205,47 +205,5 @@ public class UserService {
         authUser.getUser().setState(User.State.APPROVED);
 
         return new RegisterUserDto(authUser);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void subscribeActivity(Integer userId, Integer activityId) {
-        if (userId == null) {
-            throw new HEException(USER_NOT_FOUND);
-        }
-        if (activityId == null) {
-            throw new HEException(ACTIVITY_NOT_FOUND);
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-        if (user.getRole() != User.Role.VOLUNTEER) {
-            throw new HEException(INVALID_ROLE, user.getRole().name());
-        }
-
-        Volunteer volunteer = (Volunteer) user;
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
-
-        volunteer.addActivities(activity);
-        activity.addVolunteer(volunteer);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void unsubscribeActivity(Integer userId, Integer activityId) {
-        if (userId == null) {
-            throw new HEException(USER_NOT_FOUND);
-        }
-        if (activityId == null) {
-            throw new HEException(ACTIVITY_NOT_FOUND);
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-        if (user.getRole() != User.Role.VOLUNTEER) {
-            throw new HEException(INVALID_ROLE, user.getRole().name());
-        }
-
-        Volunteer volunteer = (Volunteer) user;
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
-
-        volunteer.removeActivities(activity.getId());
-        activity.removeVolunteer(volunteer.getId());
     }
 }

@@ -28,7 +28,7 @@ public class ActivityDto {
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity){
+    public ActivityDto(Activity activity, boolean shallow){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
@@ -37,9 +37,11 @@ public class ActivityDto {
                 .collect(Collectors.toList());
         setState(activity.getState().toString());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
-        this.volunteers = activity.getVolunteers().stream()
-                .map(UserDto::new)
-                .collect(Collectors.toList());;
+        if(!shallow) {
+            this.volunteers = activity.getVolunteers().stream()
+                    .map(user->new UserDto(user,true))
+                    .collect(Collectors.toList());;
+        }
     }
 
     public void setThemes(List<ThemeDto> themes) {
