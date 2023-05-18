@@ -17,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserReposi
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -129,8 +130,6 @@ public class ActivityService {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityDto.getId()));
-
         /*for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             if (theme.getState() != Theme.State.APPROVED) {
@@ -138,21 +137,17 @@ public class ActivityService {
             }
         }*/
 
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityDto.getId()));
+        activity.setName(activityDto.getName());
+        activity.setRegion(activityDto.getRegion());
+        List<Theme> themeList = new ArrayList<>();
+
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-            if(!activity.getThemes().contains(theme)) {
-                activity.addTheme(theme);
-                theme.addActivity(activity);
-            }
+            themeList.add(theme);
+            theme.addActivity(activity);
         }
-
-        for (Theme theme : activity.getThemes()) {
-            Theme th = themeRepository.findById(theme.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-            if(!activityDto.getThemes().contains(theme)) {
-                activity.removeTheme(theme.getId());
-                theme.removeActivity(activity.getId());
-            }
-        }
+        activity.setThemes(themeList);
 
         activityRepository.save(activity);
         return activity;
