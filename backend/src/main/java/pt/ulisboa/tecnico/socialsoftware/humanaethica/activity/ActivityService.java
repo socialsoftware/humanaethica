@@ -145,8 +145,17 @@ public class ActivityService {
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             themeList.add(theme);
-            theme.addActivity(activity);
+            if(!activity.getThemes().contains(theme)) {
+                theme.addActivity(activity);
+            }
         }
+
+        for (Theme theme : activity.getThemes()) {
+            if(!themeList.contains(theme)) {
+                theme.removeActivity(activityId);
+            }
+        }
+
         activity.setThemes(themeList);
 
         activityRepository.save(activity);
