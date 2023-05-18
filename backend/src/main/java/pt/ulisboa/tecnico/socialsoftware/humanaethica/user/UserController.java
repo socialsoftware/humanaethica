@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user;
 
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -85,15 +87,17 @@ public class UserController {
         userApplicationalService.validateUser(userId);
     }
 
-    @PutMapping("/users/{userId}/subscribe")
+    @PutMapping("/users/{activityId}/subscribe")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public void subscribeActivity(@PathVariable int userId, List<Activity> activities) {
-        userService.subscribeActivity(userId, activities);
+    public void subscribeActivity(Principal principal, @PathVariable int activityId) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        userService.subscribeActivity(userId, activityId);
     }
 
-    @DeleteMapping("/users/{userId}/unsubscribe")
+    @DeleteMapping("/users/{activityId}/unsubscribe")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public void unsubscribeActivity(@PathVariable int userId, List<Activity> activities) {
-        userService.unsubscribeActivity(userId, activities);
+    public void unsubscribeActivity(Principal principal, @PathVariable int activityId) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        userService.unsubscribeActivity(userId, activityId);
     }
 }

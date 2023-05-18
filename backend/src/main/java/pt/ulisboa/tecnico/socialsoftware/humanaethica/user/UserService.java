@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
@@ -49,6 +50,9 @@ public class UserService {
 
     @Autowired
     private UserDocumentRepository userDocumentRepository;
+
+    @Autowired
+    private ActivityRepository activityRepository;
 
     @Autowired
     public AuthUserService authUserService;
@@ -204,12 +208,12 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void subscribeActivity(Integer userId, List<Activity> activities) {
+    public void subscribeActivity(Integer userId, Integer activityId) {
         if (userId == null) {
             throw new HEException(USER_NOT_FOUND);
         }
-        if (activities.isEmpty()) {
-            throw new HEException(EMPTY_ACTIVITY_LIST);
+        if (activityId == null) {
+            throw new HEException(ACTIVITY_NOT_FOUND);
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
@@ -218,19 +222,19 @@ public class UserService {
         }
 
         Volunteer volunteer = (Volunteer) user;
-        for (int i=0; activities.size()<i; i++) {
-            volunteer.addActivities(activities.get(i));
-            activities.get(i).addVolunteer(volunteer);
-        }
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
+
+        volunteer.addActivities(activity);
+        activity.addVolunteer(volunteer);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void unsubscribeActivity(Integer userId, List<Activity> activities) {
+    public void unsubscribeActivity(Integer userId, Integer activityId) {
         if (userId == null) {
             throw new HEException(USER_NOT_FOUND);
         }
-        if (activities.isEmpty()) {
-            throw new HEException(EMPTY_ACTIVITY_LIST);
+        if (activityId == null) {
+            throw new HEException(ACTIVITY_NOT_FOUND);
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
@@ -239,9 +243,9 @@ public class UserService {
         }
 
         Volunteer volunteer = (Volunteer) user;
-        for (int i=0; activities.size()<i; i++) {
-            volunteer.removeActivities(activities.get(i).getId());
-            activities.get(i).removeVolunteer(volunteer.getId());
-        }
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
+
+        volunteer.removeActivities(activity.getId());
+        activity.removeVolunteer(volunteer.getId());
     }
 }
