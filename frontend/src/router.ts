@@ -19,6 +19,7 @@ import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
 import RegisterActivityView from '@/views/activity/RegisterActivityView.vue';
 import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
 import RegisterTheme from '@/views/member/RegisterTheme.vue';
+import ThemeView from "@/views/member/ThemeView.vue";
 
 Vue.use(Router);
 
@@ -153,12 +154,12 @@ const router = new Router({
       },
     },
     {
-      path: '/member/registerTheme',
-      name: 'register-theme',
-      component: RegisterTheme,
+      path: '/member/theme',
+      name: 'theme',
+      component: ThemeView,
       meta: {
         requiredAuth: 'None',
-        title: APP_NAME + ' - Theme Registration',
+        title: APP_NAME + ' - Theme',
       },
     },
     {

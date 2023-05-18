@@ -22,6 +22,11 @@
           >
         </v-card-title>
       </template>
+      <template v-slot:[`item.institutions`]="{ item }">
+        <v-chip v-for="institution in item.institutions">
+          {{ institution.name }}
+        </v-chip>
+      </template>
 
       <template v-slot:[`item.action`]="{ item }">
           <v-tooltip bottom v-if="item.state == 'SUBMITTED' || item.state == 'APPROVED'">
@@ -78,7 +83,13 @@ export default class ThemeView extends Vue {
   addTheme: boolean = false;
   search: string = '';
   headers: object = [
-    { text: 'Name', value: 'name', align: 'left', width: '15%' },
+    { text: 'Name', value: 'name', align: 'left', width: '5%' },
+    {
+      text: 'Institutions',
+      value: 'institutions',
+      align: 'left',
+      width: '10%',
+    },
     {
       text: 'State',
       value: 'state',

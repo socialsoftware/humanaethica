@@ -7,6 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InstitutionDto {
     private Integer id;
@@ -33,6 +34,20 @@ public class InstitutionDto {
         setNif(institution.getNIF());
         setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
+    }
+
+    public InstitutionDto(Institution institution, boolean shallow){
+        setId(institution.getId());
+        setEmail(institution.getEmail());
+        setName(institution.getName());
+        setNif(institution.getNIF());
+        setActive(institution.isActive());
+        setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
+        if (!shallow){
+            this.themeDto = institution.getThemes().stream()
+                    .map(theme->new ThemeDto(theme,true))
+                    .collect(Collectors.toList());
+        }
     }
 
     public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){

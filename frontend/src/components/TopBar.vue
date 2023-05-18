@@ -42,10 +42,9 @@
                         text
                         color="orange"
                         v-on="on"
-                        data-cy="member"
-                        @click="registerTheme"
-                >
-                    Register Theme
+                        data-cy="theme"
+                        @click="Theme"
+                >Theme
                     <v-icon>fas fa-user</v-icon>
                 </v-btn>
             </template>
@@ -267,8 +266,8 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'register-member' }).catch(() => {});
   }
 
-  async registerTheme() {
-      await this.$router.push({ name: 'register-theme' }).catch(() => {});
+  async Theme() {
+      await this.$router.push({ name: 'theme' }).catch(() => {});
   }
 
   async logout() {

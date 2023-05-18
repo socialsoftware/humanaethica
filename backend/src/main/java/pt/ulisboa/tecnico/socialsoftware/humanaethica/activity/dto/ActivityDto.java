@@ -33,7 +33,7 @@ public class ActivityDto {
         setName(activity.getName());
         setRegion(activity.getRegion());
         this.themes = activity.getThemes().stream()
-                .map(ThemeDto::new)
+                .map(theme->new ThemeDto(theme,true))
                 .collect(Collectors.toList());
         setState(activity.getState().toString());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));

@@ -15,19 +15,21 @@ public class ThemeDto {
     private String name;
     private List<Activity> activities = new ArrayList<>();
     private String state;
-    private List<InstitutionDto> institutions;
+    private List<InstitutionDto> institutions = new ArrayList<>();
 
     public ThemeDto(){
 
     }
 
-    public ThemeDto(Theme theme) {
+    public ThemeDto(Theme theme, boolean shallow) {
         setId(theme.getId());
         setName(theme.getName());
         //setActivities(activities);
-        this.institutions = theme.getInstitutions().stream()
-                .map(InstitutionDto::new)
-                .collect(Collectors.toList());
+        if (!shallow){
+            this.institutions = theme.getInstitutions().stream()
+                    .map(institution->new InstitutionDto(institution,true))
+                    .collect(Collectors.toList());
+        }
         setState(theme.getState().toString());
     }
 

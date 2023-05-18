@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -12,10 +13,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepo
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ThemeService {
@@ -32,7 +34,7 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getThemes() {
         return themeRepository.findAll().stream()
-                .map(ThemeDto::new)
+                .map(theme->new ThemeDto(theme,false))
                 .sorted(Comparator.comparing(ThemeDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
@@ -81,30 +83,54 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void addInstitution(Integer themeId, List<Institution> institutions) {
+    public void addInstitution(Integer themeId, int institutionId) {
         if (themeId == null) {
             throw new HEException(THEME_NOT_FOUND);
         }
-        if (institutions.isEmpty()) {
-            throw new HEException(EMPTY_INSTITUTION_LIST);
-        }
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
-        for (Institution institution : institutions) {
-            institution.addTheme(theme);
-        }
+        institution.addTheme(theme);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void removeInstitution(Integer themeId, List<Institution> institutions) {
+    public void removeInstitution(Integer themeId, int institutionId) {
         if (themeId == null) {
             throw new HEException(THEME_NOT_FOUND);
         }
-        if (institutions.isEmpty()) {
-            throw new HEException(EMPTY_INSTITUTION_LIST);
-        }
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
-        for(Institution institution : institutions) {
-            institution.removeTheme(theme);
-        }
+        institution.removeTheme(theme);
     }
+
+    public List<ThemeDto> getInstitutionThemes(int institutionId){
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        InstitutionDto institutionDto = new InstitutionDto(institution,false);
+        return institutionDto.getThemes();
+    }
+
+    public List<ThemeDto> availableThemesforInstitution(Integer institutionId) {
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+
+        List<ThemeDto> aux = getThemes();
+        List<ThemeDto> filteredThemes = new ArrayList<>();
+
+        for (ThemeDto x : aux) {
+            if (!(x.getState().equals("APPROVED"))) {
+                continue; // Ignora temas não aprovados
+            }
+            boolean isInInstitution = false;
+            for (Theme y : institution.getThemes()) {
+                if (x.getId().equals(y.getId())) {
+                    isInInstitution = true;
+                    break;
+                }
+            }
+            if (!isInInstitution) {
+                filteredThemes.add(x);
+            }
+        }
+
+        return filteredThemes;
+    }
+
 }

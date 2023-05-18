@@ -1,5 +1,6 @@
 import { ISOtoString } from '@/services/ConvertDateService';
 import Document from '../management/Document';
+import Theme from '@/models/theme/Theme';
 
 export default class Institution {
   id: number | null = null;
@@ -8,6 +9,7 @@ export default class Institution {
   active!: boolean;
   nif!: string;
   creationDate!: string;
+  themes: Theme[] = [];
 
   constructor(jsonObj?: Institution) {
     if (jsonObj) {
@@ -17,6 +19,11 @@ export default class Institution {
       this.nif = jsonObj.nif;
       this.active = jsonObj.active;
       this.creationDate = ISOtoString(jsonObj.creationDate);
+      this.themes = jsonObj.themes.map(
+          (theme: Theme) => {
+            return new Theme(theme);
+          }
+      );
     }
   }
 }

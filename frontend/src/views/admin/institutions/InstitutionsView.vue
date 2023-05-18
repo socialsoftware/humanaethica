@@ -18,6 +18,12 @@
           />
         </v-card-title>
       </template>
+      <template v-slot:[`item.themes`]="{ item }">
+        <v-chip v-for="theme in item.themes">
+          {{ theme.name }}
+        </v-chip>
+      </template>
+
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -68,6 +74,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Institution from '@/models/institution/Institution';
 
+
 @Component({
   components: {},
 })
@@ -76,6 +83,12 @@ export default class InstitutionsView extends Vue {
   search: string = '';
   headers: object = [
     { text: 'Name', value: 'name', align: 'left', width: '25%' },
+    {
+      text: 'Themes',
+      value: 'themes',
+      align: 'left',
+      width: '10%',
+    },
     {
       text: 'Email',
       value: 'email',

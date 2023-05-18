@@ -2,11 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import org.springframework.security.crypto.keygen.KeyGenerators;
 import jakarta.persistence.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
-
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +26,7 @@ public class Theme{
     @ManyToMany
     private List<Activity> activities = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Institution> institutions = new ArrayList<>();
 
     public Theme() {

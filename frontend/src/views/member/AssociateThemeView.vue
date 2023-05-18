@@ -1,42 +1,36 @@
 <template v-if="theme">
   <v-dialog
-    :value="dialog"
-    @input="$emit('close-dialog')"
-    @keydown.esc="$emit('close-dialog')"
-    max-width="75%"
-    max-height="80%"
+      :value="dialog"
+      @input="$emit('close-dialog')"
+      @keydown.esc="$emit('close-dialog')"
+      max-width="75%"
+      max-height="80%"
   >
     <v-card>
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-card-title>
-          <span class="headline">Add Theme</span>
+          <span class="headline">Associate Theme</span>
         </v-card-title>
 
-        <v-card-text class="text-left">
-          <v-text-field
-            v-model="theme.name"
-            label="Name"
-            data-cy="themeNameInput"
-            :rules="[(value) => !!value || 'Name is required']"
+        <v-select
+            v-model="theme"
+            :items="themes"
+            return-object
+            item-text="name"
+            item-value="name"
             required
-          />
-          <div class="add-theme-feedback-container">
-            <span class="add-theme-feedback" v-if="success">
-              {{ theme.name }} added</span
-            >
-          </div>
-        </v-card-text>
+        />
 
         <v-card-actions>
           <v-spacer />
           <v-btn
-            color="blue darken-1"
-            @click="$emit('close-dialog')"
-            data-cy="cancelButton"
-            >Close</v-btn
+              color="blue darken-1"
+              @click="$emit('close-dialog')"
+              data-cy="cancelButton"
+          >Close</v-btn
           >
           <v-btn color="blue darken-1" @click="submit" data-cy="saveButton"
-            >Add</v-btn
+          >Add</v-btn
           >
         </v-card-actions>
       </v-form>
@@ -51,26 +45,27 @@ import Theme from '@/models/theme/Theme';
 @Component({
   components: {},
 })
-export default class AddTheme extends Vue {
+export default class AssociateThemeView extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   valid = true;
   success = false;
+  themes: Theme[] | [] = [];
   theme: Theme = new Theme();
 
-  created() {
-    this.theme = new Theme();
+  async created() {
+    this.themes = await RemoteServices.getThemesAvailableforInstitution();
   }
 
   async submit() {
-    let theme: Theme;
     this.success = false;
 
     if (!(this.$refs.form as Vue & { validate: () => boolean }).validate())
       return;
 
     try {
-      theme = await RemoteServices.registerTheme(this.theme);
-      this.$emit('theme-created', theme);
+      await RemoteServices.addThemetoInstitution(
+        this.theme
+      );
       this.success = true;
       await this.$router.push({ name: 'home' });
     } catch (error) {

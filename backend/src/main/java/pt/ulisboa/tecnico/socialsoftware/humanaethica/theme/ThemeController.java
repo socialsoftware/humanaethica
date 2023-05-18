@@ -3,10 +3,16 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -45,14 +51,30 @@ public class ThemeController {
     }
 
     @PutMapping("/theme/{themeId}/addInstitution")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void addInstitution(@PathVariable int themeId, List<Institution> institutions) {
-        themeService.addInstitution(themeId, institutions);
+    public void addInstitution(@PathVariable int themeId, Principal principal) {
+        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        Member member = (Member) user;
+        themeService.addInstitution(themeId, member.getInstitution().getId());
     }
 
     @PutMapping("/theme/{themeId}/removeInstitution")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void removeInstitution(@PathVariable int themeId, List<Institution> institutions) {
-        themeService.removeInstitution(themeId, institutions);
+    public void removeInstitution(@PathVariable int themeId, Principal principal) {
+        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        Member member = (Member) user;
+        themeService.removeInstitution(themeId, member.getInstitution().getId());
+    }
+
+    @GetMapping("/theme/getInstitutionThemes")
+    public List<ThemeDto> getInstitutionThemes(Principal principal){
+        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        Member member = (Member) user;
+        return themeService.getInstitutionThemes(member.getInstitution().getId());
+    }
+
+    @GetMapping("/theme/availableThemesforInstitution")
+    public List<ThemeDto> availableThemesforInstitution(Principal principal){
+        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        Member member = (Member) user;
+        return themeService.availableThemesforInstitution(member.getInstitution().getId());
     }
 }

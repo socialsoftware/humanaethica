@@ -38,8 +38,9 @@ public class Institution {
 
     private LocalDateTime tokenGenerationDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Theme> themes = new ArrayList<>();
+
 
     public Institution() {
     }

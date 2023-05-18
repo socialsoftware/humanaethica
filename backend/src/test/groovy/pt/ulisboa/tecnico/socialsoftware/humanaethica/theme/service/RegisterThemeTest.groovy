@@ -27,7 +27,7 @@ class RegisterThemeTest extends SpockTest {
         given: "a theme dto"
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme)
+        themeDto = new ThemeDto(theme,false)
 
         when:
         def result = themeService.registerTheme(themeDto,true)
@@ -39,15 +39,14 @@ class RegisterThemeTest extends SpockTest {
         result.getState() == Theme.State.APPROVED
 
     }
+
     def "the theme already exists"() {
         given:
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
-        //theme.setState(Theme.State.APPROVED)
         themeRepository.save(theme)
         and:
         themeDto = new ThemeDto()
         themeDto.setName("THEME_1_NAME")
-        //themeDto.setState(Theme.State.APPROVED)
 
         when:
         themeService.registerTheme(themeDto,true)
@@ -62,22 +61,41 @@ class RegisterThemeTest extends SpockTest {
         given:
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme)
+        themeDto = new ThemeDto(theme,true)
         def result = themeService.registerTheme(themeDto,true)
 
         when:
         result.getInstitutions().size() == 0
         institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(institution)
-        List<Institution> institutions = new ArrayList<>()
-        institutions.add(institution)
-        themeService.addInstitution(result.getId(), institutions)
+        themeService.addInstitution(result.getId(), institution.getId());
 
         then: "the theme is associated with the institution"
         result.getInstitutions().size() == 1
         result.getInstitutions().get(0).getName() == INSTITUTION_1_NAME
         result.getInstitutions().get(0).getEmail() == INSTITUTION_1_EMAIL
         result.getInstitutions().get(0).getNIF() == INSTITUTION_1_NIF
+    }
+
+    def "getThemes from institution"() {
+        given:
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        //theme.setState(Theme.State.APPROVED)
+        themeDto = new ThemeDto(theme,true)
+        def result = themeService.registerTheme(themeDto,true)
+        result.getInstitutions().size() == 0
+        institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
+        institutionRepository.save(institution)
+        themeService.addInstitution(result.getId(), institution.getId());
+
+        when:
+        List<ThemeDto> aux = themeService.getInstitutionThemes( institution.getId());
+        List<ThemeDto> aux_2 = themeService.getThemes();
+
+        then: "the theme is associated with the institution"
+        aux.size() == 1;
+        aux.get(0).getName().equals("THEME_1_NAME");
+        aux_2.size() == 1;
     }
 
     @Unroll
