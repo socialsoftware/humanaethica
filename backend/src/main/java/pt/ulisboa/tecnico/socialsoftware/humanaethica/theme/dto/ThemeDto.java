@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
@@ -17,11 +16,15 @@ public class ThemeDto {
     private String state;
     private List<InstitutionDto> institutions = new ArrayList<>();
 
+    private ThemeDto parentTheme ;
+
+    private List<ThemeDto> subTheme = new ArrayList<>();
+
     public ThemeDto(){
 
     }
 
-    public ThemeDto(Theme theme, boolean shallow) {
+    public ThemeDto(Theme theme, boolean shallow, boolean shallowTheme) {
         setId(theme.getId());
         setName(theme.getName());
         //setActivities(activities);
@@ -31,6 +34,14 @@ public class ThemeDto {
                     .collect(Collectors.toList());
         }
         setState(theme.getState().toString());
+        if (!shallowTheme){
+            this.subTheme = theme.getSubTheme().stream()
+                    .map(themes->new ThemeDto(themes,true,true))
+                    .collect(Collectors.toList());
+        }
+        if (theme.getParentTheme() != null){
+            setTheme(new ThemeDto(theme.getParentTheme(),false,true));
+        }
     }
 
     public Integer getId() {return id;}
@@ -66,4 +77,14 @@ public class ThemeDto {
     public void setState(String state) {
         this.state = state;
     }
+
+    public void addTheme (ThemeDto theme){ subTheme.add(theme);}
+
+    public void deleteTheme(ThemeDto theme){subTheme.remove(theme);}
+
+    public ThemeDto getParentTheme(){return this.parentTheme;}
+
+    public void setTheme(ThemeDto theme){this.parentTheme = theme;}
+
+    public List<ThemeDto> getSubThemes(){return this.subTheme;}
 }

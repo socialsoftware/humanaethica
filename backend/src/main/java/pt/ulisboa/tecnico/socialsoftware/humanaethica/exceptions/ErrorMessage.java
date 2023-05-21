@@ -34,6 +34,7 @@ public enum ErrorMessage {
     ACCESS_DENIED("You do not have permission to view this resource"),
     THEME_HAS_INSTITUTIONS("This theme can not be removed because it has institutions associated"),
     THEME_ALREADY_EXISTS("This theme already exists"),
+    THEME_CAN_NOT_BE_DELETED("This Theme can not be deleted"),
     EMPTY_INSTITUTION_LIST("This list is empty"),
     ACTIVITY_ALREADY_EXISTS("Activity already exists in database"),
     THEME_NOT_APPROVED("Theme is not yet approved"),

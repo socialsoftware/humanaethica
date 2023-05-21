@@ -45,7 +45,7 @@ public class InstitutionDto {
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
         if (!shallow){
             this.themeDto = institution.getThemes().stream()
-                    .map(theme->new ThemeDto(theme,true))
+                    .map(theme->new ThemeDto(theme,true,true))
                     .collect(Collectors.toList());
         }
     }

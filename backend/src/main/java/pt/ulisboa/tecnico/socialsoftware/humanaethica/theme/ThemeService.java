@@ -34,13 +34,13 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getThemes() {
         return themeRepository.findAll().stream()
-                .map(theme->new ThemeDto(theme,false))
+                .map(theme->new ThemeDto(theme,false,false))
                 .sorted(Comparator.comparing(ThemeDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Theme registerTheme(ThemeDto themeDto, boolean isAdmin) {
+    public Theme registerTheme(ThemeDto themeDto, boolean isAdmin, int parentThemeId) {
 
         if (themeDto.getName() == null) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
@@ -50,13 +50,17 @@ public class ThemeService {
                 throw new HEException(THEME_ALREADY_EXISTS);
             }
         }
+        Theme themeParent = null;
+        if (parentThemeId >= 0) {
+            themeParent = themeRepository.findById(parentThemeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(parentThemeId)));
+        }
         Theme theme;
 
         if (isAdmin){
-            theme = new Theme(themeDto.getName(), Theme.State.APPROVED);
+            theme = new Theme(themeDto.getName(), Theme.State.APPROVED, themeParent);
         }
         else{
-            theme = new Theme(themeDto.getName(), Theme.State.SUBMITTED);
+            theme = new Theme(themeDto.getName(), Theme.State.SUBMITTED, themeParent);
         }
 
         themeRepository.save(theme);
@@ -66,13 +70,46 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> deleteTheme(int themeId) {
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
-        if (theme.getInstitutions().size() == 0) {
-            theme.delete();
-            return getThemes();
+        if(!removeTheme(theme)){
+            throw new HEException(THEME_CAN_NOT_BE_DELETED);
+        };
+        return getThemes();
+    }
+
+    public boolean removeTheme(Theme theme) {
+        // Percorre recursivamente os subtemas e verifica se possuem instituições associadas
+        for (Theme subTheme : theme.getSubTheme()) {
+            if (hasAssociatedInstitutions(subTheme)) {
+                return false;
+            }
         }
-        else{
-            throw new HEException(THEME_HAS_INSTITUTIONS, theme.getName());
+
+        // Remove o subTheme atual da lista de subtemas do parentTheme
+        //theme.getParentTheme().getSubTheme().remove(theme);
+        theme.delete();
+        // Percorre recursivamente os subtemas e remove-os
+        for (Theme subTheme : theme.getSubTheme()) {
+            subTheme.delete();
+            removeTheme(subTheme);
         }
+
+        return true;
+    }
+
+    public boolean hasAssociatedInstitutions(Theme theme) {
+        // Verifica se o tema atual possui instituições associadas
+        if (!theme.getInstitutions().isEmpty()) {
+            return true;
+        }
+
+        // Percorre recursivamente os subtemas e verifica se possuem instituições associadas
+        for (Theme subTheme : theme.getSubTheme()) {
+            if (hasAssociatedInstitutions(subTheme)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

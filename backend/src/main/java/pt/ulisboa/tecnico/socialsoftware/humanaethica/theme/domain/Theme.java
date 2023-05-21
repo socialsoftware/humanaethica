@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain;
 
+import org.hibernate.boot.model.source.internal.hbm.AttributesHelper;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import jakarta.persistence.*;
@@ -29,12 +30,18 @@ public class Theme{
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Institution> institutions = new ArrayList<>();
 
+    @ManyToOne
+    private Theme parentTheme ;
+    @OneToMany
+    private List<Theme> subTheme = new ArrayList<>();
+
     public Theme() {
     }
 
-    public Theme(String name, State state) {
+    public Theme(String name, State state, Theme parentTheme) {
         setName(name);
         setState(state);
+        setTheme(parentTheme);
     }
 
     public Integer getId() {return id;}
@@ -79,6 +86,21 @@ public class Theme{
     public void addInstitution (Institution institution){ institutions.add(institution);}
 
     public void deleteInstitution(Institution institution){institutions.remove(institution);}
+
+    public void addTheme (Theme theme){ subTheme.add(theme);}
+
+    public void deleteTheme(Theme theme){subTheme.remove(theme);}
+
+    public Theme getParentTheme(){return this.parentTheme;}
+
+    public void setTheme(Theme theme){
+        this.parentTheme = theme;
+        if (theme != null){
+            theme.addTheme(this);
+        }
+    }
+
+    public List<Theme> getSubTheme(){return this.subTheme;}
 
     public boolean isActive() {
         return state.equals(State.APPROVED);

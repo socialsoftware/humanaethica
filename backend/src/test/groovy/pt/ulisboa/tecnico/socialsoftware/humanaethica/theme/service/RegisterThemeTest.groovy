@@ -25,12 +25,12 @@ class RegisterThemeTest extends SpockTest {
 
     def "the theme does not exist, create the theme"() {
         given: "a theme dto"
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
         //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme,false)
+        themeDto = new ThemeDto(theme,false,true)
 
         when:
-        def result = themeService.registerTheme(themeDto,true)
+        def result = themeService.registerTheme(themeDto,true,-1)
 
         then: "the theme is saved in the database"
         themeRepository.findAll().size() == 1
@@ -42,14 +42,14 @@ class RegisterThemeTest extends SpockTest {
 
     def "the theme already exists"() {
         given:
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
         themeRepository.save(theme)
         and:
         themeDto = new ThemeDto()
         themeDto.setName("THEME_1_NAME")
 
         when:
-        themeService.registerTheme(themeDto,true)
+        themeService.registerTheme(themeDto,true,-1)
 
         then:
         def error = thrown(HEException)
@@ -59,10 +59,9 @@ class RegisterThemeTest extends SpockTest {
     }
     def "add institution to a theme"() {
         given:
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
-        //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme,true)
-        def result = themeService.registerTheme(themeDto,true)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
+        themeDto = new ThemeDto(theme,true,true)
+        def result = themeService.registerTheme(themeDto,true,-1)
 
         when:
         result.getInstitutions().size() == 0
@@ -79,10 +78,10 @@ class RegisterThemeTest extends SpockTest {
 
     def "getThemes from institution"() {
         given:
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
         //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme,true)
-        def result = themeService.registerTheme(themeDto,true)
+        themeDto = new ThemeDto(theme,true,true)
+        def result = themeService.registerTheme(themeDto,true,-1)
         result.getInstitutions().size() == 0
         institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(institution)
@@ -96,6 +95,34 @@ class RegisterThemeTest extends SpockTest {
         aux.size() == 1;
         aux.get(0).getName().equals("THEME_1_NAME");
         aux_2.size() == 1;
+    }
+
+
+
+    def "create and delete four themes associated with each other"(){
+        given:
+        def themeParent = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
+        themeRepository.save(themeParent)
+        def subTheme1 = new Theme("THEME_2_NAME", Theme.State.APPROVED,themeParent)
+        themeRepository.save(subTheme1)
+        def subTheme2 = new Theme("THEME_3_NAME", Theme.State.APPROVED,themeParent)
+        themeRepository.save(subTheme2)
+        def subTheme3 = new Theme("THEME_2_NAME", Theme.State.APPROVED,subTheme1)
+        themeRepository.save(subTheme3)
+        institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
+        institutionRepository.save(institution)
+        themeService.addInstitution(subTheme3.getId(), institution.getId());
+
+        when:
+        themeService.deleteTheme(themeParent.getId());
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.THEME_CAN_NOT_BE_DELETED
+        themeParent.isActive()
+        subTheme1.isActive()
+        subTheme2.isActive()
+        subTheme3.isActive()
     }
 
     @Unroll
