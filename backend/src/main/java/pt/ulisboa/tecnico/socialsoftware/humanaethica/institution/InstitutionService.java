@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
@@ -58,7 +59,7 @@ public class InstitutionService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<InstitutionDto> getInstitutions() {
         return institutionRepository.findAll().stream()
-                .map(InstitutionDto::new)
+                .map(institution->new InstitutionDto(institution,false))
                 .sorted(Comparator.comparing(InstitutionDto::getName))
                 .toList();
     }

@@ -40,7 +40,7 @@ public class ActivityService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivityDto> getActivities() {
         return activityRepository.findAll().stream()
-                .map(activity->new ActivityDto(activity,false))
+                .map(activity->new ActivityDto(activity,false,false))
                 .sorted(Comparator.comparing(ActivityDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }

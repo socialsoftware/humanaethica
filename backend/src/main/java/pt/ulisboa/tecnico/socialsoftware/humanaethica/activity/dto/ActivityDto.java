@@ -31,7 +31,7 @@ public class ActivityDto {
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity, boolean shallow){
+    public ActivityDto(Activity activity, boolean shallow, boolean shallowInstitution){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
@@ -45,8 +45,10 @@ public class ActivityDto {
                     .map(user->new UserDto(user,true))
                     .collect(Collectors.toList());;
         }
-        if (activity.getInstitution() != null) {
-            setInstitution(new InstitutionDto(activity.getInstitution()));
+        if(!shallowInstitution) {
+            if (activity.getInstitution() != null) {
+                setInstitution(new InstitutionDto(activity.getInstitution(), true));
+            }
         }
     }
 
