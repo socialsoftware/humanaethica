@@ -40,7 +40,7 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Theme registerTheme(ThemeDto themeDto, boolean isAdmin, int parentThemeId) {
+    public Theme registerTheme(ThemeDto themeDto, boolean isAdmin) {
 
         if (themeDto.getName() == null) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
@@ -51,8 +51,8 @@ public class ThemeService {
             }
         }
         Theme themeParent = null;
-        if (parentThemeId >= 0) {
-            themeParent = themeRepository.findById(parentThemeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(parentThemeId)));
+        if (themeDto.getParentTheme() != null) {
+            themeParent = themeRepository.findById(themeDto.getParentTheme().getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeDto.getParentTheme().getId())));
         }
         Theme theme;
 

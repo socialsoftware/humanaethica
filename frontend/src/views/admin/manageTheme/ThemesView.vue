@@ -27,6 +27,11 @@
           {{ institution.name }}
         </v-chip>
       </template>
+      <template v-slot:[`item.parentTheme`]="{ item }">
+        <v-chip v-if="item.parentTheme && item.parentTheme.name">
+          {{ item.parentTheme.name }}
+        </v-chip>
+      </template>
 
       <template v-slot:[`item.action`]="{ item }">
           <v-tooltip bottom v-if="item.state == 'SUBMITTED' || item.state == 'APPROVED'">
@@ -84,6 +89,12 @@ export default class ThemeView extends Vue {
   search: string = '';
   headers: object = [
     { text: 'Name', value: 'name', align: 'left', width: '5%' },
+    {
+      text: 'Parent',
+      value: 'parentTheme',
+      align: 'left',
+      width: '10%',
+    },
     {
       text: 'Institutions',
       value: 'institutions',

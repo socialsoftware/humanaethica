@@ -12,6 +12,15 @@
           <span class="headline">Add Theme</span>
         </v-card-title>
 
+        <v-select
+            v-model="theme.parentTheme"
+            :items="themes"
+            return-object
+            item-text="name"
+            item-value="name"
+            required
+        />
+
         <v-card-text class="text-left">
           <v-text-field
               v-model="theme.name"
@@ -56,9 +65,11 @@ export default class RegisterActivityView extends Vue {
   valid = true;
   success = false;
   theme: Theme = new Theme();
+  themes: Theme[] | [] = [];
 
-  created() {
+  async created() {
     this.theme = new Theme();
+    this.themes = await RemoteServices.getThemes();
   }
 
   async submit() {

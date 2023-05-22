@@ -40,14 +40,14 @@ public class ThemeController {
 
     @PostMapping("/themes/register")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void registerTheme(@Valid @RequestBody ThemeDto themeDto, int parentThemeId){
-        themeService.registerTheme(themeDto,true,parentThemeId);
+    public void registerTheme(@Valid @RequestBody ThemeDto themeDto){
+        themeService.registerTheme(themeDto,true);
     }
 
     @PostMapping("/themes/registerInstitution")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void registerThemeInstitution(@Valid @RequestBody ThemeDto themeDto, int parentThemeId){
-        themeService.registerTheme(themeDto,false,parentThemeId);
+    public void registerThemeInstitution(@Valid @RequestBody ThemeDto themeDto){
+        themeService.registerTheme(themeDto,false);
     }
 
     @PutMapping("/theme/{themeId}/addInstitution")
