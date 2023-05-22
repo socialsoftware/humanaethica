@@ -69,14 +69,14 @@ public class ActivityController {
         activityService.updateActivity(userId, activityId, activityDto);
     }
 
-    @PutMapping("/users/{activityId}/subscribe")
+    @PutMapping("/activity/{activityId}/subscribe")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public void subscribeActivity(Principal principal, @PathVariable int activityId) {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         activityService.subscribeActivity(userId, activityId);
     }
 
-    @PutMapping("/users/{activityId}/unsubscribe")
+    @PutMapping("/activity/{activityId}/unsubscribe")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public void unsubscribeActivity(Principal principal, @PathVariable int activityId) {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
