@@ -73,15 +73,11 @@ public class ActivityService {
             }
         }
 
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), null ,Activity.State.APPROVED);
-        for (ThemeDto themeDto : activityDto.getThemes()) {
-            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-            activity.addTheme(theme);
-        }
+        Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        Activity activity = null;
 
         if(userId == -1) {
-            Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-            activity.setInstitution(institution);
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), institution, Activity.State.APPROVED);
         }
 
         else{
@@ -91,7 +87,17 @@ public class ActivityService {
             }
 
             Member member = (Member) user;
-            activity.setInstitution(member.getInstitution());
+            if (member.getInstitution().equals(institution)){
+                activity = new Activity(activityDto.getName(), activityDto.getRegion(), institution, Activity.State.APPROVED);
+            }
+            else {
+                throw new HEException(INSTITUTION_DISAGREEMENT);
+            }
+        }
+
+        for (ThemeDto themeDto : activityDto.getThemes()) {
+            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
+            activity.addTheme(theme);
         }
 
         activityRepository.save(activity);
