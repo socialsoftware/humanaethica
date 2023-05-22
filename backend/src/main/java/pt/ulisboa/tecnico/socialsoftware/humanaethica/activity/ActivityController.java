@@ -57,9 +57,16 @@ public class ActivityController {
     }
 
     @PutMapping("/activity/{activityId}/update")
-    //@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ROLE_MEMBER'))")
+    @PreAuthorize("(hasRole('ROLE_ADMIN'))")
     public void updateActivity(@PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
-        activityService.updateActivity(activityId, activityDto);
+        activityService.updateActivity(-1, activityId, activityDto);
+    }
+
+    @PutMapping("/activity/{activityId}/MemberUpdate")
+    @PreAuthorize("(hasRole('ROLE_MEMBER'))")
+    public void updateActivityMember(Principal principal, @PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        activityService.updateActivity(userId, activityId, activityDto);
     }
 
     @PutMapping("/users/{activityId}/subscribe")

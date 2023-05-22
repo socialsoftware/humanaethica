@@ -37,20 +37,9 @@ public class InstitutionDto {
         setNif(institution.getNIF());
         setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
-    }
-
-    public InstitutionDto(Institution institution, boolean shallowActivity){
-        setId(institution.getId());
-        setEmail(institution.getEmail());
-        setName(institution.getName());
-        setNif(institution.getNIF());
-        setActive(institution.isActive());
-        setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
-        if (!shallowActivity){
-            this.activityDto = institution.getActivities().stream()
-                    .map(activity->new ActivityDto(activity,false,true))
-                    .collect(Collectors.toList());
-        }
+        this.activityDto = institution.getActivities().stream()
+                .map(activity->new ActivityDto(activity,false))
+                .collect(Collectors.toList());
     }
 
     public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){

@@ -31,8 +31,8 @@ public class Activity {
     @ManyToMany
     private List<Theme> themes = new ArrayList<>();
 
-    @ManyToMany
-    private List<Institution> institutions = new ArrayList<>();
+    @ManyToOne
+    private Institution institution;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -43,6 +43,7 @@ public class Activity {
         setName(name);
         setRegion(region);
         setThemes(themes);
+        setInstitution(institution);
         setState(state);
         setCreationDate(DateHandler.now());
 
@@ -115,27 +116,17 @@ public class Activity {
         }
     }
 
-    public void setInstitutions(List<Institution> institutions) {
-        this.institutions = institutions;
-    }
-
-    public List<Institution> getInstitutions() {
-        return institutions;
-    }
-
-    public void addInstitution (Institution institution) {
-        this.institutions.add(institution);
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
         institution.addActivity(this);
     }
+    public Institution getInstitution() {
+        return institution;
+    }
 
-    public void removeInstitution (Integer institutionId) {
-        for (int i = 0; i < institutions.size(); i++) {
-            if (institutions.get(i).getId().equals(institutionId)) {
-                institutions.remove(i);
-                institutions.get(i).removeActivity(this.getId());
-                return;
-            }
-        }
+    public void removeInstitution () {
+        this.institution = null;
+        institution.removeActivity(this.getId());
     }
 
     public void addVolunteer (Volunteer volunteer) {

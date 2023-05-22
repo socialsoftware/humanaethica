@@ -42,7 +42,7 @@ public class Institution {
     @ManyToMany
     private List<Theme> themes = new ArrayList<>();
 
-    @ManyToMany
+    @OneToMany
     private List<Activity> activities = new ArrayList<>();
 
     public Institution() {
@@ -166,14 +166,12 @@ public class Institution {
 
     public void addActivity(Activity activity) {
         this.activities.add(activity);
-        activity.addInstitution(this);
     }
 
     public void removeActivity(Integer activityId) {
         for (int i = 0; i < activities.size(); i++) {
             if (activities.get(i).getId().equals(activityId)) {
                 activities.remove(i);
-                activities.get(i).removeInstitution(this.getId());
                 return;
             }
         }

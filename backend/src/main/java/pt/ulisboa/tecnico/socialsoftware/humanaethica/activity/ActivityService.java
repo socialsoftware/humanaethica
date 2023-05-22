@@ -40,7 +40,7 @@ public class ActivityService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivityDto> getActivities() {
         return activityRepository.findAll().stream()
-                .map(activity->new ActivityDto(activity,false,false))
+                .map(activity->new ActivityDto(activity,false))
                 .sorted(Comparator.comparing(ActivityDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
@@ -73,37 +73,28 @@ public class ActivityService {
             }
         }
 
-        Activity activity = null;
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
+        for (ThemeDto themeDto : activityDto.getThemes()) {
+            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
+            activity.addTheme(theme);
+        }
 
         if(userId == -1) {
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
-            for (InstitutionDto institutionDto : activityDto.getInstitutions()) {
-                Institution institution = institutionRepository.findById(institutionDto.getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-                activity.addInstitution(institution);
-            }
-            for (ThemeDto themeDto : activityDto.getThemes()) {
-                Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-                activity.addTheme(theme);
-            }
+            Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+            activity.setInstitution(institution);
         }
 
         else{
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
-
             User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
             if (user.getRole() != User.Role.MEMBER) {
                 throw new HEException(INVALID_ROLE, user.getRole().name());
             }
 
             Member member = (Member) user;
-            activity.addInstitution(member.getInstitution());
-
-            for (ThemeDto themeDto : activityDto.getThemes()) {
-                Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-                activity.addTheme(theme);
-            }
-            activityRepository.save(activity);
+            activity.setInstitution(member.getInstitution());
         }
+
+        activityRepository.save(activity);
         return activity;
     }
 
@@ -150,10 +141,14 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Activity updateActivity(Integer activityId, ActivityDto activityDto) {
+    public Activity updateActivity(Integer userId, Integer activityId, ActivityDto activityDto) {
 
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
+        }
+
+        if (userId == null) {
+            throw new HEException(USER_NOT_FOUND);
         }
 
         if (activityDto.getName() == null || activityDto.getName().trim().length() == 0) {
@@ -191,6 +186,22 @@ public class ActivityService {
         }
 
         activity.setThemes(themeList);
+
+
+        if(userId == -1) {
+            Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+            activity.setInstitution(institution);
+        }
+
+        else{
+            User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+            if (user.getRole() != User.Role.MEMBER) {
+                throw new HEException(INVALID_ROLE, user.getRole().name());
+            }
+
+            Member member = (Member) user;
+            activity.setInstitution(member.getInstitution());
+        }
 
         activityRepository.save(activity);
         return activity;

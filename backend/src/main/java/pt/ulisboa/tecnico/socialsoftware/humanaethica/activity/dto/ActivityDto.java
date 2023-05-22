@@ -26,12 +26,12 @@ public class ActivityDto {
 
     private List<ThemeDto> themes;
 
-    private List<InstitutionDto> institutions;
+    private InstitutionDto institution;
 
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity, boolean shallow, boolean shallowInstitution){
+    public ActivityDto(Activity activity, boolean shallow){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
@@ -45,11 +45,7 @@ public class ActivityDto {
                     .map(user->new UserDto(user,true))
                     .collect(Collectors.toList());;
         }
-        if(!shallow) {
-            this.institutions = activity.getInstitutions().stream()
-                    .map(institution->new InstitutionDto(institution,true))
-                    .collect(Collectors.toList());;
-        }
+        setInstitution(new InstitutionDto(activity.getInstitution()));
     }
 
     public void setThemes(List<ThemeDto> themes) {
@@ -100,11 +96,11 @@ public class ActivityDto {
 
     public List<UserDto> getVolunteers() { return volunteers; }
 
-    public List<InstitutionDto>getInstitutions() {
-        return institutions;
+    public InstitutionDto getInstitution() {
+        return institution;
     }
 
-    public void setInstitutions(List<InstitutionDto> institutions) {
-        this.institutions = institutions;
+    public void setInstitution(InstitutionDto institution) {
+        this.institution = institution;
     }
 }
