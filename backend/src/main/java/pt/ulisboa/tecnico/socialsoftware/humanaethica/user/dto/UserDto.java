@@ -66,7 +66,7 @@ public class UserDto {
             if (user.getRole().equals(Role.VOLUNTEER)){
                 Volunteer volunteer = (Volunteer) user;
                 this.activities = volunteer.getActivities().stream()
-                        .map(activity->new ActivityDto(activity,true))
+                        .map(activity->new ActivityDto(activity,true,false))
                         .collect(Collectors.toList());;
             }
         }

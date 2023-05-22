@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
@@ -25,10 +26,12 @@ public class ActivityDto {
 
     private List<ThemeDto> themes;
 
+    private List<InstitutionDto> institutions;
+
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity, boolean shallow){
+    public ActivityDto(Activity activity, boolean shallow, boolean shallowInstitution){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
@@ -40,6 +43,11 @@ public class ActivityDto {
         if(!shallow) {
             this.volunteers = activity.getVolunteers().stream()
                     .map(user->new UserDto(user,true))
+                    .collect(Collectors.toList());;
+        }
+        if(!shallow) {
+            this.institutions = activity.getInstitutions().stream()
+                    .map(institution->new InstitutionDto(institution,true))
                     .collect(Collectors.toList());;
         }
     }
@@ -91,4 +99,12 @@ public class ActivityDto {
     public void setVolunteers(List<UserDto> volunteers) { this.volunteers = volunteers; }
 
     public List<UserDto> getVolunteers() { return volunteers; }
+
+    public List<InstitutionDto>getInstitutions() {
+        return institutions;
+    }
+
+    public void setInstitutions(List<InstitutionDto> institutions) {
+        this.institutions = institutions;
+    }
 }

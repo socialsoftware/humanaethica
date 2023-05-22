@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -29,6 +30,9 @@ public class Activity {
 
     @ManyToMany
     private List<Theme> themes = new ArrayList<>();
+
+    @ManyToMany
+    private List<Institution> institutions = new ArrayList<>();
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -98,12 +102,37 @@ public class Activity {
 
     public void addTheme (Theme theme) {
         this.themes.add(theme);
+        theme.addActivity(this);
     }
 
     public void removeTheme (Integer themeId) {
         for (int i = 0; i < themes.size(); i++) {
             if (themes.get(i).getId().equals(themeId)) {
                 themes.remove(i);
+                themes.get(i).removeActivity(this.getId());
+                return;
+            }
+        }
+    }
+
+    public void setInstitutions(List<Institution> institutions) {
+        this.institutions = institutions;
+    }
+
+    public List<Institution> getInstitutions() {
+        return institutions;
+    }
+
+    public void addInstitution (Institution institution) {
+        this.institutions.add(institution);
+        institution.addActivity(this);
+    }
+
+    public void removeInstitution (Integer institutionId) {
+        for (int i = 0; i < institutions.size(); i++) {
+            if (institutions.get(i).getId().equals(institutionId)) {
+                institutions.remove(i);
+                institutions.get(i).removeActivity(this.getId());
                 return;
             }
         }
@@ -111,12 +140,14 @@ public class Activity {
 
     public void addVolunteer (Volunteer volunteer) {
         this.volunteers.add(volunteer);
+        volunteer.addActivities(this);
     }
 
     public void removeVolunteer (Integer volunteerId) {
         for (int i = 0; i < volunteers.size(); i++) {
             if (volunteers.get(i).getId().equals(volunteerId)) {
                 volunteers.remove(i);
+                volunteers.get(i).removeActivities(this.getId());
                 return;
             }
         }

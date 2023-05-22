@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
 import jakarta.persistence.*;
 import org.springframework.security.crypto.keygen.KeyGenerators;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -40,6 +41,9 @@ public class Institution {
 
     @ManyToMany
     private List<Theme> themes = new ArrayList<>();
+
+    @ManyToMany
+    private List<Activity> activities = new ArrayList<>();
 
     public Institution() {
     }
@@ -150,6 +154,29 @@ public class Institution {
     public void removeTheme(Theme theme) {
         this.themes.remove(theme);
         theme.deleteInstitution(this);
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
+        activity.addInstitution(this);
+    }
+
+    public void removeActivity(Integer activityId) {
+        for (int i = 0; i < activities.size(); i++) {
+            if (activities.get(i).getId().equals(activityId)) {
+                activities.remove(i);
+                activities.get(i).removeInstitution(this.getId());
+                return;
+            }
+        }
     }
 
     public String generateConfirmationToken() {

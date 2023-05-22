@@ -6,11 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
@@ -30,17 +34,23 @@ public class ActivityService {
     ThemeRepository themeRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    InstitutionRepository institutionRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivityDto> getActivities() {
         return activityRepository.findAll().stream()
-                .map(activity->new ActivityDto(activity,false))
+                .map(activity->new ActivityDto(activity,false,false))
                 .sorted(Comparator.comparing(ActivityDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Activity registerActivity(ActivityDto activityDto) {
+    public Activity registerActivity(Integer userId, ActivityDto activityDto) {
+
+        if (userId == null) {
+            throw new HEException(USER_NOT_FOUND);
+        }
 
         if (activityDto.getName() == null || activityDto.getName().trim().length() == 0) {
             throw new HEException(INVALID_ACTIVITY_NAME, activityDto.getName());
@@ -56,20 +66,44 @@ public class ActivityService {
             }
         }
 
-        /*for (ThemeDto themeDto : activityDto.getThemes()) {
+        for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             if (theme.getState() != Theme.State.APPROVED) {
                 throw new HEException(THEME_NOT_APPROVED);
             }
-        }*/
-
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
-        for (ThemeDto themeDto : activityDto.getThemes()) {
-            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-            activity.addTheme(theme);
-            theme.addActivity(activity);
         }
-        activityRepository.save(activity);
+
+        Activity activity = null;
+
+        if(userId == -1) {
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
+            for (InstitutionDto institutionDto : activityDto.getInstitutions()) {
+                Institution institution = institutionRepository.findById(institutionDto.getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+                activity.addInstitution(institution);
+            }
+            for (ThemeDto themeDto : activityDto.getThemes()) {
+                Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
+                activity.addTheme(theme);
+            }
+        }
+
+        else{
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
+
+            User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+            if (user.getRole() != User.Role.MEMBER) {
+                throw new HEException(INVALID_ROLE, user.getRole().name());
+            }
+
+            Member member = (Member) user;
+            activity.addInstitution(member.getInstitution());
+
+            for (ThemeDto themeDto : activityDto.getThemes()) {
+                Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
+                activity.addTheme(theme);
+            }
+            activityRepository.save(activity);
+        }
         return activity;
     }
 
@@ -104,11 +138,11 @@ public class ActivityService {
         }
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
         List<Theme> themes = activity.getThemes();
-        /*for (Theme theme : themes) {
+        for (Theme theme : themes) {
             if (theme != null && theme.getState() != Theme.State.APPROVED) {
                 throw new HEException(THEME_NOT_APPROVED);
             }
-        }*/
+        }
         if (activity.getState() == Activity.State.APPROVED) {
             throw new HEException(ACTIVITY_ALREADY_APPROVED, activity.getName());
         }
@@ -130,12 +164,12 @@ public class ActivityService {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
-        /*for (ThemeDto themeDto : activityDto.getThemes()) {
+        for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             if (theme.getState() != Theme.State.APPROVED) {
                 throw new HEException(THEME_NOT_APPROVED);
             }
-        }*/
+        }
 
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityDto.getId()));
         activity.setName(activityDto.getName());
@@ -179,7 +213,6 @@ public class ActivityService {
         Volunteer volunteer = (Volunteer) user;
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
 
-        volunteer.addActivities(activity);
         activity.addVolunteer(volunteer);
     }
 
@@ -200,7 +233,6 @@ public class ActivityService {
         Volunteer volunteer = (Volunteer) user;
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
 
-        volunteer.removeActivities(activity.getId());
         activity.removeVolunteer(volunteer.getId());
     }
 }

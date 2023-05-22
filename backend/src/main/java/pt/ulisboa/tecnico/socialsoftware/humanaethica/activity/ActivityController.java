@@ -33,9 +33,16 @@ public class ActivityController {
     }
 
     @PostMapping("/activity/register")
-    //@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ROLE_MEMBER'))")
+    @PreAuthorize("(hasRole('ROLE_ADMIN'))")
     public void registerActivity(@Valid @RequestBody ActivityDto activityDto){
-        activityService.registerActivity(activityDto);
+        activityService.registerActivity(-1, activityDto);
+    }
+
+    @PostMapping("/activity/memberRegister")
+    @PreAuthorize("(hasRole('ROLE_MEMBER'))")
+    public void registerActivityMember(Principal principal, @Valid @RequestBody ActivityDto activityDto){
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        activityService.registerActivity(userId, activityDto);
     }
 
     @PutMapping("/activity/{activityId}/validate")
