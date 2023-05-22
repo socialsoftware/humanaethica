@@ -73,7 +73,7 @@ public class ActivityService {
             }
         }
 
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), Activity.State.APPROVED);
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), null ,Activity.State.APPROVED);
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             activity.addTheme(theme);

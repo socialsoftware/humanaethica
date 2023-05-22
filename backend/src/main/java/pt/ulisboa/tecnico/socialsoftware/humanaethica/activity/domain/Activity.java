@@ -32,14 +32,14 @@ public class Activity {
     private List<Theme> themes = new ArrayList<>();
 
     @ManyToOne
-    private Institution institution;
+    private Institution institution ;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     public Activity() {
     }
-    public Activity(String name, String region, State state) {
+    public Activity(String name, String region, Institution institution, State state) {
         setName(name);
         setRegion(region);
         setThemes(themes);
@@ -120,13 +120,9 @@ public class Activity {
         this.institution = institution;
         institution.addActivity(this);
     }
+
     public Institution getInstitution() {
         return institution;
-    }
-
-    public void removeInstitution () {
-        this.institution = null;
-        institution.removeActivity(this.getId());
     }
 
     public void addVolunteer (Volunteer volunteer) {

@@ -45,7 +45,9 @@ public class ActivityDto {
                     .map(user->new UserDto(user,true))
                     .collect(Collectors.toList());;
         }
-        setInstitution(new InstitutionDto(activity.getInstitution()));
+        if (activity.getInstitution() != null) {
+            setInstitution(new InstitutionDto(activity.getInstitution()));
+        }
     }
 
     public void setThemes(List<ThemeDto> themes) {
