@@ -87,12 +87,7 @@ public class ActivityService {
             }
 
             Member member = (Member) user;
-            if (member.getInstitution().equals(institution)){
-                activity = new Activity(activityDto.getName(), activityDto.getRegion(), institution, Activity.State.APPROVED);
-            }
-            else {
-                throw new HEException(INSTITUTION_DISAGREEMENT);
-            }
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), member.getInstitution(), Activity.State.APPROVED);
         }
 
         for (ThemeDto themeDto : activityDto.getThemes()) {

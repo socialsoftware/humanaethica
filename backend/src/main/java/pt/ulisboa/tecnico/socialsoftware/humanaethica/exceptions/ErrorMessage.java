@@ -41,8 +41,7 @@ public enum ErrorMessage {
     EMPTY_THEME_LIST("Theme list cannot be empty"),
     EMPTY_ACTIVITY_LIST("Activity list cannot be empty"),
     ACTIVITY_ALREADY_SUSPENDED("Activity is already suspended with name %s"),
-    ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s"),
-    INSTITUTION_DISAGREEMENT("This member doesn´t belongs to this institution");
+    ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s");
 
     public final String label;
 
