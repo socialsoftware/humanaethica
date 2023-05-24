@@ -42,7 +42,7 @@ public class Institution {
     @ManyToMany
     private List<Theme> themes = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Activity> activities = new ArrayList<>();
 
     public Institution() {

@@ -17,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRe
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
@@ -205,5 +206,13 @@ public class UserService {
         authUser.getUser().setState(User.State.APPROVED);
 
         return new RegisterUserDto(authUser);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public InstitutionDto getInstitution(Integer userId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Member member = (Member) authUser.getUser();
+
+        return new InstitutionDto(member.getInstitution(), false);
     }
 }

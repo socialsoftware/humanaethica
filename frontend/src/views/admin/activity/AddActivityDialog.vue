@@ -38,6 +38,16 @@
             data-cy="activityThemeSelect"
             label="Themes"
           ></v-select>
+          <v-select
+            v-model="activity.institution"
+            :items="institutions"
+            return-object
+            item-text="name"
+            item-value="name"
+            required
+            data-cy="activityInstitutionSelect"
+            label="Institutions"
+          ></v-select>
           <div class="add-user-feedback-container">
             <span class="add-user-feedback" v-if="success"
               >{{ activity.themes }} {{ activity.name }} added</span
@@ -67,12 +77,14 @@ import { Component, Model, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
+import Institution from '@/models/institution/Institution';
 
 @Component
 export default class AddActivityDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
 
   themes: Theme[] | [] = [];
+  institutions: Institution[] | [] = [];
   activity: Activity = new Activity();
   valid = true;
   success = false;
@@ -80,6 +92,7 @@ export default class AddActivityDialog extends Vue {
   async created() {
     this.activity = new Activity();
     this.themes = await RemoteServices.getThemes();
+    this.institutions = await RemoteServices.getInstitutions();
   }
 
   async addActivity() {

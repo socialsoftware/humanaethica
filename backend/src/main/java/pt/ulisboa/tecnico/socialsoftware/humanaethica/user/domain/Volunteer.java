@@ -19,6 +19,7 @@ public class Volunteer extends User {
 
     public Volunteer(String name, String username, String email, AuthUser.Type type, State state) {
         super(name, username, email, Role.VOLUNTEER, type, state);
+        setActivities(new ArrayList<>());
     }
 
     public Volunteer(String name, State state) {

@@ -22,6 +22,7 @@
         <v-select
           v-model="activity.themes"
           :items="themes"
+          label="Themes"
           multiple
           return-object
           item-text="name"
@@ -56,14 +57,13 @@ export default class RegisterActivityView extends Vue {
   themes: Theme[] | [] = [];
   async created() {
     this.themes = await RemoteServices.getThemes();
-    console.log(this.themes.length);
-    console.log(this.themes[0].name);
   }
   async submit() {
-    console.log(this.activity.name);
-    console.log(this.activity.themes[0].name);
     try {
-      await RemoteServices.registerActivity(this.activity);
+      await RemoteServices.registerActivityAsMember(
+        this.$store.getters.getUser.id,
+        this.activity
+      );
       await this.$router.push({ name: 'home' });
     } catch (error) {
       await this.$store.dispatch('error', error);

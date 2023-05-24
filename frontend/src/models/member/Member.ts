@@ -1,5 +1,6 @@
 import { ISOtoString } from '@/services/ConvertDateService';
 import Document from '../management/Document';
+import Institution from '@/models/institution/Institution';
 
 export default class Member {
   id: number | null = null;
@@ -8,6 +9,7 @@ export default class Member {
   username!: boolean;
   creationDate!: string;
   doc!: Document;
+  institution!: Institution;
 
   constructor(jsonObj?: Member) {
     if (jsonObj) {
@@ -17,6 +19,7 @@ export default class Member {
       this.username = jsonObj.username;
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.doc = jsonObj.doc;
+      this.institution = jsonObj.institution;
     }
   }
 }

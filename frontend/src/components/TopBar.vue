@@ -33,6 +33,27 @@
               Create Member
               <v-icon>fas fa-user</v-icon>
             </v-btn>
+            <v-btn v-if="isMember" text color="orange" @click="registerActivity">
+              Create Activity
+            </v-btn>
+            <v-btn v-if="isMember" text color="orange" @click="manageInstitutionActivities">
+              Manage Institution Activities
+            </v-btn>
+          </template>
+        </v-menu>
+
+        <v-menu v-if="isVolunteer" offset-y sopen-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              text
+              color="orange"
+              v-on="on"
+              data-cy=""
+              @click="manageActivities"
+            >
+              Join Activities
+              <v-icon>fas fa-user</v-icon>
+            </v-btn>
           </template>
         </v-menu>
 
@@ -61,12 +82,12 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/admin/manageTheme" data-cy="themeManageTheme">
-                <v-list-item-action>
-                    <v-icon>fas fa-users</v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                    <v-list-item-title>Manage Theme</v-list-item-title>
-                </v-list-item-content>
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Manage Theme</v-list-item-title>
+              </v-list-item-content>
             </v-list-item>
             <v-list-item to="/admin/activities" data-cy="adminActivities">
               <v-list-item-action>
@@ -96,14 +117,6 @@
           @click="registerVolunteer"
         >
           Create Volunteer
-        </v-btn>
-        <v-btn
-          v-if="!isLoggedIn"
-          text
-          color="orange"
-          @click="registerActivity"
-        >
-          Create Activity
         </v-btn>
         <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
           Login
@@ -250,6 +263,14 @@ export default class TopBar extends Vue {
 
   async registerMember() {
     await this.$router.push({ name: 'register-member' }).catch(() => {});
+  }
+
+  async manageInstitutionActivities() {
+    await this.$router.push({ name: 'manage-activities-member' }).catch(() => {});
+  }
+
+  async manageActivities() {
+    await this.$router.push({ name: 'manage-activities' }).catch(() => {});
   }
 
   async logout() {

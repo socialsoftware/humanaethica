@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
@@ -85,5 +86,11 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void validateUser(@PathVariable int userId) {
         userApplicationalService.validateUser(userId);
+    }
+
+    @GetMapping("/users/{userId}/getInstitution")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public InstitutionDto getInstitution(@PathVariable int userId) {
+        return userService.getInstitution(userId);
     }
 }

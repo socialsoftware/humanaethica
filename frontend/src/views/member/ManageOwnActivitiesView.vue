@@ -2,7 +2,7 @@
   <v-card class="table">
     <v-data-table
       :headers="headers"
-      :items="activities"
+      :items="institution.activities"
       :search="search"
       disable-pagination
       :hide-default-footer="true"
@@ -17,13 +17,6 @@
             class="mx-2"
           />
           <v-spacer />
-          <v-btn
-            color="primary"
-            dark
-            @click="newActivity"
-            data-cy="createButton"
-            >New Activity</v-btn
-          >
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
@@ -36,44 +29,7 @@
           {{ volunteer.name }}
         </v-chip>
       </template>
-      <template v-slot:[`item.institution`]="{ item }">
-        <v-chip>
-          {{ item.institution.name }}
-        </v-chip>
-      </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip
-          bottom
-          v-if="item.state == 'REPORTED' || item.state == 'SUSPENDED'"
-        >
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              color="green"
-              v-on="on"
-              data-cy="validateButton"
-              @click="validateActivity(item)"
-              >mdi-check-bold</v-icon
-            >
-          </template>
-          <span>Validate Activity</span>
-        </v-tooltip>
-        <v-tooltip
-          bottom
-          v-if="item.state == 'REPORTED' || item.state == 'APPROVED'"
-        >
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              color="red"
-              v-on="on"
-              data-cy="suspendButton"
-              @click="suspendActivity(item)"
-              >mdi-pause-octagon</v-icon
-            >
-          </template>
-          <span>Suspend Activity</span>
-        </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -120,17 +76,6 @@
                           required
                         />
                       </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-select
-                          label="Institution"
-                          v-model="item.institution"
-                          :items="institutions"
-                          return-object
-                          item-text="name"
-                          item-value="name"
-                          required
-                        />
-                      </v-col>
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -158,42 +103,27 @@
         </v-tooltip>
       </template>
     </v-data-table>
-    <add-activity-dialog
-      v-if="addActivityDialog"
-      v-model="addActivityDialog"
-      v-on:user-created="onCreatedActivity"
-      v-on:close-dialog="onCloseDialog"
-    />
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import Activity from '@/models/activity/Activity';
-import AddActivityDialog from '@/views/admin/activity/AddActivityDialog.vue';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
+import Member from '@/models/member/Member';
+import User from '@/models/user/User';
+import Activity from '@/models/activity/Activity';
 
 @Component({
-  components: {
-    'add-activity-dialog': AddActivityDialog,
-  },
+  components: {},
 })
-export default class ActivitiesView extends Vue {
-  activities: Activity[] = [];
+export default class ManageOwnActivitiesView extends Vue {
+  institution: Institution = new Institution();
   themes: Theme[] = [];
-  institutions: Institution[] = [];
   search: string = '';
-  addActivityDialog: boolean = false;
   dialogEditActivity: boolean = false;
   headers: object = [
-    {
-      text: 'ID',
-      value: 'id',
-      align: 'left',
-      width: '1%',
-    },
     {
       text: 'Name',
       value: 'name',
@@ -215,12 +145,6 @@ export default class ActivitiesView extends Vue {
     {
       text: 'Volunteers',
       value: 'volunteers',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Institution',
-      value: 'institution',
       align: 'left',
       width: '5%',
     },
@@ -248,39 +172,14 @@ export default class ActivitiesView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.activities = await RemoteServices.getActivities();
+      let userId = this.$store.getters.getUser.id;
+      this.institution = await RemoteServices.getInstitution(userId);
       this.themes = await RemoteServices.getThemes();
-      this.institutions = await RemoteServices.getInstitutions();
+      console.log(this.institution.name);
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-  async validateActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to validate this activity?')
-    ) {
-      try {
-        await RemoteServices.validateActivity(activityId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-  }
-  async suspendActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to suspend this activity?')
-    ) {
-      try {
-        await RemoteServices.suspendActivity(activityId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
   }
 
   async updateActivity(activity: Activity) {
@@ -290,22 +189,11 @@ export default class ActivitiesView extends Vue {
       confirm('Are you sure you want to edit this activity?')
     ) {
       try {
-        await RemoteServices.updateActivity(activityId, activity);
+        await RemoteServices.updateActivityAsMember(activityId, activity);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
     }
-  }
-  onCreatedActivity(activity: Activity) {
-    this.activities.unshift(activity);
-    this.addActivityDialog = false;
-  }
-
-  onCloseDialog() {
-    this.addActivityDialog = false;
-  }
-  newActivity() {
-    this.addActivityDialog = true;
   }
 }
 </script>

@@ -73,10 +73,10 @@ public class ActivityService {
             }
         }
 
-        Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         Activity activity = null;
 
         if(userId == -1) {
+            Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
             activity = new Activity(activityDto.getName(), activityDto.getRegion(), institution, Activity.State.APPROVED);
         }
 

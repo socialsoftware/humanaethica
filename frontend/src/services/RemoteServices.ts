@@ -298,6 +298,17 @@ export default class RemoteServices {
       });
   }
 
+  static async getInstitution(userId: number): Promise<Institution> {
+    return httpClient
+      .get(`/users/${userId}/getInstitution`)
+      .then((response) => {
+        return new Institution(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async deleteInstitution(
     institutionId: number
   ): Promise<Institution[]> {
@@ -345,6 +356,17 @@ export default class RemoteServices {
   static async registerActivity(activity: Activity) {
     return httpClient
       .post('/activity/register', activity)
+      .then((response) => {
+        return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async registerActivityAsMember(userId: number, activity: Activity) {
+    return httpClient
+      .post('/activity/memberRegister', activity)
       .then((response) => {
         return new Activity(response.data);
       })
@@ -408,12 +430,50 @@ export default class RemoteServices {
       });
   }
 
+  static async updateActivity(activityId: number, activity: Activity) {
+    return httpClient
+      .put(`/activity/${activityId}/update`, activity)
+      .then((response) => {
+        return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateActivityAsMember(activityId: number, activity: Activity) {
+    return httpClient
+      .put(`/activity/${activityId}/MemberUpdate`, activity)
+      .then((response) => {
+        return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async registerThemeInstitution(theme: Theme) {
     return httpClient
       .post('/themes/registerInstitution', theme)
       .then(() => {
         return;
       })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async manageActivities(userId: number, activityId: number) {
+    return httpClient
+      .put(`/activity/${activityId}/subscribe`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async reportActivity(userId: number, activityId: number) {
+    return httpClient
+      .put(`/activity/${activityId}/report`)
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
