@@ -14,6 +14,7 @@
 
         <v-select
             v-model="theme.parentTheme"
+            label="Parent Theme (Optional)"
             :items="themes"
             return-object
             item-text="name"

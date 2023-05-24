@@ -14,6 +14,7 @@
 
         <v-select
             v-model="theme"
+            label="Theme"
             :items="themes"
             return-object
             item-text="name"

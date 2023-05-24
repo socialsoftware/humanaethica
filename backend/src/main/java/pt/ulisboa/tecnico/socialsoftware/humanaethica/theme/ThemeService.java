@@ -77,6 +77,9 @@ public class ThemeService {
     }
 
     public boolean removeTheme(Theme theme) {
+        if (!theme.getInstitutions().isEmpty()){
+            return false;
+        }
         // Percorre recursivamente os subtemas e verifica se possuem instituições associadas
         for (Theme subTheme : theme.getSubTheme()) {
             if (hasAssociatedInstitutions(subTheme)) {

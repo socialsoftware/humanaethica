@@ -32,7 +32,7 @@ public class Theme{
 
     @ManyToOne
     private Theme parentTheme ;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Theme> subTheme = new ArrayList<>();
 
     public Theme() {
