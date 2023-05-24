@@ -8,7 +8,6 @@ import RegisterUser from '@/models/user/RegisterUser';
 interface State {
   token: string;
   user: AuthUser | null;
-  institutionId: number | null;
   error: boolean;
   errorMessage: string;
   notification: boolean;
@@ -19,7 +18,6 @@ interface State {
 const state: State = {
   token: '',
   user: null,
-  institutionId: null,
   error: false,
   errorMessage: '',
   notification: false,
