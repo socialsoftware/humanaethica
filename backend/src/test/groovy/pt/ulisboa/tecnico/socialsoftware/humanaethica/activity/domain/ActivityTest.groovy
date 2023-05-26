@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 
 @DataJpaTest
@@ -19,12 +20,13 @@ class ActivityTest extends SpockTest {
 
     def "create empty activity"() {
         when: "empty activity are created"
+        institution = new Institution()
+        institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
-        activity = new Activity("","",Activity.State.APPROVED)
+        activity = new Activity("","",institution,Activity.State.APPROVED)
         activity.addTheme(theme)
-        theme.addActivity(activity)
         activityRepository.save(activity)
 
         then: "checks if activity is saved"
@@ -41,6 +43,8 @@ class ActivityTest extends SpockTest {
 
     def "create activity and persists"() {
         given: "a theme and a volunteer"
+        institution = new Institution()
+        institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
@@ -48,11 +52,11 @@ class ActivityTest extends SpockTest {
         userRepository.save(volunteer)
 
         when: "activity is created"
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
+        activityRepository.save(activity)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
-        theme.addActivity(activity)
-        activityRepository.save(activity)
+
 
         then: "activity is saved"
         activityRepository.count() == 1L
@@ -76,12 +80,13 @@ class ActivityTest extends SpockTest {
 
     def "remove a voluntary and a theme from activity"() {
         given: "a theme, a volunteer and a activity"
+        institution = new Institution()
+        institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
-        List<Theme> themes = new ArrayList<>()
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
         activityRepository.save(activity)
@@ -100,12 +105,14 @@ class ActivityTest extends SpockTest {
 
     def "suspend activity"() {
         given: "a theme, a volunteer and a activity"
+        institution = new Institution()
+        institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         List<Theme> themes = new ArrayList<>()
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
         activityRepository.save(activity)

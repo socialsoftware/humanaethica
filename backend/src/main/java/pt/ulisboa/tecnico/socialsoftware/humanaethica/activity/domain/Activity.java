@@ -44,6 +44,7 @@ public class Activity {
         setRegion(region);
         setThemes(themes);
         setInstitution(institution);
+        setVolunteers(volunteers);
         setState(state);
         setCreationDate(DateHandler.now());
 
@@ -107,10 +108,10 @@ public class Activity {
     }
 
     public void removeTheme (Integer themeId) {
-        for (int i = 0; i < themes.size(); i++) {
-            if (themes.get(i).getId().equals(themeId)) {
-                themes.remove(i);
-                themes.get(i).removeActivity(this.getId());
+        for (Theme theme : themes) {
+            if (theme.getId().equals(themeId)) {
+                themes.remove(theme);
+                theme.removeActivity(this.getId());
                 return;
             }
         }
@@ -125,16 +126,20 @@ public class Activity {
         return institution;
     }
 
+    public void setVolunteers(List<Volunteer> volunteers) {
+        this.volunteers = volunteers;
+    }
+
     public void addVolunteer (Volunteer volunteer) {
         this.volunteers.add(volunteer);
         volunteer.addActivities(this);
     }
 
     public void removeVolunteer (Integer volunteerId) {
-        for (int i = 0; i < volunteers.size(); i++) {
-            if (volunteers.get(i).getId().equals(volunteerId)) {
-                volunteers.remove(i);
-                volunteers.get(i).removeActivities(this.getId());
+        for (Volunteer volunteer : volunteers) {
+            if (volunteer.getId().equals(volunteerId)) {
+                volunteers.remove(volunteer);
+                volunteer.removeActivities(this.getId());
                 return;
             }
         }

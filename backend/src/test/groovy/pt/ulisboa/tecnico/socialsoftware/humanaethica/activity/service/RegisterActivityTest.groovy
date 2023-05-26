@@ -10,6 +10,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import spock.lang.Unroll
 
@@ -17,23 +19,28 @@ import spock.lang.Unroll
 @DataJpaTest
 class RegisterActivityTest extends SpockTest {
     def activityDto
-    def themeDto
+    def institutionDto
     def theme
     def activity
+    def institution
 
     def "the activity does not exist, create the activity"() {
         given: "an activity dto"
+        institution = new Institution()
+        institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
-        List<Theme> themes = new ArrayList<>()
-        themes.add(theme)
+        List<ThemeDto> themes = new ArrayList<>()
+        themes.add(new ThemeDto(theme))
 
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
-        activity.setThemes(themes)
-        activityDto = new ActivityDto(activity)
+        activityDto = new ActivityDto()
+        activityDto.setName("ACTIVITY_1_NAME")
+        activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setInstitution(new InstitutionDto(institution))
+        activityDto.setThemes(themes)
 
         when:
-        def result = activityService.registerActivity(activityDto)
+        def result = activityService.registerActivity(-1, activityDto)
 
         then: "the activity is saved in the database"
         activityRepository.findAll().size() == 1
@@ -47,7 +54,9 @@ class RegisterActivityTest extends SpockTest {
 
     def "the activity already exists"() {
         given:
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
+        institution = new Institution()
+        institutionRepository.save(institution)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
         activityRepository.save(activity)
         and:
         activityDto = new ActivityDto()
@@ -55,7 +64,7 @@ class RegisterActivityTest extends SpockTest {
         activityDto.setRegion("ACTIVITY_1_REGION")
 
         when:
-        activityService.registerActivity(activityDto)
+        activityService.registerActivity(-1, activityDto)
 
         then:
         def error = thrown(HEException)
@@ -66,17 +75,24 @@ class RegisterActivityTest extends SpockTest {
 
     def "add theme to an activity"() {
         given:
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.APPROVED)
-        activityDto = new ActivityDto(activity)
-        def result = activityService.registerActivity(activityDto)
+        List<ThemeDto> themes = new ArrayList<>()
+        institution = new Institution()
+        institutionRepository.save(institution)
+        activityDto = new ActivityDto()
+        activityDto.setName("ACTIVITY_1_NAME")
+        activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setInstitution(new InstitutionDto(institution))
+        activityDto.setThemes(themes)
+        def result = activityService.registerActivity(-1, activityDto)
 
         when:
         result.getThemes().size() == 0
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
-        List<Theme> themes = new ArrayList<>()
-        themes.add(theme)
-        activityService.addTheme(result.getId(), themes)
+        themes.add(new ThemeDto(theme))
+
+        activityDto.setThemes(themes)
+        activityService.updateActivity(-1, result.getId(), activityDto)
 
         then: "the activity is associated with the theme"
         result.getThemes().size() == 1
@@ -86,12 +102,16 @@ class RegisterActivityTest extends SpockTest {
     @Unroll
     def "invalid arguments: name=#name | region=#region"() {
         given: "an activity dto"
+        institution = new Institution()
+        institutionRepository.save(institution)
+        institutionDto = new InstitutionDto(institution)
         activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
+        activityDto.setInstitution(institutionDto)
 
         when:
-        activityService.registerActivity(activityDto)
+        activityService.registerActivity(-1, activityDto)
 
         then:
         def error = thrown(HEException)
