@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -31,13 +32,46 @@ public class ThemeService {
     @Autowired
     InstitutionRepository institutionRepository;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    /*@Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getThemes() {
         return themeRepository.findAll().stream()
                 .map(theme->new ThemeDto(theme,false,false))
                 .sorted(Comparator.comparing(ThemeDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
+    }*/
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ThemeDto> getThemes() {
+        List<Theme> allThemes = themeRepository.findAll();
+        List<ThemeDto> sortedThemes = new ArrayList<>();
+
+        // Encontra os temas raiz (aqueles que não possuem um tema pai)
+        List<Theme> rootThemes = allThemes.stream()
+                .filter(theme -> theme.getParentTheme() == null)
+                .toList();
+
+        // Ordena os temas pela ordem da árvore
+        for (Theme rootTheme : rootThemes) {
+            traverseAndSortThemes(rootTheme, sortedThemes);
+        }
+
+        return sortedThemes;
     }
+
+    private void traverseAndSortThemes(Theme theme, List<ThemeDto> sortedThemes) {
+        // Cria um ThemeDto para o tema atual e adiciona à lista de temas ordenados
+        sortedThemes.add(new ThemeDto(theme, false, false));
+
+        // Ordena os subtemas do tema atual
+        List<Theme> sortedSubThemes = theme.getSubThemes().stream()
+                .sorted(Comparator.comparing(Theme::getName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+
+        // Percorre recursivamente os subtemas e os adiciona à lista de temas ordenados
+        for (Theme subTheme : sortedSubThemes) {
+            traverseAndSortThemes(subTheme, sortedThemes);
+        }
+    }
+
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Theme registerTheme(ThemeDto themeDto, boolean isAdmin) {

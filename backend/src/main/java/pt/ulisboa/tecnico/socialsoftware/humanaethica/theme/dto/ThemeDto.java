@@ -20,6 +20,8 @@ public class ThemeDto {
 
     private List<ThemeDto> subTheme = new ArrayList<>();
 
+    private Integer level;
+
     public ThemeDto(){
 
     }
@@ -42,11 +44,16 @@ public class ThemeDto {
         if (theme.getParentTheme() != null){
             setTheme(new ThemeDto(theme.getParentTheme(),false,true));
         }
+        setLevel(theme.getLevel());
     }
 
     public Integer getId() {return id;}
 
     public void setId(Integer id) {this.id = id;}
+
+    public Integer getLevel() {return level;}
+
+    public void setLevel(Integer level) {this.level = level;}
 
     public String getName() {return name;}
 

@@ -35,6 +35,8 @@ public class Theme{
     @OneToMany(fetch = FetchType.EAGER)
     private List<Theme> subTheme = new ArrayList<>();
 
+    private Integer level = 0;
+
     public Theme() {
     }
 
@@ -42,6 +44,7 @@ public class Theme{
         setName(name);
         setState(state);
         setTheme(parentTheme);
+        setLevel(parentTheme);
     }
 
     public Integer getId() {return id;}
@@ -87,6 +90,8 @@ public class Theme{
 
     public void deleteInstitution(Institution institution){institutions.remove(institution);}
 
+    public List<Theme> getSubThemes(){return this.subTheme;}
+
     public void addTheme (Theme theme){ subTheme.add(theme);}
 
     public void deleteTheme(Theme theme){subTheme.remove(theme);}
@@ -99,6 +104,14 @@ public class Theme{
             theme.addTheme(this);
         }
     }
+
+    public void setLevel(Theme theme){
+        if (theme != null){
+            this.level = theme.getLevel() + 1;
+        }
+    }
+
+    public Integer getLevel(){return this.level;}
 
     public List<Theme> getSubTheme(){return this.subTheme;}
 

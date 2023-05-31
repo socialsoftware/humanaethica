@@ -6,6 +6,7 @@ export default class Theme {
   institutions: Institution[] = [];
   state!: string;
   parentTheme?: Theme;
+  level?: number;
 
   constructor(jsonObj?: Theme) {
     if (jsonObj) {
@@ -18,6 +19,7 @@ export default class Theme {
       );
       this.state = jsonObj.state;
       this.parentTheme = jsonObj.parentTheme;
-    }
+      this.level = jsonObj.level;
+      }
   }
 }

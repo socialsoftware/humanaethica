@@ -17,10 +17,18 @@
             label="Parent Theme (Optional)"
             :items="themes"
             return-object
+            item-value= "name"
             item-text="name"
-            item-value="name"
             required
-        />
+            :menu-props="{ offsetY: true, nudgeLeft: 0, class: 'left-text' }"
+        >
+          <template v-slot:item="{ item }">
+            <div class="left-text">
+              <span class="indentation">{{ getIndentedDisplayName(item.level) }}</span>&#8735;{{ item.name }}
+            </div>
+          </template>
+        </v-select>
+
         <v-card-text class="text-left">
           <v-text-field
             v-model="theme.name"
@@ -67,6 +75,11 @@ export default class AddTheme extends Vue {
   theme: Theme = new Theme();
   themes: Theme[] | [] = [];
 
+  getIndentedDisplayName(level: number) {
+    const tabChar = '\u00A0'; // Use non-breaking space character for indentation
+    return tabChar.repeat(level*10);
+  }
+
   async created() {
     this.theme = new Theme();
     this.themes = await RemoteServices.getThemes();
@@ -99,5 +112,9 @@ export default class AddTheme extends Vue {
   font-size: 1.05rem;
   color: #1b5e20;
   text-transform: uppercase;
+}
+
+.left-text {
+  text-align: left;
 }
 </style>
