@@ -13,6 +13,7 @@ export default class Activity {
   institution!: Institution;
   state!: string;
   creationDate!: string;
+  alreadyJoined?: boolean;
 
   constructor(jsonObj?: Activity) {
     if (jsonObj) {
@@ -28,6 +29,7 @@ export default class Activity {
       this.institution = jsonObj.institution;
       this.state = jsonObj.state;
       this.creationDate = ISOtoString(jsonObj.creationDate);
+      this.alreadyJoined = false;
     }
   }
 }

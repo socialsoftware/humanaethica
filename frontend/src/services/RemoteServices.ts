@@ -388,6 +388,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getOwnActivities(userId: number): Promise<Activity[]> {
+    return httpClient
+      .get(`/users/${userId}/getActivities`)
+      .then((response) => {
+        return response.data.map((activity: any) => {
+          return new Activity(activity);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async validateActivity(activityId: number) {
     return httpClient
       .put(`/activity/${activityId}/validate`)
@@ -463,9 +476,17 @@ export default class RemoteServices {
       });
   }
 
-  static async manageActivities(userId: number, activityId: number) {
+  static async joinActivity(userId: number, activityId: number) {
     return httpClient
       .put(`/activity/${activityId}/subscribe`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async leaveActivity(userId: number, activityId: number) {
+    return httpClient
+      .put(`/activity/${activityId}/unsubscribe`)
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });

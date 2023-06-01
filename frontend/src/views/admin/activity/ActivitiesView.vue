@@ -17,6 +17,7 @@
             class="mx-2"
           />
           <v-spacer />
+          <!--
           <v-btn
             color="primary"
             dark
@@ -24,6 +25,7 @@
             data-cy="createButton"
             >New Activity</v-btn
           >
+          -->
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
@@ -74,6 +76,7 @@
           </template>
           <span>Suspend Activity</span>
         </v-tooltip>
+        <!--
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -156,6 +159,7 @@
           </v-row>
           <span>Edit Activity</span>
         </v-tooltip>
+        -->
       </template>
     </v-data-table>
     <add-activity-dialog

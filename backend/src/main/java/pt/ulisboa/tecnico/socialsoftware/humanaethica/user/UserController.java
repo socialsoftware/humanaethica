@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -23,6 +24,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -92,5 +94,11 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public InstitutionDto getInstitution(@PathVariable int userId) {
         return userService.getInstitution(userId);
+    }
+
+    @GetMapping("/users/{userId}/getActivities")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ArrayList<ActivityDto> getOwnActivities(@PathVariable int userId) {
+        return userService.getOwnActivities(userId);
     }
 }

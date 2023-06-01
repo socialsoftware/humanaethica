@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
@@ -32,6 +33,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserDocume
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -214,5 +216,19 @@ public class UserService {
         Member member = (Member) authUser.getUser();
 
         return new InstitutionDto(member.getInstitution(), false);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ArrayList<ActivityDto> getOwnActivities(Integer userId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Volunteer volunteer = (Volunteer) authUser.getUser();
+        ArrayList<ActivityDto> activities = new ArrayList<>();
+
+        for (Activity activity: volunteer.getActivities()) {
+            ActivityDto activityDto = new ActivityDto(activity, false, false);
+            activities.add(activityDto);
+        }
+
+        return activities;
     }
 }
