@@ -63,10 +63,10 @@ public class Theme{
         this.activities.add(activity);
     }
 
-    public void removeActivity (int activityId) {
-        for (int i = 0; i < activities.size(); i++) {
-            if (activities.get(i).getId() == activityId) {
-                activities.remove(i);
+    public void removeActivity (Integer activityId) {
+        for (Activity activity: activities) {
+            if (activity.getId().equals(activityId)) {
+                activities.remove(activity);
                 return;
             }
         }

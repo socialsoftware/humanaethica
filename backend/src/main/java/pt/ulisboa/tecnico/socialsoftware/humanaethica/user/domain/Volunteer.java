@@ -39,9 +39,9 @@ public class Volunteer extends User {
     }
 
     public void removeActivities (Integer activityId) {
-        for (int i = 0; i < activities.size(); i++) {
-            if (activities.get(i).getId().equals(activityId)) {
-                activities.remove(i);
+        for (Activity activity : activities) {
+            if (activity.getId().equals(activityId)) {
+                activities.remove(activity);
                 return;
             }
         }

@@ -11,26 +11,34 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 
 
 @DataJpaTest
 class ValidateActivityTest extends SpockTest {
     def activityDto
     def theme
+    def institution
     def activity
-    def newActivity
+    def institutionDto
 
     def setup() {
+        institution = new Institution()
+        institutionRepository.save(institution)
+        institutionDto = new InstitutionDto(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
         themeRepository.save(theme)
-        List<Theme> themes = new ArrayList<>()
-        themes.add(theme)
+        List<ThemeDto> themes = new ArrayList<>()
+        themes.add(new ThemeDto(theme))
 
-        newActivity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", Activity.State.REPORTED)
-        newActivity.setThemes(themes)
-        activityDto = new ActivityDto(newActivity)
+        activityDto = new ActivityDto()
+        activityDto.setName("ACTIVITY_1_NAME")
+        activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setInstitution(institutionDto)
+        activityDto.setThemes(themes)
 
-        activity = activityService.registerActivity(activityDto)
+        activity = activityService.registerActivity(-1, activityDto)
         activityService.reportActivity(activity.getId())
     }
 
@@ -61,17 +69,23 @@ class ValidateActivityTest extends SpockTest {
         error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_APPROVED
     }
 
-    /*def "the theme haven't yet been approved"() {
-        when:
+    def "the theme haven't yet been approved"() {
+        given:
         theme.setState(Theme.State.SUBMITTED)
-        themes.add(theme)
-        activity.setThemes(themes)
+        List<ThemeDto> themes = new ArrayList<>()
+        themes.add(new ThemeDto(theme))
+
+        activityDto = new ActivityDto(activity, false, false)
+        activityDto.setThemes(themes)
+
+        when:
+        activityService.updateActivity(-1, activity.getId(), activityDto)
         activityService.validateActivity(activity.getId())
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.THEME_NOT_APPROVED
-    }*/
+    }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

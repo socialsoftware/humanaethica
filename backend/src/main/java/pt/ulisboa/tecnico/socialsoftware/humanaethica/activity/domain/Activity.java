@@ -44,6 +44,7 @@ public class Activity {
         setRegion(region);
         setThemes(themes);
         setInstitution(institution);
+        setVolunteers(volunteers);
         setState(state);
         setCreationDate(DateHandler.now());
 
@@ -123,6 +124,10 @@ public class Activity {
 
     public Institution getInstitution() {
         return institution;
+    }
+
+    public void setVolunteers(List<Volunteer> volunteers) {
+        this.volunteers = volunteers;
     }
 
     public void addVolunteer (Volunteer volunteer) {
