@@ -27,10 +27,10 @@ class ValidateActivityTest extends SpockTest {
         institution = new Institution()
         institutionRepository.save(institution)
         institutionDto = new InstitutionDto(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme))
+        themes.add(new ThemeDto(theme, true, true))
 
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
@@ -73,7 +73,7 @@ class ValidateActivityTest extends SpockTest {
         given:
         theme.setState(Theme.State.SUBMITTED)
         List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme))
+        themes.add(new ThemeDto(theme, true, true))
 
         activityDto = new ActivityDto(activity, false, false)
         activityDto.setThemes(themes)

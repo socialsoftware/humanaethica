@@ -1,12 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain;
 
+import org.hibernate.boot.model.source.internal.hbm.AttributesHelper;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import org.springframework.security.crypto.keygen.KeyGenerators;
 import jakarta.persistence.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
-
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +27,24 @@ public class Theme{
     @ManyToMany
     private List<Activity> activities = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Institution> institutions = new ArrayList<>();
+
+    @ManyToOne
+    private Theme parentTheme ;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Theme> subTheme = new ArrayList<>();
+
+    private Integer level = 0;
 
     public Theme() {
     }
 
-    public Theme(String name, State state) {
+    public Theme(String name, State state, Theme parentTheme) {
         setName(name);
         setState(state);
+        setTheme(parentTheme);
+        setLevel(parentTheme);
     }
 
     public Integer getId() {return id;}
@@ -83,6 +89,31 @@ public class Theme{
     public void addInstitution (Institution institution){ institutions.add(institution);}
 
     public void deleteInstitution(Institution institution){institutions.remove(institution);}
+
+    public List<Theme> getSubThemes(){return this.subTheme;}
+
+    public void addTheme (Theme theme){ subTheme.add(theme);}
+
+    public void deleteTheme(Theme theme){subTheme.remove(theme);}
+
+    public Theme getParentTheme(){return this.parentTheme;}
+
+    public void setTheme(Theme theme){
+        this.parentTheme = theme;
+        if (theme != null){
+            theme.addTheme(this);
+        }
+    }
+
+    public void setLevel(Theme theme){
+        if (theme != null){
+            this.level = theme.getLevel() + 1;
+        }
+    }
+
+    public Integer getLevel(){return this.level;}
+
+    public List<Theme> getSubTheme(){return this.subTheme;}
 
     public boolean isActive() {
         return state.equals(State.APPROVED);

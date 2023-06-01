@@ -25,10 +25,10 @@ public class Activity {
     @Enumerated(EnumType.STRING)
     private Activity.State state;
 
-    @ManyToMany
+    @ManyToMany (fetch = FetchType.EAGER)
     private List<Volunteer> volunteers = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany (fetch = FetchType.EAGER)
     private List<Theme> themes = new ArrayList<>();
 
     @ManyToOne

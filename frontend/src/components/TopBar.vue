@@ -57,6 +57,20 @@
           </template>
         </v-menu>
 
+        <v-menu v-if="isMember" offset-y sopen-on-hover>
+            <template v-slot:activator="{ on }">
+                <v-btn
+                        text
+                        color="orange"
+                        v-on="on"
+                        data-cy="theme"
+                        @click="Theme"
+                >Theme
+                    <v-icon>fas fa-user</v-icon>
+                </v-btn>
+            </template>
+        </v-menu>
+
         <v-menu v-if="isAdmin" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn color="orange" text v-on="on" data-cy="admin">
@@ -271,6 +285,10 @@ export default class TopBar extends Vue {
 
   async manageActivities() {
     await this.$router.push({ name: 'manage-activities' }).catch(() => {});
+  }
+
+  async Theme() {
+      await this.$router.push({ name: 'theme' }).catch(() => {});
   }
 
   async logout() {

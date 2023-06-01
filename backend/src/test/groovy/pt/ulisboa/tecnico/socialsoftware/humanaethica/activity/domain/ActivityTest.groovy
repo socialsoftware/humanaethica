@@ -22,7 +22,7 @@ class ActivityTest extends SpockTest {
         when: "empty activity are created"
         institution = new Institution()
         institutionRepository.save(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         activity = new Activity("","",institution,Activity.State.APPROVED)
@@ -45,7 +45,7 @@ class ActivityTest extends SpockTest {
         given: "a theme and a volunteer"
         institution = new Institution()
         institutionRepository.save(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
@@ -82,7 +82,7 @@ class ActivityTest extends SpockTest {
         given: "a theme, a volunteer and a activity"
         institution = new Institution()
         institutionRepository.save(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
@@ -107,7 +107,7 @@ class ActivityTest extends SpockTest {
         given: "a theme, a volunteer and a activity"
         institution = new Institution()
         institutionRepository.save(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         List<Theme> themes = new ArrayList<>()
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)

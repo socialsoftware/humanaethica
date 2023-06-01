@@ -16,6 +16,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.Institutio
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.DocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
@@ -59,7 +60,7 @@ public class InstitutionService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<InstitutionDto> getInstitutions() {
         return institutionRepository.findAll().stream()
-                .map(institution->new InstitutionDto(institution,false))
+                .map(institution->new InstitutionDto(institution,false,false))
                 .sorted(Comparator.comparing(InstitutionDto::getName))
                 .toList();
     }

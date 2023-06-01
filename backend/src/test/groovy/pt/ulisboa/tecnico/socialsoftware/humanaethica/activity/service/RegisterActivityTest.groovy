@@ -28,10 +28,10 @@ class RegisterActivityTest extends SpockTest {
         given: "an activity dto"
         institution = new Institution()
         institutionRepository.save(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
         themeRepository.save(theme)
         List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme))
+        themes.add(new ThemeDto(theme,true,true))
 
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
@@ -87,9 +87,9 @@ class RegisterActivityTest extends SpockTest {
 
         when:
         result.getThemes().size() == 0
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
-        themes.add(new ThemeDto(theme))
+        themes.add(new ThemeDto(theme, true, true))
 
         activityDto.setThemes(themes)
         activityService.updateActivity(-1, result.getId(), activityDto)

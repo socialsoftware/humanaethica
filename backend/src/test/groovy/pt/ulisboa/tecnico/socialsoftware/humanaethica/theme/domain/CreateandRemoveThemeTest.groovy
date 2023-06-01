@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @DataJpaTest
@@ -12,7 +13,7 @@ class CreateandRemoveThemeTest extends SpockTest {
 
     def "create Theme: name"() {
         when:
-        def theme = new Theme("THEME_1_NAME", Theme.State.APPROVED)
+        def theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
         themeRepository.save(theme)
 
         then:
@@ -25,7 +26,7 @@ class CreateandRemoveThemeTest extends SpockTest {
 
     def "delete Theme"(){
         given:
-        def theme = new Theme("THEME_1_NAME",Theme.State.APPROVED)
+        def theme = new Theme("THEME_1_NAME",Theme.State.APPROVED, null)
         themeRepository.save(theme)
 
         when:
@@ -34,6 +35,60 @@ class CreateandRemoveThemeTest extends SpockTest {
         then:
         !theme.isActive()
     }
+
+    def "create two themes associated with each other"(){
+        when:
+        def themeParent = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
+        def themeParentDto = new ThemeDto(themeParent,false,false)
+        //def result = themeService.registerTheme(themeParentDto,true, -1)
+        def subTheme = new Theme("THEME_2_NAME", Theme.State.APPROVED,themeParent)
+        def subThemeDto = new ThemeDto(subTheme,false,false)
+        //def result2 = themeService.registerTheme(subThemeDto,true, result.getId())
+
+        then:
+        themeParent.getSubTheme().size() == 1
+        themeParent.getSubTheme().get(0).getName() =="THEME_2_NAME"
+        subTheme.getParentTheme().getName() == "THEME_1_NAME"
+
+    }
+
+    def "create and delete two themes associated with each other"(){
+        given:
+        def themeParent = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
+        themeRepository.save(themeParent)
+        def subTheme = new Theme("THEME_2_NAME", Theme.State.APPROVED,themeParent)
+        themeRepository.save(subTheme)
+
+        when:
+        themeService.deleteTheme(themeParent.getId());
+
+        then:
+        !themeParent.isActive()
+        !subTheme.isActive()
+    }
+
+
+    def "create and delete four themes associated with each other"(){
+        given:
+        def themeParent = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
+        themeRepository.save(themeParent)
+        def subTheme1 = new Theme("THEME_2_NAME", Theme.State.APPROVED,themeParent)
+        themeRepository.save(subTheme1)
+        def subTheme2 = new Theme("THEME_3_NAME", Theme.State.APPROVED,themeParent)
+        themeRepository.save(subTheme2)
+        def subTheme3 = new Theme("THEME_2_NAME", Theme.State.APPROVED,subTheme1)
+        themeRepository.save(subTheme3)
+
+        when:
+        themeService.deleteTheme(themeParent.getId());
+
+        then:
+        !themeParent.isActive()
+        !subTheme1.isActive()
+        !subTheme2.isActive()
+        !subTheme3.isActive()
+    }
+
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

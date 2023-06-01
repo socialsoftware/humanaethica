@@ -191,6 +191,50 @@ export default class RemoteServices {
       });
   }
 
+  static async getThemesbyInstitution(): Promise<Theme[]> {
+    return httpClient
+        .get('/theme/getInstitutionThemes')
+        .then((response) => {
+          return response.data.map((theme: any) => {
+            return new Theme(theme);
+          });
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async getThemesAvailableforInstitution(): Promise<Theme[]> {
+    return httpClient
+        .get('/theme/availableThemesforInstitution')
+        .then((response) => {
+          return response.data.map((theme: any) => {
+            return new Theme(theme);
+          });
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async addThemetoInstitution( theme: Theme) {
+    return httpClient
+        .put(`/theme/${theme.id}/addInstitution`)
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async removeThemetoInstitution(
+    themeId: number
+  ) {
+    return httpClient
+        .put(`/theme/${themeId}/removeInstitution`)
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async confirmRegistration(
     registerUser: RegisterUser
   ): Promise<RegisterUser> {
@@ -468,12 +512,33 @@ export default class RemoteServices {
   static async registerThemeInstitution(theme: Theme) {
     return httpClient
       .post('/themes/registerInstitution', theme)
-      .then(() => {
-        return;
+      .then((response) => {
+        return new Theme(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  static async validateTheme(themeId: number) {
+    return httpClient
+        .put(`/themes/${themeId}/validate`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteTheme(themeId: number): Promise<Theme[]> {
+    return httpClient
+        .delete(`/themes/${themeId}/delete`)
+        .then((response) => {
+          return response.data.map((theme: any) => {
+            return new Theme(theme);
+          });
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
   }
 
   static async joinActivity(userId: number, activityId: number) {
@@ -500,7 +565,7 @@ export default class RemoteServices {
       });
   }
 
-  // Error
+    // Error
 
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {

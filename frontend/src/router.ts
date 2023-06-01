@@ -20,6 +20,7 @@ import RegisterActivityView from '@/views/activity/RegisterActivityView.vue';
 import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
 import ManageActivitiesView from '@/views/volunteer/ManageActivitiesView.vue';
 import ManageOwnActivitiesView from '@/views/member/ManageOwnActivitiesView.vue';
+import ThemeView from '@/views/member/ThemeView.vue';
 
 Vue.use(Router);
 
@@ -169,6 +170,15 @@ const router = new Router({
       meta: {
         requiredAuth: 'None',
         title: APP_NAME + ' - Manage Activities - Member',
+      },
+    },
+    {
+      path: '/member/theme',
+      name: 'theme',
+      component: ThemeView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Theme',
       },
     },
     {

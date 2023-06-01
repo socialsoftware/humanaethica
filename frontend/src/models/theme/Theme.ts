@@ -1,6 +1,3 @@
-//import { ISOtoString } from '@/services/ConvertDateService';
-//import Document from '../management/Document';
-
 import Institution from '@/models/institution/Institution';
 
 export default class Theme {
@@ -8,6 +5,8 @@ export default class Theme {
   name!: string;
   institutions: Institution[] = [];
   state!: string;
+  parentTheme?: Theme;
+  level?: number;
 
   constructor(jsonObj?: Theme) {
     if (jsonObj) {
@@ -19,6 +18,8 @@ export default class Theme {
         }
       );
       this.state = jsonObj.state;
-    }
+      this.parentTheme = jsonObj.parentTheme;
+      this.level = jsonObj.level;
+      }
   }
 }
