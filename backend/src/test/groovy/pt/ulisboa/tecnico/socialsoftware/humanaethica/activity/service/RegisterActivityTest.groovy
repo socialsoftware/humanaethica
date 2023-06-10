@@ -36,6 +36,9 @@ class RegisterActivityTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
         activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setDescription("ACTIVITY_1_DESCRIPTION")
+        activityDto.setStartingDate("2023-05-26T19:09:00Z");
+        activityDto.setEndingDate("2023-05-26T22:09:00Z");
         activityDto.setInstitution(new InstitutionDto(institution))
         activityDto.setThemes(themes)
 
@@ -56,12 +59,15 @@ class RegisterActivityTest extends SpockTest {
         given:
         institution = new Institution()
         institutionRepository.save(institution)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
         activityRepository.save(activity)
         and:
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
         activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setDescription("ACTIVITY_1_DESCRIPTION")
+        activityDto.setStartingDate("2023-05-26T19:09:00Z");
+        activityDto.setEndingDate("2023-05-26T22:09:00Z");
 
         when:
         activityService.registerActivity(-1, activityDto)
@@ -81,6 +87,9 @@ class RegisterActivityTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
         activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setDescription("ACTIVITY_1_DESCRIPTION")
+        activityDto.setStartingDate("2023-05-26T19:09:00Z");
+        activityDto.setEndingDate("2023-05-26T22:09:00Z");
         activityDto.setInstitution(new InstitutionDto(institution))
         activityDto.setThemes(themes)
         def result = activityService.registerActivity(-1, activityDto)

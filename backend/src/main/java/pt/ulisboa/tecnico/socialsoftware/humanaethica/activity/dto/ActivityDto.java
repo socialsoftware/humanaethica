@@ -18,6 +18,12 @@ public class ActivityDto {
 
     private String region;
 
+    private String description;
+
+    private String startingDate;
+
+    private String endingDate;
+
     private String state;
 
     private String creationDate;
@@ -35,11 +41,14 @@ public class ActivityDto {
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
+        setDescription(activity.getDescription());
         this.themes = activity.getThemes().stream()
                 .map(ThemeDto::new)
                 .collect(Collectors.toList());
         setState(activity.getState().toString());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
+        setStartingDate(DateHandler.toISOString(activity.getStartingDate()));
+        setEndingDate(DateHandler.toISOString(activity.getEndingDate()));
         if(!shallow) {
             this.volunteers = activity.getVolunteers().stream()
                     .map(user->new UserDto(user,true))
@@ -80,6 +89,14 @@ public class ActivityDto {
 
     public void setRegion(String region) { this.region = region; }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getState() {
         return state;
     }
@@ -94,6 +111,22 @@ public class ActivityDto {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public void setStartingDate(String startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public String getStartingDate() {
+        return startingDate;
+    }
+
+    public void setEndingDate(String endingDate) {
+        this.endingDate = endingDate;
+    }
+
+    public String getEndingDate() {
+        return endingDate;
     }
 
     public void setVolunteers(List<UserDto> volunteers) { this.volunteers = volunteers; }
