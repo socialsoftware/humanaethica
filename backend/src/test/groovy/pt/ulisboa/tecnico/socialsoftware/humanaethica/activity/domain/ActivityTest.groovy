@@ -25,7 +25,7 @@ class ActivityTest extends SpockTest {
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
-        activity = new Activity("","",institution,Activity.State.APPROVED)
+        activity = new Activity("","","",institution,Activity.State.APPROVED)
         activity.addTheme(theme)
         activityRepository.save(activity)
 
@@ -52,7 +52,7 @@ class ActivityTest extends SpockTest {
         userRepository.save(volunteer)
 
         when: "activity is created"
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
         activityRepository.save(activity)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
@@ -66,6 +66,7 @@ class ActivityTest extends SpockTest {
         result.getId() != 0
         result.getName() == "ACTIVITY_1_NAME"
         result.getRegion() == "ACTIVITY_1_REGION"
+        result.getDescription() == "ACTIVITY_1_DESCRIPTION"
         result.getThemes().get(0).getName() == "THEME_1_NAME"
         result.getVolunteers().size() == 1
         result.getVolunteers().get(0).getName() == USER_1_NAME
@@ -86,7 +87,7 @@ class ActivityTest extends SpockTest {
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
         activityRepository.save(activity)
@@ -112,7 +113,7 @@ class ActivityTest extends SpockTest {
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
         activityRepository.save(activity)

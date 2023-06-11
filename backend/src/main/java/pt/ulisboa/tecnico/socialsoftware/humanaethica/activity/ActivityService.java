@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
@@ -60,6 +61,18 @@ public class ActivityService {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
+        if (activityDto.getDescription() == null || activityDto.getDescription().trim().length() == 0) {
+            throw new HEException(INVALID_DESCRIPTION);
+        }
+
+        if (activityDto.getStartingDate() == null || !DateHandler.isValidDateFormat(activityDto.getStartingDate())) {
+            throw new HEException(INVALID_DATE);
+        }
+
+        if (activityDto.getEndingDate() == null || !DateHandler.isValidDateFormat(activityDto.getEndingDate())) {
+            throw new HEException(INVALID_DATE);
+        }
+
         for (Activity act : activityRepository.findAll()) {
             if (act.getName().equals(activityDto.getName())) {
                 throw new HEException(ACTIVITY_ALREADY_EXISTS);
@@ -77,7 +90,7 @@ public class ActivityService {
 
         if(userId == -1) {
             Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), institution, Activity.State.APPROVED);
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), institution, Activity.State.APPROVED);
         }
 
         else{
@@ -87,13 +100,16 @@ public class ActivityService {
             }
 
             Member member = (Member) user;
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), member.getInstitution(), Activity.State.APPROVED);
+            activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), member.getInstitution(), Activity.State.APPROVED);
         }
 
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             activity.addTheme(theme);
         }
+
+        activity.setStartingDate(activityDto.getStartingDate());
+        activity.setEndingDate(activityDto.getEndingDate());
 
         activityRepository.save(activity);
         return activity;
@@ -160,6 +176,18 @@ public class ActivityService {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
+        if (activityDto.getDescription() == null || activityDto.getDescription().trim().length() == 0) {
+            throw new HEException(INVALID_DESCRIPTION);
+        }
+
+        if (activityDto.getStartingDate() == null || !DateHandler.isValidDateFormat(activityDto.getStartingDate())) {
+            throw new HEException(INVALID_DATE);
+        }
+
+        if (activityDto.getEndingDate() == null || !DateHandler.isValidDateFormat(activityDto.getEndingDate())) {
+            throw new HEException(INVALID_DATE);
+        }
+
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             if (theme.getState() != Theme.State.APPROVED) {
@@ -170,6 +198,9 @@ public class ActivityService {
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityDto.getId()));
         activity.setName(activityDto.getName());
         activity.setRegion(activityDto.getRegion());
+        activity.setDescription(activityDto.getDescription());
+        activity.setStartingDate(activityDto.getStartingDate());
+        activity.setEndingDate(activityDto.getEndingDate());
         List<Theme> themeList = new ArrayList<>();
 
         for (ThemeDto themeDto : activityDto.getThemes()) {
