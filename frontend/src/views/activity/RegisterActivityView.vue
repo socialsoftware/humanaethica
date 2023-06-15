@@ -29,6 +29,27 @@
           item-value="name"
           required
         />
+        <v-text-field
+          v-model="activity.description"
+          label="Description"
+          data-cy="activityDescInput"
+          :rules="[(value) => !!value || 'Description is required']"
+          required
+        />
+        <v-text-field
+          v-model="activity.startingDate"
+          label="Starting Date - YYYY-MM-DDTHH:mm:ssZ"
+          data-cy="activitySDateInput"
+          :rules="[(value) => !!value || 'Starting Date is required']"
+          required
+        />
+        <v-text-field
+          v-model="activity.endingDate"
+          label="Ending Date - YYYY-MM-DDTHH:mm:ssZ"
+          data-cy="activityEDateInput"
+          :rules="[(value) => !!value || 'Ending Date is required']"
+          required
+        />
       </v-card-text>
       <v-card-actions>
         <v-spacer />

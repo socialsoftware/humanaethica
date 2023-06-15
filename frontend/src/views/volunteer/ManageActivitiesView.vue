@@ -1,85 +1,119 @@
 <template>
-  <v-card class="table">
-    <v-data-table
-      :headers="headers"
-      :items="activities"
-      :search="search"
-      disable-pagination
-      :hide-default-footer="true"
-      :mobile-breakpoint="0"
+  <div>
+    <v-card class="table">
+      <v-data-table
+        :headers="headers"
+        :items="activities"
+        :search="search"
+        disable-pagination
+        :hide-default-footer="true"
+        :mobile-breakpoint="0"
+      >
+        <template v-slot:top>
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Search"
+              class="mx-2"
+            />
+            <v-spacer />
+          </v-card-title>
+        </template>
+        <template v-slot:[`item.themes`]="{ item }">
+          <v-chip v-for="theme in item.themes">
+            {{ theme.name }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.seeDesc`]="{ item }">
+          <v-btn color="orange" @click="openDialog(item)">
+            See Description
+          </v-btn>
+        </template>
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip v-if="!item.alreadyJoined" bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="green"
+                v-on="on"
+                data-cy="joinButton"
+                @click="joinActivity(item)"
+                >mdi-check-bold</v-icon
+              >
+            </template>
+            <span>Join Activity</span>
+          </v-tooltip>
+          <v-tooltip v-if="item.alreadyJoined" bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="red"
+                v-on="on"
+                data-cy="leaveButton"
+                @click="leaveActivity(item)"
+                >mdi-export</v-icon
+              >
+            </template>
+            <span>Leave Activity</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="red"
+                v-on="on"
+                data-cy="reportButton"
+                @click="reportActivity(item)"
+                >warning</v-icon
+              >
+            </template>
+            <span>Report Activity</span>
+          </v-tooltip>
+        </template>
+      </v-data-table>
+    </v-card>
+    <activity-dialog
+      v-if="showActivity"
+      v-model="dialog"
+      :activity="showActivity"
+      v-on:close-dialog="onCloseDialog"
+    />
+
+    <!--
+    <v-dialog v-if='showActivity != null'
+      v-model="dialog"
+      width="auto"
     >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Search"
-            class="mx-2"
-          />
-          <v-spacer />
-        </v-card-title>
-      </template>
-      <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes">
-          {{ theme.name }}
-        </v-chip>
-      </template>
-      <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip v-if="!item.alreadyJoined" bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              color="green"
-              v-on="on"
-              data-cy="joinButton"
-              @click="joinActivity(item)"
-              >mdi-check-bold</v-icon
-            >
-          </template>
-          <span>Join Activity</span>
-        </v-tooltip>
-        <v-tooltip v-if="item.alreadyJoined" bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              color="red"
-              v-on="on"
-              data-cy="joinButton"
-              @click="leaveActivity(item)"
-              >mdi-export</v-icon
-            >
-          </template>
-          <span>Leave Activity</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              color="red"
-              v-on="on"
-              data-cy="joinButton"
-              @click="reportActivity(item)"
-              >warning</v-icon
-            >
-          </template>
-          <span>Report Activity</span>
-        </v-tooltip>
-      </template>
-    </v-data-table>
-  </v-card>
+      <v-card>
+        <v-card-text>
+          {{ showActivity.description }}
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="orange" block @click="dialog = false; showActivity = null">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    -->
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
+import { show } from 'cli-cursor';
+import ActivityDialog from '@/views/activity/ActivityDialog.vue';
 
 @Component({
-  components: {},
+  methods: { show },
+  components: { 'activity-dialog': ActivityDialog },
 })
 export default class ManageActivitiesView extends Vue {
   activities: Activity[] = [];
   ownActivities: Activity[] = [];
+  dialog: boolean = false;
+  showActivity: Activity | null = null;
   search: string = '';
   headers: object = [
     {
@@ -98,11 +132,24 @@ export default class ManageActivitiesView extends Vue {
       text: 'Themes',
       value: 'themes',
       align: 'left',
-      width: '10%',
+      width: '5%',
     },
     {
-      text: 'Creation Date',
-      value: 'creationDate',
+      text: 'Description',
+      value: 'seeDesc',
+      align: 'left',
+      sortable: false,
+      width: '5%',
+    },
+    {
+      text: 'Start Date',
+      value: 'startingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'End Date',
+      value: 'endingDate',
       align: 'left',
       width: '5%',
     },
@@ -131,7 +178,11 @@ export default class ManageActivitiesView extends Vue {
       }
       */
       this.activities.forEach((activity) => {
-        if (this.ownActivities.some((ownActivity) => ownActivity.id === activity.id)) {
+        if (
+          this.ownActivities.some(
+            (ownActivity) => ownActivity.id === activity.id
+          )
+        ) {
           activity.alreadyJoined = true;
         }
       });
@@ -140,6 +191,17 @@ export default class ManageActivitiesView extends Vue {
     }
     await this.$store.dispatch('clearLoading');
   }
+
+  openDialog(activity: Activity) {
+    this.dialog = true;
+    this.showActivity = activity;
+  }
+
+  onCloseDialog() {
+    this.showActivity = null;
+    this.dialog = false;
+  }
+
 
   async joinActivity(activity: Activity) {
     let activityId = activity.id;
