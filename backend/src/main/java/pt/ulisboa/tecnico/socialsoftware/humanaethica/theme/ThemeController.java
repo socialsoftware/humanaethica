@@ -77,4 +77,9 @@ public class ThemeController {
         Member member = (Member) user;
         return themeService.availableThemesforInstitution(member.getInstitution().getId());
     }
+
+    @GetMapping("/themes/availableThemes")
+    public List<ThemeDto> availableThemes(){
+        return themeService.availableThemes();
+    }
 }

@@ -207,4 +207,16 @@ public class ThemeService {
         return filteredThemes;
     }
 
+    public List<ThemeDto> availableThemes() {
+        List<ThemeDto> aux = getThemes();
+        List<ThemeDto> filteredThemes = new ArrayList<>();
+
+        for (ThemeDto x : aux) {
+            if (x.getState().equals("APPROVED")){
+                filteredThemes.add(x);
+            }
+        }
+        return filteredThemes;
+    }
+
 }

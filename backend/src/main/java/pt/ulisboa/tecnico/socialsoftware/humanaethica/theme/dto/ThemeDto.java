@@ -22,6 +22,8 @@ public class ThemeDto {
 
     private Integer level;
 
+    private String completeName;
+
     public ThemeDto(){
 
     }
@@ -43,8 +45,24 @@ public class ThemeDto {
         }
         if (theme.getParentTheme() != null){
             setTheme(new ThemeDto(theme.getParentTheme(),false,true));
+            addCompleteName(this.parentTheme);
+        }
+        else {
+            this.completeName = theme.getName();
         }
         setLevel(theme.getLevel());
+    }
+
+    public void addCompleteName(ThemeDto themeDto) {
+        this.completeName = themeDto.getCompleteName() + '/' + this.getName();
+    }
+
+    public void setCompleteName(String completeName) {
+        this.completeName = completeName;
+    }
+
+    public String getCompleteName() {
+        return this.completeName;
     }
 
     public Integer getId() {return id;}

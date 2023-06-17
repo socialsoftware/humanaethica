@@ -17,6 +17,9 @@
             class="mx-2"
           />
           <v-spacer />
+          <v-btn color="primary" dark @click="TreeView" data-cy="createButton"
+          >Tree</v-btn
+          >
           <v-btn color="primary" dark @click="newTheme" data-cy="createButton"
             >New Theme</v-btn
           >
@@ -32,37 +35,42 @@
           {{ item.parentTheme.name }}
         </v-chip>
       </template>
-
+      <template v-slot:[`item.state`]="{ item }">
+        <span :class="getStateClass(item.state)">{{ item.state }}</span>
+      </template>
       <template v-slot:[`item.action`]="{ item }">
-          <v-tooltip bottom v-if="item.state == 'SUBMITTED' || item.state == 'APPROVED'">
-              <template v-slot:activator="{ on }">
-                  <v-icon
-                          class="mr-2 action-button"
-                          color="red"
-                          v-on="on"
-                          data-cy="deleteButton"
-                          @click="deleteTheme(item)"
-                  >delete</v-icon
-                  >
-              </template>
-              <span>Delete Theme</span>
-          </v-tooltip>
-          <v-tooltip
-                  bottom
-                  v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
-          >
-              <template v-slot:activator="{ on }">
-                  <v-icon
-                          class="mr-2 action-button"
-                          color="green"
-                          v-on="on"
-                          data-cy="validateButton"
-                          @click="validateTheme(item)"
-                  >mdi-check-bold</v-icon
-                  >
-              </template>
-              <span>Validate Theme</span>
-          </v-tooltip>
+        <v-tooltip
+          bottom
+          v-if="item.state == 'SUBMITTED' || item.state == 'APPROVED'"
+        >
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="red"
+              v-on="on"
+              data-cy="deleteButton"
+              @click="deleteTheme(item)"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Theme</span>
+        </v-tooltip>
+        <v-tooltip
+          bottom
+          v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
+        >
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="green"
+              v-on="on"
+              data-cy="validateButton"
+              @click="validateTheme(item)"
+              >mdi-check-bold</v-icon
+            >
+          </template>
+          <span>Validate Theme</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <add-theme
@@ -71,6 +79,12 @@
       v-on:user-created="onCreatedTheme"
       v-on:close-dialog="onCloseDialog"
     />
+    <tree-view
+        v-if="treeView"
+        v-model="treeView"
+        v-on:user-created="onTreeView"
+        v-on:close-dialog="onCloseDialog"
+    />
   </v-card>
 </template>
 
@@ -78,17 +92,19 @@
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import AddTheme from '@/views/admin/manageTheme/AddTheme.vue';
+import ThemesTreeView from '@/views/admin/manageTheme/ThemesTreeView.vue';
 import Theme from '@/models/theme/Theme';
 
 @Component({
-  components: { 'add-theme': AddTheme },
+  components: { 'add-theme': AddTheme , 'tree-view':ThemesTreeView},
 })
 export default class ThemeView extends Vue {
   themes: Theme[] = [];
   addTheme: boolean = false;
+  treeView: boolean = false;
   search: string = '';
   headers: object = [
-    { text: 'Name', value: 'name', align: 'left', width: '5%' },
+    { text: 'Name', value: 'completeName', align: 'left', width: '5%' },
     {
       text: 'Parent',
       value: 'parentTheme',
@@ -114,7 +130,7 @@ export default class ThemeView extends Vue {
       sortable: false,
       width: '5%',
     },
-];
+  ];
 
   async created() {
     await this.$store.dispatch('loading');
@@ -130,45 +146,84 @@ export default class ThemeView extends Vue {
     this.addTheme = true;
   }
 
+  TreeView() {
+    this.treeView = true;
+  }
+
   onCreatedTheme(theme: Theme) {
     this.themes.unshift(theme);
     this.addTheme = false;
   }
 
+  onTreeView() {
+    this.treeView = false;
+  }
+
   onCloseDialog() {
     this.addTheme = false;
+    this.treeView = false;
   }
 
   async deleteTheme(theme: Theme) {
-        let themeId = theme.id;
-        if (
-            themeId !== null &&
-            confirm('Are you sure you want to delete the theme?')
-        ) {
-            try {
-                this.themes = await RemoteServices.deleteTheme(themeId);
-            } catch (error) {
-                await this.$store.dispatch('error', error);
-            }
-        }
+    let themeId = theme.id;
+    if (
+      themeId !== null &&
+      confirm('Are you sure you want to delete the theme?')
+    ) {
+      try {
+        this.themes = await RemoteServices.deleteTheme(themeId);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
     }
+  }
 
-
-    async validateTheme(theme: Theme) {
-        let themeId = theme.id;
-        if (
-            themeId !== null &&
-            confirm('Are you sure you want to validate this theme?')
-        ) {
-            try {
-                await RemoteServices.validateTheme(themeId);
-                this.themes = await RemoteServices.getThemes();
-            } catch (error) {
-                await this.$store.dispatch('error', error);
-            }
-        }
+  async validateTheme(theme: Theme) {
+    let themeId = theme.id;
+    if (
+      themeId !== null &&
+      confirm('Are you sure you want to validate this theme?')
+    ) {
+      try {
+        await RemoteServices.validateTheme(themeId);
+        this.themes = await RemoteServices.getThemes();
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
     }
+  }
+
+  getStateClass(state: string): string {
+    switch (state) {
+      case 'SUBMITTED':
+        return 'orange--text';
+      case 'APPROVED':
+        return 'green--text';
+      case 'DELETED':
+        return 'red--text';
+      default:
+        return '';
+    }
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.orange--text,
+.green--text,
+.red--text {
+  font-weight: bold;
+}
+
+.orange--text {
+  color: orange;
+}
+
+.green--text {
+  color: green;
+}
+
+.red--text {
+  color: red;
+}
+</style>
