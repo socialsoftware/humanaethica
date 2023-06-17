@@ -66,7 +66,6 @@
                         data-cy="theme"
                         @click="Theme"
                 >Theme
-                    <v-icon>fas fa-user</v-icon>
                 </v-btn>
             </template>
         </v-menu>

@@ -17,14 +17,18 @@
             label="Parent Theme (Optional)"
             :items="themes"
             return-object
-            item-value= "name"
+            item-value="name"
             item-text="name"
             required
             :menu-props="{ offsetY: true, nudgeLeft: 0, class: 'left-text' }"
+            class="move-right"
         >
           <template v-slot:item="{ item }">
             <div class="left-text">
-              <span class="indentation">{{ getIndentedDisplayName(item.level) }}</span>&#8735;{{ item.name }}
+              <span class="indentation">{{
+                  getIndentedDisplayName(item.level)
+                }}</span
+              >&#9658;{{ item.name }}
             </div>
           </template>
         </v-select>
@@ -68,7 +72,7 @@ import Theme from '@/models/theme/Theme';
 @Component({
   components: {},
 })
-export default class RegisterActivityView extends Vue {
+export default class AddTheme extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   valid = true;
   success = false;
@@ -77,12 +81,12 @@ export default class RegisterActivityView extends Vue {
 
   getIndentedDisplayName(level: number) {
     const tabChar = '\u00A0'; // Use non-breaking space character for indentation
-    return tabChar.repeat(level*10);
+    return tabChar.repeat(level * 10);
   }
 
   async created() {
     this.theme = new Theme();
-    this.themes = await RemoteServices.getThemes();
+    this.themes = await RemoteServices.getThemesAvailable();
   }
 
   async submit() {
@@ -116,5 +120,10 @@ export default class RegisterActivityView extends Vue {
 
 .left-text {
   text-align: left;
+}
+
+.move-right {
+  margin-left: 20px;
+  margin-right: 20px;
 }
 </style>
