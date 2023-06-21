@@ -20,7 +20,7 @@
                     <v-btn color="primary" dark @click="newTheme" data-cy="createButton"
                     >New Theme</v-btn
                     >
-                    <v-btn color="primary" dark @click="AssoiateTheme" data-cy="createButton"
+                    <v-btn color="primary" dark @click="AssociateTheme" data-cy="createButton"
                     >Associate Theme</v-btn
                     >
                 </v-card-title>
@@ -47,13 +47,13 @@
         <register-theme
                 v-if="addTheme"
                 v-model="addTheme"
-                v-on:user-created="onCreatedTheme"
+                v-on:theme-created="onCreatedTheme"
                 v-on:close-dialog="onCloseDialog"
         />
       <associate-theme
           v-if="associateTheme"
           v-model="associateTheme"
-          v-on:user-created="onAssociateTheme"
+          v-on:theme-associated="onAssociateTheme"
           v-on:close-dialog="onCloseDialog"
       />
     </v-card>
@@ -99,16 +99,16 @@ export default class ThemeView extends Vue {
         this.addTheme = true;
     }
 
-  AssoiateTheme() {
+  AssociateTheme() {
     this.associateTheme = true;
   }
 
-  onAssociateTheme(theme: Theme) {
-    this.themes.unshift(theme);
+  async onAssociateTheme() {
+    this.themes = await RemoteServices.getThemesbyInstitution();
     this.associateTheme = false;
   }
 
-    onCreatedTheme(theme: Theme) {
+    onCreatedTheme() {
         this.addTheme = false;
     }
 

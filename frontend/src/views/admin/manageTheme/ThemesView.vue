@@ -76,13 +76,12 @@
     <add-theme
       v-if="addTheme"
       v-model="addTheme"
-      v-on:user-created="onCreatedTheme"
+      v-on:theme-created="onCreatedTheme"
       v-on:close-dialog="onCloseDialog"
     />
     <tree-view
         v-if="treeView"
         v-model="treeView"
-        v-on:user-created="onTreeView"
         v-on:close-dialog="onCloseDialog"
     />
     <institution
@@ -159,8 +158,8 @@ export default class ThemeView extends Vue {
     this.treeView = true;
   }
 
-  onCreatedTheme(theme: Theme) {
-    this.themes.unshift(theme);
+  async onCreatedTheme() {
+    this.themes = await RemoteServices.getThemes();
     this.addTheme = false;
   }
 

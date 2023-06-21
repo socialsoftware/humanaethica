@@ -75,8 +75,8 @@ export default class AssociateThemeView extends Vue {
       await RemoteServices.addThemetoInstitution(
         this.theme
       );
+      this.$emit('theme-associated');
       this.success = true;
-      await this.$router.push({ name: 'home' });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

@@ -91,7 +91,6 @@ export default class AddTheme extends Vue {
       theme = await RemoteServices.registerThemeInstitution(this.theme);
       this.$emit('theme-created', theme);
       this.success = true;
-      await this.$router.push({ name: 'home' });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
