@@ -75,7 +75,7 @@ export default class ThemeView extends Vue {
     associateTheme: boolean = false;
     search: string = '';
     headers: object = [
-        { text: 'Name', value: 'name', align: 'left', width: '15%' },
+        { text: 'Name', value: 'completeName', align: 'left', width: '15%' },
         {
             text: 'Delete',
             value: 'action',

@@ -30,6 +30,15 @@
           </v-list-item-group>
         </v-list>
       </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+            color="blue darken-1"
+            @click="$emit('close-dialog')"
+            data-cy="cancelButton"
+        >Close</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

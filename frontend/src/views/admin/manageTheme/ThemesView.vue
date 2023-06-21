@@ -26,9 +26,9 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.institutions`]="{ item }">
-        <v-chip v-for="institution in item.institutions">
-          {{ institution.name }}
-        </v-chip>
+        <v-btn v-if="item.institutions.length > 0" color="primary" dark @click="openDialog(item)">
+          See Institutions
+        </v-btn>
       </template>
       <template v-slot:[`item.parentTheme`]="{ item }">
         <v-chip v-if="item.parentTheme && item.parentTheme.name">
@@ -85,6 +85,12 @@
         v-on:user-created="onTreeView"
         v-on:close-dialog="onCloseDialog"
     />
+    <institution
+        v-if="dialog"
+        v-model="dialog"
+        :theme="showTheme"
+        v-on:close-dialog="onCloseDialog"
+    />
   </v-card>
 </template>
 
@@ -94,14 +100,17 @@ import RemoteServices from '@/services/RemoteServices';
 import AddTheme from '@/views/admin/manageTheme/AddTheme.vue';
 import ThemesTreeView from '@/views/admin/manageTheme/ThemesTreeView.vue';
 import Theme from '@/models/theme/Theme';
+import Institution from '@/views/admin/manageTheme/Institution.vue';
 
 @Component({
-  components: { 'add-theme': AddTheme , 'tree-view':ThemesTreeView},
+  components: { 'add-theme': AddTheme, 'tree-view':ThemesTreeView, 'institution': Institution},
 })
 export default class ThemeView extends Vue {
   themes: Theme[] = [];
   addTheme: boolean = false;
   treeView: boolean = false;
+  dialog: boolean = false;
+  showTheme: Theme = new Theme();
   search: string = '';
   headers: object = [
     { text: 'Name', value: 'completeName', align: 'left', width: '5%' },
@@ -162,6 +171,7 @@ export default class ThemeView extends Vue {
   onCloseDialog() {
     this.addTheme = false;
     this.treeView = false;
+    this.dialog = false;
   }
 
   async deleteTheme(theme: Theme) {
@@ -191,6 +201,11 @@ export default class ThemeView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  openDialog(theme: Theme) {
+    this.dialog = true;
+    this.showTheme = theme;
   }
 
   getStateClass(state: string): string {

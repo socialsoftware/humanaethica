@@ -13,14 +13,22 @@
         </v-card-title>
 
         <v-select
-            v-model="theme"
-            label="Theme"
-            :items="themes"
-            return-object
-            item-text="name"
-            item-value="name"
-            required
-        />
+          v-model="theme"
+          label="Theme"
+          :items="themes"
+          return-object
+          item-value="name"
+          item-text="name"
+          required
+          :menu-props="{ offsetY: true, nudgeLeft: 0, class: 'left-text' }"
+          class="move-right"
+        >
+          <template v-slot:item="{ item }">
+            <div class="left-text">
+              <span class="indentation">{{ item.completeName }}</span>
+            </div>
+          </template>
+        </v-select>
 
         <v-card-actions>
           <v-spacer />
@@ -84,5 +92,14 @@ export default class AssociateThemeView extends Vue {
   font-size: 1.05rem;
   color: #1b5e20;
   text-transform: uppercase;
+}
+
+.left-text {
+  text-align: left;
+}
+
+.move-right {
+  margin-left: 20px;
+  margin-right: 20px;
 }
 </style>

@@ -90,7 +90,7 @@ public class ThemeService {
         }
         Theme theme;
 
-        if (isAdmin){
+        if (isAdmin || themeParent != null) {
             theme = new Theme(themeDto.getName(), Theme.State.APPROVED, themeParent);
         }
         else{

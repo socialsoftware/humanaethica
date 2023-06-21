@@ -25,10 +25,7 @@
         >
           <template v-slot:item="{ item }">
             <div class="left-text">
-              <span class="indentation">{{
-                  getIndentedDisplayName(item.level)
-                }}</span
-              >&#9658;{{ item.name }}
+              <span class="indentation">{{ item.completeName }}</span>
             </div>
           </template>
         </v-select>
@@ -78,12 +75,6 @@ export default class AddTheme extends Vue {
   success = false;
   theme: Theme = new Theme();
   themes: Theme[] | [] = [];
-
-  getIndentedDisplayName(level: number) {
-    const tabChar = '\u00A0'; // Use non-breaking space character for indentation
-    return tabChar.repeat(level * 10);
-  }
-
   async created() {
     this.theme = new Theme();
     this.themes = await RemoteServices.getThemesAvailable();
