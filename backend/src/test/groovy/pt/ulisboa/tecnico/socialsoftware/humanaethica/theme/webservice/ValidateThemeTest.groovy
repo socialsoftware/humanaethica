@@ -42,9 +42,6 @@ class ValidateThemeTest extends SpockTest {
         result = themeService.registerTheme(theme,false)
 
         when:
-        System.out.println("AQUI       ")
-        System.out.println(result.getId())
-
         response = restClient.put(
                 path: '/themes/' + result.getId() + '/validate'
         )
