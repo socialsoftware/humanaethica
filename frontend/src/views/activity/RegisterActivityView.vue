@@ -36,20 +36,72 @@
           :rules="[(value) => !!value || 'Description is required']"
           required
         />
-        <v-text-field
-          v-model="activity.startingDate"
-          label="Starting Date - YYYY-MM-DDTHH:mm:ssZ"
-          data-cy="activitySDateInput"
-          :rules="[(value) => !!value || 'Starting Date is required']"
-          required
-        />
-        <v-text-field
-          v-model="activity.endingDate"
-          label="Ending Date - YYYY-MM-DDTHH:mm:ssZ"
-          data-cy="activityEDateInput"
-          :rules="[(value) => !!value || 'Ending Date is required']"
-          required
-        />
+        <div class="date-fields-container">
+          <span class="headline">Starting Date</span>
+          <div class="date-fields-row">
+            <v-text-field
+              v-model="startDay"
+              label="Day"
+              data-cy="activitySDayInput"
+              :rules="[(value) => !!value || 'Starting Date Day is required']"
+              required
+            />
+            <v-text-field
+              v-model="startMonth"
+              label="Month"
+              data-cy="activitySMonthInput"
+              :rules="[(value) => !!value || 'Starting Date Month is required']"
+              required
+            />
+            <v-text-field
+              v-model="startYear"
+              label="Year"
+              data-cy="activitySYearInput"
+              :rules="[(value) => !!value || 'Starting Date Year is required']"
+              required
+            />
+            <v-text-field
+              v-model="startHour"
+              label="Hour"
+              data-cy="activitySHourInput"
+              :rules="[(value) => !!value || 'Starting Date Hour is required']"
+              required
+            />
+          </div>
+        </div>
+        <div class="date-fields-container">
+          <span class="headline">Ending Date</span>
+          <div class="date-fields-row">
+            <v-text-field
+              v-model="endDay"
+              label="Day"
+              data-cy="activityEDayInput"
+              :rules="[(value) => !!value || 'Ending Date Day is required']"
+              required
+            />
+            <v-text-field
+              v-model="endMonth"
+              label="Month"
+              data-cy="activityEMonthInput"
+              :rules="[(value) => !!value || 'Ending Date Month is required']"
+              required
+            />
+            <v-text-field
+              v-model="endYear"
+              label="Year"
+              data-cy="activityEYearInput"
+              :rules="[(value) => !!value || 'Ending Date Year is required']"
+              required
+            />
+            <v-text-field
+              v-model="endHour"
+              label="Hour"
+              data-cy="activityEHourInput"
+              :rules="[(value) => !!value || 'Ending Date Hour is required']"
+              required
+            />
+          </div>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -69,6 +121,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+
+Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 
 @Component({
   components: {},
@@ -76,11 +131,38 @@ import Theme from '@/models/theme/Theme';
 export default class RegisterActivityView extends Vue {
   activity: Activity = new Activity();
   themes: Theme[] | [] = [];
+  startDay: string = '';
+  startMonth: string = '';
+  startYear: string = '';
+  startHour: string = '';
+  endDay: string = '';
+  endMonth: string = '';
+  endYear: string = '';
+  endHour: string = '';
+
   async created() {
     this.themes = await RemoteServices.getThemes();
   }
   async submit() {
     try {
+      this.activity.startingDate =
+        this.startYear +
+        '-' +
+        this.startMonth +
+        '-' +
+        this.startDay +
+        'T' +
+        this.startHour +
+        ':00:00Z';
+      this.activity.endingDate =
+        this.endYear +
+        '-' +
+        this.endMonth +
+        '-' +
+        this.endDay +
+        'T' +
+        this.endHour +
+        ':00:00Z';
       await RemoteServices.registerActivityAsMember(
         this.$store.getters.getUser.id,
         this.activity
@@ -128,5 +210,17 @@ h2 {
   font-weight: 500;
   line-height: 40px;
   margin: 0 0 16px;
+}
+
+.date-fields-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.date-fields-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
 }
 </style>
