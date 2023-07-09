@@ -35,6 +35,9 @@ class ValidateActivityTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName("ACTIVITY_1_NAME")
         activityDto.setRegion("ACTIVITY_1_REGION")
+        activityDto.setDescription("ACTIVITY_1_DESCRIPTION")
+        activityDto.setStartingDate("2023-05-26T19:09:00Z")
+        activityDto.setEndingDate("2023-05-26T22:09:00Z")
         activityDto.setInstitution(institutionDto)
         activityDto.setThemes(themes)
 
@@ -76,6 +79,8 @@ class ValidateActivityTest extends SpockTest {
         themes.add(new ThemeDto(theme, true, true))
 
         activityDto = new ActivityDto(activity, false, false)
+        activityDto.setStartingDate("2023-05-26T19:09:00Z")
+        activityDto.setEndingDate("2023-05-26T22:09:00Z")
         activityDto.setThemes(themes)
 
         when:

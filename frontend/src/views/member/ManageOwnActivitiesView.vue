@@ -76,6 +76,79 @@
                           required
                         />
                       </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          label="Description"
+                          required
+                          v-model="item.description"
+                        ></v-text-field>
+                      </v-col>
+                      <div class="date-fields-container">
+                        <span class="text-h6">Starting Date</span>
+                        <div class="date-fields-row">
+                          <v-text-field
+                            v-model="startDay"
+                            label="Day"
+                            data-cy="activitySDayInput"
+                            :rules="[(value) => !!value || 'Starting Date Day is required']"
+                            required
+                          />
+                          <v-text-field
+                            v-model="startMonth"
+                            label="Month"
+                            data-cy="activitySMonthInput"
+                            :rules="[(value) => !!value || 'Starting Date Month is required']"
+                            required
+                          />
+                          <v-text-field
+                            v-model="startYear"
+                            label="Year"
+                            data-cy="activitySYearInput"
+                            :rules="[(value) => !!value || 'Starting Date Year is required']"
+                            required
+                          />
+                          <v-text-field
+                            v-model="startHour"
+                            label="Hour"
+                            data-cy="activitySHourInput"
+                            :rules="[(value) => !!value || 'Starting Date Hour is required']"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="date-fields-container">
+                        <span class="text-h6">Ending Date</span>
+                        <div class="date-fields-row">
+                          <v-text-field
+                            v-model="endDay"
+                            label="Day"
+                            data-cy="activityEDayInput"
+                            :rules="[(value) => !!value || 'Ending Date Day is required']"
+                            required
+                          />
+                          <v-text-field
+                            v-model="endMonth"
+                            label="Month"
+                            data-cy="activityEMonthInput"
+                            :rules="[(value) => !!value || 'Ending Date Month is required']"
+                            required
+                          />
+                          <v-text-field
+                            v-model="endYear"
+                            label="Year"
+                            data-cy="activityEYearInput"
+                            :rules="[(value) => !!value || 'Ending Date Year is required']"
+                            required
+                          />
+                          <v-text-field
+                            v-model="endHour"
+                            label="Hour"
+                            data-cy="activityEHourInput"
+                            :rules="[(value) => !!value || 'Ending Date Hour is required']"
+                            required
+                          />
+                        </div>
+                      </div>
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -121,6 +194,14 @@ import Activity from '@/models/activity/Activity';
 export default class ManageOwnActivitiesView extends Vue {
   institution: Institution = new Institution();
   themes: Theme[] = [];
+  startDay: string = '';
+  startMonth: string = '';
+  startYear: string = '';
+  startHour: string = '';
+  endDay: string = '';
+  endMonth: string = '';
+  endYear: string = '';
+  endHour: string = '';
   search: string = '';
   dialogEditActivity: boolean = false;
   headers: object = [
@@ -189,6 +270,24 @@ export default class ManageOwnActivitiesView extends Vue {
       confirm('Are you sure you want to edit this activity?')
     ) {
       try {
+        activity.startingDate =
+          this.startYear +
+          '-' +
+          this.startMonth +
+          '-' +
+          this.startDay +
+          'T' +
+          this.startHour +
+          ':00:00Z';
+        activity.endingDate =
+          this.endYear +
+          '-' +
+          this.endMonth +
+          '-' +
+          this.endDay +
+          'T' +
+          this.endHour +
+          ':00:00Z';
         await RemoteServices.updateActivityAsMember(activityId, activity);
       } catch (error) {
         await this.$store.dispatch('error', error);
@@ -198,4 +297,16 @@ export default class ManageOwnActivitiesView extends Vue {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.date-fields-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.date-fields-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+</style>

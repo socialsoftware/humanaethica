@@ -14,6 +14,9 @@ export default class Activity {
   state!: string;
   creationDate!: string;
   alreadyJoined?: boolean;
+  description!: string;
+  startingDate!: string;
+  endingDate!: string;
 
   constructor(jsonObj?: Activity) {
     if (jsonObj) {
@@ -30,6 +33,9 @@ export default class Activity {
       this.state = jsonObj.state;
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.alreadyJoined = false;
+      this.description = jsonObj.description;
+      this.startingDate = ISOtoString(jsonObj.startingDate);
+      this.endingDate = ISOtoString(jsonObj.endingDate);
     }
   }
 }

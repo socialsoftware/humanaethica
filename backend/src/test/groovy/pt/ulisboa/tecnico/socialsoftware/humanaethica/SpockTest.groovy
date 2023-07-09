@@ -131,6 +131,8 @@ class SpockTest extends Specification {
         authUserRepository.deleteAll()
         userRepository.deleteAll()
         institutionRepository.deleteAll()
+        activityRepository.deleteAll()
+        themeRepository.deleteAll()
     }
 
 

@@ -21,6 +21,9 @@ public class Activity {
     private Integer id;
     private String name;
     private String region;
+    private String description;
+    private String startingDate;
+    private String endingDate;
 
     @Enumerated(EnumType.STRING)
     private Activity.State state;
@@ -39,14 +42,17 @@ public class Activity {
 
     public Activity() {
     }
-    public Activity(String name, String region, Institution institution, State state) {
+    public Activity(String name, String region, String description, Institution institution, State state) {
         setName(name);
         setRegion(region);
+        setDescription(description);
         setThemes(themes);
         setInstitution(institution);
         setVolunteers(volunteers);
         setState(state);
         setCreationDate(DateHandler.now());
+        setStartingDate(startingDate);
+        setEndingDate(endingDate);
 
     }
 
@@ -68,6 +74,30 @@ public class Activity {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getStartingDate() {
+        return DateHandler.toLocalDateTime(startingDate);
+    }
+
+    public void setStartingDate(String startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public LocalDateTime getEndingDate() {
+        return DateHandler.toLocalDateTime(endingDate);
+    }
+
+    public void setEndingDate(String endingDate) {
+        this.endingDate = endingDate;
     }
 
     public Activity.State getState() {
