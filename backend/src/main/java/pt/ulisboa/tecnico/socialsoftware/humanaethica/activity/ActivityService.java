@@ -25,6 +25,7 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ActivityService {
@@ -86,30 +87,14 @@ public class ActivityService {
             }
         }
 
-        Activity activity = null;
-
-        if(userId == -1) {
-            Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), institution, Activity.State.APPROVED);
-        }
-
-        else{
-            User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-            if (user.getRole() != User.Role.MEMBER) {
-                throw new HEException(INVALID_ROLE, user.getRole().name());
-            }
-
-            Member member = (Member) user;
-            activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), member.getInstitution(), Activity.State.APPROVED);
-        }
+        Member member = (Member) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), member.getInstitution(),
+                activityDto.getStartingDate(), activityDto.getEndingDate(), Activity.State.APPROVED);
 
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
             activity.addTheme(theme);
         }
-
-        activity.setStartingDate(activityDto.getStartingDate());
-        activity.setEndingDate(activityDto.getEndingDate());
 
         activityRepository.save(activity);
         return activity;
@@ -201,39 +186,21 @@ public class ActivityService {
         activity.setDescription(activityDto.getDescription());
         activity.setStartingDate(activityDto.getStartingDate());
         activity.setEndingDate(activityDto.getEndingDate());
-        List<Theme> themeList = new ArrayList<>();
 
-        for (ThemeDto themeDto : activityDto.getThemes()) {
-            Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
-            themeList.add(theme);
-            if(!activity.getThemes().contains(theme)) {
-                theme.addActivity(activity);
-            }
-        }
-
-        for (Theme theme : activity.getThemes()) {
-            if(!themeList.contains(theme)) {
-                theme.removeActivity(activityId);
-            }
-        }
+        List<Theme> themeList = activityDto.getThemes().stream()
+                .map(themeDto -> themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND)))
+                .collect(Collectors.toList());
 
         activity.setThemes(themeList);
 
 
-        if(userId == -1) {
-            Institution institution = institutionRepository.findById(activityDto.getInstitution().getId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-            activity.setInstitution(institution);
+        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+        if (user.getRole() != User.Role.MEMBER) {
+            throw new HEException(INVALID_ROLE, user.getRole().name());
         }
 
-        else{
-            User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-            if (user.getRole() != User.Role.MEMBER) {
-                throw new HEException(INVALID_ROLE, user.getRole().name());
-            }
-
-            Member member = (Member) user;
-            activity.setInstitution(member.getInstitution());
-        }
+        Member member = (Member) user;
+        activity.setInstitution(member.getInstitution());
 
         activityRepository.save(activity);
         return activity;
@@ -276,6 +243,6 @@ public class ActivityService {
         Volunteer volunteer = (Volunteer) user;
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
 
-        activity.removeVolunteer(volunteer.getId());
+        activity.removeVolunteer(volunteer);
     }
 }

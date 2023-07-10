@@ -32,12 +32,6 @@ public class ActivityController {
         activityService.suspendActivity(activityId);
     }
 
-    @PostMapping("/activity/register")
-    @PreAuthorize("(hasRole('ROLE_ADMIN'))")
-    public void registerActivity(@Valid @RequestBody ActivityDto activityDto){
-        activityService.registerActivity(-1, activityDto);
-    }
-
     @PostMapping("/activity/memberRegister")
     @PreAuthorize("(hasRole('ROLE_MEMBER'))")
     public void registerActivityMember(Principal principal, @Valid @RequestBody ActivityDto activityDto){
@@ -56,14 +50,8 @@ public class ActivityController {
         activityService.reportActivity(activityId);
     }
 
-    @PutMapping("/activity/{activityId}/update")
-    @PreAuthorize("(hasRole('ROLE_ADMIN'))")
-    public void updateActivity(@PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
-        activityService.updateActivity(-1, activityId, activityDto);
-    }
-
-    @PutMapping("/activity/{activityId}/MemberUpdate")
-    @PreAuthorize("(hasRole('ROLE_MEMBER'))")
+    @PutMapping("/activity/{activityId}/memberUpdate")
+    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
     public void updateActivityMember(Principal principal, @PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         activityService.updateActivity(userId, activityId, activityDto);

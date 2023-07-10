@@ -12,38 +12,28 @@ import java.util.List;
 public class Volunteer extends User {
 
     @ManyToMany
-    private List<Activity> activities;
+    private List<Activity> activities = new ArrayList<>();
 
     public Volunteer() {
     }
 
     public Volunteer(String name, String username, String email, AuthUser.Type type, State state) {
         super(name, username, email, Role.VOLUNTEER, type, state);
-        setActivities(new ArrayList<>());
     }
 
     public Volunteer(String name, State state) {
         super(name, Role.VOLUNTEER, state);
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
-
     public List<Activity> getActivities() {
         return activities;
     }
 
-    public void addActivities (Activity activity) {
+    public void addActivities(Activity activity) {
         this.activities.add(activity);
     }
 
-    public void removeActivities (Integer activityId) {
-        for (Activity activity : activities) {
-            if (activity.getId().equals(activityId)) {
-                activities.remove(activity);
-                return;
-            }
-        }
+    public void removeActivity(Activity activity) {
+        this.activities.remove(activity);
     }
 }

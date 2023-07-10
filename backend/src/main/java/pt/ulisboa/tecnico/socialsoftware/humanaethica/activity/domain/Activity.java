@@ -1,14 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.THEME_NOT_FOUND;
 
 @Entity
 @Table(name = "activity")
@@ -35,25 +39,23 @@ public class Activity {
     private List<Theme> themes = new ArrayList<>();
 
     @ManyToOne
-    private Institution institution ;
+    private Institution institution;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     public Activity() {
     }
-    public Activity(String name, String region, String description, Institution institution, State state) {
+
+    public Activity(String name, String region, String description, Institution institution, String startingDate, String endingDate, State state) {
         setName(name);
         setRegion(region);
         setDescription(description);
-        setThemes(themes);
         setInstitution(institution);
-        setVolunteers(volunteers);
         setState(state);
         setCreationDate(DateHandler.now());
         setStartingDate(startingDate);
         setEndingDate(endingDate);
-
     }
 
     public Integer getId() {
@@ -124,12 +126,22 @@ public class Activity {
         return volunteers;
     }
 
-    public void setThemes(List<Theme> themes) {
-        this.themes = themes;
-    }
-
     public List<Theme> getThemes() {
         return themes;
+    }
+
+    public void setThemes(List<Theme> newThemes) {
+        newThemes.forEach(newTheme -> {
+            if (!this.themes.contains(newTheme)) {
+                addTheme(newTheme);
+            }
+        });
+
+        this.themes.forEach(theme -> {
+            if (!newThemes.contains(theme)) {
+                removeTheme(theme);
+            }
+        });
     }
 
     public void addTheme (Theme theme) {
@@ -137,14 +149,9 @@ public class Activity {
         theme.addActivity(this);
     }
 
-    public void removeTheme (Integer themeId) {
-        for (Theme theme : themes) {
-            if (theme.getId().equals(themeId)) {
-                themes.remove(theme);
-                theme.removeActivity(this.getId());
-                return;
-            }
-        }
+    public void removeTheme(Theme theme) {
+        this.themes.remove(theme);
+        theme.removeActivity(this);
     }
 
     public void setInstitution(Institution institution) {
@@ -156,22 +163,13 @@ public class Activity {
         return institution;
     }
 
-    public void setVolunteers(List<Volunteer> volunteers) {
-        this.volunteers = volunteers;
-    }
-
-    public void addVolunteer (Volunteer volunteer) {
+    public void addVolunteer(Volunteer volunteer) {
         this.volunteers.add(volunteer);
         volunteer.addActivities(this);
     }
 
-    public void removeVolunteer (Integer volunteerId) {
-        for (Volunteer volunteer : volunteers) {
-            if (volunteer.getId().equals(volunteerId)) {
-                volunteers.remove(volunteer);
-                volunteer.removeActivities(this.getId());
-                return;
-            }
-        }
+    public void removeVolunteer(Volunteer volunteer) {
+        this.volunteers.remove(volunteer);
+        volunteer.removeActivity(this);
     }
 }

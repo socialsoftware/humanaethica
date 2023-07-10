@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.Institutio
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class RegisterActivityWebServiceIt extends SpockTest {
+class RegisterActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 

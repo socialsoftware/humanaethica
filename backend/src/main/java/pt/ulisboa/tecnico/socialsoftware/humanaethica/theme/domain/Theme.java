@@ -12,29 +12,22 @@ import java.util.List;
 @Entity
 @Table(name = "theme")
 public class Theme{
-
     public enum State {SUBMITTED, APPROVED, DELETED}
 
     @Enumerated(EnumType.STRING)
     private Theme.State state;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-
-
     @ManyToMany
     private List<Activity> activities = new ArrayList<>();
-
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Institution> institutions = new ArrayList<>();
-
     @ManyToOne
     private Theme parentTheme ;
     @OneToMany(fetch = FetchType.EAGER)
     private List<Theme> subTheme = new ArrayList<>();
-
     private Integer level = 0;
 
     public Theme() {
@@ -61,21 +54,12 @@ public class Theme{
         return activities;
     }
 
-    public void setActivities(ArrayList<Activity> activities){
-        this.activities = activities;
-    }
-
     public void addActivity (Activity activity) {
         this.activities.add(activity);
     }
 
-    public void removeActivity (Integer activityId) {
-        for (Activity activity: activities) {
-            if (activity.getId().equals(activityId)) {
-                activities.remove(activity);
-                return;
-            }
-        }
+    public void removeActivity(Activity activity) {
+        this.activities.remove(activity);
     }
 
     public List<Institution> getInstitutions() {

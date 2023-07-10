@@ -17,15 +17,6 @@
             class="mx-2"
           />
           <v-spacer />
-          <!--
-          <v-btn
-            color="primary"
-            dark
-            @click="newActivity"
-            data-cy="createButton"
-            >New Activity</v-btn
-          >
-          -->
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
@@ -76,98 +67,8 @@
           </template>
           <span>Suspend Activity</span>
         </v-tooltip>
-        <!--
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              color="black"
-              v-on="on"
-              @click="dialogEditActivity = true"
-            >
-              description
-            </v-icon>
-          </template>
-          <v-row justify="center">
-            <v-dialog v-model="dialogEditActivity" persistent width="1024">
-              <v-card>
-                <v-card-title>
-                  <span class="text-h5">Edit Activity</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Name"
-                          required
-                          v-model="item.name"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
-                          label="Region"
-                          required
-                          v-model="item.region"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-select
-                          label="Themes"
-                          v-model="item.themes"
-                          :items="themes"
-                          multiple
-                          return-object
-                          item-text="name"
-                          item-value="name"
-                          required
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-select
-                          label="Institution"
-                          v-model="item.institution"
-                          :items="institutions"
-                          return-object
-                          item-text="name"
-                          item-value="name"
-                          required
-                        />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue-darken-1"
-                    variant="text"
-                    @click="dialogEditActivity = false"
-                  >
-                    Close
-                  </v-btn>
-                  <v-btn
-                    color="blue-darken-1"
-                    variant="text"
-                    @click="updateActivity(item)"
-                  >
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-row>
-          <span>Edit Activity</span>
-        </v-tooltip>
-        -->
       </template>
     </v-data-table>
-    <add-activity-dialog
-      v-if="addActivityDialog"
-      v-model="addActivityDialog"
-      v-on:user-created="onCreatedActivity"
-      v-on:close-dialog="onCloseDialog"
-    />
   </v-card>
 </template>
 
@@ -175,15 +76,10 @@
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
-import AddActivityDialog from '@/views/admin/activity/AddActivityDialog.vue';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
 
-@Component({
-  components: {
-    'add-activity-dialog': AddActivityDialog,
-  },
-})
+@Component
 export default class ActivitiesView extends Vue {
   activities: Activity[] = [];
   themes: Theme[] = [];
@@ -285,31 +181,6 @@ export default class ActivitiesView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
-  }
-
-  async updateActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to edit this activity?')
-    ) {
-      try {
-        await RemoteServices.updateActivity(activityId, activity);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-  }
-  onCreatedActivity(activity: Activity) {
-    this.activities.unshift(activity);
-    this.addActivityDialog = false;
-  }
-
-  onCloseDialog() {
-    this.addActivityDialog = false;
-  }
-  newActivity() {
-    this.addActivityDialog = true;
   }
 }
 </script>

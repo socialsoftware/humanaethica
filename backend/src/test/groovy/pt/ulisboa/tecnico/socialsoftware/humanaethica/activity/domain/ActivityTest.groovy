@@ -25,7 +25,7 @@ class ActivityTest extends SpockTest {
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
-        activity = new Activity("","","",institution,Activity.State.APPROVED)
+        activity = new Activity("", "", "", institution, "", "", Activity.State.APPROVED)
         activity.addTheme(theme)
         activityRepository.save(activity)
 
@@ -52,7 +52,7 @@ class ActivityTest extends SpockTest {
         userRepository.save(volunteer)
 
         when: "activity is created"
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
         activityRepository.save(activity)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
@@ -79,33 +79,46 @@ class ActivityTest extends SpockTest {
         theme.getActivities().contains(result)
     }
 
-    def "remove a voluntary and a theme from activity"() {
-        given: "a theme, a volunteer and a activity"
+    def "remove a volunteer from activity"() {
+        given: "a volunteer and a activity"
         institution = new Institution()
         institutionRepository.save(institution)
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
-        themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
         activity.addVolunteer(volunteer)
-        activity.addTheme(theme)
         activityRepository.save(activity)
 
         when: "the voluntary and theme are removed"
-        activity.getVolunteers().size() == 1
-        activity.removeVolunteer(volunteer.getId())
-        activity.removeTheme(theme.getId())
+        activity.removeVolunteer(volunteer)
 
         then: "the voluntary and theme are no longer persisted in the activity"
         activityRepository.count() == 1L
         def result = activityRepository.findAll().get(0)
         result.getVolunteers().size() == 0
+    }
+
+    def "remove a theme from activity"() {
+        given: "a theme and a activity"
+        institution = new Institution()
+        institutionRepository.save(institution)
+        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
+        themeRepository.save(theme)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
+        activity.addTheme(theme)
+        activityRepository.save(activity)
+
+        when: "the voluntary and theme are removed"
+        activity.removeTheme(theme)
+
+        then: "the voluntary and theme are no longer persisted in the activity"
+        activityRepository.count() == 1L
+        def result = activityRepository.findAll().get(0)
         result.getThemes().size() == 0
     }
 
     def "suspend activity"() {
-        given: "a theme, a volunteer and a activity"
+        given: "a volunteer and a activity"
         institution = new Institution()
         institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
@@ -113,7 +126,7 @@ class ActivityTest extends SpockTest {
         themeRepository.save(theme)
         volunteer = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
         userRepository.save(volunteer)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
         activity.addVolunteer(volunteer)
         activity.addTheme(theme)
         activityRepository.save(activity)
