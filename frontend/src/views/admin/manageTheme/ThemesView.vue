@@ -18,7 +18,7 @@
           />
           <v-spacer />
           <v-btn color="primary" dark @click="TreeView" data-cy="createButton"
-          >Tree</v-btn
+            >Tree</v-btn
           >
           <v-btn color="primary" dark @click="newTheme" data-cy="createButton"
             >New Theme</v-btn
@@ -26,7 +26,12 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.institutions`]="{ item }">
-        <v-btn v-if="item.institutions.length > 0" color="primary" dark @click="openDialog(item)">
+        <v-btn
+          v-if="item.institutions.length > 0"
+          color="primary"
+          dark
+          @click="openDialog(item)"
+        >
           See Institutions
         </v-btn>
       </template>
@@ -80,15 +85,15 @@
       v-on:close-dialog="onCloseDialog"
     />
     <tree-view
-        v-if="treeView"
-        v-model="treeView"
-        v-on:close-dialog="onCloseDialog"
+      v-if="treeView"
+      v-model="treeView"
+      v-on:close-dialog="onCloseDialog"
     />
     <institution
-        v-if="dialog"
-        v-model="dialog"
-        :theme="showTheme"
-        v-on:close-dialog="onCloseDialog"
+      v-if="dialog"
+      v-model="dialog"
+      :theme="showTheme"
+      v-on:close-dialog="onCloseDialog"
     />
   </v-card>
 </template>
@@ -102,7 +107,11 @@ import Theme from '@/models/theme/Theme';
 import Institution from '@/views/admin/manageTheme/Institution.vue';
 
 @Component({
-  components: { 'add-theme': AddTheme, 'tree-view':ThemesTreeView, 'institution': Institution},
+  components: {
+    'add-theme': AddTheme,
+    'tree-view': ThemesTreeView,
+    institution: Institution,
+  },
 })
 export default class ThemeView extends Vue {
   themes: Theme[] = [];

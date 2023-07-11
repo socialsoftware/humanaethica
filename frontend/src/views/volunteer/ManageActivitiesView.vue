@@ -21,7 +21,7 @@
           </v-card-title>
         </template>
         <template v-slot:[`item.themes`]="{ item }">
-          <v-chip v-for="theme in item.themes">
+          <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
             {{ theme.name }}
           </v-chip>
         </template>
@@ -79,22 +79,6 @@
       :activity="showActivity"
       v-on:close-dialog="onCloseDialog"
     />
-
-    <!--
-    <v-dialog v-if='showActivity != null'
-      v-model="dialog"
-      width="auto"
-    >
-      <v-card>
-        <v-card-text>
-          {{ showActivity.description }}
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="orange" block @click="dialog = false; showActivity = null">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    -->
   </div>
 </template>
 
@@ -169,14 +153,6 @@ export default class ManageActivitiesView extends Vue {
       this.ownActivities = await RemoteServices.getOwnActivities(
         this.$store.getters.getUser.id
       );
-      /*
-      for (i; i < this.activities.length; i++) {
-        for (j; j < this.ownActivities.length; j++)
-          if (this.ownActivities[j].id == this.activities[i].id) {
-            this.activities[i].alreadyJoined = true;
-          }
-      }
-      */
       this.activities.forEach((activity) => {
         if (
           this.ownActivities.some(
@@ -201,7 +177,6 @@ export default class ManageActivitiesView extends Vue {
     this.showActivity = null;
     this.dialog = false;
   }
-
 
   async joinActivity(activity: Activity) {
     let activityId = activity.id;

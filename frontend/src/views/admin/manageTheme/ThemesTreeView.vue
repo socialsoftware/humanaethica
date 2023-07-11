@@ -1,10 +1,10 @@
 <template>
   <v-dialog
-      :value="dialog"
-      @input="$emit('close-dialog')"
-      @keydown.esc="$emit('close-dialog')"
-      max-width="90%"
-      max-height="90%"
+    :value="dialog"
+    @input="$emit('close-dialog')"
+    @keydown.esc="$emit('close-dialog')"
+    max-width="90%"
+    max-height="90%"
   >
     <v-card>
       <v-card-title>
@@ -14,16 +14,19 @@
         <v-list>
           <v-list-item-group v-model="selectedTheme">
             <v-list-item
-                v-for="theme in themes"
-                :key="theme.name"
-                :value="theme.name"
+              v-for="theme in themes"
+              :key="theme.name"
+              :value="theme.name"
             >
               <v-list-item-content>
                 <div
-                    class="left-text"
-                    :style="{ color: getThemeColor(theme.state) }"
+                  class="left-text"
+                  :style="{ color: getThemeColor(theme.state) }"
                 >
-                  <span class="indentation">{{ getIndentedDisplayName(theme.level) }}</span>&#9658;{{ theme.name }}
+                  <span class="indentation">{{
+                    getIndentedDisplayName(theme.level)
+                  }}</span
+                  >&#9658;{{ theme.name }}
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -33,10 +36,10 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-            color="blue darken-1"
-            @click="$emit('close-dialog')"
-            data-cy="cancelButton"
-        >Close</v-btn
+          color="blue darken-1"
+          @click="$emit('close-dialog')"
+          data-cy="cancelButton"
+          >Close</v-btn
         >
       </v-card-actions>
     </v-card>

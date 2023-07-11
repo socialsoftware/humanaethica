@@ -19,7 +19,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes">
+        <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
           {{ theme.name }}
         </v-chip>
       </template>
@@ -73,7 +73,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Institution from '@/models/institution/Institution';
-
 
 @Component({
   components: {},

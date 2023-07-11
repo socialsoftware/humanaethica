@@ -31,6 +31,7 @@ class ValidateActivityTest extends SpockTest {
     def activity
     def institutionDto
     def memberDto
+    def member
 
     def setup() {
         institution = new Institution()
@@ -44,7 +45,7 @@ class ValidateActivityTest extends SpockTest {
         memberDto.setRole(User.Role.MEMBER)
         memberDto.setInstitutionId(institution.getId())
 
-        def member = userService.registerUser(memberDto, null);
+        member = userService.registerUser(memberDto, null);
 
         theme = new Theme(THEME_1__NAME, Theme.State.APPROVED, null)
         themeRepository.save(theme)
@@ -103,7 +104,7 @@ class ValidateActivityTest extends SpockTest {
         activityDto.setThemes(themes)
 
         when:
-        activityService.updateActivity(-1, activity.getId(), activityDto)
+        activityService.updateActivity(member.getId(), activity.getId(), activityDto)
         activityService.validateActivity(activity.getId())
 
         then:

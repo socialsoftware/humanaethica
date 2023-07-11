@@ -75,14 +75,12 @@ public class ThemeService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Theme registerTheme(ThemeDto themeDto, boolean isAdmin) {
-
         if (themeDto.getName() == null) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
         }
-        for (Theme the : themeRepository.findAll()) {
-            if (the.getName().equals(themeDto.getName())) {
-                throw new HEException(THEME_ALREADY_EXISTS);
-            }
+
+       if (themeRepository.countByName(themeDto.getName()) > 0) {
+           throw new HEException(THEME_ALREADY_EXISTS);
         }
         Theme themeParent = null;
         if (themeDto.getParentTheme() != null) {

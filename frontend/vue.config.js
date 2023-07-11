@@ -5,6 +5,7 @@ const CompressionPlugin = require('compression-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const PurgecssPlugin = require('purgecss-webpack-plugin');
 const glob = require('glob-all');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const isProductionEnvFlag = process.env.NODE_ENV === 'production';
 
@@ -24,6 +25,8 @@ module.exports = {
   productionSourceMap: process.env.NODE_ENV !== 'production',
 
   chainWebpack: (config) => {
+    config.plugin('polyfills').use(NodePolyfillPlugin);
+
     config.resolve.alias
       .set('vue$', 'vue/dist/vue.esm.js')
       .set('@assets', path.join(__dirname, 'src/assets'))

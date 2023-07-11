@@ -15,7 +15,7 @@
         <v-card-text class="text-left">
           <b>Activity:</b>
           {{ activity.name }}
-          <br>
+          <br />
           <b>Description:</b>
           {{ activity.description }}
         </v-card-text>

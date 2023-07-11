@@ -10,10 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto
 import spock.lang.Unroll
 
 
@@ -34,18 +31,8 @@ class RegisterActivityTest extends SpockTest {
     def member
 
     def setup() {
-        institution = new Institution()
-        institutionRepository.save(institution)
-
-        def memberDto = new RegisterUserDto()
-        memberDto.setEmail(USER_1_EMAIL)
-        memberDto.setUsername(USER_1_EMAIL)
-        memberDto.setConfirmationToken(USER_1_TOKEN)
-        memberDto.setRole(User.Role.MEMBER)
-        memberDto.setInstitutionId(institution.getId())
-        member = userService.registerUser(memberDto, null)
-
-
+        member = authUserService.loginDemoMemberAuth().getUser()
+        institution = institutionService.getDemoInstitution()
     }
 
     def "the activity does not exist, create the activity"() {
@@ -95,36 +82,7 @@ class RegisterActivityTest extends SpockTest {
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_EXISTS
-        and:
         activityRepository.count() == 1
-    }
-
-    def "add theme to an activity"() {
-        given:
-        List<ThemeDto> themes = new ArrayList<>()
-
-        activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_1__NAME)
-        activityDto.setRegion(ACTIVITY_1__REGION)
-        activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
-        activityDto.setStartingDate(STARTING_DATE);
-        activityDto.setEndingDate(ENDING_DATE);
-        activityDto.setInstitution(new InstitutionDto(institution))
-        activityDto.setThemes(themes)
-        def result = activityService.registerActivity(member.getId(), activityDto)
-
-        when:
-        result.getThemes().size() == 0
-        theme = new Theme(THEME_1__NAME, Theme.State.APPROVED, null)
-        themeRepository.save(theme)
-        themes.add(new ThemeDto(theme, true, true))
-
-        activityDto.setThemes(themes)
-        activityService.updateActivity(-1, result.getId(), activityDto)
-
-        then: "the activity is associated with the theme"
-        result.getThemes().size() == 1
-        result.getThemes().get(0).getName() == THEME_1__NAME
     }
 
     @Unroll

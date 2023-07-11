@@ -20,12 +20,12 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes">
+        <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
           {{ theme.name }}
         </v-chip>
       </template>
       <template v-slot:[`item.volunteers`]="{ item }">
-        <v-chip v-for="volunteer in item.volunteers">
+        <v-chip v-for="volunteer in item.volunteers" v-bind:key="volunteer.id">
           {{ volunteer.name }}
         </v-chip>
       </template>
@@ -90,28 +90,40 @@
                             v-model="startDay"
                             label="Day"
                             data-cy="activitySDayInput"
-                            :rules="[(value) => !!value || 'Starting Date Day is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Starting Date Day is required',
+                            ]"
                             required
                           />
                           <v-text-field
                             v-model="startMonth"
                             label="Month"
                             data-cy="activitySMonthInput"
-                            :rules="[(value) => !!value || 'Starting Date Month is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Starting Date Month is required',
+                            ]"
                             required
                           />
                           <v-text-field
                             v-model="startYear"
                             label="Year"
                             data-cy="activitySYearInput"
-                            :rules="[(value) => !!value || 'Starting Date Year is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Starting Date Year is required',
+                            ]"
                             required
                           />
                           <v-text-field
                             v-model="startHour"
                             label="Hour"
                             data-cy="activitySHourInput"
-                            :rules="[(value) => !!value || 'Starting Date Hour is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Starting Date Hour is required',
+                            ]"
                             required
                           />
                         </div>
@@ -123,28 +135,40 @@
                             v-model="endDay"
                             label="Day"
                             data-cy="activityEDayInput"
-                            :rules="[(value) => !!value || 'Ending Date Day is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Ending Date Day is required',
+                            ]"
                             required
                           />
                           <v-text-field
                             v-model="endMonth"
                             label="Month"
                             data-cy="activityEMonthInput"
-                            :rules="[(value) => !!value || 'Ending Date Month is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Ending Date Month is required',
+                            ]"
                             required
                           />
                           <v-text-field
                             v-model="endYear"
                             label="Year"
                             data-cy="activityEYearInput"
-                            :rules="[(value) => !!value || 'Ending Date Year is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Ending Date Year is required',
+                            ]"
                             required
                           />
                           <v-text-field
                             v-model="endHour"
                             label="Hour"
                             data-cy="activityEHourInput"
-                            :rules="[(value) => !!value || 'Ending Date Hour is required']"
+                            :rules="[
+                              (value) =>
+                                !!value || 'Ending Date Hour is required',
+                            ]"
                             required
                           />
                         </div>

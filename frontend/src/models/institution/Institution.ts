@@ -22,14 +22,12 @@ export default class Institution {
       this.nif = jsonObj.nif;
       this.active = jsonObj.active;
       this.creationDate = ISOtoString(jsonObj.creationDate);
-      this.themes = jsonObj.themes.map(
-          (theme: Theme) => {
-            return new Theme(theme);
-          }
-      );
-        this.activities = jsonObj.activities.map((activities: Activity) => {
-            return new Activity(activities);
-        });
+      this.themes = jsonObj.themes.map((theme: Theme) => {
+        return new Theme(theme);
+      });
+      this.activities = jsonObj.activities.map((activities: Activity) => {
+        return new Activity(activities);
+      });
     }
   }
 }

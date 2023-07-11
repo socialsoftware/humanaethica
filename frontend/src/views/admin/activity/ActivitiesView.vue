@@ -20,12 +20,12 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes">
+        <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
           {{ theme.name }}
         </v-chip>
       </template>
       <template v-slot:[`item.volunteers`]="{ item }">
-        <v-chip v-for="volunteer in item.volunteers">
+        <v-chip v-for="volunteer in item.volunteers" v-bind:key="volunteer.id">
           {{ volunteer.name }}
         </v-chip>
       </template>
