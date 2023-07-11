@@ -11,7 +11,7 @@ import java.util.List;
 @DiscriminatorValue(User.UserTypes.VOLUNTEER)
 public class Volunteer extends User {
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "volunteers")
     private List<Activity> activities = new ArrayList<>();
 
     public Volunteer() {

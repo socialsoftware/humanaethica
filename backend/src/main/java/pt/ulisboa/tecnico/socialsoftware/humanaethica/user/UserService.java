@@ -55,12 +55,6 @@ public class UserService {
     private UserDocumentRepository userDocumentRepository;
 
     @Autowired
-    private ActivityRepository activityRepository;
-
-    @Autowired
-    public AuthUserService authUserService;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public static final String MAIL_FORMAT = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";

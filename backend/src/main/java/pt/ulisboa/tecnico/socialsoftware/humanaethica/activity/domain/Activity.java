@@ -33,9 +33,11 @@ public class Activity {
     private Activity.State state;
 
     @ManyToMany (fetch = FetchType.EAGER)
+    @JoinTable(name = "activity_volunteers")
     private List<Volunteer> volunteers = new ArrayList<>();
 
     @ManyToMany (fetch = FetchType.EAGER)
+    @JoinTable(name = "activity_themes")
     private List<Theme> themes = new ArrayList<>();
 
     @ManyToOne

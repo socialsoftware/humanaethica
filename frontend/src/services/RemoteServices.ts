@@ -395,9 +395,9 @@ export default class RemoteServices {
       });
   }
 
-  static async registerActivityAsMember(userId: number, activity: Activity) {
+  static async registerActivity(userId: number, activity: Activity) {
     return httpClient
-      .post('/activity/memberRegister', activity)
+      .post('/activity/register', activity)
       .then((response) => {
         return new Activity(response.data);
       })
@@ -489,7 +489,7 @@ export default class RemoteServices {
 
   static async updateActivityAsMember(activityId: number, activity: Activity) {
     return httpClient
-      .put(`/activity/${activityId}/memberUpdate`, activity)
+      .put(`/activity/${activityId}/update`, activity)
       .then((response) => {
         return new Activity(response.data);
       })

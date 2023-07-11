@@ -72,7 +72,7 @@ public class ThemeController {
     }
 
     @GetMapping("/theme/availableThemesforInstitution")
-    public List<ThemeDto> availableThemesforInstitution(Principal principal){
+    public List<ThemeDto> availableThemesForInstitution(Principal principal){
         User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
         Member member = (Member) user;
         return themeService.availableThemesforInstitution(member.getInstitution().getId());

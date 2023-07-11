@@ -1,9 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.webservice
 
+import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
+import org.apache.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
@@ -16,13 +19,18 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ValidateActivityWebServiceIT extends SpockTest {
+    public static final String THEME_1__NAME = "THEME_1_NAME"
+    public static final String ACTIVITY_1__NAME = "ACTIVITY_1_NAME"
+    public static final String ACTIVITY_1__REGION = "ACTIVITY_1_REGION"
+    public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
+    public static final String STARTING_DATE = "2023-05-26T19:09:00Z"
+    public static final String ENDING_DATE = "2023-05-26T22:09:00Z"
     @LocalServerPort
     private int port
 
     def response
     def activity
     def activityDto
-    def institutionDto
     def institution
     def theme
     def member
@@ -31,56 +39,71 @@ class ValidateActivityWebServiceIT extends SpockTest {
     def setup() {
         deleteAll()
 
-        def post = new URL("https://jira/rest/api/latest/issue").openConnection();
-
         restClient = new RESTClient("http://localhost:" + port)
 
-        institutionDto = new InstitutionDto()
-        institutionDto.setName(INSTITUTION_1_NAME)
-        institutionDto.setEmail(INSTITUTION_1_EMAIL)
-        institutionDto.setNif(INSTITUTION_1_NIF)
-        institution = institutionService.registerInstitution(institutionDto)
+        def user = demoMemberLogin()
 
-        member = new Member(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.DEMO, institution, User.State.SUBMITTED)
-        member.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
-        userRepository.save(member)
-
-        normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
-    }
-
-    def "validate activity"() {
-        given: "one activity"
-
-        theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
+        theme = new Theme(THEME_1__NAME, Theme.State.APPROVED,null)
         themeRepository.save(theme)
         List<ThemeDto> themes = new ArrayList<>()
         themes.add(new ThemeDto(theme,true,true))
 
         activityDto = new ActivityDto()
-        activityDto.setName("ACTIVITY_1_NAME")
-        activityDto.setRegion("ACTIVITY_1_REGION")
-        activityDto.setDescription("ACTIVITY_1_DESCRIPTION")
-        activityDto.setStartingDate("2023-05-26T19:09:00Z");
-        activityDto.setEndingDate("2023-05-26T22:09:00Z");
-        activityDto.setInstitution(new InstitutionDto(institution))
+        activityDto.setName(ACTIVITY_1__NAME)
+        activityDto.setRegion(ACTIVITY_1__REGION)
+        activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
+        activityDto.setStartingDate(STARTING_DATE);
+        activityDto.setEndingDate(ENDING_DATE);
+        activityDto.setInstitution(new InstitutionDto(institutionService.getDemoInstitution()))
         activityDto.setThemes(themes)
-        activity = activityService.registerActivity(member.getId(), activityDto)
+        activity = activityService.registerActivity(user.id, activityDto)
         activityService.reportActivity(activity.getId())
+    }
 
-        when:
-        admin = new Admin(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
-        admin.authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
-        userRepository.save(admin)
+    def "admin validate activity"() {
+        given: "login admin"
+        demoAdminLogin()
 
-        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
-
+        when: 'validate'
         response = restClient.put(
                 path: '/activity/' + activity.getId() + '/validate'
         )
 
         then: "check response status"
-        response.status == 200
+        response.status == HttpStatus.SC_OK
         activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.APPROVED
+    }
 
+    def "member validate activity"() {
+        when: 'validate'
+        response = restClient.put(
+                path: '/activity/' + activity.getId() + '/validate'
+        )
+
+        then: "error is thrown"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
+        activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.REPORTED
+    }
+
+    def "volunteer validate activity"() {
+        given: "login 'volunteer"
+        demoVolunteerLogin()
+
+        when: 'validate'
+        response = restClient.put(
+                path: '/activity/' + activity.getId() + '/validate'
+        )
+
+        then: "error is thrown"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
+        activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.REPORTED
     }
 }

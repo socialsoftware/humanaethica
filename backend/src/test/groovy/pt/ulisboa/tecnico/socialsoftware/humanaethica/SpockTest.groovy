@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
@@ -109,13 +112,32 @@ class SpockTest extends Specification {
                 path: '/auth/demo/volunteer'
         )
         restClient.headers['Authorization'] = "Bearer " + loginResponse.data.token
+
+        return loginResponse.data.user
     }
+
+
 
     def demoMemberLogin() {
         def loginResponse = restClient.get(
                 path: '/auth/demo/member'
         )
         restClient.headers['Authorization'] = "Bearer " + loginResponse.data.token
+
+        return loginResponse.data.user
+    }
+
+    def demoAdminLogin() {
+        demoService.getDemoAdmin()
+
+        def loggedUser = restClient.post(
+                path: '/auth/user',
+                body: JsonOutput.toJson(new AuthPasswordDto("ars", "ars")),
+                requestContentType: 'application/json'
+        )
+        restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token
+
+        return loggedUser.data.user
     }
 
     def normalUserLogin(username, password) {
@@ -125,13 +147,17 @@ class SpockTest extends Specification {
                 requestContentType: 'application/json'
         )
         restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token
+
+        return loggedUser.data.user
     }
 
     def deleteAll() {
+        activityRepository.deleteAllActivityVolunteer()
+        activityRepository.deleteAllActivityTheme()
+        activityRepository.deleteAll()
         authUserRepository.deleteAll()
         userRepository.deleteAll()
         institutionRepository.deleteAll()
-        activityRepository.deleteAll()
         themeRepository.deleteAll()
     }
 

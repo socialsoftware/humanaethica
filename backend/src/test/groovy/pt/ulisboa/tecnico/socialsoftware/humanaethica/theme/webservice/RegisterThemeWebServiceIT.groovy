@@ -1,18 +1,16 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.webservice
 
+import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
+import org.apache.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterThemeWebServiceIT extends SpockTest {
+    public static final String THEME_1__NAME = "THEME_1_NAME"
     @LocalServerPort
     private int port
 
@@ -22,28 +20,72 @@ class RegisterThemeWebServiceIT extends SpockTest {
         deleteAll()
 
         restClient = new RESTClient("http://localhost:" + port)
-
-        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
-        admin.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
-        userRepository.save(admin)
-
-        normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
     }
 
     def "login as admin, and create a Theme"() {
+        given: 'admin login'
+        demoAdminLogin()
+
         when:
         response = restClient.post(
                 path: '/themes/register',
                 body: [
-                        name: "THEME_1_NAME"
+                        name: THEME_1__NAME
                 ],
                 requestContentType: 'application/json'
         )
 
         then: "check response status"
         response != null
-        response.status == 200
+        response.status == HttpStatus.SC_OK
         themeRepository.count() == 1
+        def theme = themeRepository.findAll().get(0)
+        theme.name == THEME_1__NAME
+        theme.state == Theme.State.APPROVED
+
+        cleanup:
+        deleteAll()
+    }
+
+    def "login as volunteer, and create a Theme"() {
+        given: 'volunteer login'
+        demoVolunteerLogin()
+
+        when:
+        response = restClient.post(
+                path: '/themes/register',
+                body: [
+                        name: THEME_1__NAME
+                ],
+                requestContentType: 'application/json'
+        )
+
+        then: "exception is thrown"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
+        themeRepository.count() == 0
+
+        cleanup:
+        deleteAll()
+    }
+
+    def "login as member, and create a Theme"() {
+        given: 'member login'
+        demoMemberLogin()
+
+        when:
+        response = restClient.post(
+                path: '/themes/register',
+                body: [
+                        name: THEME_1__NAME
+                ],
+                requestContentType: 'application/json'
+        )
+
+        then: "exception is thrown"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
+        themeRepository.count() == 0
 
         cleanup:
         deleteAll()

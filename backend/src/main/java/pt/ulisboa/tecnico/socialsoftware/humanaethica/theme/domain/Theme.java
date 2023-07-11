@@ -20,7 +20,7 @@ public class Theme{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @ManyToMany
+    @ManyToMany(mappedBy = "themes")
     private List<Activity> activities = new ArrayList<>();
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Institution> institutions = new ArrayList<>();

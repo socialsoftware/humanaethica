@@ -163,7 +163,7 @@ export default class RegisterActivityView extends Vue {
         'T' +
         this.endHour +
         ':00:00Z';
-      await RemoteServices.registerActivityAsMember(
+      await RemoteServices.registerActivity(
         this.$store.getters.getUser.id,
         this.activity
       );
