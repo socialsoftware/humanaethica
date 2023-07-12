@@ -21,7 +21,7 @@ public class ThemeController {
     private ThemeService themeService;
 
     @GetMapping("/themes")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ThemeDto> getThemes() {
         return themeService.getThemes();
     }
@@ -51,34 +51,35 @@ public class ThemeController {
     }
 
     @PutMapping("/theme/{themeId}/addInstitution")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void addInstitution(@PathVariable int themeId, Principal principal) {
-        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        Member member = (Member) user;
+        Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
         themeService.addInstitution(themeId, member.getInstitution().getId());
     }
 
     @PutMapping("/theme/{themeId}/removeInstitution")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void removeInstitution(@PathVariable int themeId, Principal principal) {
-        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        Member member = (Member) user;
+        Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
         themeService.removeInstitution(themeId, member.getInstitution().getId());
     }
 
     @GetMapping("/theme/getInstitutionThemes")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public List<ThemeDto> getInstitutionThemes(Principal principal){
-        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        Member member = (Member) user;
+        Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
         return themeService.getInstitutionThemes(member.getInstitution().getId());
     }
 
     @GetMapping("/theme/availableThemesforInstitution")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public List<ThemeDto> availableThemesForInstitution(Principal principal){
-        User user = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        Member member = (Member) user;
+        Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
         return themeService.availableThemesforInstitution(member.getInstitution().getId());
     }
 
     @GetMapping("/themes/availableThemes")
+    @PreAuthorize("hasRole('ROLE_ADMIN') and hasRole('ROLE_MEMBER')")
     public List<ThemeDto> availableThemes(){
         return themeService.availableThemes();
     }
