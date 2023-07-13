@@ -279,7 +279,7 @@ export default class ManageOwnActivitiesView extends Vue {
     try {
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
-      this.themes = await RemoteServices.getThemes();
+      this.themes = await RemoteServices.getThemesAvailable();
       console.log(this.institution.name);
     } catch (error) {
       await this.$store.dispatch('error', error);

@@ -79,7 +79,7 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/availableThemes")
-    @PreAuthorize("hasRole('ROLE_ADMIN') and hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MEMBER')")
     public List<ThemeDto> availableThemes(){
         return themeService.availableThemes();
     }

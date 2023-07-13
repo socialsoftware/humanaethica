@@ -46,7 +46,7 @@ public class ActivityController {
     }
 
     @PutMapping("/activity/{activityId}/report")
-    @PreAuthorize("hasRole('ROLE_MEMBER') and hasRole('ROLE_VOLUNTEER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
     public void reportActivity(@PathVariable int activityId) {
         activityService.reportActivity(activityId);
     }

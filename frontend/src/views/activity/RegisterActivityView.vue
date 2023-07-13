@@ -141,7 +141,7 @@ export default class RegisterActivityView extends Vue {
   endHour: string = '';
 
   async created() {
-    this.themes = await RemoteServices.getThemes();
+    this.themes = await RemoteServices.getThemesAvailable();
   }
   async submit() {
     try {
