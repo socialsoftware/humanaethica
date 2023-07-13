@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.io.Serializable;
@@ -13,6 +16,8 @@ import java.io.Serializable;
 public class HEPermissionEvaluator implements PermissionEvaluator {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ActivityRepository activityRepository;
 
 
     @Override
@@ -24,6 +29,10 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
             int id = (int) targetDomainObject;
             String permissionValue = (String) permission;
             switch (permissionValue) {
+                case "ACTIVITY.MEMBER":
+                    Activity activity = activityRepository.findById(id).orElse(null);
+                    if (activity == null) return false;
+                    return activity.getInstitution().getId().equals(((Member)authUser.getUser()).getInstitution().getId());
                 default:
                     return false;
             }

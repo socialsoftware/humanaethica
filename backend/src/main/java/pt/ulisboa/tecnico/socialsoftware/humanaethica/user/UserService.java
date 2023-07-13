@@ -7,6 +7,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
@@ -15,7 +18,9 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRe
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
@@ -28,6 +33,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserDocume
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,9 +55,6 @@ public class UserService {
     private UserDocumentRepository userDocumentRepository;
 
     @Autowired
-    public AuthUserService authUserService;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public static final String MAIL_FORMAT = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
@@ -64,7 +67,7 @@ public class UserService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<UserDto> getUsers() {
         return userRepository.findAll().stream()
-                .map(UserDto::new)
+                .map(user->new UserDto(user,false))
                 .sorted(Comparator.comparing(UserDto::getUsername))
                 .collect(Collectors.toList());
     }
@@ -199,5 +202,27 @@ public class UserService {
         authUser.getUser().setState(User.State.APPROVED);
 
         return new RegisterUserDto(authUser);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public InstitutionDto getInstitution(Integer userId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Member member = (Member) authUser.getUser();
+
+        return new InstitutionDto(member.getInstitution(), false, false);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ArrayList<ActivityDto> getOwnActivities(Integer userId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Volunteer volunteer = (Volunteer) authUser.getUser();
+        ArrayList<ActivityDto> activities = new ArrayList<>();
+
+        for (Activity activity: volunteer.getActivities()) {
+            ActivityDto activityDto = new ActivityDto(activity, false, false);
+            activities.add(activityDto);
+        }
+
+        return activities;
     }
 }

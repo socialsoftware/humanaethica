@@ -1,8 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class InstitutionDto {
     private Integer id;
@@ -17,6 +23,10 @@ public class InstitutionDto {
 
     private String creationDate;
 
+    private List<ThemeDto> themeDto = new ArrayList<>();
+
+    private List<ActivityDto> activityDto = new ArrayList<>();
+
     public InstitutionDto(){
     }
 
@@ -27,6 +37,25 @@ public class InstitutionDto {
         setNif(institution.getNIF());
         setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
+    }
+
+    public InstitutionDto(Institution institution, boolean shallow, boolean shallowActivity){
+        setId(institution.getId());
+        setEmail(institution.getEmail());
+        setName(institution.getName());
+        setNif(institution.getNIF());
+        setActive(institution.isActive());
+        setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
+        if (!shallow){
+            this.themeDto = institution.getThemes().stream()
+                    .map(theme->new ThemeDto(theme,true,true))
+                    .collect(Collectors.toList());
+        }
+        if(!shallowActivity) {
+            this.activityDto = institution.getActivities().stream()
+                    .map(activity->new ActivityDto(activity,false,true))
+                    .collect(Collectors.toList());
+        }
     }
 
     public InstitutionDto(RegisterInstitutionDto registerInstitutionDto){
@@ -81,5 +110,21 @@ public class InstitutionDto {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public List<ThemeDto>getThemes() {
+        return themeDto;
+    }
+
+    public void setThemes(List<ThemeDto> themeDto) {
+        this.themeDto = themeDto;
+    }
+
+    public List<ActivityDto>getActivities() {
+        return activityDto;
+    }
+
+    public void setActivities(List<ActivityDto> activityDto) {
+        this.activityDto = activityDto;
     }
 }

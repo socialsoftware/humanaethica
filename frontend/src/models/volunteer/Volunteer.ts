@@ -1,5 +1,6 @@
 import { ISOtoString } from '@/services/ConvertDateService';
 import Document from '../management/Document';
+import Activity from '@/models/activity/Activity';
 
 export default class Volunteer {
   id: number | null = null;
@@ -7,6 +8,7 @@ export default class Volunteer {
   email!: string;
   username!: boolean;
   creationDate!: string;
+  activities: Activity[] = [];
   doc!: Document;
 
   constructor(jsonObj?: Volunteer) {
@@ -17,6 +19,9 @@ export default class Volunteer {
       this.username = jsonObj.username;
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.doc = jsonObj.doc;
+      this.activities = jsonObj.activities.map((activities: Activity) => {
+        return new Activity(activities);
+      });
     }
   }
 }

@@ -4,6 +4,8 @@ public enum ErrorMessage {
     INVALID_TYPE_FOR_AUTH_USER("Invalid type for auth user"),
     INVALID_AUTH_USERNAME("Username: %s, belongs to a different authentication method"),
     INVALID_INSTITUTION_NAME("Name: %s, is not valid"),
+    INVALID_ACTIVITY_NAME("Activity Name: %s, is not valid"),
+    INVALID_REGION_NAME("Region Name: %s, is not valid"),
     USERNAME_ALREADY_EXIST("Username: %s, already exist"),
     NIF_ALREADY_EXIST("Institution with NIF: %s, already exist"),
     INVALID_EMAIL("The mail %s is invalid."),
@@ -15,6 +17,7 @@ public enum ErrorMessage {
     AUTHUSER_NOT_FOUND("AuthUser not found with id %d"),
     USER_NOT_FOUND("User not found with username %s"),
     INSTITUTION_NOT_FOUND("Institution not found with id %d"),
+    ACTIVITY_NOT_FOUND("Activity not found with id %d"),
     USER_NOT_APPROVED("The member of this institution is not yet approved"),
     COURSE_NOT_FOUND("Course not found with name %s"),
     INVALID_COURSE("The course you are exporting from does not match the course you are importing to."
@@ -26,7 +29,22 @@ public enum ErrorMessage {
     EXPIRED_CONFIRMATION_TOKEN("Expired confirmation token"),
     INVALID_LOGIN_CREDENTIALS("Invalid login credentials"),
     DUPLICATE_USER("Duplicate user: %s"),
-    ACCESS_DENIED("You do not have permission to view this resource");
+    INVALID_THEME_NAME("Name: %s, is not valid"),
+    THEME_NOT_FOUND("Theme not found with id %d"),
+    ACCESS_DENIED("You do not have permission to view this resource"),
+    THEME_HAS_INSTITUTIONS("This theme can not be removed because it has institutions associated"),
+    THEME_ALREADY_EXISTS("This theme already exists"),
+    THEME_CAN_NOT_BE_DELETED("This Theme can not be deleted because has associated Institutions"),
+    EMPTY_INSTITUTION_LIST("This list is empty"),
+    ACTIVITY_ALREADY_EXISTS("Activity already exists in database"),
+    THEME_NOT_APPROVED("Theme is not yet approved"),
+    ACTIVITY_ALREADY_APPROVED("Activity is already approved with name %s"),
+    EMPTY_THEME_LIST("Theme list cannot be empty"),
+    EMPTY_ACTIVITY_LIST("Activity list cannot be empty"),
+    ACTIVITY_ALREADY_SUSPENDED("Activity is already suspended with name %s"),
+    ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s"),
+    INVALID_DATE("Date format is invalid"),
+    INVALID_DESCRIPTION("Activity description is missing");
 
     public final String label;
 

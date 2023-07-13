@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
 import jakarta.persistence.*;
 import org.springframework.security.crypto.keygen.KeyGenerators;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
@@ -36,6 +38,12 @@ public class Institution {
     private List<Member> members = new ArrayList<>();
 
     private LocalDateTime tokenGenerationDate;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Theme> themes = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Activity> activities = new ArrayList<>();
 
     public Institution() {
     }
@@ -132,6 +140,41 @@ public class Institution {
     public void setDocument(Document document) {
         this.document = document;
         document.setInstitution(this);
+    }
+
+    public List<Theme> getThemes() {
+        return this.themes;
+    }
+
+    public void addTheme(Theme theme) {
+        this.themes.add(theme);
+        theme.addInstitution(this);
+    }
+
+    public void removeTheme(Theme theme) {
+        this.themes.remove(theme);
+        theme.deleteInstitution(this);
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
+    }
+
+    public void removeActivity(Integer activityId) {
+        for (int i = 0; i < activities.size(); i++) {
+            if (activities.get(i).getId().equals(activityId)) {
+                activities.remove(i);
+                return;
+            }
+        }
     }
 
     public String generateConfirmationToken() {

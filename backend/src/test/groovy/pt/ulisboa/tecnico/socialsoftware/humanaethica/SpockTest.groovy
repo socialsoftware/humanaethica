@@ -6,15 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.ActivityService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.ThemeService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 import spock.lang.Specification
@@ -60,6 +67,9 @@ class SpockTest extends Specification {
     UserRepository userRepository
 
     @Autowired
+    ThemeRepository themeRepository
+
+    @Autowired
     UserService userService
 
     @Autowired
@@ -73,6 +83,15 @@ class SpockTest extends Specification {
 
     @Autowired
     InstitutionRepository institutionRepository
+
+    @Autowired
+    ActivityRepository activityRepository
+
+    @Autowired
+    ActivityService activityService
+
+    @Autowired
+    ThemeService themeService
 
     @Autowired
     DemoService demoService;
@@ -93,13 +112,32 @@ class SpockTest extends Specification {
                 path: '/auth/demo/volunteer'
         )
         restClient.headers['Authorization'] = "Bearer " + loginResponse.data.token
+
+        return loginResponse.data.user
     }
+
+
 
     def demoMemberLogin() {
         def loginResponse = restClient.get(
                 path: '/auth/demo/member'
         )
         restClient.headers['Authorization'] = "Bearer " + loginResponse.data.token
+
+        return loginResponse.data.user
+    }
+
+    def demoAdminLogin() {
+        demoService.getDemoAdmin()
+
+        def loggedUser = restClient.post(
+                path: '/auth/user',
+                body: JsonOutput.toJson(new AuthPasswordDto("ars", "ars")),
+                requestContentType: 'application/json'
+        )
+        restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token
+
+        return loggedUser.data.user
     }
 
     def normalUserLogin(username, password) {
@@ -109,12 +147,18 @@ class SpockTest extends Specification {
                 requestContentType: 'application/json'
         )
         restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token
+
+        return loggedUser.data.user
     }
 
     def deleteAll() {
+        activityRepository.deleteAllActivityVolunteer()
+        activityRepository.deleteAllActivityTheme()
+        activityRepository.deleteAll()
         authUserRepository.deleteAll()
         userRepository.deleteAll()
         institutionRepository.deleteAll()
+        themeRepository.deleteAll()
     }
 
 
