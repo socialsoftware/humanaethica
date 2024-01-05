@@ -208,8 +208,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
-import Member from '@/models/member/Member';
-import User from '@/models/user/User';
 import Activity from '@/models/activity/Activity';
 
 @Component({

@@ -63,8 +63,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
+import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 
 @Component({

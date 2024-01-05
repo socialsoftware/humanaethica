@@ -204,7 +204,7 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-router.afterEach(async (to, from) => {
+router.afterEach(async (to) => {
   document.title = to.meta?.title;
   await Store.dispatch('clearLoading');
 });

@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Model, Prop, Vue } from 'vue-property-decorator';
+import { Component, Model, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
 @Component({

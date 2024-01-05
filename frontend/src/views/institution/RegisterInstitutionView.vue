@@ -110,8 +110,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import RegisterInstitution from '@/models/institution/RegisterInstitution';
+import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 
 @Component({

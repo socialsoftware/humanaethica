@@ -1,7 +1,5 @@
 import { ISOtoString } from '@/services/ConvertDateService';
-import Document from '../management/Document';
 import Activity from '@/models/activity/Activity';
-import Volunteer from '@/models/volunteer/Volunteer';
 import Theme from '@/models/theme/Theme';
 
 export default class Institution {

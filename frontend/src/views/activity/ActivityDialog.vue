@@ -36,7 +36,6 @@
 
 <script lang="ts">
 import { Component, Model, Prop, Vue } from 'vue-property-decorator';
-import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 
 @Component
