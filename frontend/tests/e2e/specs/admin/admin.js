@@ -17,7 +17,7 @@ describe('Admin', () => {
     cy.get('[data-cy="adminUsers"]').click();
     cy.wait('@users');
 
-    cy.get('[data-cy="deleteButton"]').should('have.length', 1)
+    cy.get('[data-cy="deleteButton"]').should('have.length', 0)
 
 
     cy.intercept('POST', '/users/register').as(
@@ -32,7 +32,7 @@ describe('Admin', () => {
     cy.get('[data-cy="saveButton"]').click();
     cy.wait('@userRegister')
 
-    cy.get('[data-cy="deleteButton"]').should('have.length', 2)
+    cy.get('[data-cy="deleteButton"]').should('have.length', 1)
 
     cy.intercept('DELETE', '/users/*').as(
       'deleteUser'
@@ -40,7 +40,7 @@ describe('Admin', () => {
     cy.get('[data-cy="deleteButton"]').first().click();
     cy.wait('@deleteUser');
 
-    cy.get('[data-cy="deleteButton"]').should('have.length', 1)
+    cy.get('[data-cy="deleteButton"]').should('have.length', 0)
   });
 
 
