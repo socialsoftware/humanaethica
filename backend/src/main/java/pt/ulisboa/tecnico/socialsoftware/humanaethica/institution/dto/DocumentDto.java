@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto;
 
 import java.io.Serializable;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.InstitutionDocument;
 
 public class DocumentDto implements Serializable {
     byte[] content;
@@ -11,9 +11,9 @@ public class DocumentDto implements Serializable {
     public DocumentDto() {
     }
 
-    public DocumentDto(Document document) {
-        this.content = document.getContent();
-        this.name = document.getName();
+    public DocumentDto(InstitutionDocument institutionDocument) {
+        this.content = institutionDocument.getContent();
+        this.name = institutionDocument.getName();
     }
 
     public byte[] getContent() {

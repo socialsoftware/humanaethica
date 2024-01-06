@@ -150,7 +150,7 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> validateTheme(int themeId) {
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
-        theme.setState(Theme.State.APPROVED);
+        theme.approve();
         return getThemes();
     }
 

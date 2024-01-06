@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Document;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.InstitutionDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto;
 
@@ -45,7 +45,7 @@ public class InstitutionController {
     @GetMapping("/institution/{institutionId}/document")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<byte[]> getInstitutionDocument(@PathVariable int institutionId) {
-        Document doc = institutionService.getInstitutionDocument(institutionId);
+        InstitutionDocument doc = institutionService.getInstitutionDocument(institutionId);
         HttpHeaders headers = new HttpHeaders();
         MediaType type = MediaType.APPLICATION_PDF;
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachement; filename=\"" + doc.getName() + "\"");

@@ -4,7 +4,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 import jakarta.persistence.*;
 
 @Entity
-public class Document {
+public class InstitutionDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -151,24 +151,18 @@ public class UserService {
         }
 
 
-        User user;
-        switch (registerUserDto.getRole()) {
-            case VOLUNTEER:
-                user = new Volunteer(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
-                break;
-            case MEMBER:
+        User user = switch (registerUserDto.getRole()) {
+            case VOLUNTEER -> new Volunteer(registerUserDto.getName(),
+                    registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
+            case MEMBER -> {
                 Institution institution = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-                user = new Member(registerUserDto.getName(),
+                yield new Member(registerUserDto.getName(),
                         registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, institution, state);
-                break;
-            case ADMIN:
-                user = new Admin(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
-                break;
-            default:
-                throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
-        }
+            }
+            case ADMIN -> new Admin(registerUserDto.getName(),
+                    registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
+            default -> throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
+        };
 
         userRepository.save(user);
 

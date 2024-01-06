@@ -32,7 +32,7 @@ public class Institution {
     private String confirmationToken = "";
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER, orphanRemoval = true)
-    private Document document;
+    private InstitutionDocument institutionDocument;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Member> members = new ArrayList<>();
@@ -133,13 +133,13 @@ public class Institution {
         this.tokenGenerationDate = tokenGenerationDate;
     }
 
-    public Document getDocument() {
-        return document;
+    public InstitutionDocument getDocument() {
+        return institutionDocument;
     }
 
-    public void setDocument(Document document) {
-        this.document = document;
-        document.setInstitution(this);
+    public void setDocument(InstitutionDocument institutionDocument) {
+        this.institutionDocument = institutionDocument;
+        institutionDocument.setInstitution(this);
     }
 
     public List<Theme> getThemes() {

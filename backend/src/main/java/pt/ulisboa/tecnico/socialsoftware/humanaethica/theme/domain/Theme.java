@@ -114,4 +114,12 @@ public class Theme{
             setState(State.DELETED);
         }
     }
+
+    public void approve() {
+        if (state != State.APPROVED && getParentTheme() != null) {
+            getParentTheme().approve();
+        }
+
+        setState(Theme.State.APPROVED);
+    }
 }

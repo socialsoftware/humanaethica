@@ -30,7 +30,7 @@
               data-cy="member"
               @click="registerMember"
             >
-              Create Member
+              Register Member
               <v-icon>fas fa-user</v-icon>
             </v-btn>
             <v-btn
@@ -39,7 +39,7 @@
               color="orange"
               @click="registerActivity"
             >
-              Create Activity
+              Register Activity
             </v-btn>
             <v-btn
               v-if="isMember"
@@ -47,7 +47,7 @@
               color="orange"
               @click="manageInstitutionActivities"
             >
-              Manage Institution Activities
+              Manage Activities
             </v-btn>
           </template>
         </v-menu>
@@ -126,7 +126,7 @@
           color="orange"
           @click="registerInstitution"
         >
-          Create Institution
+          Register Institution
         </v-btn>
         <v-btn
           v-if="!isLoggedIn"
@@ -134,7 +134,7 @@
           color="orange"
           @click="registerVolunteer"
         >
-          Create Volunteer
+          Register Volunteer
         </v-btn>
         <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
           Login
