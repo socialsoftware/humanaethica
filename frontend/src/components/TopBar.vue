@@ -31,7 +31,6 @@
               @click="registerMember"
             >
               Register Member
-              <v-icon>fas fa-user</v-icon>
             </v-btn>
             <v-btn
               v-if="isMember"
@@ -47,7 +46,10 @@
               color="orange"
               @click="manageInstitutionActivities"
             >
-              Manage Activities
+              Activities
+            </v-btn>
+            <v-btn v-if="isMember" text color="orange" @click="theme">
+              Themes
             </v-btn>
           </template>
         </v-menu>
@@ -61,16 +63,8 @@
               data-cy=""
               @click="manageActivities"
             >
-              Join Activities
+              Join Activity
               <v-icon>fas fa-user</v-icon>
-            </v-btn>
-          </template>
-        </v-menu>
-
-        <v-menu v-if="isMember" offset-y sopen-on-hover>
-          <template v-slot:activator="{ on }">
-            <v-btn text color="orange" v-on="on" data-cy="theme" @click="Theme"
-              >Theme
             </v-btn>
           </template>
         </v-menu>
@@ -293,7 +287,7 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'manage-activities' }).catch(() => {});
   }
 
-  async Theme() {
+  async theme() {
     await this.$router.push({ name: 'theme' }).catch(() => {});
   }
 

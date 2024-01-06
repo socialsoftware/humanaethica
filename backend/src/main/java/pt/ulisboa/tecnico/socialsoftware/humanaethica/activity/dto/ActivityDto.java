@@ -37,27 +37,29 @@ public class ActivityDto {
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity, boolean shallow, boolean shallowInstitution){
+    public ActivityDto(Activity activity, boolean deepCopyVolunteers, boolean deepCopyInstitutions){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
         setDescription(activity.getDescription());
+
         this.themes = activity.getThemes().stream()
-                .map(theme->new ThemeDto(theme,true,true))
-                .collect(Collectors.toList());
+                .map(theme->new ThemeDto(theme,false, true, false))
+                .toList();
+
         setState(activity.getState().toString());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
         setStartingDate(DateHandler.toISOString(activity.getStartingDate()));
         setEndingDate(DateHandler.toISOString(activity.getEndingDate()));
-        if(!shallow) {
+
+        if (deepCopyVolunteers) {
             this.volunteers = activity.getVolunteers().stream()
-                    .map(user->new UserDto(user,true))
-                    .collect(Collectors.toList());;
+                    .map(user-> new UserDto(user,true))
+                    .toList();
         }
-        if(!shallowInstitution) {
-            if (activity.getInstitution() != null) {
-                setInstitution(new InstitutionDto(activity.getInstitution(), true, true));
-            }
+        if (deepCopyInstitutions && (activity.getInstitution() != null)) {
+                setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
+
         }
     }
 

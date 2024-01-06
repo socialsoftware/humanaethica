@@ -17,7 +17,6 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 @Entity
 @Table(name = "activity")
 public class Activity {
-
     public enum State {REPORTED, APPROVED, SUSPENDED}
 
     @Id

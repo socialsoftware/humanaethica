@@ -4,9 +4,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @DataJpaTest
 class CreateandRemoveThemeTest extends SpockTest {
@@ -39,15 +37,11 @@ class CreateandRemoveThemeTest extends SpockTest {
     def "create two themes associated with each other"(){
         when:
         def themeParent = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
-        def themeParentDto = new ThemeDto(themeParent,false,false)
-        //def result = themeService.registerTheme(themeParentDto,true, -1)
         def subTheme = new Theme("THEME_2_NAME", Theme.State.APPROVED,themeParent)
-        def subThemeDto = new ThemeDto(subTheme,false,false)
-        //def result2 = themeService.registerTheme(subThemeDto,true, result.getId())
 
         then:
-        themeParent.getSubTheme().size() == 1
-        themeParent.getSubTheme().get(0).getName() =="THEME_2_NAME"
+        themeParent.getSubThemes().size() == 1
+        themeParent.getSubThemes().get(0).getName() =="THEME_2_NAME"
         subTheme.getParentTheme().getName() == "THEME_1_NAME"
 
     }

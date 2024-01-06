@@ -203,7 +203,7 @@ public class UserService {
         AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
         Member member = (Member) authUser.getUser();
 
-        return new InstitutionDto(member.getInstitution(), false, false);
+        return new InstitutionDto(member.getInstitution(), true, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -213,7 +213,7 @@ public class UserService {
         ArrayList<ActivityDto> activities = new ArrayList<>();
 
         for (Activity activity: volunteer.getActivities()) {
-            ActivityDto activityDto = new ActivityDto(activity, false, false);
+            ActivityDto activityDto = new ActivityDto(activity, true, true);
             activities.add(activityDto);
         }
 

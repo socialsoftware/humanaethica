@@ -141,7 +141,7 @@ export default class ThemeView extends Vue {
       width: '10%',
     },
     {
-      text: 'Delete',
+      text: 'Actions',
       value: 'action',
       align: 'left',
       sortable: false,

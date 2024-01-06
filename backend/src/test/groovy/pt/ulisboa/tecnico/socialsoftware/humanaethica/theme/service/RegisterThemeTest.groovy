@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.service
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
@@ -9,25 +8,19 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import spock.lang.Unroll
-import spock.mock.DetachedMockFactory
 
 @DataJpaTest
 class RegisterThemeTest extends SpockTest {
     def theme
     def themeDto
     def institution
-    def institutionDto
-    def institutionDto2
 
     def "the theme does not exist, create the theme"() {
         given: "a theme dto"
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
-        //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme,false,true)
+        themeDto = new ThemeDto(theme,true,false,false)
 
         when:
         def result = themeService.registerTheme(themeDto,true)
@@ -60,7 +53,7 @@ class RegisterThemeTest extends SpockTest {
     def "add institution to a theme"() {
         given:
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
-        themeDto = new ThemeDto(theme,true,true)
+        themeDto = new ThemeDto(theme,true,false, true)
         def result = themeService.registerTheme(themeDto,true)
 
         when:
@@ -80,7 +73,7 @@ class RegisterThemeTest extends SpockTest {
         given:
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED,null)
         //theme.setState(Theme.State.APPROVED)
-        themeDto = new ThemeDto(theme,true,true)
+        themeDto = new ThemeDto(theme,false,false, false)
         def result = themeService.registerTheme(themeDto,true)
         result.getInstitutions().size() == 0
         institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)

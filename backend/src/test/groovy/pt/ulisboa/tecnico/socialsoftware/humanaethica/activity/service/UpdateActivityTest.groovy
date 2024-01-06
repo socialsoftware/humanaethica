@@ -50,7 +50,7 @@ class UpdateActivityTest extends SpockTest {
         activityDto.setEndingDate(ENDING_DATE);
         activityDto.setInstitution(new InstitutionDto(institution))
         List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme, true, true))
+        themes.add(new ThemeDto(theme, false, false, false))
         activityDto.setThemes(themes)
 
         when:

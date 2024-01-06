@@ -12,13 +12,14 @@ public class ThemeDto {
 
     private Integer id;
     private String name;
+    private String absoluteName;
     private List<Activity> activities = new ArrayList<>();
     private String state;
     private List<InstitutionDto> institutions = new ArrayList<>();
 
     private ThemeDto parentTheme ;
 
-    private List<ThemeDto> subTheme = new ArrayList<>();
+    private List<ThemeDto> subThemes = new ArrayList<>();
 
     private Integer level;
 
@@ -28,28 +29,27 @@ public class ThemeDto {
 
     }
 
-    public ThemeDto(Theme theme, boolean shallow, boolean shallowTheme) {
+    public ThemeDto(Theme theme, boolean deepCopyInstitutions, boolean copyParent, boolean deepCopySubThemes) {
         setId(theme.getId());
         setName(theme.getName());
+        setAbsoluteName(theme.getAbsoluteName());
+        setCompleteName(theme.getAbsoluteName());
         //setActivities(activities);
-        if (!shallow){
+        if (deepCopyInstitutions) {
             this.institutions = theme.getInstitutions().stream()
-                    .map(institution->new InstitutionDto(institution,true, true))
-                    .collect(Collectors.toList());
+                    .map(institution-> new InstitutionDto(institution,false, false))
+                    .toList();
         }
         setState(theme.getState().toString());
-        if (!shallowTheme){
-            this.subTheme = theme.getSubTheme().stream()
-                    .map(themes->new ThemeDto(themes,true,true))
-                    .collect(Collectors.toList());
+        if (deepCopySubThemes) {
+            this.subThemes = theme.getSubThemes().stream()
+                    .map(themes-> new ThemeDto(themes, false, true, true))
+                    .toList();
         }
-        if (theme.getParentTheme() != null){
-            setTheme(new ThemeDto(theme.getParentTheme(),false,true));
-            addCompleteName(this.parentTheme);
+        if (copyParent && theme.getParentTheme() != null){
+            setTheme(new ThemeDto(theme.getParentTheme(),false, false, false));
         }
-        else {
-            this.completeName = theme.getName();
-        }
+
         setLevel(theme.getLevel());
     }
 
@@ -79,6 +79,14 @@ public class ThemeDto {
         this.name = name;
     }
 
+    public String getAbsoluteName() {
+        return absoluteName;
+    }
+
+    public void setAbsoluteName(String absoluteName) {
+        this.absoluteName = absoluteName;
+    }
+
     public List<Activity> getActivities() {
         return activities;
     }
@@ -103,13 +111,14 @@ public class ThemeDto {
         this.state = state;
     }
 
-    public void addTheme (ThemeDto theme){ subTheme.add(theme);}
+    public void addTheme (ThemeDto theme){ subThemes.add(theme);}
 
-    public void deleteTheme(ThemeDto theme){subTheme.remove(theme);}
+    public void deleteTheme(ThemeDto theme){
+        subThemes.remove(theme);}
 
     public ThemeDto getParentTheme(){return this.parentTheme;}
 
     public void setTheme(ThemeDto theme){this.parentTheme = theme;}
 
-    public List<ThemeDto> getSubThemes(){return this.subTheme;}
+    public List<ThemeDto> getSubThemes(){return this.subThemes;}
 }

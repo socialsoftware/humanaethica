@@ -39,7 +39,7 @@ public class Institution {
 
     private LocalDateTime tokenGenerationDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "institutions", fetch = FetchType.LAZY)
     private List<Theme> themes = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", orphanRemoval = true, fetch = FetchType.EAGER)

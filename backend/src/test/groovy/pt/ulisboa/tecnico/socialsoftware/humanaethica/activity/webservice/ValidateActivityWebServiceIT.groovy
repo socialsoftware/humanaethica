@@ -46,7 +46,7 @@ class ValidateActivityWebServiceIT extends SpockTest {
         theme = new Theme(THEME_1__NAME, Theme.State.APPROVED,null)
         themeRepository.save(theme)
         List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme,true,true))
+        themes.add(new ThemeDto(theme,false,false,false))
 
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_1__NAME)

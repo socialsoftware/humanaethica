@@ -38,22 +38,22 @@ public class InstitutionDto {
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
     }
 
-    public InstitutionDto(Institution institution, boolean shallow, boolean shallowActivity){
+    public InstitutionDto(Institution institution, boolean deepCopyThemes, boolean deepCopyActivities){
         setId(institution.getId());
         setEmail(institution.getEmail());
         setName(institution.getName());
         setNif(institution.getNIF());
         setActive(institution.isActive());
         setCreationDate(DateHandler.toISOString(institution.getCreationDate()));
-        if (!shallow){
+        if (deepCopyThemes) {
             this.themeDto = institution.getThemes().stream()
-                    .map(theme->new ThemeDto(theme,true,true))
-                    .collect(Collectors.toList());
+                    .map(theme-> new ThemeDto(theme,false, true, false))
+                    .toList();
         }
-        if(!shallowActivity) {
+        if (deepCopyActivities) {
             this.activityDto = institution.getActivities().stream()
-                    .map(activity->new ActivityDto(activity,false,true))
-                    .collect(Collectors.toList());
+                    .map(activity-> new ActivityDto(activity,true,false))
+                    .toList();
         }
     }
 

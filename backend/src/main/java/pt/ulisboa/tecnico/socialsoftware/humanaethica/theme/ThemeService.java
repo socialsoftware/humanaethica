@@ -14,10 +14,9 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserReposi
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,44 +31,14 @@ public class ThemeService {
     @Autowired
     InstitutionRepository institutionRepository;
 
-    /*@Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<ThemeDto> getThemes() {
-        return themeRepository.findAll().stream()
-                .map(theme->new ThemeDto(theme,false,false))
-                .sorted(Comparator.comparing(ThemeDto::getName, String.CASE_INSENSITIVE_ORDER))
-                .toList();
-    }*/
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getThemes() {
         List<Theme> allThemes = themeRepository.findAll();
-        List<ThemeDto> sortedThemes = new ArrayList<>();
 
-        // Encontra os temas raiz (aqueles que não possuem um tema pai)
-        List<Theme> rootThemes = allThemes.stream()
-                .filter(theme -> theme.getParentTheme() == null)
+        return allThemes.stream()
+                .sorted(Comparator.comparing(Theme::getAbsoluteName, String.CASE_INSENSITIVE_ORDER))
+                .map(theme -> new ThemeDto(theme, true, true, false))
                 .toList();
-
-        // Ordena os temas pela ordem da árvore
-        for (Theme rootTheme : rootThemes) {
-            traverseAndSortThemes(rootTheme, sortedThemes);
-        }
-
-        return sortedThemes;
-    }
-
-    private void traverseAndSortThemes(Theme theme, List<ThemeDto> sortedThemes) {
-        // Cria um ThemeDto para o tema atual e adiciona à lista de temas ordenados
-        sortedThemes.add(new ThemeDto(theme, false, false));
-
-        // Ordena os subtemas do tema atual
-        List<Theme> sortedSubThemes = theme.getSubThemes().stream()
-                .sorted(Comparator.comparing(Theme::getName, String.CASE_INSENSITIVE_ORDER))
-                .toList();
-
-        // Percorre recursivamente os subtemas e os adiciona à lista de temas ordenados
-        for (Theme subTheme : sortedSubThemes) {
-            traverseAndSortThemes(subTheme, sortedThemes);
-        }
     }
 
 
@@ -91,7 +60,7 @@ public class ThemeService {
         if (isAdmin || themeParent != null) {
             theme = new Theme(themeDto.getName(), Theme.State.APPROVED, themeParent);
         }
-        else{
+        else {
             theme = new Theme(themeDto.getName(), Theme.State.SUBMITTED, themeParent);
         }
 
@@ -102,49 +71,10 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> deleteTheme(int themeId) {
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
-        if(!removeTheme(theme)){
-            throw new HEException(THEME_CAN_NOT_BE_DELETED);
-        };
-        return getThemes();
-    }
 
-    public boolean removeTheme(Theme theme) {
-        if (!theme.getInstitutions().isEmpty()){
-            return false;
-        }
-        // Percorre recursivamente os subtemas e verifica se possuem instituições associadas
-        for (Theme subTheme : theme.getSubTheme()) {
-            if (hasAssociatedInstitutions(subTheme)) {
-                return false;
-            }
-        }
-
-        // Remove o subTheme atual da lista de subtemas do parentTheme
-        //theme.getParentTheme().getSubTheme().remove(theme);
         theme.delete();
-        // Percorre recursivamente os subtemas e remove-os
-        for (Theme subTheme : theme.getSubTheme()) {
-            subTheme.delete();
-            removeTheme(subTheme);
-        }
 
-        return true;
-    }
-
-    public boolean hasAssociatedInstitutions(Theme theme) {
-        // Verifica se o tema atual possui instituições associadas
-        if (!theme.getInstitutions().isEmpty()) {
-            return true;
-        }
-
-        // Percorre recursivamente os subtemas e verifica se possuem instituições associadas
-        for (Theme subTheme : theme.getSubTheme()) {
-            if (hasAssociatedInstitutions(subTheme)) {
-                return true;
-            }
-        }
-
-        return false;
+        return getThemes();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -174,47 +104,54 @@ public class ThemeService {
         institution.removeTheme(theme);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getInstitutionThemes(int institutionId){
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-        InstitutionDto institutionDto = new InstitutionDto(institution,false, false);
+        InstitutionDto institutionDto = new InstitutionDto(institution,true, true);
         return institutionDto.getThemes();
     }
 
-    public List<ThemeDto> availableThemesforInstitution(Integer institutionId) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ThemeDto> availableThemesForInstitution(Integer institutionId) {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 
-        List<ThemeDto> aux = getThemes();
-        List<ThemeDto> filteredThemes = new ArrayList<>();
+        Set<Integer> institutionThemeIds = institution.getThemes().stream()
+                .map(Theme::getId)
+                .collect(Collectors.toSet());
 
-        for (ThemeDto x : aux) {
-            if (!(x.getState().equals("APPROVED"))) {
-                continue; // Ignora temas não aprovados
-            }
-            boolean isInInstitution = false;
-            for (Theme y : institution.getThemes()) {
-                if (x.getId().equals(y.getId())) {
-                    isInInstitution = true;
-                    break;
-                }
-            }
-            if (!isInInstitution) {
-                filteredThemes.add(x);
-            }
-        }
+        return getThemes().stream()
+                    .filter(themeDto -> themeDto.getState().equals("APPROVED"))
+                    .filter(themeDto -> !institutionThemeIds.contains(themeDto.getId()))
+                    .toList();
 
-        return filteredThemes;
+//        List<ThemeDto> aux = getThemes();
+//        List<ThemeDto> filteredThemes = new ArrayList<>();
+//
+//        for (ThemeDto x : aux) {
+//            if (!(x.getState().equals("APPROVED"))) {
+//                continue; // Ignora temas não aprovados
+//            }
+//            boolean isInInstitution = false;
+//            for (Theme y : institution.getThemes()) {
+//                if (x.getId().equals(y.getId())) {
+//                    isInInstitution = true;
+//                    break;
+//                }
+//            }
+//            if (!isInInstitution) {
+//                filteredThemes.add(x);
+//            }
+//        }
+//
+//        return filteredThemes;
     }
 
-    public List<ThemeDto> availableThemes() {
-        List<ThemeDto> aux = getThemes();
-        List<ThemeDto> filteredThemes = new ArrayList<>();
+    @Transactional(isolation = Isolation.READ_COMMITTED)
 
-        for (ThemeDto x : aux) {
-            if (x.getState().equals("APPROVED")){
-                filteredThemes.add(x);
-            }
-        }
-        return filteredThemes;
+    public List<ThemeDto> getAvailableThemes() {
+        return getThemes().stream()
+                .filter(themeDto -> themeDto.getState().equals("APPROVED"))
+                .toList();
     }
 
 }

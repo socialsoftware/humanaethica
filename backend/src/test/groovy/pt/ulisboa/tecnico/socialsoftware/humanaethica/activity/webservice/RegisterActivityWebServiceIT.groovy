@@ -37,7 +37,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         theme = new Theme(THEME_1__NAME, Theme.State.APPROVED,null)
         themeRepository.save(theme)
         themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme,true,true))
+        themes.add(new ThemeDto(theme,false, false, false))
     }
 
     def "login as member, and create an activity"() {

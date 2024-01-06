@@ -8,11 +8,8 @@ import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -75,12 +72,12 @@ public class ThemeController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public List<ThemeDto> availableThemesForInstitution(Principal principal){
         Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        return themeService.availableThemesforInstitution(member.getInstitution().getId());
+        return themeService.availableThemesForInstitution(member.getInstitution().getId());
     }
 
     @GetMapping("/themes/availableThemes")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MEMBER')")
     public List<ThemeDto> availableThemes(){
-        return themeService.availableThemes();
+        return themeService.getAvailableThemes();
     }
 }
