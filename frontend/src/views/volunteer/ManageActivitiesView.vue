@@ -151,12 +151,12 @@ export default class ManageActivitiesView extends Vue {
     try {
       this.activities = await RemoteServices.getActivities();
       this.ownActivities = await RemoteServices.getOwnActivities(
-        this.$store.getters.getUser.id
+        this.$store.getters.getUser.id,
       );
       this.activities.forEach((activity) => {
         if (
           this.ownActivities.some(
-            (ownActivity) => ownActivity.id === activity.id
+            (ownActivity) => ownActivity.id === activity.id,
           )
         ) {
           activity.alreadyJoined = true;
@@ -187,7 +187,7 @@ export default class ManageActivitiesView extends Vue {
       try {
         await RemoteServices.joinActivity(
           this.$store.getters.getUser.id,
-          activityId
+          activityId,
         );
       } catch (error) {
         await this.$store.dispatch('error', error);
@@ -203,7 +203,7 @@ export default class ManageActivitiesView extends Vue {
       try {
         await RemoteServices.leaveActivity(
           this.$store.getters.getUser.id,
-          activityId
+          activityId,
         );
       } catch (error) {
         await this.$store.dispatch('error', error);
@@ -219,7 +219,7 @@ export default class ManageActivitiesView extends Vue {
       try {
         await RemoteServices.reportActivity(
           this.$store.getters.getUser.id,
-          activityId
+          activityId,
         );
       } catch (error) {
         await this.$store.dispatch('error', error);

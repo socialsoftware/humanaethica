@@ -84,7 +84,7 @@ export default class RegisterVolunteerView extends Vue {
       ) {
         await this.$store.dispatch(
           'error',
-          'Missing information, please check the form again'
+          'Missing information, please check the form again',
         );
         return;
       } else if (this.volunteerDoc != null) {
@@ -94,7 +94,7 @@ export default class RegisterVolunteerView extends Vue {
             volunteerEmail: this.volunteerEmail,
             volunteerUsername: this.volunteerUsername,
           },
-          this.volunteerDoc
+          this.volunteerDoc,
         );
         await this.$router.push({ name: 'home' });
       }

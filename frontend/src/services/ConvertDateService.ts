@@ -35,7 +35,7 @@ export function ISOtoStringDayOnly(dateString: string | null): string {
 }
 
 export function milisecondsToHHMMSS(
-  miliseconds: number | undefined | null
+  miliseconds: number | undefined | null,
 ): string {
   if (miliseconds) {
     const timeInSeconds = Math.abs(miliseconds) / 1000;

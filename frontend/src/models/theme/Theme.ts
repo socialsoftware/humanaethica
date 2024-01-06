@@ -17,7 +17,7 @@ export default class Theme {
       this.institutions = jsonObj.institutions.map(
         (institutions: Institution) => {
           return new Institution(institutions);
-        }
+        },
       );
       this.state = jsonObj.state;
       this.parentTheme = jsonObj.parentTheme;

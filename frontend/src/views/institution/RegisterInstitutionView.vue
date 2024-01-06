@@ -138,7 +138,7 @@ export default class RegisterInstitutionView extends Vue {
       ) {
         await this.$store.dispatch(
           'error',
-          'Missing information, please check the form again'
+          'Missing information, please check the form again',
         );
         return;
       } else if (this.institutionDoc != null && this.memberDoc != null) {
@@ -152,7 +152,7 @@ export default class RegisterInstitutionView extends Vue {
             memberName: this.memberName,
           },
           this.institutionDoc,
-          this.memberDoc
+          this.memberDoc,
         );
         await this.$router.push({ name: 'home' });
       }

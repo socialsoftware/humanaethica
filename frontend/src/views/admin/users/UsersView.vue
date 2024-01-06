@@ -23,7 +23,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom v-if="item.state != 'DELETED'">
+        <v-tooltip bottom v-if="item.state != 'DELETED' && !isDemoUser(item)">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -36,7 +36,7 @@
           </template>
           <span>Delete user</span>
         </v-tooltip>
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.hasDocument">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -51,7 +51,10 @@
         </v-tooltip>
         <v-tooltip
           bottom
-          v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
+          v-if="
+            item.state == 'SUBMITTED' ||
+            (item.state == 'DELETED' && !isDemoUser(item))
+          "
         >
           <template v-slot:activator="{ on }">
             <v-icon
@@ -149,7 +152,7 @@ export default class UsersView extends Vue {
       width: '30%',
     },
     {
-      text: 'Delete',
+      text: 'Actions',
       value: 'action',
       align: 'left',
       sortable: false,
@@ -221,6 +224,14 @@ export default class UsersView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  isDemoUser(user: User) {
+    return (
+      user.username == 'ars' ||
+      user.username == 'demo-member' ||
+      user.username == 'demo-volunteer'
+    );
   }
 }
 </script>

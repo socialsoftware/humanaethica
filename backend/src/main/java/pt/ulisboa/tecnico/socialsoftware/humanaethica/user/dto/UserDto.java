@@ -38,7 +38,7 @@ public class UserDto {
 
     private String lastAccess;
     
-
+    private boolean hasDocument;
 
     public UserDto() {
     }
@@ -50,6 +50,7 @@ public class UserDto {
         this.role = user.getRole().toString();
         this.state = user.getState().toString();
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
+        this.hasDocument = user.getDocument() != null;
 
         if (user.getAuthUser() != null) {
             this.active = user.getAuthUser().isActive();
@@ -172,5 +173,13 @@ public class UserDto {
     }
     public List<ActivityDto> getActivities() {
         return activities;
+    }
+
+    public boolean isHasDocument() {
+        return hasDocument;
+    }
+
+    public void setHasDocument(boolean hasDocument) {
+        this.hasDocument = hasDocument;
     }
 }

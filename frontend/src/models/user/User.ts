@@ -12,6 +12,7 @@ export default class User {
   type!: string;
   creationDate!: string;
   lastAccess!: string;
+  hasDocument!: boolean;
 
   constructor(jsonObj?: User) {
     if (jsonObj) {
@@ -26,6 +27,7 @@ export default class User {
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.lastAccess = ISOtoString(jsonObj.lastAccess);
       this.institutionName = jsonObj.institutionName;
+      this.hasDocument = jsonObj.hasDocument;
     }
   }
 }

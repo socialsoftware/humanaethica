@@ -138,9 +138,8 @@ export default class InstitutionsView extends Vue {
       confirm('Are you sure you want to delete the institution?')
     ) {
       try {
-        this.institutions = await RemoteServices.deleteInstitution(
-          institutionId
-        );
+        this.institutions =
+          await RemoteServices.deleteInstitution(institutionId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

@@ -28,7 +28,7 @@ httpClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 httpClient.interceptors.response.use(
   (response) => {
@@ -36,13 +36,13 @@ httpClient.interceptors.response.use(
       if (response.data.notification.errorMessages.length)
         Store.dispatch(
           'notification',
-          response.data.notification.errorMessages
+          response.data.notification.errorMessages,
         );
       response.data = response.data.response;
     }
     return response;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default class RemoteServices {
@@ -50,7 +50,7 @@ export default class RemoteServices {
 
   static async userLogin(
     username: string,
-    password: string
+    password: string,
   ): Promise<TokenAuthUser> {
     return httpClient
       .post('/auth/user', new AuthPasswordDto(username, password))
@@ -144,8 +144,8 @@ export default class RemoteServices {
         ],
         {
           type: 'application/json',
-        }
-      )
+        },
+      ),
     );
     return httpClient
       .post('/users/registerVolunteer', formData, {
@@ -161,7 +161,7 @@ export default class RemoteServices {
   static async registerMember(
     member: RegisterMember,
     doc: File,
-    institutionId: number
+    institutionId: number,
   ) {
     const formData = new FormData();
     formData.append('file', doc);
@@ -177,8 +177,8 @@ export default class RemoteServices {
         ],
         {
           type: 'application/json',
-        }
-      )
+        },
+      ),
     );
     return httpClient
       .post(`/users/${institutionId}/registerMember`, formData, {
@@ -234,7 +234,7 @@ export default class RemoteServices {
   }
 
   static async confirmRegistration(
-    registerUser: RegisterUser
+    registerUser: RegisterUser,
   ): Promise<RegisterUser> {
     return httpClient
       .post('/users/register/confirm', registerUser)
@@ -293,7 +293,7 @@ export default class RemoteServices {
   static async registerInstitution(
     institution: RegisterInstitution,
     institutionDoc: File,
-    memberDoc: File
+    memberDoc: File,
   ) {
     const formData = new FormData();
     formData.append('institutionDocument', institutionDoc);
@@ -313,8 +313,8 @@ export default class RemoteServices {
         ],
         {
           type: 'application/json',
-        }
-      )
+        },
+      ),
     );
     return httpClient
       .post('/institution/register', formData, {
@@ -352,7 +352,7 @@ export default class RemoteServices {
   }
 
   static async deleteInstitution(
-    institutionId: number
+    institutionId: number,
   ): Promise<Institution[]> {
     return httpClient
       .delete(`/institutions/${institutionId}`)

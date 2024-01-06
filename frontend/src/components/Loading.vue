@@ -17,7 +17,7 @@ export default class Loading extends Vue {
       (state, getters) => getters.getLoading,
       () => {
         this.loading = this.$store.getters.getLoading;
-      }
+      },
     );
   }
 

@@ -22,7 +22,7 @@ export default class ErrorMessage extends Vue {
       () => {
         this.dialog = this.$store.getters.getError;
         this.errorMessage = this.$store.getters.getErrorMessage;
-      }
+      },
     );
   }
 

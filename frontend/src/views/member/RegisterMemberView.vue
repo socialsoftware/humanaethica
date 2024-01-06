@@ -78,7 +78,7 @@ export default class RegisterMemberView extends Vue {
       ) {
         await this.$store.dispatch(
           'error',
-          'Missing information, please check the form again'
+          'Missing information, please check the form again',
         );
       } else if (this.memberDoc != null) {
         await RemoteServices.registerMember(
@@ -88,7 +88,7 @@ export default class RegisterMemberView extends Vue {
             memberUsername: this.memberUsername,
           },
           this.memberDoc,
-          this.$store.getters.getInstitutionId
+          this.$store.getters.getInstitutionId,
         );
         await this.$router.push({ name: 'home' });
       }

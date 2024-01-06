@@ -41,10 +41,10 @@
       <v-btn
         depressed
         color="blue accent-1"
-        @click="loginArsAdmin"
+        @click="loginAdmin"
         data-cy="arsAdminLoginButton"
       >
-        <i class="fa fa-graduation-cap" />Login as ars
+        <i class="fa fa-graduation-cap" />Login as admin
       </v-btn>
     </div>
 
@@ -84,10 +84,10 @@ export default class HomeView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async loginArsAdmin() {
+  async loginAdmin() {
     await this.$store.dispatch('loading');
     try {
-      await this.$store.dispatch('arsAdminLogin');
+      await this.$store.dispatch('adminLogin');
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -120,7 +120,9 @@ export default class HomeView extends Vue {
     transform-origin: 229.922px 34px;
     caret-color: rgb(255, 255, 255);
     border: 0 none rgb(255, 255, 255);
-    font: normal normal 100 normal 45px / 48px Roboto, sans-serif !important;
+    font:
+      normal normal 100 normal 45px / 48px Roboto,
+      sans-serif !important;
     margin-bottom: 70px !important;
     outline: rgb(255, 255, 255) none 0;
     padding: 10px 20px;

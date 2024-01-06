@@ -98,7 +98,7 @@ export default new Vuex.Store({
     async userLogin({ commit }, user: RegisterUser) {
       const authResponse = await RemoteServices.userLogin(
         user.username,
-        user.password
+        user.password,
       );
       commit('login', authResponse);
     },
@@ -110,7 +110,7 @@ export default new Vuex.Store({
       const authResponse = await RemoteServices.demoMemberLogin();
       commit('login', authResponse);
     },
-    async arsAdminLogin({ commit }) {
+    async adminLogin({ commit }) {
       const authResponse = await RemoteServices.userLogin('ars', 'ars');
       commit('login', authResponse);
     },

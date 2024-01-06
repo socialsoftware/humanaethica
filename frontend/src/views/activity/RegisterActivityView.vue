@@ -165,7 +165,7 @@ export default class RegisterActivityView extends Vue {
         ':00:00Z';
       await RemoteServices.registerActivity(
         this.$store.getters.getUser.id,
-        this.activity
+        this.activity,
       );
       await this.$router.push({ name: 'home' });
     } catch (error) {

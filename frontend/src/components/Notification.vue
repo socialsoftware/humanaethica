@@ -25,7 +25,7 @@ export default class Notification extends Vue {
       () => {
         this.dialog = this.$store.getters.getNotification;
         this.messageList = this.$store.getters.getNotificationMessageList;
-      }
+      },
     );
   }
 
