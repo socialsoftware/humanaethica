@@ -7,15 +7,16 @@ import org.springframework.stereotype.Component;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.io.Serializable;
 
 @Component
 public class HEPermissionEvaluator implements PermissionEvaluator {
     @Autowired
-    private UserRepository userRepository;
+    private InstitutionRepository institutionRepository;
     @Autowired
     private ActivityRepository activityRepository;
 
@@ -23,7 +24,6 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         AuthUser authUser = ((AuthUser) authentication.getPrincipal());
-        int userId = authUser.getUser().getId();
 
         if (targetDomainObject instanceof Integer) {
             int id = (int) targetDomainObject;

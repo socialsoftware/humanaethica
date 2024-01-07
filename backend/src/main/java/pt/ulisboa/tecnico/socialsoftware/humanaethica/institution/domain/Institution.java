@@ -168,15 +168,6 @@ public class Institution {
         this.activities.add(activity);
     }
 
-    public void removeActivity(Integer activityId) {
-        for (int i = 0; i < activities.size(); i++) {
-            if (activities.get(i).getId().equals(activityId)) {
-                activities.remove(i);
-                return;
-            }
-        }
-    }
-
     public String generateConfirmationToken() {
         String token = KeyGenerators.string().generateKey();
         setTokenGenerationDate(DateHandler.now());

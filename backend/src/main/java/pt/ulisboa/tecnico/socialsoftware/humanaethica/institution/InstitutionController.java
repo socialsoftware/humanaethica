@@ -64,7 +64,7 @@ public class InstitutionController {
 
     @PostMapping("/institution/{institutionId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void validateInstitution(@PathVariable int institutionId) {
-        institutionService.validateInstitution(institutionId);
+    public List<InstitutionDto>  validateInstitution(@PathVariable int institutionId) {
+        return institutionService.validateInstitution(institutionId);
     }
 }

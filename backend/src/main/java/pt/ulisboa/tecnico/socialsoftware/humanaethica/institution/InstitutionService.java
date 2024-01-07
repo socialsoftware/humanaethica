@@ -138,7 +138,7 @@ public class InstitutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void validateInstitution(int institutionId) {
+    public List<InstitutionDto>  validateInstitution(int institutionId) {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND, institutionId));
         Member member = institution.getMembers().isEmpty() ? null : institution.getMembers().get(0);
         if (member != null && member.getState().equals(State.SUBMITTED))
@@ -146,6 +146,8 @@ public class InstitutionService {
         if (member != null && !institution.isActive())
             sendConfirmationEmailTo(member.getUsername(), member.getEmail(), institution.generateConfirmationToken());
         institution.validate();
+
+        return getInstitutions();
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
@@ -161,6 +163,7 @@ public class InstitutionService {
     public Institution getDemoInstitution() {
         return institutionRepository.findInstitutionByNif(DemoUtils.DEMO_INSTITUTION).orElseGet(() -> {
             Institution institution = new Institution(DemoUtils.DEMO_INSTITUTION, "demo_institution@mail.com", DemoUtils.DEMO_INSTITUTION_NIF);
+            institution.validate();
             institutionRepository.save(institution);
             return institution;
         });

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="table">
+  <v-card class="table" data-cy="users">
     <v-data-table
       :headers="headers"
       :items="users"
@@ -16,10 +16,6 @@
             label="Search"
             class="mx-2"
           />
-          <v-spacer />
-          <v-btn color="primary" dark @click="newUser" data-cy="createButton"
-            >New User</v-btn
-          >
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
@@ -70,30 +66,17 @@
         </v-tooltip>
       </template>
     </v-data-table>
-
-    <add-user-dialog
-      v-if="addUserDialog"
-      v-model="addUserDialog"
-      v-on:user-created="onCreatedUser"
-      v-on:close-dialog="onCloseDialog"
-    />
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import AddUserDialog from '@/views/admin/users/AddUserDialog.vue';
 import User from '@/models/user/User';
 
-@Component({
-  components: {
-    'add-user-dialog': AddUserDialog,
-  },
-})
+@Component
 export default class UsersView extends Vue {
   users: User[] = [];
-  addUserDialog: boolean = false;
   search: string = '';
   headers: object = [
     {
@@ -171,19 +154,6 @@ export default class UsersView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  newUser() {
-    this.addUserDialog = true;
-  }
-
-  onCreatedUser(user: User) {
-    this.users.unshift(user);
-    this.addUserDialog = false;
-  }
-
-  onCloseDialog() {
-    this.addUserDialog = false;
   }
 
   async deleteUser(user: User) {

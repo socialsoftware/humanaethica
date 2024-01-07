@@ -161,7 +161,6 @@ export default class RemoteServices {
   static async registerMember(
     member: RegisterMember,
     doc: File,
-    institutionId: number,
   ) {
     const formData = new FormData();
     formData.append('file', doc);
@@ -181,7 +180,7 @@ export default class RemoteServices {
       ),
     );
     return httpClient
-      .post(`/users/${institutionId}/registerMember`, formData, {
+      .post(`/users/registerInstitutionMember`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -366,9 +365,16 @@ export default class RemoteServices {
       });
   }
 
-  static async validateInstitution(institutionId: number) {
+  static async validateInstitution(
+    institutionId: number,
+  ): Promise<Institution[]> {
     return httpClient
       .post(`/institution/${institutionId}/validate`)
+      .then((response) => {
+        return response.data.map((institution: any) => {
+          return new Institution(institution);
+        });
+      })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });

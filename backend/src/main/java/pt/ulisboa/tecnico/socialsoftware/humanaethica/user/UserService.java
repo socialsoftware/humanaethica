@@ -155,7 +155,7 @@ public class UserService {
             case VOLUNTEER -> new Volunteer(registerUserDto.getName(),
                     registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
             case MEMBER -> {
-                Institution institution = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+                Institution institution = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND, registerUserDto.getInstitutionId()));
                 yield new Member(registerUserDto.getName(),
                         registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, institution, state);
             }

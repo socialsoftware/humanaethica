@@ -8,8 +8,6 @@
         label="Name"
         required
         :rules="[(v) => !!v || 'Member name is required']"
-        @input="$v.memberName.$touch()"
-        @blur="$v.memberName.$touch()"
       ></v-text-field>
 
       <v-text-field
@@ -17,8 +15,6 @@
         label="E-mail"
         required
         :rules="[(v) => !!v || 'Member email is required']"
-        @input="$v.memberEmail.$touch()"
-        @blur="$v.memberEmail.$touch()"
       ></v-text-field>
 
       <v-text-field
@@ -26,8 +22,6 @@
         label="Username"
         required
         :rules="[(v) => !!v || 'Member username is required']"
-        @input="$v.memberUsername.$touch()"
-        @blur="$v.memberUsername.$touch()"
       ></v-text-field>
 
       <v-file-input
@@ -36,8 +30,10 @@
         truncate-length="7"
         label="Declaration"
         required
+        :rules="[(v) => !!v || 'Declaration is required']"
         dense
         small-chips
+        accept=".pdf"
         @change="handleFileUpload($event)"
       ></v-file-input>
 
@@ -46,7 +42,7 @@
         color="orange"
         @click="submit"
         :disabled="
-          !(memberUsername !== '' && memberEmail !== '' && memberName !== '')
+          !(memberUsername !== '' && memberEmail !== '' && memberName !== '' && memberDoc !== null)
         "
       >
         submit
@@ -88,7 +84,6 @@ export default class RegisterMemberView extends Vue {
             memberUsername: this.memberUsername,
           },
           this.memberDoc,
-          this.$store.getters.getInstitutionId,
         );
         await this.$router.push({ name: 'home' });
       }

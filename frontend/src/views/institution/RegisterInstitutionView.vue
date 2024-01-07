@@ -6,27 +6,21 @@
         v-model="institutionName"
         label="Name"
         required
-        :rules="[(v) => !!v || 'Intitution name is required']"
-        @input="$v.institutionName.$touch()"
-        @blur="$v.institutionName.$touch()"
+        :rules="[(v) => !!v || 'Institution name is required']"
       ></v-text-field>
 
       <v-text-field
         v-model="institutionEmail"
         label="E-mail"
-        :rules="[(v) => !!v || 'Intitution email is required']"
+        :rules="[(v) => !!v || 'Institution email is required']"
         required
-        @input="$v.institutionEmail.$touch()"
-        @blur="$v.institutionEmail.$touch()"
       ></v-text-field>
 
       <v-text-field
         v-model="institutionNif"
         label="NIF"
         required
-        :rules="[(v) => !!v || 'Intitution NIF is required']"
-        @input="$v.institutionNif.$touch()"
-        @blur="$v.institutionNif.$touch()"
+        :rules="[(v) => !!v || 'Institution NIF is required']"
       ></v-text-field>
 
       <v-file-input
@@ -35,6 +29,7 @@
         truncate-length="7"
         label="Declaration"
         required
+        :rules="[(v) => !!v || 'Declaration is required']"
         dense
         small-chips
         accept=".pdf"
@@ -48,13 +43,10 @@
 
       <v-text-field
         v-model="memberUsername"
-        :error-messages="nameErrors"
         :counter="10"
         label="Username"
         required
         :rules="[(v) => !!v || 'Member username is required']"
-        @input="$v.memberUsername.$touch()"
-        @blur="$v.memberUsername.$touch()"
       ></v-text-field>
 
       <v-text-field
@@ -62,8 +54,6 @@
         label="E-mail"
         required
         :rules="[(v) => !!v || 'Member email is required']"
-        @input="$v.memberEmail.$touch()"
-        @blur="$v.memberEmail.$touch()"
       ></v-text-field>
 
       <v-text-field
@@ -71,8 +61,6 @@
         label="Name"
         required
         :rules="[(v) => !!v || 'Member name is required']"
-        @input="$v.memberName.$touch()"
-        @blur="$v.memberName.$touch()"
       ></v-text-field>
 
       <v-file-input
@@ -81,6 +69,7 @@
         truncate-length="7"
         label="Declaration"
         required
+        :rules="[(v) => !!v || 'Declaration is required']"
         dense
         small-chips
         accept=".pdf"
@@ -96,9 +85,11 @@
             institutionName !== '' &&
             institutionEmail !== '' &&
             institutionNif !== '' &&
+            institutionDoc !== null &&
             memberUsername !== '' &&
             memberEmail !== '' &&
-            memberName !== ''
+            memberName !== '',
+            memberDoc !== null
           )
         "
       >

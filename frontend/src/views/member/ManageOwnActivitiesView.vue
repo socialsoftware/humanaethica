@@ -17,6 +17,9 @@
             class="mx-2"
           />
           <v-spacer />
+          <v-btn color="primary" dark @click="newActivity"
+          >New Activity</v-btn
+          >
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
@@ -283,6 +286,10 @@ export default class ManageOwnActivitiesView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async newActivity() {
+    await this.$router.push({ name: 'register-activity' }).catch(() => {});
   }
 
   async updateActivity(activity: Activity) {

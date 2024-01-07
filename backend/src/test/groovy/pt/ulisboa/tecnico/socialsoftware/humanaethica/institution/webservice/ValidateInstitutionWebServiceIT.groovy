@@ -47,7 +47,6 @@ class ValidateInstitutionWebserviceIT extends SpockTest {
 
         then: "check response status"
         response.status == 200
-        response.data == null
         and: "check if institution is active"
         institutionRepository.findAll().size() == 1
         userRepository.findAll().size() == 1

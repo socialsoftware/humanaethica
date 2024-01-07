@@ -8,6 +8,13 @@ describe('Volunteer', () => {
   });
 
   it('close', () => {
-    cy.get('[data-cy="member"]').click();
+    cy.get('[data-cy="institution"]').click();
+    cy.get('[data-cy="members"]').click();
+
+    cy.get('[data-cy="institution"]').click();
+    cy.get('[data-cy="themes"]').click();
+
+    cy.get('[data-cy="institution"]').click();
+    cy.get('[data-cy="activities"]').click();
   });
 });

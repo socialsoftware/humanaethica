@@ -25,7 +25,7 @@
       </template>
 
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.active && !isDemoInstitution(item)">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -38,7 +38,7 @@
           </template>
           <span>Delete institution</span>
         </v-tooltip>
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="!isDemoInstitution(item)">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -51,7 +51,7 @@
           </template>
           <span>See document</span>
         </v-tooltip>
-        <v-tooltip bottom v-if="!item.active">
+        <v-tooltip bottom v-if="!item.active && !isDemoInstitution(item)">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -153,7 +153,8 @@ export default class InstitutionsView extends Vue {
       confirm('Are you sure you want to validate this institution?')
     ) {
       try {
-        await RemoteServices.validateInstitution(institutionId);
+        this.institutions =
+          await RemoteServices.validateInstitution(institutionId);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -169,6 +170,10 @@ export default class InstitutionsView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  isDemoInstitution(institution: Institution) {
+    return institution.name === 'DEMO INSTITUTION'
   }
 }
 </script>

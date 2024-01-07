@@ -9,8 +9,6 @@
         label="Name"
         required
         :rules="[(v) => !!v || 'Volunteer name is required']"
-        @input="$v.volunteerName.$touch()"
-        @blur="$v.volunteerName.$touch()"
       ></v-text-field>
 
       <v-text-field
@@ -18,8 +16,6 @@
         label="E-mail"
         required
         :rules="[(v) => !!v || 'Volunteer email is required']"
-        @input="$v.volunteerEmail.$touch()"
-        @blur="$v.volunteerEmail.$touch()"
       ></v-text-field>
 
       <v-text-field
@@ -27,8 +23,6 @@
         label="Username"
         required
         :rules="[(v) => !!v || 'Volunteer username is required']"
-        @input="$v.volunteerUsername.$touch()"
-        @blur="$v.volunteerUsername.$touch()"
       ></v-text-field>
 
       <v-file-input
@@ -37,6 +31,7 @@
         truncate-length="7"
         label="Declaration"
         required
+        :rules="[(v) => !!v || 'Declaration is required']"
         dense
         small-chips
         accept=".pdf"
@@ -51,7 +46,8 @@
           !(
             volunteerUsername !== '' &&
             volunteerEmail !== '' &&
-            volunteerName !== ''
+            volunteerName !== '' &&
+            volunteerDoc !== null
           )
         "
       >

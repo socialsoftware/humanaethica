@@ -159,9 +159,5 @@ export default new Vuex.Store({
     getLoading(state): boolean {
       return state.loading;
     },
-    getInstitutionId(state): number | null {
-      if (state.user != null) return state.user.id;
-      else return null;
-    },
   },
 });

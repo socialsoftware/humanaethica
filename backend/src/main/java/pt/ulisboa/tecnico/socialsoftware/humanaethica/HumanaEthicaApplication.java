@@ -23,7 +23,6 @@ public class HumanaEthicaApplication extends SpringBootServletInitializer implem
     @Autowired
     private DemoUtils demoUtils;
 
-
     public static void main(String[] args) {
         SpringApplication.run(HumanaEthicaApplication.class, args);
     }

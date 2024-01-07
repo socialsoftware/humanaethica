@@ -20,39 +20,6 @@
 
       <v-spacer />
 
-      <v-toolbar-items class="hidden-sm-and-down" hide-details>
-        <v-menu v-if="isMember" offset-y sopen-on-hover>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              text
-              color="orange"
-              v-on="on"
-              data-cy="member"
-              @click="registerMember"
-            >
-              Register Member
-            </v-btn>
-            <v-btn
-              v-if="isMember"
-              text
-              color="orange"
-              @click="registerActivity"
-            >
-              Register Activity
-            </v-btn>
-            <v-btn
-              v-if="isMember"
-              text
-              color="orange"
-              @click="manageInstitutionActivities"
-            >
-              Activities
-            </v-btn>
-            <v-btn v-if="isMember" text color="orange" @click="theme">
-              Themes
-            </v-btn>
-          </template>
-        </v-menu>
 
         <v-menu v-if="isVolunteer" offset-y sopen-on-hover>
           <template v-slot:activator="{ on }">
@@ -69,11 +36,36 @@
           </template>
         </v-menu>
 
-        <v-menu v-if="isAdmin" offset-y open-on-hover>
+        <v-menu v-if="isMember" offset-y open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn color="orange" text v-on="on" data-cy="institution">
+              Institution
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/member/register" data-cy="members">
+              <v-list-item-content>
+                <v-list-item-title>Register Member</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/theme" data-cy="themes">
+              <v-list-item-content>
+                <v-list-item-title>Themes</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/manageActivities" data-cy="activities">
+              <v-list-item-content>
+                <v-list-item-title>Activities</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+
+      <v-menu v-if="isAdmin" offset-y open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn color="orange" text v-on="on" data-cy="admin">
               Administration
-              <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
           </template>
           <v-list dense>
@@ -111,7 +103,6 @@
             </v-list-item>
           </v-list>
         </v-menu>
-      </v-toolbar-items>
 
       <v-toolbar-items class="hidden-sm-and-down" hide-details>
         <v-btn
@@ -269,26 +260,11 @@ export default class TopBar extends Vue {
   async registerVolunteer() {
     await this.$router.push({ name: 'register-volunteer' }).catch(() => {});
   }
-  async registerActivity() {
-    await this.$router.push({ name: 'register-activity' }).catch(() => {});
-  }
 
-  async registerMember() {
-    await this.$router.push({ name: 'register-member' }).catch(() => {});
-  }
 
-  async manageInstitutionActivities() {
-    await this.$router
-      .push({ name: 'manage-activities-member' })
-      .catch(() => {});
-  }
 
   async manageActivities() {
     await this.$router.push({ name: 'manage-activities' }).catch(() => {});
-  }
-
-  async theme() {
-    await this.$router.push({ name: 'theme' }).catch(() => {});
   }
 
   async logout() {

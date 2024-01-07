@@ -17,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
@@ -69,19 +70,23 @@ public class UserController {
         return userApplicationalService.confirmRegistration(registerUserDto);
     }
 
-    @PostMapping("/users/{institutionId}/registerMember")
-    public void registerMember(@PathVariable int institutionId, @Valid @RequestPart(value = "member") RegisterUserDto registerUserDto, @RequestParam(value = "file") MultipartFile document) throws IOException {
+    @PostMapping("/users/registerInstitutionMember")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public void registerMember(Principal principal,
+                               @Valid @RequestPart(value = "member") RegisterUserDto registerUserDto,
+                               @RequestParam(value = "file") MultipartFile document) throws IOException {
+        Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+
         registerUserDto.setRole(Role.MEMBER);
-        registerUserDto.setInstitutionId(institutionId);
+        registerUserDto.setInstitutionId(member.getInstitution().getId());
 
-        UserDto userDto = userService.registerUser(registerUserDto, document);
+        userService.registerUser(registerUserDto, document);
     }
-
     @PostMapping("/users/registerVolunteer")
     public void registerVolunteer(@Valid @RequestPart("volunteer") RegisterUserDto registerUserDto, @RequestParam(value = "file") MultipartFile document) throws IOException {
         registerUserDto.setRole(Role.VOLUNTEER);
 
-        UserDto userDto = userService.registerUser(registerUserDto, document);
+        userService.registerUser(registerUserDto, document);
     }
 
     @PostMapping("/users/{userId}/validate")
