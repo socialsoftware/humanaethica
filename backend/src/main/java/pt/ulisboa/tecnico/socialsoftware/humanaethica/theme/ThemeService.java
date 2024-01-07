@@ -52,7 +52,8 @@ public class ThemeService {
         }
 
         if (themeRepository.getThemesByName(themeDto.getName()).stream()
-                .anyMatch(theme -> theme.getParentTheme().getId().equals(themeDto.getParentTheme().getId()))) {
+                .anyMatch(theme -> (theme.getParentTheme() == null && themeDto.getParentTheme() == null)
+                        || theme.getParentTheme().getId().equals(themeDto.getParentTheme().getId()))) {
             throw new HEException(THEME_ALREADY_EXISTS);
         }
 
