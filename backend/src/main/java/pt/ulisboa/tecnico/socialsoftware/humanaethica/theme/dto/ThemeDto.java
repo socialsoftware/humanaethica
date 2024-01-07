@@ -6,13 +6,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ThemeDto {
 
     private Integer id;
     private String name;
-    private String absoluteName;
     private List<Activity> activities = new ArrayList<>();
     private String state;
     private List<InstitutionDto> institutions = new ArrayList<>();
@@ -32,8 +30,7 @@ public class ThemeDto {
     public ThemeDto(Theme theme, boolean deepCopyInstitutions, boolean copyParent, boolean deepCopySubThemes) {
         setId(theme.getId());
         setName(theme.getName());
-        setAbsoluteName(theme.getAbsoluteName());
-        setCompleteName(theme.getAbsoluteName());
+        setCompleteName(theme.getCompleteName());
         //setActivities(activities);
         if (deepCopyInstitutions) {
             this.institutions = theme.getInstitutions().stream()
@@ -53,16 +50,12 @@ public class ThemeDto {
         setLevel(theme.getLevel());
     }
 
-    public void addCompleteName(ThemeDto themeDto) {
-        this.completeName = themeDto.getCompleteName() + '/' + this.getName();
+    public String getCompleteName() {
+        return completeName;
     }
 
     public void setCompleteName(String completeName) {
         this.completeName = completeName;
-    }
-
-    public String getCompleteName() {
-        return this.completeName;
     }
 
     public Integer getId() {return id;}
@@ -77,14 +70,6 @@ public class ThemeDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAbsoluteName() {
-        return absoluteName;
-    }
-
-    public void setAbsoluteName(String absoluteName) {
-        this.absoluteName = absoluteName;
     }
 
     public List<Activity> getActivities() {

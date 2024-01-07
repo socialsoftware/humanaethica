@@ -82,7 +82,7 @@
                 <v-icon>fas fa-users</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Manage Users</v-list-item-title>
+                <v-list-item-title>Users</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/admin/institutions" data-cy="adminInstitutions">
@@ -90,7 +90,7 @@
                 <v-icon>fas fa-users</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Manage Institutions</v-list-item-title>
+                <v-list-item-title>Institutions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/admin/manageTheme" data-cy="themeManageTheme">
@@ -98,7 +98,7 @@
                 <v-icon>fas fa-users</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Manage Theme</v-list-item-title>
+                <v-list-item-title>Themes</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/admin/activities" data-cy="adminActivities">
@@ -106,7 +106,7 @@
                 <v-icon>fas fa-users</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Manage Activities</v-list-item-title>
+                <v-list-item-title>Activities</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

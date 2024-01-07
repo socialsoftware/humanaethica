@@ -51,14 +51,14 @@ public class ThemeController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void addInstitution(@PathVariable int themeId, Principal principal) {
         Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        themeService.addInstitution(themeId, member.getInstitution().getId());
+        themeService.addInstitutionToTeam(themeId, member.getInstitution().getId());
     }
 
     @PutMapping("/theme/{themeId}/removeInstitution")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void removeInstitution(@PathVariable int themeId, Principal principal) {
         Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        themeService.removeInstitution(themeId, member.getInstitution().getId());
+        themeService.removeInstitutionFromTeam(themeId, member.getInstitution().getId());
     }
 
     @GetMapping("/theme/getInstitutionThemes")

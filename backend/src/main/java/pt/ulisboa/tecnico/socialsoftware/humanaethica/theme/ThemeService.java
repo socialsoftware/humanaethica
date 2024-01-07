@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -33,10 +32,14 @@ public class ThemeService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getThemes() {
+        return getThemeDtos();
+    }
+
+    private List<ThemeDto> getThemeDtos() {
         List<Theme> allThemes = themeRepository.findAll();
 
         return allThemes.stream()
-                .sorted(Comparator.comparing(Theme::getAbsoluteName, String.CASE_INSENSITIVE_ORDER))
+                .sorted(Comparator.comparing(Theme::getCompleteName, String.CASE_INSENSITIVE_ORDER))
                 .map(theme -> new ThemeDto(theme, true, true, false))
                 .toList();
     }
@@ -48,20 +51,22 @@ public class ThemeService {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
         }
 
-       if (themeRepository.countByName(themeDto.getName()) > 0) {
-           throw new HEException(THEME_ALREADY_EXISTS);
+        if (themeRepository.getThemesByName(themeDto.getName()).stream()
+                .anyMatch(theme -> theme.getParentTheme().getId().equals(themeDto.getParentTheme().getId()))) {
+            throw new HEException(THEME_ALREADY_EXISTS);
         }
-        Theme themeParent = null;
-        if (themeDto.getParentTheme() != null) {
-            themeParent = themeRepository.findById(themeDto.getParentTheme().getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeDto.getParentTheme().getId())));
-        }
-        Theme theme;
 
-        if (isAdmin || themeParent != null) {
-            theme = new Theme(themeDto.getName(), Theme.State.APPROVED, themeParent);
+        Theme parentTheme = null;
+        if (themeDto.getParentTheme() != null) {
+            parentTheme = themeRepository.findById(themeDto.getParentTheme().getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeDto.getParentTheme().getId())));
+        }
+
+        Theme theme;
+        if (isAdmin) {
+            theme = new Theme(themeDto.getName(), Theme.State.APPROVED, parentTheme);
         }
         else {
-            theme = new Theme(themeDto.getName(), Theme.State.SUBMITTED, themeParent);
+            theme = new Theme(themeDto.getName(), Theme.State.SUBMITTED, parentTheme);
         }
 
         themeRepository.save(theme);
@@ -71,9 +76,7 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> deleteTheme(int themeId) {
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new HEException(THEME_NOT_FOUND,Integer.toString(themeId)));
-
         theme.delete();
-
         return getThemes();
     }
 
@@ -85,7 +88,7 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void addInstitution(Integer themeId, int institutionId) {
+    public void addInstitutionToTeam(Integer themeId, int institutionId) {
         if (themeId == null) {
             throw new HEException(THEME_NOT_FOUND);
         }
@@ -95,7 +98,7 @@ public class ThemeService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void removeInstitution(Integer themeId, int institutionId) {
+    public void removeInstitutionFromTeam(Integer themeId, int institutionId) {
         if (themeId == null) {
             throw new HEException(THEME_NOT_FOUND);
         }
@@ -107,8 +110,9 @@ public class ThemeService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ThemeDto> getInstitutionThemes(int institutionId){
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
-        InstitutionDto institutionDto = new InstitutionDto(institution,true, true);
-        return institutionDto.getThemes();
+        return institution.getThemes().stream()
+                .map(theme -> new ThemeDto(theme, false, true, false))
+                .toList();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -119,38 +123,16 @@ public class ThemeService {
                 .map(Theme::getId)
                 .collect(Collectors.toSet());
 
-        return getThemes().stream()
-                    .filter(themeDto -> themeDto.getState().equals("APPROVED"))
+        return getThemeDtos().stream()
+                    .filter(themeDto -> themeDto.getState().equals(Theme.State.APPROVED.name()))
                     .filter(themeDto -> !institutionThemeIds.contains(themeDto.getId()))
                     .toList();
-
-//        List<ThemeDto> aux = getThemes();
-//        List<ThemeDto> filteredThemes = new ArrayList<>();
-//
-//        for (ThemeDto x : aux) {
-//            if (!(x.getState().equals("APPROVED"))) {
-//                continue; // Ignora temas não aprovados
-//            }
-//            boolean isInInstitution = false;
-//            for (Theme y : institution.getThemes()) {
-//                if (x.getId().equals(y.getId())) {
-//                    isInInstitution = true;
-//                    break;
-//                }
-//            }
-//            if (!isInInstitution) {
-//                filteredThemes.add(x);
-//            }
-//        }
-//
-//        return filteredThemes;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-
     public List<ThemeDto> getAvailableThemes() {
-        return getThemes().stream()
-                .filter(themeDto -> themeDto.getState().equals("APPROVED"))
+        return getThemeDtos().stream()
+                .filter(themeDto -> themeDto.getState().equals(Theme.State.APPROVED.name()))
                 .toList();
     }
 

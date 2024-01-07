@@ -6,9 +6,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 
+import java.util.List;
+
 
 @Repository
 @Transactional
 public interface ThemeRepository extends JpaRepository<Theme, Integer> {
-    long countByName(String name);
+    @Query(value = "SELECT theme FROM Theme theme WHERE theme.name = :name")
+    List<Theme> getThemesByName(String name);
 }

@@ -22,7 +22,7 @@
         </template>
         <template v-slot:[`item.themes`]="{ item }">
           <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
-            {{ theme.name }}
+            {{ theme.completeName }}
           </v-chip>
         </template>
         <template v-slot:[`item.seeDesc`]="{ item }">

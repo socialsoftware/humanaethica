@@ -21,7 +21,7 @@
       </template>
       <template v-slot:[`item.themes`]="{ item }">
         <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
-          {{ theme.name }}
+          {{ theme.completeName }}
         </v-chip>
       </template>
       <template v-slot:[`item.volunteers`]="{ item }">
@@ -71,8 +71,8 @@
                           :items="themes"
                           multiple
                           return-object
-                          item-text="name"
-                          item-value="name"
+                          item-text="completeName"
+                          item-value="id"
                           required
                         />
                       </v-col>

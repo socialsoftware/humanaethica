@@ -17,8 +17,8 @@
           label="Parent Theme (Optional)"
           :items="themes"
           return-object
-          item-value="name"
-          item-text="name"
+          item-value="id"
+          item-text="completeName"
           required
           :menu-props="{ offsetY: true, nudgeLeft: 0, class: 'left-text' }"
           class="move-right"

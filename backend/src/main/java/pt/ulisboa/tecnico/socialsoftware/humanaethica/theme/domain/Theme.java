@@ -116,7 +116,7 @@ public class Theme {
         }
 
         if (!institutions.isEmpty()) {
-            throw new HEException(THEME_CAN_NOT_BE_DELETED, getAbsoluteName());
+            throw new HEException(THEME_CAN_NOT_BE_DELETED, getCompleteName());
         }
         setState(State.DELETED);
     }
@@ -129,7 +129,7 @@ public class Theme {
         setState(Theme.State.APPROVED);
     }
 
-    public String getAbsoluteName() {
-        return getParentTheme() != null ? getParentTheme().getAbsoluteName() + "/" + name : name;
+    public String getCompleteName() {
+        return getParentTheme() != null ? getParentTheme().getCompleteName() + "/" + name : name;
     }
 }

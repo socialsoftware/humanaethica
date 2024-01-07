@@ -25,8 +25,8 @@
           label="Themes"
           multiple
           return-object
-          item-text="name"
-          item-value="name"
+          item-text="completeName"
+          item-value="id"
           required
         />
         <v-text-field

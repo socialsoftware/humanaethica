@@ -60,7 +60,7 @@ class RegisterThemeTest extends SpockTest {
         result.getInstitutions().size() == 0
         institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(institution)
-        themeService.addInstitution(result.getId(), institution.getId());
+        themeService.addInstitutionToTeam(result.getId(), institution.getId());
 
         then: "the theme is associated with the institution"
         result.getInstitutions().size() == 1
@@ -78,7 +78,7 @@ class RegisterThemeTest extends SpockTest {
         result.getInstitutions().size() == 0
         institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(institution)
-        themeService.addInstitution(result.getId(), institution.getId());
+        themeService.addInstitutionToTeam(result.getId(), institution.getId());
 
         when:
         List<ThemeDto> aux = themeService.getInstitutionThemes( institution.getId());
@@ -104,7 +104,7 @@ class RegisterThemeTest extends SpockTest {
         themeRepository.save(subTheme3)
         institution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(institution)
-        themeService.addInstitution(subTheme3.getId(), institution.getId());
+        themeService.addInstitutionToTeam(subTheme3.getId(), institution.getId());
 
         when:
         themeService.deleteTheme(themeParent.getId());
