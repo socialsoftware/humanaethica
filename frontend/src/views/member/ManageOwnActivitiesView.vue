@@ -17,9 +17,7 @@
             class="mx-2"
           />
           <v-spacer />
-          <v-btn color="primary" dark @click="newActivity"
-          >New Activity</v-btn
-          >
+          <v-btn color="primary" dark @click="newActivity">New Activity</v-btn>
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">

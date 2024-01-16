@@ -158,10 +158,7 @@ export default class RemoteServices {
       });
   }
 
-  static async registerMember(
-    member: RegisterMember,
-    doc: File,
-  ) {
+  static async registerMember(member: RegisterMember, doc: File) {
     const formData = new FormData();
     formData.append('file', doc);
     formData.append(
@@ -180,7 +177,7 @@ export default class RemoteServices {
       ),
     );
     return httpClient
-      .post(`/users/registerInstitutionMember`, formData, {
+      .post('/users/registerInstitutionMember', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

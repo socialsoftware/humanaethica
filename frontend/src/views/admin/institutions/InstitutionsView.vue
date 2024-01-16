@@ -173,7 +173,7 @@ export default class InstitutionsView extends Vue {
   }
 
   isDemoInstitution(institution: Institution) {
-    return institution.name === 'DEMO INSTITUTION'
+    return institution.name === 'DEMO INSTITUTION';
   }
 }
 </script>

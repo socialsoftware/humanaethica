@@ -81,16 +81,14 @@
         color="orange"
         @click="submit"
         :disabled="
-          !(
-            institutionName !== '' &&
+          !(institutionName !== '' &&
             institutionEmail !== '' &&
             institutionNif !== '' &&
             institutionDoc !== null &&
             memberUsername !== '' &&
             memberEmail !== '' &&
             memberName !== '',
-            memberDoc !== null
-          )
+          memberDoc !== null)
         "
       >
         submit

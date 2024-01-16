@@ -36,8 +36,8 @@
         </v-btn>
       </template>
       <template v-slot:[`item.parentTheme`]="{ item }">
-        <v-chip v-if="item.parentTheme && item.parentTheme.name">
-          {{ item.parentTheme.name }}
+        <v-chip v-if="item.parentTheme && item.parentTheme.completeName">
+          {{ item.parentTheme.completeName }}
         </v-chip>
       </template>
       <template v-slot:[`item.state`]="{ item }">

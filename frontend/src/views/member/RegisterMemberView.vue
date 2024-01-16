@@ -42,7 +42,12 @@
         color="orange"
         @click="submit"
         :disabled="
-          !(memberUsername !== '' && memberEmail !== '' && memberName !== '' && memberDoc !== null)
+          !(
+            memberUsername !== '' &&
+            memberEmail !== '' &&
+            memberName !== '' &&
+            memberDoc !== null
+          )
         "
       >
         submit
