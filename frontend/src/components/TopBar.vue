@@ -29,7 +29,7 @@
             data-cy=""
             @click="manageActivities"
           >
-            Join Activity
+            Activities
             <v-icon>fas fa-user</v-icon>
           </v-btn>
         </template>
