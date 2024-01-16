@@ -241,6 +241,12 @@ export default class ManageOwnActivitiesView extends Vue {
       width: '5%',
     },
     {
+      text: 'Description',
+      value: 'description',
+      align: 'left',
+      width: '30%',
+    },
+    {
       text: 'Themes',
       value: 'themes',
       align: 'left',
@@ -255,6 +261,18 @@ export default class ManageOwnActivitiesView extends Vue {
     {
       text: 'State',
       value: 'state',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'Start Date',
+      value: 'startingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'End Date',
+      value: 'endingDate',
       align: 'left',
       width: '5%',
     },

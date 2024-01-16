@@ -25,11 +25,6 @@
             {{ theme.completeName }}
           </v-chip>
         </template>
-        <template v-slot:[`item.seeDesc`]="{ item }">
-          <v-btn color="orange" @click="openDialog(item)">
-            See Description
-          </v-btn>
-        </template>
         <template v-slot:[`item.action`]="{ item }">
           <v-tooltip v-if="!item.alreadyJoined" bottom>
             <template v-slot:activator="{ on }">
@@ -73,12 +68,6 @@
         </template>
       </v-data-table>
     </v-card>
-    <activity-dialog
-      v-if="showActivity"
-      v-model="dialog"
-      :activity="showActivity"
-      v-on:close-dialog="onCloseDialog"
-    />
   </div>
 </template>
 
@@ -87,17 +76,13 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import { show } from 'cli-cursor';
-import ActivityDialog from '@/views/activity/ActivityDialog.vue';
 
 @Component({
   methods: { show },
-  components: { 'activity-dialog': ActivityDialog },
 })
 export default class ManageActivitiesView extends Vue {
   activities: Activity[] = [];
   ownActivities: Activity[] = [];
-  dialog: boolean = false;
-  showActivity: Activity | null = null;
   search: string = '';
   headers: object = [
     {
@@ -113,16 +98,15 @@ export default class ManageActivitiesView extends Vue {
       width: '5%',
     },
     {
+      text: 'Description',
+      value: 'description',
+      align: 'left',
+      width: '30%',
+    },
+    {
       text: 'Themes',
       value: 'themes',
       align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Description',
-      value: 'seeDesc',
-      align: 'left',
-      sortable: false,
       width: '5%',
     },
     {
@@ -166,16 +150,6 @@ export default class ManageActivitiesView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  openDialog(activity: Activity) {
-    this.dialog = true;
-    this.showActivity = activity;
-  }
-
-  onCloseDialog() {
-    this.showActivity = null;
-    this.dialog = false;
   }
 
   async joinActivity(activity: Activity) {
