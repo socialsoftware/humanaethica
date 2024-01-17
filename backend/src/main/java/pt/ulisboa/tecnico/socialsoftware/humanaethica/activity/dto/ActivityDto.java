@@ -47,7 +47,7 @@ public class ActivityDto {
                 .map(theme->new ThemeDto(theme,false, true, false))
                 .toList();
 
-        setState(activity.getState().toString());
+        setState(activity.getState().name());
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
         setStartingDate(DateHandler.toISOString(activity.getStartingDate()));
         setEndingDate(DateHandler.toISOString(activity.getEndingDate()));

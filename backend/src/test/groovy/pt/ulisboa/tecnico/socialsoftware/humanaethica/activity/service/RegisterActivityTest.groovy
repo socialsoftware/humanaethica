@@ -60,7 +60,7 @@ class RegisterActivityTest extends SpockTest {
         result.getName() == ACTIVITY_1__NAME
         result.getRegion() == ACTIVITY_1__REGION
         result.getThemes().get(0).getName() == THEME_1__NAME
-        result.getState() == Activity.State.APPROVED
+        result.getState() == Activity.State.APPROVED.name()
 
     }
 

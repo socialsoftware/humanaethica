@@ -50,7 +50,7 @@
       :activity="currentActivity"
       :themes="themes"
       v-on:save-activity="onSaveActivity"
-      v-on:close-activity-dialog="editActivityDialog = false"
+      v-on:close-activity-dialog="onCloseActivityDialog"
     />
   </v-card>
 </template>
@@ -153,13 +153,19 @@ export default class ManageOwnActivitiesView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async newActivity() {
-    await this.$router.push({ name: 'register-activity' }).catch(() => {});
+  newActivity() {
+    this.currentActivity = new Activity();
+    this.editActivityDialog = true;
   }
 
   editActivity(activity: Activity) {
     this.currentActivity = activity;
     this.editActivityDialog = true;
+  }
+
+  onCloseActivityDialog() {
+    this.currentActivity = null;
+    this.editActivityDialog = false;
   }
 
   async onSaveActivity(activity: Activity) {

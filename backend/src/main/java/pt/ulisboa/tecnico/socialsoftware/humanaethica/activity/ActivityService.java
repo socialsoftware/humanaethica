@@ -48,7 +48,7 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Activity registerActivity(Integer userId, ActivityDto activityDto) {
+    public ActivityDto registerActivity(Integer userId, ActivityDto activityDto) {
 
         if (userId == null) {
             throw new HEException(USER_NOT_FOUND);
@@ -97,7 +97,7 @@ public class ActivityService {
         }
 
         activityRepository.save(activity);
-        return activity;
+        return new ActivityDto(activity, true, false);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -203,7 +203,7 @@ public class ActivityService {
         activity.setInstitution(member.getInstitution());
 
         activityRepository.save(activity);
-        return new ActivityDto(activity, true, true);
+        return new ActivityDto(activity, true, false);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

@@ -173,34 +173,39 @@ export default class ActivityDialog extends Vue {
   }
 
   async updateActivity() {
-    if (this.editActivity.id !== null) {
-      try {
-        this.editActivity.startingDate =
-          this.startYear +
-          '-' +
-          this.startMonth +
-          '-' +
-          this.startDay +
-          'T' +
-          this.startHour +
-          ':00:00Z';
-        this.editActivity.endingDate =
-          this.endYear +
-          '-' +
-          this.endMonth +
-          '-' +
-          this.endDay +
-          'T' +
-          this.endHour +
-          ':00:00Z';
-        const result = await RemoteServices.updateActivityAsMember(
-          this.editActivity.id,
-          this.editActivity,
-        );
-        this.$emit('save-activity', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
+    this.editActivity.startingDate =
+      this.startYear +
+      '-' +
+      this.startMonth +
+      '-' +
+      this.startDay +
+      'T' +
+      this.startHour +
+      ':00:00Z';
+    this.editActivity.endingDate =
+      this.endYear +
+      '-' +
+      this.endMonth +
+      '-' +
+      this.endDay +
+      'T' +
+      this.endHour +
+      ':00:00Z';
+
+    try {
+      const result =
+        this.editActivity.id !== null
+          ? await RemoteServices.updateActivityAsMember(
+              this.editActivity.id,
+              this.editActivity,
+            )
+          : await RemoteServices.registerActivity(
+              this.$store.getters.getUser.id,
+              this.editActivity,
+            );
+      this.$emit('save-activity', result);
+    } catch (error) {
+      await this.$store.dispatch('error', error);
     }
   }
 }

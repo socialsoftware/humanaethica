@@ -26,9 +26,9 @@ class ValidateActivityTest extends SpockTest {
     public static final String ENDING_DATE = "2023-05-26T22:09:00Z"
     public static final String THEME_1__NAME = "THEME_1_NAME"
     def activityDto
+    def activityResultDto
     def theme
     def institution
-    def activity
     def institutionDto
     def memberDto
     def member
@@ -61,21 +61,21 @@ class ValidateActivityTest extends SpockTest {
         activityDto.setInstitution(institutionDto)
         activityDto.setThemes(themes)
 
-        activity = activityService.registerActivity(member.getId(), activityDto)
-        activityService.reportActivity(activity.getId())
+        activityResultDto = activityService.registerActivity(member.getId(), activityDto)
+        activityService.reportActivity(activityResultDto.getId())
     }
 
     def "validate activity with success"() {
         when:
-        activityService.validateActivity(activity.getId())
+        activityService.validateActivity(activityResultDto.getId())
 
         then: "the activity and theme are validated"
-        activity.getState() == Activity.State.APPROVED
+        activityResultDto.getState() == Activity.State.APPROVED.name()
    }
 
     def "the activity doesn't exist"() {
         when:
-        activityService.validateActivity(activity.getId() + 1)
+        activityService.validateActivity(activityResultDto.getId() + 1)
 
         then:
         def error = thrown(HEException)
@@ -84,8 +84,8 @@ class ValidateActivityTest extends SpockTest {
 
     def "the activity is already approved"() {
         when:
-        activityService.validateActivity(activity.getId())
-        activityService.validateActivity(activity.getId())
+        activityService.validateActivity(activityResultDto.getId())
+        activityService.validateActivity(activityResultDto.getId())
 
         then:
         def error = thrown(HEException)
@@ -98,14 +98,13 @@ class ValidateActivityTest extends SpockTest {
         List<ThemeDto> themes = new ArrayList<>()
         themes.add(new ThemeDto(theme, false, false, false))
 
-        activityDto = new ActivityDto(activity, true, true)
-        activityDto.setStartingDate(STARTING_DATE)
-        activityDto.setEndingDate(ENDING_DATE)
-        activityDto.setThemes(themes)
+        activityResultDto.setStartingDate(STARTING_DATE)
+        activityResultDto.setEndingDate(ENDING_DATE)
+        activityResultDto.setThemes(themes)
 
         when:
-        activityService.updateActivity(member.getId(), activity.getId(), activityDto)
-        activityService.validateActivity(activity.getId())
+        activityService.updateActivity(member.getId(), activityResultDto.getId(), activityDto)
+        activityService.validateActivity(c.getId())
 
         then:
         def error = thrown(HEException)

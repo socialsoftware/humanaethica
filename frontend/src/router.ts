@@ -16,7 +16,6 @@ import AdminView from '@/views/admin/AdminView.vue';
 import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
-import RegisterActivityView from '@/views/activity/RegisterActivityView.vue';
 import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
 import ManageActivitiesView from '@/views/volunteer/ManageActivitiesView.vue';
 import ManageOwnActivitiesView from '@/views/member/ManageOwnActivitiesView.vue';
@@ -122,15 +121,6 @@ const router = new Router({
       meta: {
         requiredAuth: 'None',
         title: APP_NAME + ' - Manage Volunteer Activities',
-      },
-    },
-    {
-      path: '/activity/register',
-      name: 'register-activity',
-      component: RegisterActivityView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Activity Registration',
       },
     },
     {
