@@ -68,13 +68,6 @@ const router = new Router({
             requiredAuth: 'Admin',
           },
         },
-      ],
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView,
-      children: [
         {
           path: 'institutions',
           name: 'institutionsAdmin',
@@ -84,13 +77,6 @@ const router = new Router({
             requiredAuth: 'Admin',
           },
         },
-      ],
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView,
-      children: [
         {
           path: 'manageTheme',
           name: 'manageThemeAdmin',
@@ -100,13 +86,6 @@ const router = new Router({
             requiredAuth: 'Admin',
           },
         },
-      ],
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView,
-      children: [
         {
           path: 'activities',
           name: 'activitiesAdmin',
