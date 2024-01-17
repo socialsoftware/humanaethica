@@ -169,26 +169,22 @@ export default class ActivitiesView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
   async validateActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to validate this activity?')
-    ) {
+    if (activity.id !== null) {
       try {
-        await RemoteServices.validateActivity(activityId);
+        const result = await RemoteServices.validateActivity(activity.id);
+        this.activities = this.activities.filter((a) => a.id !== activity.id);
+        this.activities.unshift(result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
     }
   }
   async suspendActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to suspend this activity?')
-    ) {
+    if (activity.id !== null) {
       try {
-        await RemoteServices.suspendActivity(activityId);
+        const result = await RemoteServices.suspendActivity(activity.id);
+        this.activities = this.activities.filter((a) => a.id !== activity.id);
+        this.activities.unshift(result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

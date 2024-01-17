@@ -170,7 +170,7 @@ export default class ManageOwnActivitiesView extends Vue {
 
   async onSaveActivity(activity: Activity) {
     this.institution.activities = this.institution.activities.filter(
-      (q) => q.id !== activity.id,
+      (a) => a.id !== activity.id,
     );
     this.institution.activities.unshift(activity);
     this.editActivityDialog = false;

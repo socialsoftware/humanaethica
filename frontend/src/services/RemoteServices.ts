@@ -438,6 +438,9 @@ export default class RemoteServices {
   static async validateActivity(activityId: number) {
     return httpClient
       .put(`/activity/${activityId}/validate`)
+      .then((response) => {
+        return new Activity(response.data);
+      })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
@@ -446,6 +449,9 @@ export default class RemoteServices {
   static async suspendActivity(activityId: number) {
     return httpClient
       .put(`/activity/${activityId}/suspend`)
+      .then((response) => {
+        return new Activity(response.data);
+      })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
@@ -552,6 +558,9 @@ export default class RemoteServices {
   static async reportActivity(userId: number, activityId: number) {
     return httpClient
       .put(`/activity/${activityId}/report`)
+      .then((response) => {
+        return new Activity(response.data);
+      })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });

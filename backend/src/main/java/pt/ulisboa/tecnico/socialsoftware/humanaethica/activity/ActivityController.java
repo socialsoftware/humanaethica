@@ -29,8 +29,8 @@ public class ActivityController {
 
     @PutMapping("/activity/{activityId}/suspend")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void suspendActivity(@PathVariable Integer activityId) {
-        activityService.suspendActivity(activityId);
+    public ActivityDto suspendActivity(@PathVariable Integer activityId) {
+        return activityService.suspendActivity(activityId);
     }
 
     @PostMapping("/activity/register")
@@ -42,14 +42,14 @@ public class ActivityController {
 
     @PutMapping("/activity/{activityId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void validateActivity(@PathVariable int activityId) {
-        activityService.validateActivity(activityId);
+    public ActivityDto validateActivity(@PathVariable int activityId) {
+        return activityService.validateActivity(activityId);
     }
 
     @PutMapping("/activity/{activityId}/report")
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
-    public void reportActivity(@PathVariable int activityId) {
-        activityService.reportActivity(activityId);
+    public ActivityDto reportActivity(@PathVariable int activityId) {
+        return activityService.reportActivity(activityId);
     }
 
     @PutMapping("/activity/{activityId}/update")

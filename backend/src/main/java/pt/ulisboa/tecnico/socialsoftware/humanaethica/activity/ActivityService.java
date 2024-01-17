@@ -101,7 +101,7 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void suspendActivity(Integer activityId) {
+    public ActivityDto suspendActivity(Integer activityId) {
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
         }
@@ -110,10 +110,12 @@ public class ActivityService {
             throw new HEException(ACTIVITY_ALREADY_SUSPENDED, activity.getName());
         }
         activity.suspend();
+
+        return new ActivityDto(activity, true, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void reportActivity(Integer activityId) {
+    public ActivityDto reportActivity(Integer activityId) {
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
         }
@@ -122,10 +124,12 @@ public class ActivityService {
             throw new HEException(ACTIVITY_ALREADY_REPORTED, activity.getName());
         }
         activity.setState(Activity.State.REPORTED);
+
+        return new ActivityDto(activity, true, false);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void validateActivity(Integer activityId) {
+    public ActivityDto validateActivity(Integer activityId) {
         if (activityId == null) {
             throw new HEException(ACTIVITY_NOT_FOUND);
         }
@@ -140,6 +144,8 @@ public class ActivityService {
             throw new HEException(ACTIVITY_ALREADY_APPROVED, activity.getName());
         }
         activity.setState(Activity.State.APPROVED);
+
+        return new ActivityDto(activity, true, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

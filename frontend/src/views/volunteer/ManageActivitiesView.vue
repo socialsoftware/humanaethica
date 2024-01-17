@@ -52,7 +52,7 @@
             </template>
             <span>Leave Activity</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-tooltip v-if="item.state === 'APPROVED'" bottom>
             <template v-slot:activator="{ on }">
               <v-icon
                 class="mr-2 action-button"
@@ -106,6 +106,12 @@ export default class ManageActivitiesView extends Vue {
     {
       text: 'Themes',
       value: 'themes',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'State',
+      value: 'state',
       align: 'left',
       width: '5%',
     },
@@ -185,16 +191,14 @@ export default class ManageActivitiesView extends Vue {
     }
   }
   async reportActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to report this activity?')
-    ) {
+    if (activity.id !== null) {
       try {
-        await RemoteServices.reportActivity(
+        const result = await RemoteServices.reportActivity(
           this.$store.getters.getUser.id,
-          activityId,
+          activity.id,
         );
+        this.activities = this.activities.filter((a) => a.id !== activity.id);
+        this.activities.unshift(result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
