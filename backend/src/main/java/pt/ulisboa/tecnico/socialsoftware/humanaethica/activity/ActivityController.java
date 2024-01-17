@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +54,9 @@ public class ActivityController {
 
     @PutMapping("/activity/{activityId}/update")
     @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
-    public void updateActivity(Principal principal, @PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
+    public ActivityDto updateActivity(Principal principal, @PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        activityService.updateActivity(userId, activityId, activityDto);
+        return activityService.updateActivity(userId, activityId, activityDto);
     }
 
     @PutMapping("/activity/{activityId}/subscribe")

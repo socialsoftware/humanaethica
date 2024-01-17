@@ -164,7 +164,6 @@ export default class ThemeView extends Vue {
   onCloseDialog() {
     this.addTheme = false;
     this.treeView = false;
-    this.dialog = false;
   }
 
   async deleteTheme(theme: Theme) {

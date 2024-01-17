@@ -125,6 +125,18 @@ export default class ActivitiesView extends Vue {
       width: '5%',
     },
     {
+      text: 'Start Date',
+      value: 'startingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'End Date',
+      value: 'endingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
       text: 'State',
       value: 'state',
       align: 'left',
