@@ -152,7 +152,6 @@ class SpockTest extends Specification {
     }
 
     def deleteAll() {
-        activityRepository.deleteAllActivityVolunteer()
         activityRepository.deleteAllActivityTheme()
         activityRepository.deleteAll()
         authUserRepository.deleteAll()

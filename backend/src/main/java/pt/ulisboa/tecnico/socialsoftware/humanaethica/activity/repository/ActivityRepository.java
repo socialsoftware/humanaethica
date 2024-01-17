@@ -13,10 +13,6 @@ import java.util.Set;
 @Transactional
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
     @Modifying
-    @Query(value = "DELETE FROM activity_volunteers", nativeQuery = true)
-    void deleteAllActivityVolunteer();
-
-    @Modifying
     @Query(value = "DELETE FROM activity_themes", nativeQuery = true)
     void deleteAllActivityTheme();
 }

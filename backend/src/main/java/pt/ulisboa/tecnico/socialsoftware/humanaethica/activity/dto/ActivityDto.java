@@ -28,8 +28,6 @@ public class ActivityDto {
 
     private String creationDate;
 
-    private List<UserDto> volunteers;
-
     private List<ThemeDto> themes;
 
     private InstitutionDto institution;
@@ -37,7 +35,7 @@ public class ActivityDto {
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity, boolean deepCopyVolunteers, boolean deepCopyInstitutions){
+    public ActivityDto(Activity activity, boolean deepCopyInstitutions){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
@@ -52,11 +50,6 @@ public class ActivityDto {
         setStartingDate(DateHandler.toISOString(activity.getStartingDate()));
         setEndingDate(DateHandler.toISOString(activity.getEndingDate()));
 
-        if (deepCopyVolunteers) {
-            this.volunteers = activity.getVolunteers().stream()
-                    .map(user-> new UserDto(user,true))
-                    .toList();
-        }
         if (deepCopyInstitutions && (activity.getInstitution() != null)) {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
 
@@ -130,10 +123,6 @@ public class ActivityDto {
     public String getEndingDate() {
         return endingDate;
     }
-
-    public void setVolunteers(List<UserDto> volunteers) { this.volunteers = volunteers; }
-
-    public List<UserDto> getVolunteers() { return volunteers; }
 
     public InstitutionDto getInstitution() {
         return institution;

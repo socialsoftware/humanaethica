@@ -67,7 +67,7 @@ public class UserService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<UserDto> getUsers() {
         return userRepository.findAll().stream()
-                .map(user->new UserDto(user,false))
+                .map(user->new UserDto(user))
                 .sorted(Comparator.comparing(UserDto::getUsername))
                 .collect(Collectors.toList());
     }
@@ -206,17 +206,4 @@ public class UserService {
         return new InstitutionDto(member.getInstitution(), true, true);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ArrayList<ActivityDto> getOwnActivities(Integer userId) {
-        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        Volunteer volunteer = (Volunteer) authUser.getUser();
-        ArrayList<ActivityDto> activities = new ArrayList<>();
-
-        for (Activity activity: volunteer.getActivities()) {
-            ActivityDto activityDto = new ActivityDto(activity, true, true);
-            activities.add(activityDto);
-        }
-
-        return activities;
-    }
 }

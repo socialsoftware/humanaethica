@@ -26,32 +26,6 @@
           </v-chip>
         </template>
         <template v-slot:[`item.action`]="{ item }">
-          <v-tooltip v-if="!item.alreadyJoined" bottom>
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="green"
-                v-on="on"
-                data-cy="joinButton"
-                @click="joinActivity(item)"
-                >mdi-check-bold</v-icon
-              >
-            </template>
-            <span>Join Activity</span>
-          </v-tooltip>
-          <v-tooltip v-if="item.alreadyJoined" bottom>
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="red"
-                v-on="on"
-                data-cy="leaveButton"
-                @click="leaveActivity(item)"
-                >mdi-export</v-icon
-              >
-            </template>
-            <span>Leave Activity</span>
-          </v-tooltip>
           <v-tooltip v-if="item.state === 'APPROVED'" bottom>
             <template v-slot:activator="{ on }">
               <v-icon
@@ -82,7 +56,6 @@ import { show } from 'cli-cursor';
 })
 export default class ManageActivitiesView extends Vue {
   activities: Activity[] = [];
-  ownActivities: Activity[] = [];
   search: string = '';
   headers: object = [
     {
@@ -140,56 +113,12 @@ export default class ManageActivitiesView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.activities = await RemoteServices.getActivities();
-      this.ownActivities = await RemoteServices.getOwnActivities(
-        this.$store.getters.getUser.id,
-      );
-      this.activities.forEach((activity) => {
-        if (
-          this.ownActivities.some(
-            (ownActivity) => ownActivity.id === activity.id,
-          )
-        ) {
-          activity.alreadyJoined = true;
-        }
-      });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
   }
 
-  async joinActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to join this activity?')
-    ) {
-      try {
-        await RemoteServices.joinActivity(
-          this.$store.getters.getUser.id,
-          activityId,
-        );
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-  }
-  async leaveActivity(activity: Activity) {
-    let activityId = activity.id;
-    if (
-      activityId !== null &&
-      confirm('Are you sure you want to leave this activity?')
-    ) {
-      try {
-        await RemoteServices.leaveActivity(
-          this.$store.getters.getUser.id,
-          activityId,
-        );
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-  }
   async reportActivity(activity: Activity) {
     if (activity.id !== null) {
       try {

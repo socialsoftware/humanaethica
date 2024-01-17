@@ -42,7 +42,7 @@ public class ActivityService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivityDto> getActivities() {
         return activityRepository.findAll().stream()
-                .map(activity-> new ActivityDto(activity,true,true))
+                .map(activity-> new ActivityDto(activity,true))
                 .sorted(Comparator.comparing(ActivityDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
@@ -97,7 +97,7 @@ public class ActivityService {
         }
 
         activityRepository.save(activity);
-        return new ActivityDto(activity, true, false);
+        return new ActivityDto(activity, false);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -111,7 +111,7 @@ public class ActivityService {
         }
         activity.suspend();
 
-        return new ActivityDto(activity, true, true);
+        return new ActivityDto(activity, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -125,7 +125,7 @@ public class ActivityService {
         }
         activity.setState(Activity.State.REPORTED);
 
-        return new ActivityDto(activity, true, false);
+        return new ActivityDto(activity, false);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -145,7 +145,7 @@ public class ActivityService {
         }
         activity.setState(Activity.State.APPROVED);
 
-        return new ActivityDto(activity, true, true);
+        return new ActivityDto(activity, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -209,46 +209,6 @@ public class ActivityService {
         activity.setInstitution(member.getInstitution());
 
         activityRepository.save(activity);
-        return new ActivityDto(activity, true, false);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void subscribeActivity(Integer userId, Integer activityId) {
-        if (userId == null) {
-            throw new HEException(USER_NOT_FOUND);
-        }
-        if (activityId == null) {
-            throw new HEException(ACTIVITY_NOT_FOUND);
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-        if (user.getRole() != User.Role.VOLUNTEER) {
-            throw new HEException(INVALID_ROLE, user.getRole().name());
-        }
-
-        Volunteer volunteer = (Volunteer) user;
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
-
-        activity.addVolunteer(volunteer);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void unsubscribeActivity(Integer userId, Integer activityId) {
-        if (userId == null) {
-            throw new HEException(USER_NOT_FOUND);
-        }
-        if (activityId == null) {
-            throw new HEException(ACTIVITY_NOT_FOUND);
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-        if (user.getRole() != User.Role.VOLUNTEER) {
-            throw new HEException(INVALID_ROLE, user.getRole().name());
-        }
-
-        Volunteer volunteer = (Volunteer) user;
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));;
-
-        activity.removeVolunteer(volunteer);
+        return new ActivityDto(activity, false);
     }
 }

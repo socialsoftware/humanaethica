@@ -101,9 +101,4 @@ public class UserController {
         return userService.getInstitution(userId);
     }
 
-    @GetMapping("/users/{userId}/getActivities")
-    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public ArrayList<ActivityDto> getOwnActivities(@PathVariable int userId) {
-        return userService.getOwnActivities(userId);
-    }
 }

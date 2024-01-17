@@ -52,7 +52,7 @@ public class InstitutionDto {
         }
         if (deepCopyActivities) {
             this.activityDto = institution.getActivities().stream()
-                    .map(activity-> new ActivityDto(activity,true,false))
+                    .map(activity-> new ActivityDto(activity,false))
                     .toList();
         }
     }

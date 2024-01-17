@@ -8,11 +8,9 @@ export default class Activity {
   name!: string;
   region!: string;
   themes: Theme[] = [];
-  volunteers: Volunteer[] = [];
   institution!: Institution;
   state!: string;
   creationDate!: string;
-  alreadyJoined?: boolean;
   description!: string;
   startingDate!: string;
   endingDate!: string;
@@ -25,13 +23,9 @@ export default class Activity {
       this.themes = jsonObj.themes.map((themes: Theme) => {
         return new Theme(themes);
       });
-      this.volunteers = jsonObj.volunteers.map((volunteers: Volunteer) => {
-        return new Volunteer(volunteers);
-      });
       this.institution = jsonObj.institution;
       this.state = jsonObj.state;
       this.creationDate = ISOtoString(jsonObj.creationDate);
-      this.alreadyJoined = false;
       this.description = jsonObj.description;
       this.startingDate = ISOtoString(jsonObj.startingDate);
       this.endingDate = ISOtoString(jsonObj.endingDate);

@@ -32,10 +32,6 @@ public class Activity {
     private Activity.State state;
 
     @ManyToMany (fetch = FetchType.EAGER)
-    @JoinTable(name = "activity_volunteers")
-    private List<Volunteer> volunteers = new ArrayList<>();
-
-    @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(name = "activity_themes")
     private List<Theme> themes = new ArrayList<>();
 
@@ -123,10 +119,6 @@ public class Activity {
         this.creationDate = creationDate;
     }
 
-    public List<Volunteer> getVolunteers() {
-        return volunteers;
-    }
-
     public List<Theme> getThemes() {
         return themes;
     }
@@ -162,15 +154,5 @@ public class Activity {
 
     public Institution getInstitution() {
         return institution;
-    }
-
-    public void addVolunteer(Volunteer volunteer) {
-        this.volunteers.add(volunteer);
-        volunteer.addActivities(this);
-    }
-
-    public void removeVolunteer(Volunteer volunteer) {
-        this.volunteers.remove(volunteer);
-        volunteer.removeActivity(this);
     }
 }
