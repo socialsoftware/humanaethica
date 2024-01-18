@@ -12,6 +12,7 @@ public class ActivityDto {
     private Integer id;
     private String name;
     private String region;
+    private int participantNumber;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -28,6 +29,7 @@ public class ActivityDto {
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
+        setParticipantNumber(activity.getParticipantNumber());
         setDescription(activity.getDescription());
 
         this.themes = activity.getThemes().stream()
@@ -73,6 +75,7 @@ public class ActivityDto {
     public String getRegion() { return region; }
 
     public void setRegion(String region) { this.region = region; }
+
 
     public String getDescription() {
         return description;
@@ -128,5 +131,13 @@ public class ActivityDto {
 
     public void setInstitution(InstitutionDto institution) {
         this.institution = institution;
+    }
+
+    public int getParticipantNumber() {
+        return participantNumber;
+    }
+
+    public void setParticipantNumber(int participantNumber) {
+        this.participantNumber = participantNumber;
     }
 }

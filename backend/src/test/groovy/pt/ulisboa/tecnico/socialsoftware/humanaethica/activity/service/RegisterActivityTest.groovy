@@ -48,6 +48,7 @@ class RegisterActivityTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_1__NAME)
         activityDto.setRegion(ACTIVITY_1__REGION)
+        activityDto.setParticipantNumber(1)
         activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
         activityDto.setStartingDate(STARTING_DATE);
         activityDto.setEndingDate(ENDING_DATE);
@@ -70,7 +71,7 @@ class RegisterActivityTest extends SpockTest {
 
     def "the activity already exists"() {
         given:
-        activity = new Activity(ACTIVITY_1__NAME, ACTIVITY_1__REGION, ACTIVITY_1__DESCRIPTION, institution, STARTING_DATE, ENDING_DATE,APPLICATION_DEADLINE, Activity.State.APPROVED)
+        activity = new Activity(ACTIVITY_1__NAME, ACTIVITY_1__REGION, 2, ACTIVITY_1__DESCRIPTION, institution, STARTING_DATE, ENDING_DATE,APPLICATION_DEADLINE, Activity.State.APPROVED)
         activityRepository.save(activity)
         and:
         activityDto = new ActivityDto()

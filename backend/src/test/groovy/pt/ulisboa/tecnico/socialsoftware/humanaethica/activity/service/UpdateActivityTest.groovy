@@ -37,7 +37,7 @@ class UpdateActivityTest extends SpockTest {
 
     def "add theme to an activity"() {
         given: 'an activity'
-        activity = new Activity(ACTIVITY_1__NAME, ACTIVITY_1__REGION, ACTIVITY_1__DESCRIPTION, institution, STARTING_DATE, ENDING_DATE, APPLICATION_DEADLINE, Activity.State.APPROVED)
+        activity = new Activity(ACTIVITY_1__NAME, ACTIVITY_1__REGION, 1, ACTIVITY_1__DESCRIPTION, institution, STARTING_DATE, ENDING_DATE, APPLICATION_DEADLINE, Activity.State.APPROVED)
         activityRepository.save(activity)
         and:
         theme = new Theme(THEME_1__NAME, Theme.State.APPROVED, null)

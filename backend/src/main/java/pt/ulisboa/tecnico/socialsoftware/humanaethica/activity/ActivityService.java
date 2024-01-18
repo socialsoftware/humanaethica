@@ -88,7 +88,7 @@ public class ActivityService {
         }
 
         Member member = (Member) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), member.getInstitution(),
+        Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getParticipantNumber(), activityDto.getDescription(), member.getInstitution(),
                 activityDto.getStartingDate(), activityDto.getEndingDate(), activityDto.getApplicationDeadline(), Activity.State.APPROVED);
 
         for (ThemeDto themeDto : activityDto.getThemes()) {

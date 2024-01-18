@@ -100,6 +100,18 @@ export default class ActivitiesView extends Vue {
       width: '5%',
     },
     {
+      text: 'Participants',
+      value: 'participantNumber',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'Themes',
+      value: 'themes',
+      align: 'left',
+      width: '5%',
+    },
+    {
       text: 'Themes',
       value: 'themes',
       align: 'left',

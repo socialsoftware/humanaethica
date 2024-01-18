@@ -27,6 +27,13 @@
                 v-model="editActivity.region"
               ></v-text-field>
             </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-text-field
+                label="Number of Participants"
+                required
+                v-model="editActivity.participantNumber"
+              ></v-text-field>
+            </v-col>
             <v-col cols="12" sm="6">
               <v-select
                 label="Themes"

@@ -21,7 +21,8 @@ class RegisterActivityWebServiceIT extends SpockTest {
     public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
     public static final LocalDateTime STARTING_DATE = DateHandler.now().plusDays(1)
     public static final LocalDateTime ENDING_DATE = DateHandler.now().plusDays(2)
-        public static final LocalDateTime APPLICATION_DEADLINE = DateHandler.now().plusDays(2)
+    public static final LocalDateTime APPLICATION_DEADLINE = DateHandler.now().plusDays(2)
+
     @LocalServerPort
     private int port
 
@@ -51,6 +52,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
                 body: [
                         name         : ACTIVITY_1__NAME,
                         region       : ACTIVITY_1__REGION,
+                        participantNumber: 2,
                         themes       : themes,
                         description  : ACTIVITY_1__DESCRIPTION,
                         startingDate : DateHandler.toISOString(STARTING_DATE),
@@ -68,9 +70,11 @@ class RegisterActivityWebServiceIT extends SpockTest {
         def activity = activityRepository.findAll().get(0)
         activity.getName() == ACTIVITY_1__NAME
         activity.getRegion() == ACTIVITY_1__REGION
+        activity.getParticipantNumber() == 2
         activity.getDescription() == ACTIVITY_1__DESCRIPTION
-        activity.getStartingDate() == STARTING_DATE
-        activity.getEndingDate() == ENDING_DATE
+        activity.getStartingDate().withNano(0) == STARTING_DATE.withNano(0)
+        activity.getEndingDate().withNano(0) == ENDING_DATE.withNano(0)
+        activity.getApplicationDeadline().withNano(0) == APPLICATION_DEADLINE.withNano(0)
         activity.themes.get(0).getName() == THEME_1__NAME
 
         cleanup:

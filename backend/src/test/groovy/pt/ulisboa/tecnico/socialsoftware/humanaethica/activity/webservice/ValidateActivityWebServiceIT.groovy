@@ -53,6 +53,7 @@ class ValidateActivityWebServiceIT extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_1__NAME)
         activityDto.setRegion(ACTIVITY_1__REGION)
+        activityDto.setParticipantNumber(2)
         activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
         activityDto.setStartingDate(STARTING_DATE)
         activityDto.setEndingDate(ENDING_DATE)

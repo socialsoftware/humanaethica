@@ -20,6 +20,7 @@ public class Activity {
     private String name;
     private String region;
     private String description;
+    private Integer participantNumber;
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
@@ -40,9 +41,10 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(String name, String region, String description, Institution institution, String startingDate, String endingDate, String applicationDeadline, State state) {
+    public Activity(String name, String region, int participantNumber, String description, Institution institution, String startingDate, String endingDate, String applicationDeadline, State state) {
         setName(name);
         setRegion(region);
+        setParticipantNumber(participantNumber);
         setDescription(description);
         setInstitution(institution);
         setState(state);
@@ -70,6 +72,14 @@ public class Activity {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public Integer getParticipantNumber() {
+        return participantNumber;
+    }
+
+    public void setParticipantNumber(Integer participantNumber) {
+        this.participantNumber = participantNumber;
     }
 
     public String getDescription() {
