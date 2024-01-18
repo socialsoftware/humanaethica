@@ -43,7 +43,7 @@ public enum ErrorMessage {
     EMPTY_ACTIVITY_LIST("Activity list cannot be empty"),
     ACTIVITY_ALREADY_SUSPENDED("Activity is already suspended with name %s"),
     ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s"),
-    INVALID_DATE("Date format is invalid"),
+    INVALID_DATE("Date format %s is invalid"),
     INVALID_DESCRIPTION("Activity description is missing");
 
     public final String label;

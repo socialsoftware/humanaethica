@@ -1,18 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.THEME_NOT_FOUND;
 
 @Entity
 @Table(name = "activity")
@@ -25,8 +20,9 @@ public class Activity {
     private String name;
     private String region;
     private String description;
-    private String startingDate;
-    private String endingDate;
+    private LocalDateTime startingDate;
+    private LocalDateTime endingDate;
+    private LocalDateTime applicationDeadline;
 
     @Enumerated(EnumType.STRING)
     private Activity.State state;
@@ -44,15 +40,16 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(String name, String region, String description, Institution institution, String startingDate, String endingDate, State state) {
+    public Activity(String name, String region, String description, Institution institution, String startingDate, String endingDate, String applicationDeadline, State state) {
         setName(name);
         setRegion(region);
         setDescription(description);
         setInstitution(institution);
         setState(state);
         setCreationDate(DateHandler.now());
-        setStartingDate(startingDate);
-        setEndingDate(endingDate);
+        setStartingDate(DateHandler.toLocalDateTime(startingDate));
+        setEndingDate(DateHandler.toLocalDateTime(endingDate));
+        setApplicationDeadline(DateHandler.toLocalDateTime(applicationDeadline));
     }
 
     public Integer getId() {
@@ -84,19 +81,27 @@ public class Activity {
     }
 
     public LocalDateTime getStartingDate() {
-        return DateHandler.toLocalDateTime(startingDate);
+        return startingDate;
     }
 
-    public void setStartingDate(String startingDate) {
+    public void setStartingDate(LocalDateTime startingDate) {
         this.startingDate = startingDate;
     }
 
     public LocalDateTime getEndingDate() {
-        return DateHandler.toLocalDateTime(endingDate);
+        return endingDate;
     }
 
-    public void setEndingDate(String endingDate) {
+    public void setEndingDate(LocalDateTime endingDate) {
         this.endingDate = endingDate;
+    }
+
+    public LocalDateTime getApplicationDeadline() {
+        return applicationDeadline;
+    }
+
+    public void setApplicationDeadline(LocalDateTime applicationDeadline) {
+        this.applicationDeadline = applicationDeadline;
     }
 
     public Activity.State getState() {

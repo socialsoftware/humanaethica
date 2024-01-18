@@ -1,6 +1,5 @@
 import { ISOtoString } from '@/services/ConvertDateService';
 import Theme from '@/models/theme/Theme';
-import Volunteer from '@/models/volunteer/Volunteer';
 import Institution from '@/models/institution/Institution';
 
 export default class Activity {
@@ -13,7 +12,11 @@ export default class Activity {
   creationDate!: string;
   description!: string;
   startingDate!: string;
+  formattedStartingDate!: string;
   endingDate!: string;
+  formattedEndingDate!: string;
+  applicationDeadline!: string;
+  formattedApplicationDeadline!: string;
 
   constructor(jsonObj?: Activity) {
     if (jsonObj) {
@@ -27,8 +30,17 @@ export default class Activity {
       this.state = jsonObj.state;
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.description = jsonObj.description;
-      this.startingDate = ISOtoString(jsonObj.startingDate);
-      this.endingDate = ISOtoString(jsonObj.endingDate);
+      this.startingDate = jsonObj.startingDate;
+      if (jsonObj.startingDate)
+        this.formattedStartingDate = ISOtoString(jsonObj.startingDate);
+      this.endingDate = jsonObj.endingDate;
+      if (jsonObj.endingDate)
+        this.formattedEndingDate = ISOtoString(jsonObj.endingDate);
+      this.applicationDeadline = jsonObj.applicationDeadline;
+      if (jsonObj.applicationDeadline)
+        this.formattedApplicationDeadline = ISOtoString(
+          jsonObj.applicationDeadline,
+        );
     }
   }
 }

@@ -23,7 +23,7 @@ class ActivityTest extends SpockTest {
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<Theme> themes = new ArrayList<>()
-        activity = new Activity("", "", "", institution, "", "", Activity.State.APPROVED)
+        activity = new Activity("", "", "", institution, "", "", "" ,Activity.State.APPROVED)
         activity.addTheme(theme)
         activityRepository.save(activity)
 
@@ -47,7 +47,7 @@ class ActivityTest extends SpockTest {
         List<Theme> themes = new ArrayList<>()
 
         when: "activity is created"
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", "", Activity.State.APPROVED)
         activityRepository.save(activity)
         activity.addTheme(theme)
 
@@ -74,7 +74,7 @@ class ActivityTest extends SpockTest {
         institutionRepository.save(institution)
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         themeRepository.save(theme)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", "",Activity.State.APPROVED)
         activity.addTheme(theme)
         activityRepository.save(activity)
 
@@ -94,7 +94,7 @@ class ActivityTest extends SpockTest {
         theme = new Theme("THEME_1_NAME", Theme.State.APPROVED, null)
         List<Theme> themes = new ArrayList<>()
         themeRepository.save(theme)
-        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", Activity.State.APPROVED)
+        activity = new Activity("ACTIVITY_1_NAME", "ACTIVITY_1_REGION", "ACTIVITY_1_DESCRIPTION", institution, "", "", "", Activity.State.APPROVED)
         activity.addTheme(theme)
         activityRepository.save(activity)
 

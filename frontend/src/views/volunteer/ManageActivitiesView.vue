@@ -90,13 +90,19 @@ export default class ManageActivitiesView extends Vue {
     },
     {
       text: 'Start Date',
-      value: 'startingDate',
+      value: 'formattedStartingDate',
       align: 'left',
       width: '5%',
     },
     {
       text: 'End Date',
-      value: 'endingDate',
+      value: 'formattedEndingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'Application Deadline',
+      value: 'formattedApplicationDeadline',
       align: 'left',
       width: '5%',
     },

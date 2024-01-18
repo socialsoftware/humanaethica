@@ -2,34 +2,23 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ActivityDto {
     private Integer id;
-
     private String name;
-
     private String region;
-
     private String description;
-
     private String startingDate;
-
     private String endingDate;
-
+    private String applicationDeadline;
     private String state;
-
     private String creationDate;
-
     private List<ThemeDto> themes;
-
     private InstitutionDto institution;
 
     public ActivityDto(){
@@ -49,6 +38,7 @@ public class ActivityDto {
         setCreationDate(DateHandler.toISOString(activity.getCreationDate()));
         setStartingDate(DateHandler.toISOString(activity.getStartingDate()));
         setEndingDate(DateHandler.toISOString(activity.getEndingDate()));
+        setApplicationDeadline(DateHandler.toISOString(activity.getApplicationDeadline()));
 
         if (deepCopyInstitutions && (activity.getInstitution() != null)) {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
@@ -122,6 +112,14 @@ public class ActivityDto {
 
     public String getEndingDate() {
         return endingDate;
+    }
+
+    public String getApplicationDeadline() {
+        return applicationDeadline;
+    }
+
+    public void setApplicationDeadline(String applicationDeadline) {
+        this.applicationDeadline = applicationDeadline;
     }
 
     public InstitutionDto getInstitution() {

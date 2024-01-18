@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.webservice
 import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
 import org.apache.http.HttpStatus
+import org.checkerframework.checker.units.qual.A
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
@@ -25,6 +26,7 @@ class ValidateActivityWebServiceIT extends SpockTest {
     public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
     public static final String STARTING_DATE = "2023-05-26T19:09:00Z"
     public static final String ENDING_DATE = "2023-05-26T22:09:00Z"
+    public static final String APPLICATION_DEADLINE = "2023-05-26T22:09:00Z"
     @LocalServerPort
     private int port
 
@@ -52,8 +54,9 @@ class ValidateActivityWebServiceIT extends SpockTest {
         activityDto.setName(ACTIVITY_1__NAME)
         activityDto.setRegion(ACTIVITY_1__REGION)
         activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
-        activityDto.setStartingDate(STARTING_DATE);
-        activityDto.setEndingDate(ENDING_DATE);
+        activityDto.setStartingDate(STARTING_DATE)
+        activityDto.setEndingDate(ENDING_DATE)
+        activityDto.setApplicationDeadline(APPLICATION_DEADLINE)
         activityDto.setInstitution(new InstitutionDto(institutionService.getDemoInstitution()))
         activityDto.setThemes(themes)
         activity = activityService.registerActivity(user.id, activityDto)

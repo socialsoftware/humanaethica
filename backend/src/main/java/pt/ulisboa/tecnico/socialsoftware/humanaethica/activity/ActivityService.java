@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
@@ -16,13 +14,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepo
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,6 +70,10 @@ public class ActivityService {
             throw new HEException(INVALID_DATE);
         }
 
+        if (activityDto.getApplicationDeadline() == null || !DateHandler.isValidDateFormat(activityDto.getApplicationDeadline())) {
+            throw new HEException(INVALID_DATE);
+        }
+
         for (Activity act : activityRepository.findAll()) {
             if (act.getName().equals(activityDto.getName())) {
                 throw new HEException(ACTIVITY_ALREADY_EXISTS);
@@ -89,7 +89,7 @@ public class ActivityService {
 
         Member member = (Member) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
         Activity activity = new Activity(activityDto.getName(), activityDto.getRegion(), activityDto.getDescription(), member.getInstitution(),
-                activityDto.getStartingDate(), activityDto.getEndingDate(), Activity.State.APPROVED);
+                activityDto.getStartingDate(), activityDto.getEndingDate(), activityDto.getApplicationDeadline(), Activity.State.APPROVED);
 
         for (ThemeDto themeDto : activityDto.getThemes()) {
             Theme theme = themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND));
@@ -159,24 +159,28 @@ public class ActivityService {
             throw new HEException(USER_NOT_FOUND);
         }
 
-        if (activityDto.getName() == null || activityDto.getName().trim().length() == 0) {
+        if (activityDto.getName() == null || activityDto.getName().trim().isEmpty()) {
             throw new HEException(INVALID_ACTIVITY_NAME, activityDto.getName());
         }
 
-        if (activityDto.getRegion() == null || activityDto.getRegion().trim().length() == 0) {
+        if (activityDto.getRegion() == null || activityDto.getRegion().trim().isEmpty()) {
             throw new HEException(INVALID_REGION_NAME, activityDto.getRegion());
         }
 
-        if (activityDto.getDescription() == null || activityDto.getDescription().trim().length() == 0) {
+        if (activityDto.getDescription() == null || activityDto.getDescription().trim().isEmpty()) {
             throw new HEException(INVALID_DESCRIPTION);
         }
 
         if (activityDto.getStartingDate() == null || !DateHandler.isValidDateFormat(activityDto.getStartingDate())) {
-            throw new HEException(INVALID_DATE);
+            throw new HEException(INVALID_DATE, activityDto.getStartingDate());
         }
 
         if (activityDto.getEndingDate() == null || !DateHandler.isValidDateFormat(activityDto.getEndingDate())) {
-            throw new HEException(INVALID_DATE);
+            throw new HEException(INVALID_DATE, activityDto.getEndingDate());
+        }
+
+        if (activityDto.getApplicationDeadline() == null || !DateHandler.isValidDateFormat(activityDto.getApplicationDeadline())) {
+            throw new HEException(INVALID_DATE, activityDto.getApplicationDeadline());
         }
 
         for (ThemeDto themeDto : activityDto.getThemes()) {
@@ -190,8 +194,9 @@ public class ActivityService {
         activity.setName(activityDto.getName());
         activity.setRegion(activityDto.getRegion());
         activity.setDescription(activityDto.getDescription());
-        activity.setStartingDate(activityDto.getStartingDate());
-        activity.setEndingDate(activityDto.getEndingDate());
+        activity.setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
+        activity.setEndingDate(DateHandler.toLocalDateTime(activityDto.getEndingDate()));
+        activity.setApplicationDeadline(DateHandler.toLocalDateTime(activityDto.getApplicationDeadline()));
 
         List<Theme> themeList = activityDto.getThemes().stream()
                 .map(themeDto -> themeRepository.findById(themeDto.getId()).orElseThrow(() -> new HEException(THEME_NOT_FOUND)))

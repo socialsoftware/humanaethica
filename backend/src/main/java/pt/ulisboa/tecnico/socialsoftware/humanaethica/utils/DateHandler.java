@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;

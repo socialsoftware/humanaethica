@@ -25,11 +25,6 @@
           {{ theme.completeName }}
         </v-chip>
       </template>
-      <template v-slot:[`item.volunteers`]="{ item }">
-        <v-chip v-for="volunteer in item.volunteers" v-bind:key="volunteer.id">
-          {{ volunteer.name }}
-        </v-chip>
-      </template>
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -102,12 +97,6 @@ export default class ManageOwnActivitiesView extends Vue {
       width: '5%',
     },
     {
-      text: 'Volunteers',
-      value: 'volunteers',
-      align: 'left',
-      width: '5%',
-    },
-    {
       text: 'State',
       value: 'state',
       align: 'left',
@@ -115,13 +104,19 @@ export default class ManageOwnActivitiesView extends Vue {
     },
     {
       text: 'Start Date',
-      value: 'startingDate',
+      value: 'formattedStartingDate',
       align: 'left',
       width: '5%',
     },
     {
       text: 'End Date',
-      value: 'endingDate',
+      value: 'formattedEndingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'Application Deadline',
+      value: 'formattedApplicationDeadline',
       align: 'left',
       width: '5%',
     },

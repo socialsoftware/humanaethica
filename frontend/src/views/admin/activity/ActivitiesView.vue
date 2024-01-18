@@ -24,11 +24,6 @@
           {{ theme.completeName }}
         </v-chip>
       </template>
-      <template v-slot:[`item.volunteers`]="{ item }">
-        <v-chip v-for="volunteer in item.volunteers" v-bind:key="volunteer.id">
-          {{ volunteer.name }}
-        </v-chip>
-      </template>
       <template v-slot:[`item.institution`]="{ item }">
         <v-chip>
           {{ item.institution.name }}
@@ -79,14 +74,12 @@ import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
 
-@Component
+@Component({})
 export default class ActivitiesView extends Vue {
   activities: Activity[] = [];
   themes: Theme[] = [];
   institutions: Institution[] = [];
   search: string = '';
-  addActivityDialog: boolean = false;
-  dialogEditActivity: boolean = false;
   headers: object = [
     {
       text: 'ID',
@@ -113,12 +106,6 @@ export default class ActivitiesView extends Vue {
       width: '5%',
     },
     {
-      text: 'Volunteers',
-      value: 'volunteers',
-      align: 'left',
-      width: '5%',
-    },
-    {
       text: 'Institution',
       value: 'institution',
       align: 'left',
@@ -126,13 +113,19 @@ export default class ActivitiesView extends Vue {
     },
     {
       text: 'Start Date',
-      value: 'startingDate',
+      value: 'formattedStartingDate',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'Application Deadline',
+      value: 'formattedApplicationDeadline',
       align: 'left',
       width: '5%',
     },
     {
       text: 'End Date',
-      value: 'endingDate',
+      value: 'formattedEndingDate',
       align: 'left',
       width: '5%',
     },

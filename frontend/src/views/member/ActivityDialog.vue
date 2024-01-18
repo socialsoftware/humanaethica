@@ -46,86 +46,30 @@
                 v-model="editActivity.description"
               ></v-text-field>
             </v-col>
-            <div class="date-fields-container">
-              <span class="text-h6">Starting Date</span>
-              <div class="date-fields-row">
-                <v-text-field
-                  v-model="startDay"
-                  label="Day"
-                  data-cy="activitySDayInput"
-                  :rules="[
-                    (value) => !!value || 'Starting Date Day is required',
-                  ]"
-                  required
-                />
-                <v-text-field
-                  v-model="startMonth"
-                  label="Month"
-                  data-cy="activitySMonthInput"
-                  :rules="[
-                    (value) => !!value || 'Starting Date Month is required',
-                  ]"
-                  required
-                />
-                <v-text-field
-                  v-model="startYear"
-                  label="Year"
-                  data-cy="activitySYearInput"
-                  :rules="[
-                    (value) => !!value || 'Starting Date Year is required',
-                  ]"
-                  required
-                />
-                <v-text-field
-                  v-model="startHour"
-                  label="Hour"
-                  data-cy="activitySHourInput"
-                  :rules="[
-                    (value) => !!value || 'Starting Date Hour is required',
-                  ]"
-                  required
-                />
-              </div>
-            </div>
-            <div class="date-fields-container">
-              <span class="text-h6">Ending Date</span>
-              <div class="date-fields-row">
-                <v-text-field
-                  v-model="endDay"
-                  label="Day"
-                  data-cy="activityEDayInput"
-                  :rules="[(value) => !!value || 'Ending Date Day is required']"
-                  required
-                />
-                <v-text-field
-                  v-model="endMonth"
-                  label="Month"
-                  data-cy="activityEMonthInput"
-                  :rules="[
-                    (value) => !!value || 'Ending Date Month is required',
-                  ]"
-                  required
-                />
-                <v-text-field
-                  v-model="endYear"
-                  label="Year"
-                  data-cy="activityEYearInput"
-                  :rules="[
-                    (value) => !!value || 'Ending Date Year is required',
-                  ]"
-                  required
-                />
-                <v-text-field
-                  v-model="endHour"
-                  label="Hour"
-                  data-cy="activityEHourInput"
-                  :rules="[
-                    (value) => !!value || 'Ending Date Hour is required',
-                  ]"
-                  required
-                />
-              </div>
-            </div>
+            <v-col>
+              <VueCtkDateTimePicker
+                id="startingDateInput"
+                v-model="editActivity.startingDate"
+                format="YYYY-MM-DDTHH:mm:ssZ"
+                label="*Starting Date"
+              ></VueCtkDateTimePicker>
+            </v-col>
+            <v-col>
+              <VueCtkDateTimePicker
+                id="endingDateInput"
+                v-model="editActivity.endingDate"
+                format="YYYY-MM-DDTHH:mm:ssZ"
+                label="*Ending Date"
+              ></VueCtkDateTimePicker>
+            </v-col>
+            <v-col>
+              <VueCtkDateTimePicker
+                id="ApplicationDeadlineInput"
+                v-model="editActivity.applicationDeadline"
+                format="YYYY-MM-DDTHH:mm:ssZ"
+                label="*Application Deadline"
+              ></VueCtkDateTimePicker>
+            </v-col>
           </v-row>
         </v-container>
       </v-card-text>
@@ -150,8 +94,14 @@ import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
 import RemoteServices from '@/services/RemoteServices';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import { ISOtoString } from '@/services/ConvertDateService';
 
-@Component({})
+Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
+@Component({
+  methods: { ISOtoString },
+})
 export default class ActivityDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Activity, required: true }) readonly activity!: Activity;
@@ -159,40 +109,13 @@ export default class ActivityDialog extends Vue {
 
   editActivity: Activity = new Activity();
 
-  startDay: string = '';
-  startMonth: string = '';
-  startYear: string = '';
-  startHour: string = '';
-  endDay: string = '';
-  endMonth: string = '';
-  endYear: string = '';
-  endHour: string = '';
-
   async created() {
     this.editActivity = new Activity(this.activity);
   }
 
   async updateActivity() {
-    this.editActivity.startingDate =
-      this.startYear +
-      '-' +
-      this.startMonth +
-      '-' +
-      this.startDay +
-      'T' +
-      this.startHour +
-      ':00:00Z';
-    this.editActivity.endingDate =
-      this.endYear +
-      '-' +
-      this.endMonth +
-      '-' +
-      this.endDay +
-      'T' +
-      this.endHour +
-      ':00:00Z';
-
     try {
+      console.log(this.editActivity);
       const result =
         this.editActivity.id !== null
           ? await RemoteServices.updateActivityAsMember(

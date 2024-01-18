@@ -21,6 +21,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
     public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
     public static final LocalDateTime STARTING_DATE = DateHandler.now().plusDays(1)
     public static final LocalDateTime ENDING_DATE = DateHandler.now().plusDays(2)
+        public static final LocalDateTime APPLICATION_DEADLINE = DateHandler.now().plusDays(2)
     @LocalServerPort
     private int port
 
@@ -53,7 +54,8 @@ class RegisterActivityWebServiceIT extends SpockTest {
                         themes       : themes,
                         description  : ACTIVITY_1__DESCRIPTION,
                         startingDate : DateHandler.toISOString(STARTING_DATE),
-                        endingDate   : DateHandler.toISOString(ENDING_DATE)
+                        endingDate   : DateHandler.toISOString(ENDING_DATE),
+                        applicationDeadline   : DateHandler.toISOString(APPLICATION_DEADLINE)
 
                 ],
                 requestContentType: 'application/json'
