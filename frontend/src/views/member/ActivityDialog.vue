@@ -31,7 +31,7 @@
               <v-text-field
                 label="Number of Participants"
                 required
-                v-model="editActivity.participantNumber"
+                v-model="editActivity.participantsNumber"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">

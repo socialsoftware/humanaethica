@@ -1,13 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
 @Entity
 @Table(name = "activity")
@@ -20,13 +25,13 @@ public class Activity {
     private String name;
     private String region;
     private String description;
-    private Integer participantNumber;
+    private Integer participantsNumber;
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
 
     @Enumerated(EnumType.STRING)
-    private Activity.State state;
+    private Activity.State state = Activity.State.APPROVED;
 
     @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(name = "activity_themes")
@@ -41,18 +46,35 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(String name, String region, int participantNumber, String description, Institution institution, String startingDate, String endingDate, String applicationDeadline, State state) {
-        setName(name);
-        setRegion(region);
-        setParticipantNumber(participantNumber);
-        setDescription(description);
+    public Activity(ActivityDto activityDto, Institution institution, List<Theme> themes) {
         setInstitution(institution);
-        setState(state);
+
+        setName(activityDto.getName());
+        setRegion(activityDto.getRegion());
+        setParticipantsNumber(activityDto.getParticipantsNumber());
+        setDescription(activityDto.getDescription());
         setCreationDate(DateHandler.now());
-        setStartingDate(DateHandler.toLocalDateTime(startingDate));
-        setEndingDate(DateHandler.toLocalDateTime(endingDate));
-        setApplicationDeadline(DateHandler.toLocalDateTime(applicationDeadline));
+        setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
+        setEndingDate(DateHandler.toLocalDateTime(activityDto.getEndingDate()));
+        setApplicationDeadline(DateHandler.toLocalDateTime(activityDto.getApplicationDeadline()));
+
+        for (Theme theme : themes) {
+            addTheme(theme);
+        }
     }
+
+    public void update(ActivityDto activityDto, List<Theme> themes) {
+        setName(activityDto.getName());
+        setRegion(activityDto.getRegion());
+        setParticipantsNumber(activityDto.getParticipantsNumber());
+        setDescription(activityDto.getDescription());
+        setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
+        setEndingDate(DateHandler.toLocalDateTime(activityDto.getEndingDate()));
+        setApplicationDeadline(DateHandler.toLocalDateTime(activityDto.getApplicationDeadline()));
+
+        setThemes(themes);
+    }
+
 
     public Integer getId() {
         return id;
@@ -63,6 +85,11 @@ public class Activity {
     }
 
     public void setName(String name) {
+       if (this.institution.getActivities().stream()
+                .anyMatch(activity -> activity != this && activity.getName().equals(name))) {
+           throw new HEException(ACTIVITY_ALREADY_EXISTS);
+       }
+
         this.name = name;
     }
 
@@ -74,12 +101,12 @@ public class Activity {
         this.region = region;
     }
 
-    public Integer getParticipantNumber() {
-        return participantNumber;
+    public Integer getParticipantsNumber() {
+        return participantsNumber;
     }
 
-    public void setParticipantNumber(Integer participantNumber) {
-        this.participantNumber = participantNumber;
+    public void setParticipantsNumber(Integer participantsNumber) {
+        this.participantsNumber = participantsNumber;
     }
 
     public String getDescription() {
@@ -123,7 +150,29 @@ public class Activity {
     }
 
     public void suspend() {
+        if (this.state == State.SUSPENDED) {
+            throw new HEException(ACTIVITY_ALREADY_SUSPENDED, this.name);
+        }
         this.setState(State.SUSPENDED);
+    }
+
+    public void report() {
+        if (this.state == State.REPORTED) {
+            throw new HEException(ACTIVITY_ALREADY_REPORTED, this.name);
+        }
+        this.setState(State.REPORTED);
+    }
+
+    public void validate() {
+        for (Theme theme : themes) {
+            if (theme.getState() != Theme.State.APPROVED) {
+                throw new HEException(THEME_NOT_APPROVED, theme.getCompleteName());
+            }
+        }
+        if (getState() == Activity.State.APPROVED) {
+            throw new HEException(ACTIVITY_ALREADY_APPROVED, this.name);
+        }
+        setState(Activity.State.APPROVED);
     }
 
     public LocalDateTime getCreationDate() {
@@ -169,5 +218,68 @@ public class Activity {
 
     public Institution getInstitution() {
         return institution;
+    }
+
+    public void verifyInvariants() {
+        hasName();
+        hasRegion();
+        hasParticipants();
+        hasDescription();
+        datesAreConsistent();
+        themesAreApproved();
+    }
+
+    private void hasName() {
+        if (this.name == null || this.name.trim().isEmpty()) {
+            throw new HEException(ACTIVITY_NAME_INVALID, this.name);
+        }
+    }
+
+    private void hasRegion() {
+        if (this.region == null || this.region.trim().isEmpty()) {
+            throw new HEException(ACTIVITY_REGION_NAME_INVALID, this.region);
+        }
+    }
+
+    private void hasParticipants() {
+        if (this.participantsNumber <= 0) {
+            throw new HEException(ACTIVITY_SHOULD_REQUIRE_PARTICIPANTS);
+        }
+    }
+
+    private void hasDescription() {
+        if (this.description == null || this.description.trim().isEmpty()) {
+            throw new HEException(ACTIVITY_DESCRIPTION_INVALID, this.description);
+        }
+    }
+
+    private void datesAreConsistent() {
+        if (this.applicationDeadline == null) {
+            throw new HEException(ACTIVITY_INVALID_DATE, "application deadline");
+        }
+
+        if (this.startingDate == null) {
+            throw new HEException(ACTIVITY_INVALID_DATE, "starting date");
+        }
+
+        if (this.endingDate == null) {
+            throw new HEException(ACTIVITY_INVALID_DATE, "ending date");
+        }
+
+        if (!this.applicationDeadline.isBefore(this.startingDate)) {
+            throw new HEException(ACTIVITY_APPLICATION_DEADLINE_AFTER_START);
+        }
+
+        if (!this.startingDate.isBefore(this.endingDate)) {
+            throw new HEException(ACTIVITY_START_AFTER_END);
+        }
+    }
+
+    private void themesAreApproved() {
+        for (Theme theme : this.themes) {
+            if (theme.getState() != Theme.State.APPROVED) {
+                throw new HEException(THEME_NOT_APPROVED, theme.getCompleteName());
+            }
+        }
     }
 }

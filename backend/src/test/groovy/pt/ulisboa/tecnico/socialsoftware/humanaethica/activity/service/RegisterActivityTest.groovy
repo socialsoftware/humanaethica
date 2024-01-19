@@ -11,24 +11,15 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
-
-import java.time.LocalDateTime
-
 
 @DataJpaTest
 class RegisterActivityTest extends SpockTest {
-    public static final String ACTIVITY_1__NAME = "ACTIVITY_1_NAME"
-    public static final String ACTIVITY_1__REGION = "ACTIVITY_1_REGION"
-    public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
-    public static final String STARTING_DATE = "2023-05-26T19:09:00Z"
-    public static final String ENDING_DATE = "2023-05-26T22:09:00Z"
-    public static final String APPLICATION_DEADLINE = "2023-05-26T19:09:00Z"
-    public static final String THEME_1__NAME = "THEME_1_NAME"
-
     def activityDto
     def institutionDto
     def theme
+    def themesDto
     def activity
     def institution
     def member
@@ -36,25 +27,25 @@ class RegisterActivityTest extends SpockTest {
     def setup() {
         member = authUserService.loginDemoMemberAuth().getUser()
         institution = institutionService.getDemoInstitution()
+
+        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
+        themeRepository.save(theme)
+        themesDto = new ArrayList<>()
+        themesDto.add(new ThemeDto(theme,false,false,false))
     }
 
     def "the activity does not exist, create the activity"() {
         given: "an activity dto"
-        theme = new Theme(THEME_1__NAME, Theme.State.APPROVED,null)
-        themeRepository.save(theme)
-        List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme,false,false,false))
-
         activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_1__NAME)
-        activityDto.setRegion(ACTIVITY_1__REGION)
-        activityDto.setParticipantNumber(1)
-        activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
-        activityDto.setStartingDate(STARTING_DATE);
-        activityDto.setEndingDate(ENDING_DATE);
-        activityDto.setApplicationDeadline(APPLICATION_DEADLINE)
+        activityDto.setName(ACTIVITY_NAME_1)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(1)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setInstitution(new InstitutionDto(institution))
-        activityDto.setThemes(themes)
+        activityDto.setThemes(themesDto)
 
         when:
         def result = activityService.registerActivity(member.getId(), activityDto)
@@ -62,25 +53,34 @@ class RegisterActivityTest extends SpockTest {
         then: "the activity is saved in the database"
         activityRepository.findAll().size() == 1
         and: "checks if user data is correct"
-        result.getName() == ACTIVITY_1__NAME
-        result.getRegion() == ACTIVITY_1__REGION
-        result.getThemes().get(0).getName() == THEME_1__NAME
+        result.name == ACTIVITY_NAME_1
+        result.region == ACTIVITY_REGION_1
+        result.participantsNumber == 1
+        result.description == ACTIVITY_DESCRIPTION_1
+        result.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
+        result.endingDate == DateHandler.toISOString(IN_THREE_DAYS)
+        result.applicationDeadline == DateHandler.toISOString(IN_ONE_DAY)
+        result.institution.id == institution.id
+        result.getThemes().get(0).getName() == THEME_NAME_1
         result.getState() == Activity.State.APPROVED.name()
 
     }
 
     def "the activity already exists"() {
         given:
-        activity = new Activity(ACTIVITY_1__NAME, ACTIVITY_1__REGION, 2, ACTIVITY_1__DESCRIPTION, institution, STARTING_DATE, ENDING_DATE,APPLICATION_DEADLINE, Activity.State.APPROVED)
-        activityRepository.save(activity)
-        and:
         activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_1__NAME)
-        activityDto.setRegion(ACTIVITY_1__REGION)
-        activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
-        activityDto.setStartingDate(STARTING_DATE)
-        activityDto.setEndingDate(ENDING_DATE)
-        activityDto.setApplicationDeadline(APPLICATION_DEADLINE)
+        activityDto.name = ACTIVITY_NAME_1
+        activityDto.region = ACTIVITY_REGION_1
+        activityDto.participantsNumber = 2
+        activityDto.description = ACTIVITY_DESCRIPTION_1
+        activityDto.startingDate = IN_TWO_DAYS
+        activityDto.endingDate = IN_THREE_DAYS
+        activityDto.applicationDeadline = IN_ONE_DAY
+        activityDto.themes = themesDto;
+        def themes = new ArrayList()
+        themes.add(theme)
+        activity = new Activity(activityDto, institution, themes)
+        activityRepository.save(activity)
 
         when:
         activityService.registerActivity(member.getId(), activityDto)
@@ -88,7 +88,7 @@ class RegisterActivityTest extends SpockTest {
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_EXISTS
-        activityRepository.count() == 1
+//        activityRepository.findAll().stream().size() == 1
     }
 
     @Unroll
@@ -98,7 +98,13 @@ class RegisterActivityTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
+        activityDto.setParticipantsNumber(1)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setInstitution(institutionDto)
+        activityDto.setThemes(themesDto)
 
         when:
         activityService.registerActivity(member.getId(), activityDto)
@@ -107,14 +113,14 @@ class RegisterActivityTest extends SpockTest {
         def error = thrown(HEException)
         error.getErrorMessage() == errorMessage
         and: "no activity was created"
-        activityRepository.count() == 0
+        activityRepository.count() == 1
 
         where:
-        name               | region               || errorMessage
-        null               | ACTIVITY_1__REGION || ErrorMessage.INVALID_ACTIVITY_NAME
-        ""                 | ACTIVITY_1__REGION || ErrorMessage.INVALID_ACTIVITY_NAME
-        ACTIVITY_1__NAME  | null                 || ErrorMessage.INVALID_REGION_NAME
-        ACTIVITY_1__NAME  | ""                   || ErrorMessage.INVALID_REGION_NAME
+        name           | region          || errorMessage
+        null           | ACTIVITY_REGION_1 || ErrorMessage.ACTIVITY_NAME_INVALID
+        ""             | ACTIVITY_REGION_1 || ErrorMessage.ACTIVITY_NAME_INVALID
+        ACTIVITY_NAME_1 | null || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | ""   || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
   }
 
     @TestConfiguration

@@ -86,7 +86,7 @@ export default class ManageOwnActivitiesView extends Vue {
     },
     {
       text: 'Participants',
-      value: 'participantNumber',
+      value: 'participantsNumber',
       align: 'left',
       width: '5%',
     },

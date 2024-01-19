@@ -21,7 +21,7 @@ class CheckConfirmationTokenTest extends SpockTest {
     def "checkConfirmationToken: correct token and date has not expired"() {
         given:
         user.getAuthUser().setConfirmationToken(USER_1_TOKEN)
-        user.getAuthUser().setTokenGenerationDate(LOCAL_DATE_TODAY)
+        user.getAuthUser().setTokenGenerationDate(NOW)
 
         when:
         user.getAuthUser().checkConfirmationToken(USER_1_TOKEN)
@@ -33,7 +33,7 @@ class CheckConfirmationTokenTest extends SpockTest {
     def "checkConfirmationToken: correct token but date has expired"() {
         given:
         user.getAuthUser().setConfirmationToken(USER_1_TOKEN)
-        user.getAuthUser().setTokenGenerationDate(LOCAL_DATE_BEFORE)
+        user.getAuthUser().setTokenGenerationDate(TWO_DAYS_AGO)
 
         when:
         user.getAuthUser().checkConfirmationToken(USER_1_TOKEN)
@@ -46,7 +46,7 @@ class CheckConfirmationTokenTest extends SpockTest {
     def "checkConfirmationToken: incorrect token"() {
         given:
         user.getAuthUser().setConfirmationToken(USER_1_TOKEN)
-        user.getAuthUser().setTokenGenerationDate(LOCAL_DATE_TODAY)
+        user.getAuthUser().setTokenGenerationDate(NOW)
 
         when:
         user.getAuthUser().checkConfirmationToken(USER_2_TOKEN)

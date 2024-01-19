@@ -5,14 +5,13 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.Institutio
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class ActivityDto {
     private Integer id;
     private String name;
     private String region;
-    private int participantNumber;
+    private int participantsNumber;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -25,11 +24,11 @@ public class ActivityDto {
     public ActivityDto(){
     }
 
-    public ActivityDto(Activity activity, boolean deepCopyInstitutions){
+    public ActivityDto(Activity activity, boolean deepCopyInstitution){
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
-        setParticipantNumber(activity.getParticipantNumber());
+        setParticipantsNumber(activity.getParticipantsNumber());
         setDescription(activity.getDescription());
 
         this.themes = activity.getThemes().stream()
@@ -42,7 +41,7 @@ public class ActivityDto {
         setEndingDate(DateHandler.toISOString(activity.getEndingDate()));
         setApplicationDeadline(DateHandler.toISOString(activity.getApplicationDeadline()));
 
-        if (deepCopyInstitutions && (activity.getInstitution() != null)) {
+        if (deepCopyInstitution && (activity.getInstitution() != null)) {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
 
         }
@@ -133,11 +132,11 @@ public class ActivityDto {
         this.institution = institution;
     }
 
-    public int getParticipantNumber() {
-        return participantNumber;
+    public int getParticipantsNumber() {
+        return participantsNumber;
     }
 
-    public void setParticipantNumber(int participantNumber) {
-        this.participantNumber = participantNumber;
+    public void setParticipantsNumber(int participantsNumber) {
+        this.participantsNumber = participantsNumber;
     }
 }

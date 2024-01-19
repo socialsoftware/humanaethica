@@ -25,12 +25,6 @@ public class ActivityController {
         return activityService.getActivities();
     }
 
-    @PutMapping("/activity/{activityId}/suspend")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ActivityDto suspendActivity(@PathVariable Integer activityId) {
-        return activityService.suspendActivity(activityId);
-    }
-
     @PostMapping("/activity/register")
     @PreAuthorize("(hasRole('ROLE_MEMBER'))")
     public ActivityDto registerActivity(Principal principal, @Valid @RequestBody ActivityDto activityDto){
@@ -38,23 +32,27 @@ public class ActivityController {
         return activityService.registerActivity(userId, activityDto);
     }
 
+    @PutMapping("/activity/{activityId}/update")
+    @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
+    public ActivityDto updateActivity(@PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
+        return activityService.updateActivity(activityId, activityDto);
+    }
+
+    @PutMapping("/activity/{activityId}/report")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ActivityDto reportActivity(@PathVariable int activityId) {
+        return activityService.reportActivity(activityId);
+    }
+
+    @PutMapping("/activity/{activityId}/suspend")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ActivityDto suspendActivity(@PathVariable Integer activityId) {
+        return activityService.suspendActivity(activityId);
+    }
+
     @PutMapping("/activity/{activityId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ActivityDto validateActivity(@PathVariable int activityId) {
         return activityService.validateActivity(activityId);
     }
-
-    @PutMapping("/activity/{activityId}/report")
-    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
-    public ActivityDto reportActivity(@PathVariable int activityId) {
-        return activityService.reportActivity(activityId);
-    }
-
-    @PutMapping("/activity/{activityId}/update")
-    @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
-    public ActivityDto updateActivity(Principal principal, @PathVariable int activityId, @Valid @RequestBody ActivityDto activityDto){
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return activityService.updateActivity(userId, activityId, activityDto);
-    }
-
 }

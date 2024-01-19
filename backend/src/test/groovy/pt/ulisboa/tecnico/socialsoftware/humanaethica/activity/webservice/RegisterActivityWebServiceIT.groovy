@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.webservice
 import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
 import org.apache.http.HttpStatus
+import org.checkerframework.checker.units.qual.N
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
@@ -15,14 +16,6 @@ import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterActivityWebServiceIT extends SpockTest {
-    public static final String THEME_1__NAME = "THEME_1_NAME"
-    public static final String ACTIVITY_1__NAME = "ACTIVITY_1_NAME"
-    public static final String ACTIVITY_1__REGION = "ACTIVITY_1_REGION"
-    public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
-    public static final LocalDateTime STARTING_DATE = DateHandler.now().plusDays(1)
-    public static final LocalDateTime ENDING_DATE = DateHandler.now().plusDays(2)
-    public static final LocalDateTime APPLICATION_DEADLINE = DateHandler.now().plusDays(2)
-
     @LocalServerPort
     private int port
 
@@ -36,7 +29,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
 
         restClient = new RESTClient("http://localhost:" + port)
 
-        theme = new Theme(THEME_1__NAME, Theme.State.APPROVED,null)
+        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
         themeRepository.save(theme)
         themes = new ArrayList<>()
         themes.add(new ThemeDto(theme,false, false, false))
@@ -50,14 +43,14 @@ class RegisterActivityWebServiceIT extends SpockTest {
         response = restClient.post(
                 path: '/activity/register',
                 body: [
-                        name         : ACTIVITY_1__NAME,
-                        region       : ACTIVITY_1__REGION,
-                        participantNumber: 2,
+                        name         : ACTIVITY_NAME_1,
+                        region       : ACTIVITY_REGION_1,
+                        participantsNumber: 2,
                         themes       : themes,
-                        description  : ACTIVITY_1__DESCRIPTION,
-                        startingDate : DateHandler.toISOString(STARTING_DATE),
-                        endingDate   : DateHandler.toISOString(ENDING_DATE),
-                        applicationDeadline   : DateHandler.toISOString(APPLICATION_DEADLINE)
+                        description  : ACTIVITY_DESCRIPTION_1,
+                        startingDate : DateHandler.toISOString(NOW),
+                        endingDate   : DateHandler.toISOString(IN_ONE_DAY),
+                        applicationDeadline   : DateHandler.toISOString(ONE_DAY_AGO)
 
                 ],
                 requestContentType: 'application/json'
@@ -68,14 +61,14 @@ class RegisterActivityWebServiceIT extends SpockTest {
         response.status == HttpStatus.SC_OK
         activityRepository.count() == 1
         def activity = activityRepository.findAll().get(0)
-        activity.getName() == ACTIVITY_1__NAME
-        activity.getRegion() == ACTIVITY_1__REGION
-        activity.getParticipantNumber() == 2
-        activity.getDescription() == ACTIVITY_1__DESCRIPTION
-        activity.getStartingDate().withNano(0) == STARTING_DATE.withNano(0)
-        activity.getEndingDate().withNano(0) == ENDING_DATE.withNano(0)
-        activity.getApplicationDeadline().withNano(0) == APPLICATION_DEADLINE.withNano(0)
-        activity.themes.get(0).getName() == THEME_1__NAME
+        activity.getName() == ACTIVITY_NAME_1
+        activity.getRegion() == ACTIVITY_REGION_1
+        activity.getParticipantsNumber() == 2
+        activity.getDescription() == ACTIVITY_DESCRIPTION_1
+        activity.getStartingDate().withNano(0) == NOW.withNano(0)
+        activity.getEndingDate().withNano(0) == IN_ONE_DAY.withNano(0)
+        activity.getApplicationDeadline().withNano(0) == ONE_DAY_AGO.withNano(0)
+        activity.themes.get(0).getName() == THEME_NAME_1
 
         cleanup:
         deleteAll()
@@ -89,12 +82,12 @@ class RegisterActivityWebServiceIT extends SpockTest {
         response = restClient.post(
                 path: '/activity/register',
                 body: [
-                        name         : ACTIVITY_1__NAME,
-                        region       : ACTIVITY_1__REGION,
+                        name         : ACTIVITY_NAME_1,
+                        region       : ACTIVITY_REGION_1,
                         themes       : themes,
-                        description  : ACTIVITY_1__DESCRIPTION,
-                        startingDate : DateHandler.toISOString(STARTING_DATE),
-                        endingDate   : DateHandler.toISOString(ENDING_DATE)
+                        description  : ACTIVITY_DESCRIPTION_1,
+                        startingDate : DateHandler.toISOString(NOW),
+                        endingDate   : DateHandler.toISOString(IN_ONE_DAY)
 
                 ],
                 requestContentType: 'application/json'
@@ -117,12 +110,12 @@ class RegisterActivityWebServiceIT extends SpockTest {
         response = restClient.post(
                 path: '/activity/register',
                 body: [
-                        name         : ACTIVITY_1__NAME,
-                        region       : ACTIVITY_1__REGION,
+                        name         : ACTIVITY_NAME_1,
+                        region       : ACTIVITY_REGION_1,
                         themes       : themes,
-                        description  : ACTIVITY_1__DESCRIPTION,
-                        startingDate : DateHandler.toISOString(STARTING_DATE),
-                        endingDate   : DateHandler.toISOString(ENDING_DATE)
+                        description  : ACTIVITY_DESCRIPTION_1,
+                        startingDate : DateHandler.toISOString(NOW),
+                        endingDate   : DateHandler.toISOString(IN_ONE_DAY)
 
                 ],
                 requestContentType: 'application/json'

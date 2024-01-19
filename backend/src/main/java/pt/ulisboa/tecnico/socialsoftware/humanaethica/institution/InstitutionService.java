@@ -161,7 +161,7 @@ public class InstitutionService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Institution getDemoInstitution() {
-        return institutionRepository.findInstitutionByNif(DemoUtils.DEMO_INSTITUTION).orElseGet(() -> {
+        return institutionRepository.findInstitutionByNif(DemoUtils.DEMO_INSTITUTION_NIF).orElseGet(() -> {
             Institution institution = new Institution(DemoUtils.DEMO_INSTITUTION, "demo_institution@mail.com", DemoUtils.DEMO_INSTITUTION_NIF);
             institution.validate();
             institutionRepository.save(institution);

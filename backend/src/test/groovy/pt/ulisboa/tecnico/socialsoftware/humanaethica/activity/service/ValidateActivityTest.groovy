@@ -15,17 +15,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institu
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 
 @DataJpaTest
 class ValidateActivityTest extends SpockTest {
-    public static final String ACTIVITY_1__NAME = "ACTIVITY_1_NAME"
-    public static final String ACTIVITY_1__REGION = "ACTIVITY_1_REGION"
-    public static final String ACTIVITY_1__DESCRIPTION = "ACTIVITY_1_DESCRIPTION"
-    public static final String STARTING_DATE = "2023-05-26T19:09:00Z"
-    public static final String ENDING_DATE = "2023-05-26T22:09:00Z"
-    public static final String APPLICATION_DEADLINE = "2023-05-26T22:09:00Z"
-    public static final String THEME_1__NAME = "THEME_1_NAME"
     def activityDto
     def activityResultDto
     def theme
@@ -48,19 +42,19 @@ class ValidateActivityTest extends SpockTest {
 
         member = userService.registerUser(memberDto, null);
 
-        theme = new Theme(THEME_1__NAME, Theme.State.APPROVED, null)
+        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED, null)
         themeRepository.save(theme)
         List<ThemeDto> themes = new ArrayList<>()
         themes.add(new ThemeDto(theme, false, false, false))
 
         activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_1__NAME)
-        activityDto.setRegion(ACTIVITY_1__REGION)
-        activityDto.setParticipantNumber(2)
-        activityDto.setDescription(ACTIVITY_1__DESCRIPTION)
-        activityDto.setStartingDate(STARTING_DATE)
-        activityDto.setEndingDate(ENDING_DATE)
-        activityDto.setApplicationDeadline(APPLICATION_DEADLINE);
+        activityDto.setName(ACTIVITY_NAME_1)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(2)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+        activityDto.setApplicationDeadline(DateHandler.toISOString(NOW))
         activityDto.setInstitution(institutionDto)
         activityDto.setThemes(themes)
 
@@ -101,12 +95,12 @@ class ValidateActivityTest extends SpockTest {
         List<ThemeDto> themes = new ArrayList<>()
         themes.add(new ThemeDto(theme, false, false, false))
 
-        activityResultDto.setStartingDate(STARTING_DATE)
-        activityResultDto.setEndingDate(ENDING_DATE)
+        activityResultDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
+        activityResultDto.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
         activityResultDto.setThemes(themes)
 
         when:
-        activityService.updateActivity(member.getId(), activityResultDto.getId(), activityDto)
+        activityService.updateActivity(activityResultDto.getId(), activityDto)
         activityService.validateActivity(c.getId())
 
         then:
