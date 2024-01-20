@@ -52,7 +52,7 @@ public class ActivityService {
                 .toList();
 
         Activity activity = new Activity(activityDto, institution, themes);
-        activity.verifyInvariants();
+
         activityRepository.save(activity);
 
         return new ActivityDto(activity, true);
@@ -67,7 +67,6 @@ public class ActivityService {
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityDto.getId()));
 
         activity.update(activityDto, themeList);
-        activity.verifyInvariants();
 
         return new ActivityDto(activity, false);
     }

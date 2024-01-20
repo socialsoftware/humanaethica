@@ -31,7 +31,7 @@ public enum ErrorMessage {
     ACTIVITY_NOT_FOUND("Activity not found with id %d"),
     ACTIVITY_NAME_INVALID("Activity Name: %s, is not valid"),
     ACTIVITY_REGION_NAME_INVALID("Region Name: %s, is not valid"),
-    ACTIVITY_SHOULD_REQUIRE_PARTICIPANTS("Activity should require participants"),
+    ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS("Activity should have one to five participants"),
     ACTIVITY_DESCRIPTION_INVALID("Activity description is missing"),
     ACTIVITY_INVALID_DATE("Date format for %s is invalid"),
     ACTIVITY_APPLICATION_DEADLINE_AFTER_START("Activity application deadline is after start"),

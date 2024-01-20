@@ -119,7 +119,7 @@ class RegisterThemeTest extends SpockTest {
     }
 
     @Unroll
-    /*def "invalid arguments: name=#name"() {
+    def "invalid arguments: name=#name"() {
         given: "a theme dto"
         themeDto = new ThemeDto()
         themeDto.setName(name)
@@ -137,7 +137,7 @@ class RegisterThemeTest extends SpockTest {
         name               || errorMessage
         null               || ErrorMessage.INVALID_THEME_NAME
         ""                 || ErrorMessage.INVALID_THEME_NAME
-    }*/
+    }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

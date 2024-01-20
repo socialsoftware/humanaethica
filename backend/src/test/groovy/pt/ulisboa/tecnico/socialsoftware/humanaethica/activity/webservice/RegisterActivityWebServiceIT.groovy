@@ -74,6 +74,36 @@ class RegisterActivityWebServiceIT extends SpockTest {
         deleteAll()
     }
 
+    def "login as member, and create an activity with error"() {
+        given: 'a member'
+        demoMemberLogin()
+
+        when: 'the member registers the activity'
+        response = restClient.post(
+                path: '/activity/register',
+                body: [
+                        name         : ACTIVITY_NAME_1,
+                        region       : ACTIVITY_REGION_1,
+                        participantsNumber: 0,
+                        themes       : themes,
+                        description  : ACTIVITY_DESCRIPTION_1,
+                        startingDate : DateHandler.toISOString(NOW),
+                        endingDate   : DateHandler.toISOString(IN_ONE_DAY),
+                        applicationDeadline   : DateHandler.toISOString(ONE_DAY_AGO)
+
+                ],
+                requestContentType: 'application/json'
+        )
+
+        then: "check response status"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_BAD_REQUEST
+        activityRepository.count() == 0
+
+        cleanup:
+        deleteAll()
+    }
+
     def "login as volunteer, and create an activity"() {
         given: 'a volunteer'
         demoVolunteerLogin()
@@ -115,7 +145,8 @@ class RegisterActivityWebServiceIT extends SpockTest {
                         themes       : themes,
                         description  : ACTIVITY_DESCRIPTION_1,
                         startingDate : DateHandler.toISOString(NOW),
-                        endingDate   : DateHandler.toISOString(IN_ONE_DAY)
+                        endingDate   : DateHandler.toISOString(IN_ONE_DAY),
+                        applicationDeadline: DateHandler.toISOString(NOW)
 
                 ],
                 requestContentType: 'application/json'

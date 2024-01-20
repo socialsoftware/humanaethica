@@ -47,7 +47,7 @@ public class ThemeService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Theme registerTheme(ThemeDto themeDto, boolean isAdmin) {
-        if (themeDto.getName() == null) {
+        if (themeDto.getName() == null || themeDto.getName().trim().isEmpty()) {
             throw new HEException(INVALID_THEME_NAME, themeDto.getName());
         }
 

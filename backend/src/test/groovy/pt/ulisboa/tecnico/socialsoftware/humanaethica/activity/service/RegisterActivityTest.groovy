@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
@@ -13,6 +14,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
+
+import java.time.LocalDateTime
 
 @DataJpaTest
 class RegisterActivityTest extends SpockTest {
@@ -66,17 +69,17 @@ class RegisterActivityTest extends SpockTest {
 
     }
 
-    def "the activity already exists"() {
+    def "an activity with the same name already exists in the institution"() {
         given:
         activityDto = new ActivityDto()
         activityDto.name = ACTIVITY_NAME_1
         activityDto.region = ACTIVITY_REGION_1
         activityDto.participantsNumber = 2
         activityDto.description = ACTIVITY_DESCRIPTION_1
-        activityDto.startingDate = IN_TWO_DAYS
-        activityDto.endingDate = IN_THREE_DAYS
-        activityDto.applicationDeadline = IN_ONE_DAY
-        activityDto.themes = themesDto;
+        activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
+        activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
+        activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+        activityDto.setThemes(themesDto)
         def themes = new ArrayList()
         themes.add(theme)
         activity = new Activity(activityDto, institution, themes)
@@ -88,21 +91,47 @@ class RegisterActivityTest extends SpockTest {
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_EXISTS
-//        activityRepository.findAll().stream().size() == 1
+        and: "only an activity"
+        activityRepository.findAll().size() == 1
+    }
+
+    def "an activity with the same name already exists in another institution"() {
+        given:
+        activityDto = new ActivityDto()
+        activityDto.name = ACTIVITY_NAME_1
+        activityDto.region = ACTIVITY_REGION_1
+        activityDto.participantsNumber = 2
+        activityDto.description = ACTIVITY_DESCRIPTION_1
+        activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
+        activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
+        activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+        activityDto.setThemes(themesDto)
+        def themes = new ArrayList()
+        themes.add(theme)
+        def institution2 = new Institution()
+        institutionRepository.save(institution2)
+        activity = new Activity(activityDto, institution2, themes)
+        activityRepository.save(activity)
+
+        when:
+        activityService.registerActivity(member.getId(), activityDto)
+
+        then: "two activities"
+        activityRepository.findAll().size() == 2
     }
 
     @Unroll
-    def "invalid arguments: name=#name | region=#region"() {
+    def "invalid arguments: name=#name | region=#region | participants=#participants | description=#description | deadline=#deadline | start=#start | end=#end"() {
         given: "an activity dto"
         institutionDto = new InstitutionDto(institution)
         activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
-        activityDto.setParticipantsNumber(1)
-        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setParticipantsNumber(participants)
+        activityDto.setDescription(description)
+        activityDto.setApplicationDeadline(deadline instanceof LocalDateTime ? DateHandler.toISOString(deadline) : deadline as String)
+        activityDto.setStartingDate(start instanceof LocalDateTime ? DateHandler.toISOString(start) : start as String)
+        activityDto.setEndingDate(end instanceof LocalDateTime ? DateHandler.toISOString(end) : end as String)
         activityDto.setInstitution(institutionDto)
         activityDto.setThemes(themesDto)
 
@@ -113,14 +142,26 @@ class RegisterActivityTest extends SpockTest {
         def error = thrown(HEException)
         error.getErrorMessage() == errorMessage
         and: "no activity was created"
-        activityRepository.count() == 1
+        activityRepository.findAll().size() == 0
 
         where:
-        name           | region          || errorMessage
-        null           | ACTIVITY_REGION_1 || ErrorMessage.ACTIVITY_NAME_INVALID
-        ""             | ACTIVITY_REGION_1 || ErrorMessage.ACTIVITY_NAME_INVALID
-        ACTIVITY_NAME_1 | null || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
-        ACTIVITY_NAME_1 | ""   || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        name            | region            | participants | description            | deadline   | start       | end           || errorMessage
+        null            | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_NAME_INVALID
+        " "             | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_NAME_INVALID
+        ACTIVITY_NAME_1 | null              | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | " "               | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 0            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 6            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | null                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | "  "                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | null       | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | "  "       | IN_TWO_DAYS | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | null        | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | "   "       | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | null          || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | "     "       || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | NOW         | IN_THREE_DAYS || ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_TWO_DAYS   || ErrorMessage.ACTIVITY_START_AFTER_END
   }
 
     @TestConfiguration

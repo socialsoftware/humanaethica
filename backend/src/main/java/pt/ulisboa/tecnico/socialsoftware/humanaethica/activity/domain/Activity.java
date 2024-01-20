@@ -5,7 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.time.LocalDateTime;
@@ -48,7 +47,6 @@ public class Activity {
 
     public Activity(ActivityDto activityDto, Institution institution, List<Theme> themes) {
         setInstitution(institution);
-
         setName(activityDto.getName());
         setRegion(activityDto.getRegion());
         setParticipantsNumber(activityDto.getParticipantsNumber());
@@ -61,6 +59,8 @@ public class Activity {
         for (Theme theme : themes) {
             addTheme(theme);
         }
+
+        verifyInvariants();
     }
 
     public void update(ActivityDto activityDto, List<Theme> themes) {
@@ -73,6 +73,8 @@ public class Activity {
         setApplicationDeadline(DateHandler.toLocalDateTime(activityDto.getApplicationDeadline()));
 
         setThemes(themes);
+
+        verifyInvariants();
     }
 
 
@@ -223,9 +225,13 @@ public class Activity {
     public void verifyInvariants() {
         hasName();
         hasRegion();
-        hasParticipants();
         hasDescription();
-        datesAreConsistent();
+        hasOneToFiveParticipants();
+        hasApplicationDate();
+        hasStartingDate();
+        hasEndingDate();
+        applicationBeforeStart();
+        startBeforeEnd();
         themesAreApproved();
     }
 
@@ -241,35 +247,44 @@ public class Activity {
         }
     }
 
-    private void hasParticipants() {
-        if (this.participantsNumber <= 0) {
-            throw new HEException(ACTIVITY_SHOULD_REQUIRE_PARTICIPANTS);
-        }
-    }
-
     private void hasDescription() {
         if (this.description == null || this.description.trim().isEmpty()) {
             throw new HEException(ACTIVITY_DESCRIPTION_INVALID, this.description);
         }
     }
 
-    private void datesAreConsistent() {
+
+    private void hasOneToFiveParticipants() {
+        if (this.participantsNumber <= 0 || this.participantsNumber > 5) {
+            throw new HEException(ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS);
+        }
+    }
+
+    private void hasApplicationDate() {
         if (this.applicationDeadline == null) {
             throw new HEException(ACTIVITY_INVALID_DATE, "application deadline");
         }
+    }
 
+    private void hasStartingDate() {
         if (this.startingDate == null) {
             throw new HEException(ACTIVITY_INVALID_DATE, "starting date");
         }
+    }
 
+    private void hasEndingDate() {
         if (this.endingDate == null) {
             throw new HEException(ACTIVITY_INVALID_DATE, "ending date");
         }
+    }
 
+    private void applicationBeforeStart() {
         if (!this.applicationDeadline.isBefore(this.startingDate)) {
             throw new HEException(ACTIVITY_APPLICATION_DEADLINE_AFTER_START);
         }
+    }
 
+    private void startBeforeEnd() {
         if (!this.startingDate.isBefore(this.endingDate)) {
             throw new HEException(ACTIVITY_START_AFTER_END);
         }
