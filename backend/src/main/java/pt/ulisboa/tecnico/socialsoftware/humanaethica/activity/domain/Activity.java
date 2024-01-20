@@ -166,14 +166,16 @@ public class Activity {
     }
 
     public void validate() {
+        if (getState() == Activity.State.APPROVED) {
+            throw new HEException(ACTIVITY_ALREADY_APPROVED, this.name);
+        }
+
         for (Theme theme : themes) {
             if (theme.getState() != Theme.State.APPROVED) {
                 throw new HEException(THEME_NOT_APPROVED, theme.getCompleteName());
             }
         }
-        if (getState() == Activity.State.APPROVED) {
-            throw new HEException(ACTIVITY_ALREADY_APPROVED, this.name);
-        }
+
         setState(Activity.State.APPROVED);
     }
 

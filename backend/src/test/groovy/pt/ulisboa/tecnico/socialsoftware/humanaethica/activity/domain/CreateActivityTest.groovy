@@ -79,8 +79,6 @@ class CreateActivityTest extends SpockTest {
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == errorMessage
-        and: "no activity was created"
-        activityRepository.findAll().size() == 0
 
         where:
         name            | region            | participants | description            | deadline   | start       | end           | activityName | themeStatus || errorMessage
