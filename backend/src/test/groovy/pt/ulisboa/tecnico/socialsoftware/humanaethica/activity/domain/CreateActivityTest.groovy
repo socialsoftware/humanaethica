@@ -57,9 +57,9 @@ class CreateActivityTest extends SpockTest {
     }
 
     @Unroll
-    def "create activity and violate invariants for arguments: name=#name | region=#region | participants=#participants | description=#description | deadline=#deadline | start=#start | end=#end | activityName=#activityName | themeStatus=#themeStatus"() {
+    def "create activity and violate invariants for arguments: name=#name | region=#region | participants=#participants | description=#description | deadline=#deadline | start=#start | end=#end | themeStatus=#themeStatus"() {
         given:
-        activity.getName() >> activityName
+        activity.getName() >> ACTIVITY_NAME_2
         institution.getActivities() >> [activity]
         theme.getState() >> themeStatus
         def themes = [theme]
@@ -81,26 +81,28 @@ class CreateActivityTest extends SpockTest {
         error.getErrorMessage() == errorMessage
 
         where:
-        name            | region            | participants | description            | deadline   | start       | end           | activityName | themeStatus || errorMessage
-        null            | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_NAME_INVALID
-        " "             | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_NAME_INVALID
-        ACTIVITY_NAME_1 | null              | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
-        ACTIVITY_NAME_1 | " "               | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 0            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 6            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | null                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | "  "                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | null       | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | "  "       | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | null        | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | "   "       | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | null          | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | "     "       | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | NOW         | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_TWO_DAYS   | ACTIVITY_NAME_2 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_START_AFTER_END
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_1 | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_ALREADY_EXISTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.DELETED   || ErrorMessage.THEME_NOT_APPROVED
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | ACTIVITY_NAME_2 | Theme.State.SUBMITTED || ErrorMessage.THEME_NOT_APPROVED
+        name            | region            | participants | description            | deadline   | start       | end           | themeStatus           || errorMessage
+        null            | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_NAME_INVALID
+        " "             | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_NAME_INVALID
+        ACTIVITY_NAME_1 | null              | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | " "               | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | -5           | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 0            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 6            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 10           | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | null                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | "  "                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | null       | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | "  "       | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | null        | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | "   "       | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | null          | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | "     "       | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | NOW         | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_TWO_DAYS   | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_START_AFTER_END
+        ACTIVITY_NAME_2 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_ALREADY_EXISTS
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.DELETED   || ErrorMessage.THEME_NOT_APPROVED
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.SUBMITTED || ErrorMessage.THEME_NOT_APPROVED
     }
 
     @TestConfiguration

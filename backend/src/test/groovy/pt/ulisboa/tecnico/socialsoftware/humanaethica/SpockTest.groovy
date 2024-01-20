@@ -66,6 +66,7 @@ class SpockTest extends Specification {
 
     public static final String ACTIVITY_NAME_1 = "activity name 1"
     public static final String ACTIVITY_NAME_2 = "activity name 2"
+    public static final String ACTIVITY_NAME_3 = "activity name 3"
     public static final String ACTIVITY_REGION_1 = "activity region 1"
     public static final String ACTIVITY_REGION_2 = "activity region 2"
     public static final String ACTIVITY_DESCRIPTION_1 = "activity description 1"

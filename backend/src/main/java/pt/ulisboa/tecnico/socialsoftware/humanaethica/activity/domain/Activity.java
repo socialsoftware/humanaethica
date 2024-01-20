@@ -192,13 +192,15 @@ public class Activity {
     }
 
     public void setThemes(List<Theme> newThemes) {
+        List<Theme> oldThemes = new ArrayList<>(this.themes);
+
         newThemes.forEach(newTheme -> {
             if (!this.themes.contains(newTheme)) {
                 addTheme(newTheme);
             }
         });
 
-        this.themes.forEach(theme -> {
+        oldThemes.forEach(theme -> {
             if (!newThemes.contains(theme)) {
                 removeTheme(theme);
             }
