@@ -15,7 +15,7 @@ import spock.lang.Unroll
 import java.time.LocalDateTime
 
 @DataJpaTest
-class CreateActivityTest extends SpockTest {
+class CreateActivityMethodTest extends SpockTest {
     Institution institution = Mock()
     Theme theme = Mock()
     Activity activity = Mock()

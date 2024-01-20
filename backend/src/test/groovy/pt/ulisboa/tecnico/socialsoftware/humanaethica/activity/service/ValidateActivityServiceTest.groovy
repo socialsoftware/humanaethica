@@ -19,7 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 
 @DataJpaTest
-class ValidateActivityTest extends SpockTest {
+class ValidateActivityServiceTest extends SpockTest {
     def activityDto
     def activityResultDto
     def theme

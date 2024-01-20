@@ -18,7 +18,7 @@ import spock.lang.Unroll
 import java.time.LocalDateTime
 
 @DataJpaTest
-class RegisterActivityTest extends SpockTest {
+class RegisterActivityServiceTest extends SpockTest {
     def activityDto
     def institutionDto
     def theme

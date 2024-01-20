@@ -12,10 +12,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
 
+import java.time.LocalDateTime
+
 @DataJpaTest
-class ValidateActivityTest extends SpockTest {
+class ReportActivityMethodTest extends SpockTest {
     Institution institution = Mock()
-    Theme theme = Mock()
     Activity activity
     def activityDto
 
@@ -32,49 +33,40 @@ class ValidateActivityTest extends SpockTest {
     }
 
     @Unroll
-    def "validate activity with: state:#state"() {
+    def "report activity with: state:#state"() {
         given: "activity"
         institution.getActivities() >> []
-        theme.getState() >> Theme.State.APPROVED
-        def themes = [theme]
+        def themes = []
         activity = new Activity(activityDto, institution, themes)
         activity.setState(state)
 
         when:
-        activity.validate()
+        activity.report()
 
-        then: "it is suspended"
+        then: "it is reported"
         activity.getState() == resultState
 
         where:
         state                    || resultState
-        Activity.State.SUSPENDED || Activity.State.APPROVED
-        Activity.State.REPORTED  || Activity.State.APPROVED
+        Activity.State.APPROVED  || Activity.State.REPORTED
+        Activity.State.SUSPENDED || Activity.State.REPORTED
     }
 
     @Unroll
-    def "validate activity: activityState=#activityState | themeState=#themeState || message=#message"() {
+    def "report reported activity"() {
         given:
         institution.getActivities() >> []
-        theme.getState() >> themeState
         def themes = []
         activity = new Activity(activityDto, institution, themes)
-        activity.setState(activityState)
-        activity.addTheme(theme)
+        activity.setState(Activity.State.REPORTED)
 
         when:
-        activity.validate()
+        activity.report()
 
         then:
         def error = thrown(HEException)
-        error.getErrorMessage() == message
-        activity.getState() == activityState
-
-        where:
-        activityState            | themeState            || message
-        Activity.State.APPROVED  | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_ALREADY_APPROVED
-        Activity.State.SUSPENDED | Theme.State.SUBMITTED || ErrorMessage.THEME_NOT_APPROVED
-        Activity.State.SUSPENDED | Theme.State.DELETED   || ErrorMessage.THEME_NOT_APPROVED
+        error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_REPORTED
+        activity.getState() == Activity.State.REPORTED
     }
 
     @TestConfiguration

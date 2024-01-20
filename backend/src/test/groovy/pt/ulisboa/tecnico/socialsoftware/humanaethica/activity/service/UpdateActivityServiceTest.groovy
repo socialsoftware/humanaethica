@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 @DataJpaTest
-class UpdateActivityTest extends SpockTest {
+class UpdateActivityServiceTest extends SpockTest {
     def activityDto
     def theme
     def activity

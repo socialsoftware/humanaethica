@@ -12,10 +12,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
 
-import java.time.LocalDateTime
-
 @DataJpaTest
-class ReportActivityTest extends SpockTest {
+class SuspendActivityMethodTest extends SpockTest {
     Institution institution = Mock()
     Activity activity
     def activityDto
@@ -33,7 +31,7 @@ class ReportActivityTest extends SpockTest {
     }
 
     @Unroll
-    def "report activity with: state:#state"() {
+    def "suspend activity with: state:#state"() {
         given: "activity"
         institution.getActivities() >> []
         def themes = []
@@ -41,32 +39,32 @@ class ReportActivityTest extends SpockTest {
         activity.setState(state)
 
         when:
-        activity.report()
+        activity.suspend()
 
-        then: "it is reported"
+        then:
         activity.getState() == resultState
 
         where:
-        state                    || resultState
-        Activity.State.APPROVED  || Activity.State.REPORTED
-        Activity.State.SUSPENDED || Activity.State.REPORTED
+        state                   || resultState
+        Activity.State.APPROVED || Activity.State.SUSPENDED
+        Activity.State.REPORTED || Activity.State.SUSPENDED
     }
 
     @Unroll
-    def "report reported activity"() {
+    def "suspend suspended activity"() {
         given:
         institution.getActivities() >> []
         def themes = []
         activity = new Activity(activityDto, institution, themes)
-        activity.setState(Activity.State.REPORTED)
+        activity.setState(Activity.State.SUSPENDED)
 
         when:
-        activity.report()
+        activity.suspend()
 
         then:
         def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_REPORTED
-        activity.getState() == Activity.State.REPORTED
+        error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_SUSPENDED
+        activity.getState() == Activity.State.SUSPENDED
     }
 
     @TestConfiguration
