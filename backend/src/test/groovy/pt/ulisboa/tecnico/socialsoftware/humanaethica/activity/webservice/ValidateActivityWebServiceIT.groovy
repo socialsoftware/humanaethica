@@ -23,8 +23,6 @@ class ValidateActivityWebServiceIT extends SpockTest {
     def activityDto
     def institution
     def theme
-    def member
-    def admin
 
     def setup() {
         deleteAll()
@@ -46,7 +44,6 @@ class ValidateActivityWebServiceIT extends SpockTest {
         activityDto.setStartingDate(DateHandler.toISOString(NOW))
         activityDto.setEndingDate(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setApplicationDeadline(DateHandler.toISOString(TWO_DAYS_AGO))
-        activityDto.setInstitution(new InstitutionDto(institutionService.getDemoInstitution()))
         activityDto.setThemes(themes)
         activity = activityService.registerActivity(user.id, activityDto)
         activityService.reportActivity(activity.getId())

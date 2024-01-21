@@ -20,7 +20,6 @@ class RegisterActivityWebServiceIT extends SpockTest {
     private int port
 
     def response
-
     def theme
     def themes
 
