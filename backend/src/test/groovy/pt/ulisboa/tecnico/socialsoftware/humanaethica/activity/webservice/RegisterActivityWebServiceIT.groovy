@@ -19,8 +19,6 @@ class RegisterActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
-    def response
-    def theme
     def themes
 
     def setup() {
@@ -28,7 +26,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
 
         restClient = new RESTClient("http://localhost:" + port)
 
-        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
+        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
         themeRepository.save(theme)
         themes = new ArrayList<>()
         themes.add(new ThemeDto(theme,false, false, false))
@@ -39,7 +37,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when: 'the member registers the activity'
-        response = restClient.post(
+        def response = restClient.post(
                 path: '/activity/register',
                 body: [
                         name         : ACTIVITY_NAME_1,
@@ -78,7 +76,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when: 'the member registers the activity'
-        response = restClient.post(
+        restClient.post(
                 path: '/activity/register',
                 body: [
                         name         : ACTIVITY_NAME_1,
@@ -108,7 +106,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         when: 'the volunteer registers the activity'
-        response = restClient.post(
+        restClient.post(
                 path: '/activity/register',
                 body: [
                         name         : ACTIVITY_NAME_1,
@@ -136,7 +134,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         demoAdminLogin()
 
         when: 'the admin registers the activity'
-        response = restClient.post(
+        restClient.post(
                 path: '/activity/register',
                 body: [
                         name         : ACTIVITY_NAME_1,

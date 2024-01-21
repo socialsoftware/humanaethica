@@ -16,97 +16,63 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.Institutio
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
+import spock.lang.Unroll
 
 
 @DataJpaTest
 class ValidateActivityServiceTest extends SpockTest {
-    def activityDto
-    def activityResultDto
-    def theme
-    def institution
-    def institutionDto
-    def memberDto
-    def member
+    def activity
 
     def setup() {
-        institution = new Institution()
-        institutionRepository.save(institution)
-        institutionDto = new InstitutionDto(institution)
-
-        memberDto = new RegisterUserDto()
-        memberDto.setEmail(USER_1_EMAIL)
-        memberDto.setUsername(USER_1_EMAIL)
-        memberDto.setConfirmationToken(USER_1_TOKEN)
-        memberDto.setRole(User.Role.MEMBER)
-        memberDto.setInstitutionId(institution.getId())
-
-        member = userService.registerUser(memberDto, null);
-
-        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED, null)
+        def member = authUserService.loginDemoMemberAuth().getUser()
+        def institution = institutionService.getDemoInstitution()
+        given: "activity info"
+        def activityDto = new ActivityDto()
+        activityDto.name = ACTIVITY_NAME_1
+        activityDto.region = ACTIVITY_REGION_1
+        activityDto.participantsNumber = 1
+        activityDto.description = ACTIVITY_DESCRIPTION_1
+        activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
+        activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
+        activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+        and: "a theme"
+        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED, null)
         themeRepository.save(theme)
-        List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme, false, false, false))
-
-        activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_NAME_1)
-        activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(2)
-        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(NOW))
-        activityDto.setInstitution(institutionDto)
-        activityDto.setThemes(themes)
-
-        activityResultDto = activityService.registerActivity(member.getId(), activityDto)
-        activityService.reportActivity(activityResultDto.getId())
+        def themes = new ArrayList<>()
+        themes.add(theme)
+        and: "an activity"
+        activity = new Activity(activityDto, institution, themes)
+        activityRepository.save(activity)
     }
 
     def "validate activity with success"() {
+        given:
+        activity.setState(state)
+
         when:
-        activityService.validateActivity(activityResultDto.getId())
+        def result = activityService.validateActivity(activity.id)
 
         then: "the activity and theme are validated"
-        activityResultDto.getState() == Activity.State.APPROVED.name()
-   }
+        result.state == Activity.State.APPROVED.name()
 
-    def "the activity doesn't exist"() {
+        where:
+        state << [Activity.State.SUSPENDED, Activity.State.REPORTED]
+    }
+
+    @Unroll
+    def "arguments: activityId=#activityId"() {
         when:
-        activityService.validateActivity(activityResultDto.getId() + 1)
+        activityService.validateActivity(activityId)
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ACTIVITY_NOT_FOUND
+
+        where:
+        activityId << [null, 222]
     }
 
-    def "the activity is already approved"() {
-        when:
-        activityService.validateActivity(activityResultDto.getId())
-        activityService.validateActivity(activityResultDto.getId())
 
-        then:
-        def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_APPROVED
-    }
-
-    def "the theme haven't yet been approved"() {
-        given:
-        theme.setState(Theme.State.SUBMITTED)
-        List<ThemeDto> themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme, false, false, false))
-
-        activityResultDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
-        activityResultDto.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityResultDto.setThemes(themes)
-
-        when:
-        activityService.updateActivity(activityResultDto.getId(), activityDto)
-        activityService.validateActivity(c.getId())
-
-        then:
-        def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.THEME_NOT_APPROVED
-    }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

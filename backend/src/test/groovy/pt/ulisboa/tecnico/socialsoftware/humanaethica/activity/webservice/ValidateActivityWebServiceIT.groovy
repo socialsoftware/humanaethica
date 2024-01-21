@@ -18,11 +18,7 @@ class ValidateActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
-    def response
-    def activity
-    def activityDto
-    def institution
-    def theme
+    def activityId
 
     def setup() {
         deleteAll()
@@ -31,22 +27,24 @@ class ValidateActivityWebServiceIT extends SpockTest {
 
         def user = demoMemberLogin()
 
-        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
+        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
         themeRepository.save(theme)
-        List<ThemeDto> themes = new ArrayList<>()
+        def themes = new ArrayList<>()
         themes.add(new ThemeDto(theme,false,false,false))
 
-        activityDto = new ActivityDto()
+        def activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_NAME_1)
         activityDto.setRegion(ACTIVITY_REGION_1)
         activityDto.setParticipantsNumber(2)
         activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(NOW))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_ONE_DAY))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(TWO_DAYS_AGO))
+        activityDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setApplicationDeadline(DateHandler.toISOString(NOW))
         activityDto.setThemes(themes)
-        activity = activityService.registerActivity(user.id, activityDto)
-        activityService.reportActivity(activity.getId())
+        def activity = activityService.registerActivity(user.id, activityDto)
+
+        activityId = activity.id
+        activityService.reportActivity(activityId)
     }
 
     def "admin validate activity"() {
@@ -54,8 +52,8 @@ class ValidateActivityWebServiceIT extends SpockTest {
         demoAdminLogin()
 
         when: 'validate'
-        response = restClient.put(
-                path: '/activity/' + activity.getId() + '/validate'
+        def response = restClient.put(
+                path: '/activity/' + activityId + '/validate'
         )
 
         then: "check response status"
@@ -65,10 +63,30 @@ class ValidateActivityWebServiceIT extends SpockTest {
         activity.state == Activity.State.APPROVED
     }
 
-    def "member validate activity"() {
+    def "admin validate activity with wrong id"() {
+        given: "login admin"
+        demoAdminLogin()
+
         when: 'validate'
-        response = restClient.put(
-                path: '/activity/' + activity.getId() + '/validate'
+        restClient.put(
+                path: '/activity/' + '222' + '/validate'
+        )
+
+        then: "error"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_BAD_REQUEST
+        activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.REPORTED
+    }
+
+    def "member validate activity"() {
+        given: "login volunteer"
+        demoMemberLogin()
+
+        when: 'validate'
+        restClient.put(
+                path: '/activity/' + activityId + '/validate'
         )
 
         then: "error is thrown"
@@ -80,12 +98,12 @@ class ValidateActivityWebServiceIT extends SpockTest {
     }
 
     def "volunteer validate activity"() {
-        given: "login 'volunteer"
+        given: "login volunteer"
         demoVolunteerLogin()
 
         when: 'validate'
-        response = restClient.put(
-                path: '/activity/' + activity.getId() + '/validate'
+        restClient.put(
+                path: '/activity/' + activityId + '/validate'
         )
 
         then: "error is thrown"

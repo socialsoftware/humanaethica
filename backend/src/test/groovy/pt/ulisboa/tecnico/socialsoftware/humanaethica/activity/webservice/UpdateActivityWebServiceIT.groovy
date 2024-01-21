@@ -16,8 +16,6 @@ class UpdateActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
-    def response
-    def theme
     def themes
     def activityId
 
@@ -28,7 +26,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
 
         def user = demoMemberLogin()
 
-        theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
+        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
         themeRepository.save(theme)
         themes = new ArrayList<>()
         themes.add(new ThemeDto(theme,false,false,false))
@@ -52,7 +50,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when: 'the member registers the activity'
-        response = restClient.put(
+        def response = restClient.put(
                 path: '/activity/' + activityId + '/update',
                 body: [
                         name         : ACTIVITY_NAME_2,
@@ -101,7 +99,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when: 'the member registers the activity'
-        response = restClient.put(
+        restClient.put(
                 path: '/activity/' + activityId + '/update',
                 body: [
                         name         : '   ',
@@ -141,7 +139,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         when: 'the volunteer registers the activity'
-        response = restClient.put(
+        restClient.put(
                 path: '/activity/' + activityId + '/update',
                 body: [
                         name         : ACTIVITY_NAME_2,
@@ -170,7 +168,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoAdminLogin()
 
         when: 'the admin registers the activity'
-        response = restClient.put(
+        restClient.put(
                 path: '/activity/' + activityId + '/update',
                 body: [
                         name         : ACTIVITY_NAME_2,
