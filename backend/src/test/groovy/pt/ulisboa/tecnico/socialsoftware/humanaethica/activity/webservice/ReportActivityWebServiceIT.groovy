@@ -8,13 +8,12 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ValidateActivityWebServiceIT extends SpockTest {
+class ReportActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
@@ -44,32 +43,31 @@ class ValidateActivityWebServiceIT extends SpockTest {
         def activity = activityService.registerActivity(user.id, activityDto)
 
         activityId = activity.id
-        activityService.reportActivity(activityId)
     }
 
-    def "admin validates activity"() {
-        given: "login admin"
-        demoAdminLogin()
+    def "volunteer reports activity"() {
+        given:
+        demoVolunteerLogin()
 
-        when: 'validate'
+        when:
         def response = restClient.put(
-                path: '/activity/' + activityId + '/validate'
+                path: '/activity/' + activityId + '/report'
         )
 
         then: "check response status"
         response.status == HttpStatus.SC_OK
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
-        activity.state == Activity.State.APPROVED
+        activity.state == Activity.State.REPORTED
     }
 
-    def "admin validates activity with wrong id"() {
+    def "volunteer reports activity with wrong id"() {
         given:
-        demoAdminLogin()
+        demoVolunteerLogin()
 
         when:
         restClient.put(
-                path: '/activity/' + '222' + '/validate'
+                path: '/activity/' + '222' + '/report'
         )
 
         then: "error"
@@ -77,16 +75,16 @@ class ValidateActivityWebServiceIT extends SpockTest {
         error.response.status == HttpStatus.SC_BAD_REQUEST
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
-        activity.state == Activity.State.REPORTED
+        activity.state == Activity.State.APPROVED
     }
 
-    def "member tries to validate activity"() {
+    def "member tries to report activity"() {
         given:
         demoMemberLogin()
 
         when:
         restClient.put(
-                path: '/activity/' + activityId + '/validate'
+                path: '/activity/' + activityId + '/report'
         )
 
         then: "error is thrown"
@@ -94,16 +92,16 @@ class ValidateActivityWebServiceIT extends SpockTest {
         error.response.status == HttpStatus.SC_FORBIDDEN
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
-        activity.state == Activity.State.REPORTED
+        activity.state == Activity.State.APPROVED
     }
 
-    def "volunteer tries to validate activity"() {
-        given:
-        demoVolunteerLogin()
+    def "admin tries to report activity"() {
+        given: "login volunteer"
+        demoAdminLogin()
 
         when:
         restClient.put(
-                path: '/activity/' + activityId + '/validate'
+                path: '/activity/' + activityId + '/report'
         )
 
         then: "error is thrown"
@@ -111,6 +109,6 @@ class ValidateActivityWebServiceIT extends SpockTest {
         error.response.status == HttpStatus.SC_FORBIDDEN
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
-        activity.state == Activity.State.REPORTED
+        activity.state == Activity.State.APPROVED
     }
 }

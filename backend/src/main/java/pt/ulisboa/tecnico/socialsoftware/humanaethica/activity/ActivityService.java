@@ -82,6 +82,7 @@ public class ActivityService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ActivityDto suspendActivity(Integer activityId) {
+        if (activityId == null) throw new HEException(ACTIVITY_NOT_FOUND);
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND));
 
         activity.suspend();
@@ -91,6 +92,7 @@ public class ActivityService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ActivityDto reportActivity(Integer activityId) {
+        if (activityId == null) throw new HEException(ACTIVITY_NOT_FOUND);
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND));
 
         activity.report();
