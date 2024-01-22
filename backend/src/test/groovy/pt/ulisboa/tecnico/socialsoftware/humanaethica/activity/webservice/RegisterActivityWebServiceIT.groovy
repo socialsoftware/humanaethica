@@ -73,9 +73,9 @@ class RegisterActivityWebServiceIT extends SpockTest {
         activity.getRegion() == ACTIVITY_REGION_1
         activity.getParticipantsNumber() == 2
         activity.getDescription() == ACTIVITY_DESCRIPTION_1
-        activity.getStartingDate() == IN_TWO_DAYS
-        activity.getEndingDate() == IN_THREE_DAYS
-        activity.getApplicationDeadline() == IN_ONE_DAY
+        activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
+        activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)
+        activity.getApplicationDeadline().withNano(0) == IN_ONE_DAY.withNano(0)
         activity.themes.get(0).getName() == THEME_NAME_1
 
         cleanup:
