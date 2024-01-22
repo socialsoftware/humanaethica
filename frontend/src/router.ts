@@ -20,6 +20,8 @@ import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
 import ManageActivitiesView from '@/views/volunteer/ManageActivitiesView.vue';
 import ManageOwnActivitiesView from '@/views/member/ManageOwnActivitiesView.vue';
 import ThemeView from '@/views/member/ThemeView.vue';
+import MemberView from '@/views/member/MemberView.vue';
+import VolunteerView from '@/views/volunteer/VolunteerView.vue';
 
 Vue.use(Router);
 
@@ -45,7 +47,25 @@ const router = new Router({
       },
     },
     {
-      path: '/registration/confirmation',
+      path: '/register/institution',
+      name: 'register-institution',
+      component: RegisterInstitutionView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Institution Registration',
+      },
+    },
+    {
+      path: '/register/volunteer',
+      name: 'register-volunteer',
+      component: RegisterVolunteerView,
+      meta: {
+        requiredAuth: 'None',
+        title: APP_NAME + ' - Volunteer Registration',
+      },
+    },
+    {
+      path: '/register/confirmation',
       name: 'registration-confirmation',
       component: RegistrationConfirmationView,
       meta: {
@@ -97,58 +117,54 @@ const router = new Router({
       ],
     },
     {
-      path: '/institution/register',
-      name: 'register-institution',
-      component: RegisterInstitutionView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Institution Registration',
-      },
+      path: '/member',
+      name: 'member',
+      component: MemberView,
+      children: [
+        {
+          path: 'register',
+          name: 'register-member',
+          component: RegisterMemberView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Member Registration',
+          },
+        },
+        {
+          path: 'manageActivities',
+          name: 'manage-activities-member',
+          component: ManageOwnActivitiesView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Manage Activities - Member',
+          },
+        },
+        {
+          path: 'theme',
+          name: 'theme',
+          component: ThemeView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Theme',
+          },
+        },
+      ],
     },
     {
-      path: '/volunteer/register',
-      name: 'register-volunteer',
-      component: RegisterVolunteerView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Volunteer Registration',
-      },
-    },
-    {
-      path: '/volunteer/manageActivities',
-      name: 'manage-activities',
-      component: ManageActivitiesView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Manage Volunteer Activities',
-      },
-    },
-    {
-      path: '/member/register',
-      name: 'register-member',
-      component: RegisterMemberView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Member Registration',
-      },
-    },
-    {
-      path: '/member/manageActivities',
-      name: 'manage-activities-member',
-      component: ManageOwnActivitiesView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Manage Activities - Member',
-      },
-    },
-    {
-      path: '/member/theme',
-      name: 'theme',
-      component: ThemeView,
-      meta: {
-        requiredAuth: 'None',
-        title: APP_NAME + ' - Theme',
-      },
+      path: '/volunteer',
+      name: 'volunteer',
+      component: VolunteerView,
+      children: [
+        {
+          path: 'manageActivities',
+          name: 'manage-activities',
+          component: ManageActivitiesView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Manage Volunteer Activities',
+          },
+        },
+      ],
     },
     {
       path: '**',

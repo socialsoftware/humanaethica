@@ -134,8 +134,9 @@ export default class ActivityDialog extends Vue {
   }
 
   isNumberValid(value: any) {
-    const parsedValue = parseFloat(value);
-    return !isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 5;
+    if (!/^\d+$/.test(value)) return false;
+    const parsedValue = parseInt(value);
+    return parsedValue >= 1 && parsedValue <= 5;
   }
 
   get canSave(): boolean {
