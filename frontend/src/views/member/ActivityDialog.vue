@@ -11,25 +11,32 @@
         </span>
       </v-card-title>
       <v-card-text>
-        <v-container>
+        <v-form ref="form" lazy-validation>
           <v-row>
             <v-col cols="12" sm="6" md="4">
               <v-text-field
-                label="Name"
+                label="*Name"
+                :rules="[(v) => !!v || 'Activity name is required']"
                 required
                 v-model="editActivity.name"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
-                label="Region"
+                label="*Region"
+                :rules="[(v) => !!v || 'Region name is required']"
                 required
                 v-model="editActivity.region"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-text-field
-                label="Number of Participants"
+                label="*Number of Participants"
+                :rules="[
+                  (v) =>
+                    isNumberValid(v) ||
+                    'Number of participants between 1 and 5 is required',
+                ]"
                 required
                 v-model="editActivity.participantsNumber"
               ></v-text-field>
@@ -48,7 +55,8 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                label="Description"
+                label="*Description"
+                :rules="[(v) => !!v || 'Description is required']"
                 required
                 v-model="editActivity.description"
               ></v-text-field>
@@ -78,7 +86,7 @@
               ></VueCtkDateTimePicker>
             </v-col>
           </v-row>
-        </v-container>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -89,7 +97,12 @@
         >
           Close
         </v-btn>
-        <v-btn color="blue-darken-1" variant="text" @click="updateActivity">
+        <v-btn
+          v-if="canSave"
+          color="blue-darken-1"
+          variant="text"
+          @click="updateActivity"
+        >
           Save
         </v-btn>
       </v-card-actions>
@@ -120,22 +133,40 @@ export default class ActivityDialog extends Vue {
     this.editActivity = new Activity(this.activity);
   }
 
+  isNumberValid(value: any) {
+    const parsedValue = parseFloat(value);
+    return !isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 5;
+  }
+
+  get canSave(): boolean {
+    return (
+      !!this.editActivity.name &&
+      !!this.editActivity.region &&
+      !!this.editActivity.participantsNumber &&
+      !!this.editActivity.description &&
+      !!this.editActivity.startingDate &&
+      !!this.editActivity.endingDate &&
+      !!this.editActivity.applicationDeadline
+    );
+  }
+
   async updateActivity() {
-    try {
-      console.log(this.editActivity);
-      const result =
-        this.editActivity.id !== null
-          ? await RemoteServices.updateActivityAsMember(
-              this.editActivity.id,
-              this.editActivity,
-            )
-          : await RemoteServices.registerActivity(
-              this.$store.getters.getUser.id,
-              this.editActivity,
-            );
-      this.$emit('save-activity', result);
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+      try {
+        const result =
+          this.editActivity.id !== null
+            ? await RemoteServices.updateActivityAsMember(
+                this.editActivity.id,
+                this.editActivity,
+              )
+            : await RemoteServices.registerActivity(
+                this.$store.getters.getUser.id,
+                this.editActivity,
+              );
+        this.$emit('save-activity', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
     }
   }
 }
