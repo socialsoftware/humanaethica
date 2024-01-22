@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.webservice
 
-import groovy.json.JsonOutput
-import groovyx.net.http.RESTClient
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
@@ -20,7 +22,9 @@ class GetUserAuthWebServiceIT extends SpockTest {
     def setup() {
         deleteAll()
 
-        restClient = new RESTClient("http://localhost:" + port)
+        webClient = WebClient.create("http://localhost:" + port)
+        headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
     }
 
     def "user makes a login"() {
@@ -30,16 +34,17 @@ class GetUserAuthWebServiceIT extends SpockTest {
         userRepository.save(user)
 
         when:
-        def response = restClient.post(
-                path: '/auth/user',
-                body: JsonOutput.toJson(new AuthPasswordDto(USER_1_USERNAME, USER_1_PASSWORD)),
-                requestContentType: 'application/json'
-        )
+        def result = webClient.post()
+                .uri('/auth/user')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(new AuthPasswordDto(USER_1_USERNAME, USER_1_PASSWORD))
+                .retrieve()
+                .bodyToMono(AuthDto.class)
+                .block()
 
         then: "check response status"
-        response.status == 200
-        response.data.token != ""
-        response.data.user.username == USER_1_USERNAME
+        result.token != ""
+        result.user.username == USER_1_USERNAME
     }
 
     def cleanup() {

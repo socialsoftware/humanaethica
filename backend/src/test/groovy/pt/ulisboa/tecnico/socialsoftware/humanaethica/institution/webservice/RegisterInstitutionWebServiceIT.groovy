@@ -1,10 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.webservice
 
-import groovyx.net.http.RESTClient
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.RegisterInstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import spock.lang.Ignore
 
@@ -13,34 +16,36 @@ class RegisterInstitutionWebserviceIT extends SpockTest {
     @LocalServerPort
     private int port
 
-    def response
-    def user
+    def registerInstitutionDto
 
     def setup() {
         deleteAll()
 
-        restClient = new RESTClient("http://localhost:" + port)
+        webClient = WebClient.create("http://localhost:" + port)
+        headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
+
+        registerInstitutionDto = new RegisterInstitutionDto()
+        registerInstitutionDto.setInstitutionEmail(INSTITUTION_1_EMAIL)
+        registerInstitutionDto.setInstitutionName(INSTITUTION_1_NAME)
+        registerInstitutionDto.setInstitutionNif(INSTITUTION_1_NIF)
+        registerInstitutionDto.setMemberEmail(USER_1_EMAIL)
+        registerInstitutionDto.setMemberUsername(USER_1_USERNAME)
+        registerInstitutionDto.setMemberName(USER_1_NAME)
     }
 
     @Ignore
     def "create new institution"() {
         when:
-        response = restClient.post(
-                path: '/institution/register',
-                body: [
-                        institutionEmail: INSTITUTION_1_EMAIL,
-                        institutionName : INSTITUTION_1_NAME,
-                        institutionNif  : INSTITUTION_1_NIF,
-                        memberUsername  : USER_1_USERNAME,
-                        memberEmail     : USER_1_EMAIL,
-                        memberName      : USER_1_NAME,
-                ],
-                requestContentType: 'application/json'
-        )
+        def response = webClient.post()
+                .uri('/activity/register')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(registerInstitutionDto)
+                .retrieve()
+                .bodyToMono(RegisterInstitutionDto.class)
+                .block()
 
         then: "the institution and member are saved in the database"
-        response.status == 200
-        response.data == null
         institutionRepository.findAll().size() == 1
         userRepository.findAll().size() == 1
         def institution = institutionRepository.findAll().get(0)

@@ -12,6 +12,7 @@ public class AuthUserDto {
     private String email;
     private User.Role role;
 
+    public AuthUserDto() {}
 
     public AuthUserDto(AuthUser authUser) {
         this.id = authUser.getUser().getId();

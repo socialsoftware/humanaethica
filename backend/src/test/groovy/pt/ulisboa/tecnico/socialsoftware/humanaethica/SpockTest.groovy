@@ -1,20 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica
 
-import groovy.json.JsonOutput
-import groovyx.net.http.RESTClient
+import org.springframework.http.HttpHeaders
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
@@ -117,50 +115,60 @@ class SpockTest extends Specification {
     @Autowired
     DemoUtils demoUtils
 
-    RESTClient restClient
+    WebClient webClient
+    HttpHeaders headers
 
     def demoVolunteerLogin() {
-        def loginResponse = restClient.get(
-                path: '/auth/demo/volunteer'
-        )
-        restClient.headers['Authorization'] = "Bearer " + loginResponse.data.token
+        def result = webClient.get()
+                .uri('/auth/demo/volunteer')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(AuthDto.class)
+                .block()
 
-        return loginResponse.data.user
+        headers.setBearerAuth(result.token)
+
+        return result.getUser()
     }
 
-
-
     def demoMemberLogin() {
-        def loginResponse = restClient.get(
-                path: '/auth/demo/member'
-        )
-        restClient.headers['Authorization'] = "Bearer " + loginResponse.data.token
+        def result = webClient.get()
+                .uri('/auth/demo/member')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(AuthDto.class)
+                .block()
 
-        return loginResponse.data.user
+        headers.setBearerAuth(result.token)
+
+        return result.getUser()
     }
 
     def demoAdminLogin() {
-        demoService.getDemoAdmin()
+        def result = webClient.get()
+                .uri('/auth/demo/admin')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(AuthDto.class)
+                .block()
 
-        def loggedUser = restClient.post(
-                path: '/auth/user',
-                body: JsonOutput.toJson(new AuthPasswordDto("ars", "ars")),
-                requestContentType: 'application/json'
-        )
-        restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token
+        headers.setBearerAuth(result.token)
 
-        return loggedUser.data.user
+        return result.getUser()
     }
 
     def normalUserLogin(username, password) {
-        def loggedUser = restClient.post(
-                path: '/auth/user',
-                body: JsonOutput.toJson(new AuthPasswordDto(username, password)),
-                requestContentType: 'application/json'
-        )
-        restClient.headers['Authorization'] = "Bearer " + loggedUser.data.token
+        def result = webClient.post()
+                .uri('/auth/user')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(new AuthPasswordDto(username, password))
+                .retrieve()
+                .bodyToMono(AuthDto.class)
+                .block()
 
-        return loggedUser.data.user
+        headers.setBearerAuth(result.token)
+
+        return result.getUser()
     }
 
     def deleteAll() {

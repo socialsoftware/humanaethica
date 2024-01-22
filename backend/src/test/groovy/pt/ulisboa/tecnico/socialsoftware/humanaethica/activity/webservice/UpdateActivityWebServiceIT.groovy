@@ -1,8 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.webservice
 
-import groovyx.net.http.HttpResponseException
-import groovyx.net.http.RESTClient
-import org.apache.http.HttpStatus
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
@@ -18,11 +20,14 @@ class UpdateActivityWebServiceIT extends SpockTest {
 
     def themes
     def activityId
+    def activityDto2
 
     def setup() {
         deleteAll()
 
-        restClient = new RESTClient("http://localhost:" + port)
+        webClient = WebClient.create("http://localhost:" + port)
+        headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
 
         def user = demoMemberLogin()
 
@@ -31,18 +36,28 @@ class UpdateActivityWebServiceIT extends SpockTest {
         themes = new ArrayList<>()
         themes.add(new ThemeDto(theme,false,false,false))
 
-        def activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_NAME_1)
-        activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(2)
-        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(NOW))
-        activityDto.setThemes(themes)
-        def activity = activityService.registerActivity(user.id, activityDto)
+        def activityDto1 = new ActivityDto()
+        activityDto1.setName(ACTIVITY_NAME_1)
+        activityDto1.setRegion(ACTIVITY_REGION_1)
+        activityDto1.setParticipantsNumber(2)
+        activityDto1.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto1.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto1.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto1.setApplicationDeadline(DateHandler.toISOString(NOW))
+        activityDto1.setThemes(themes)
+        def activity = activityService.registerActivity(user.id, activityDto1)
 
         activityId = activity.id
+
+        activityDto2 = new ActivityDto()
+        activityDto2.setName(ACTIVITY_NAME_2)
+        activityDto2.setRegion(ACTIVITY_REGION_2)
+        activityDto2.setParticipantsNumber(4)
+        activityDto2.setDescription(ACTIVITY_DESCRIPTION_2)
+        activityDto2.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto2.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+        activityDto2.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto2.setThemes(new ArrayList<>())
     }
 
     def "login as member, and update an activity"() {
@@ -50,34 +65,23 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when: 'the member registers the activity'
-        def response = restClient.put(
-                path: '/activity/' + activityId + '/update',
-                body: [
-                        name         : ACTIVITY_NAME_2,
-                        region       : ACTIVITY_REGION_2,
-                        participantsNumber: 4,
-                        themes       : themes,
-                        description  : ACTIVITY_DESCRIPTION_2,
-                        startingDate : DateHandler.toISOString(IN_TWO_DAYS),
-                        endingDate   : DateHandler.toISOString(IN_THREE_DAYS),
-                        applicationDeadline   : DateHandler.toISOString(IN_ONE_DAY)
+        def response = webClient.put()
+                .uri('/activity/' + activityId + '/update')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(activityDto2)
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
-                ],
-                requestContentType: 'application/json'
-        )
-
-        then: "check response status"
-        response != null
-        response.status == HttpStatus.SC_OK
-        and: 'data'
-        response.data.name == ACTIVITY_NAME_2
-        response.data.region == ACTIVITY_REGION_2
-        response.data.participantsNumber == 4
-        response.data.description == ACTIVITY_DESCRIPTION_2
-        response.data.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
-        response.data.endingDate== DateHandler.toISOString(IN_THREE_DAYS)
-        response.data.applicationDeadline == DateHandler.toISOString(IN_ONE_DAY)
-        response.data.themes[0].name == THEME_NAME_1
+        then: "check response"
+        response.name == ACTIVITY_NAME_2
+        response.region == ACTIVITY_REGION_2
+        response.participantsNumber == 4
+        response.description == ACTIVITY_DESCRIPTION_2
+        response.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
+        response.endingDate== DateHandler.toISOString(IN_THREE_DAYS)
+        response.applicationDeadline == DateHandler.toISOString(IN_ONE_DAY)
+        response.themes.isEmpty()
         and: 'check database'
         activityRepository.count() == 1
         def activity = activityRepository.findAll().get(0)
@@ -88,36 +92,30 @@ class UpdateActivityWebServiceIT extends SpockTest {
         activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
         activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)
         activity.getApplicationDeadline().withNano(0) == IN_ONE_DAY.withNano(0)
-        activity.themes.get(0).getName() == THEME_NAME_1
+        activity.themes.isEmpty()
 
         cleanup:
         deleteAll()
     }
 
-    def "update with empty name abort and no changes"() {
+    def "update with 10 participants abort and no changes"() {
         given: 'a member'
         demoMemberLogin()
+        and:
+        activityDto2.setParticipantsNumber(10)
 
         when: 'the member registers the activity'
-        restClient.put(
-                path: '/activity/' + activityId + '/update',
-                body: [
-                        name         : '   ',
-                        region       : ACTIVITY_REGION_2,
-                        participantsNumber: 4,
-                        themes       : themes,
-                        description  : ACTIVITY_DESCRIPTION_2,
-                        startingDate : DateHandler.toISOString(IN_TWO_DAYS),
-                        endingDate   : DateHandler.toISOString(IN_THREE_DAYS),
-                        applicationDeadline   : DateHandler.toISOString(IN_ONE_DAY)
-
-                ],
-                requestContentType: 'application/json'
-        )
+        webClient.put()
+                .uri('/activity/' + activityId + '/update')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(activityDto2)
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
         then: "check response status"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_BAD_REQUEST
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.BAD_REQUEST
         and: 'check database'
         activityRepository.count() == 1
         def activity = activityRepository.findAll().get(0)
@@ -139,24 +137,17 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         when: 'the volunteer registers the activity'
-        restClient.put(
-                path: '/activity/' + activityId + '/update',
-                body: [
-                        name         : ACTIVITY_NAME_2,
-                        region       : ACTIVITY_REGION_2,
-                        participantsNumber: 4,
-                        themes       : themes,
-                        description  : ACTIVITY_DESCRIPTION_2,
-                        startingDate : DateHandler.toISOString(IN_TWO_DAYS),
-                        endingDate   : DateHandler.toISOString(IN_THREE_DAYS),
-                        applicationDeadline   : DateHandler.toISOString(IN_ONE_DAY)
+        webClient.put()
+                .uri('/activity/' + activityId + '/update')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(activityDto2)
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
-                ],
-                requestContentType: 'application/json' )
-
-        then: "an error is returned"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_FORBIDDEN
+        then: "check response status"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
         activityRepository.count() == 1
 
         cleanup:
@@ -168,24 +159,17 @@ class UpdateActivityWebServiceIT extends SpockTest {
         demoAdminLogin()
 
         when: 'the admin registers the activity'
-        restClient.put(
-                path: '/activity/' + activityId + '/update',
-                body: [
-                        name         : ACTIVITY_NAME_2,
-                        region       : ACTIVITY_REGION_2,
-                        participantsNumber: 4,
-                        themes       : themes,
-                        description  : ACTIVITY_DESCRIPTION_2,
-                        startingDate : DateHandler.toISOString(IN_TWO_DAYS),
-                        endingDate   : DateHandler.toISOString(IN_THREE_DAYS),
-                        applicationDeadline   : DateHandler.toISOString(IN_ONE_DAY)
+        webClient.put()
+                .uri('/activity/' + activityId + '/update')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(activityDto2)
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
-                ],
-                requestContentType: 'application/json' )
-
-        then: "an error is returned"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_FORBIDDEN
+        then: "check response status"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
         activityRepository.count() == 1
 
         cleanup:

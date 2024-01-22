@@ -1,12 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.webservice
 
-import groovyx.net.http.HttpResponseException
-import groovyx.net.http.RESTClient
-import org.apache.http.HttpStatus
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterThemeWebServiceIT extends SpockTest {
@@ -14,12 +17,17 @@ class RegisterThemeWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
-    def response
+    def themeDto
 
     def setup() {
         deleteAll()
 
-        restClient = new RESTClient("http://localhost:" + port)
+        webClient = WebClient.create("http://localhost:" + port)
+        headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
+
+        themeDto = new ThemeDto()
+        themeDto.name = THEME_1__NAME
     }
 
     def "login as admin, and create a Theme"() {
@@ -27,17 +35,15 @@ class RegisterThemeWebServiceIT extends SpockTest {
         demoAdminLogin()
 
         when:
-        response = restClient.post(
-                path: '/themes/register',
-                body: [
-                        name: THEME_1__NAME
-                ],
-                requestContentType: 'application/json'
-        )
+        webClient.post()
+                .uri('/themes/register')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(themeDto)
+                .retrieve()
+                .toBodilessEntity()
+                .block()
 
-        then: "check response status"
-        response != null
-        response.status == HttpStatus.SC_OK
+        then: "check database"
         themeRepository.count() == 1
         def theme = themeRepository.findAll().get(0)
         theme.name == THEME_1__NAME
@@ -52,17 +58,17 @@ class RegisterThemeWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         when:
-        response = restClient.post(
-                path: '/themes/register',
-                body: [
-                        name: THEME_1__NAME
-                ],
-                requestContentType: 'application/json'
-        )
+        webClient.post()
+                .uri('/themes/register')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(themeDto)
+                .retrieve()
+                .toBodilessEntity()
+                .block()
 
         then: "exception is thrown"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_FORBIDDEN
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
         themeRepository.count() == 0
 
         cleanup:
@@ -74,17 +80,17 @@ class RegisterThemeWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when:
-        response = restClient.post(
-                path: '/themes/register',
-                body: [
-                        name: THEME_1__NAME
-                ],
-                requestContentType: 'application/json'
-        )
+        webClient.post()
+                .uri('/themes/register')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(themeDto)
+                .retrieve()
+                .toBodilessEntity()
+                .block()
 
         then: "exception is thrown"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_FORBIDDEN
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
         themeRepository.count() == 0
 
         cleanup:

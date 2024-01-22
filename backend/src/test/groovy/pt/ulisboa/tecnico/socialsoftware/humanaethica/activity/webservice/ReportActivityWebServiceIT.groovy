@@ -1,8 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.webservice
 
-import groovyx.net.http.HttpResponseException
-import groovyx.net.http.RESTClient
-import org.apache.http.HttpStatus
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
@@ -22,7 +24,9 @@ class ReportActivityWebServiceIT extends SpockTest {
     def setup() {
         deleteAll()
 
-        restClient = new RESTClient("http://localhost:" + port)
+        webClient = WebClient.create("http://localhost:" + port)
+        headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
 
         def user = demoMemberLogin()
 
@@ -50,12 +54,15 @@ class ReportActivityWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         when:
-        def response = restClient.put(
-                path: '/activity/' + activityId + '/report'
-        )
+        def response = webClient.put()
+                .uri('/activity/' + activityId + '/report')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
         then: "check response status"
-        response.status == HttpStatus.SC_OK
+        response.name == ACTIVITY_NAME_1
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.REPORTED
@@ -66,13 +73,16 @@ class ReportActivityWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         when:
-        restClient.put(
-                path: '/activity/' + '222' + '/report'
-        )
+        webClient.put()
+                .uri('/activity/' + '222' + '/report')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
         then: "error"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_BAD_REQUEST
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.BAD_REQUEST
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.APPROVED
@@ -83,30 +93,36 @@ class ReportActivityWebServiceIT extends SpockTest {
         demoMemberLogin()
 
         when:
-        restClient.put(
-                path: '/activity/' + activityId + '/report'
-        )
+        webClient.put()
+                .uri('/activity/' + activityId + '/report')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
         then: "error is thrown"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_FORBIDDEN
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.APPROVED
     }
 
     def "admin tries to report activity"() {
-        given: "login volunteer"
+        given:
         demoAdminLogin()
 
         when:
-        restClient.put(
-                path: '/activity/' + activityId + '/report'
-        )
+        webClient.put()
+                .uri('/activity/' + activityId + '/report')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
 
         then: "error is thrown"
-        def error = thrown(HttpResponseException)
-        error.response.status == HttpStatus.SC_FORBIDDEN
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.APPROVED

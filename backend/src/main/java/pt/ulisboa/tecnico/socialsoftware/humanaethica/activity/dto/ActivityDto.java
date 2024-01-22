@@ -143,4 +143,22 @@ public class ActivityDto {
     public void setParticipantsNumber(int participantsNumber) {
         this.participantsNumber = participantsNumber;
     }
+
+    @Override
+    public String toString() {
+        return "ActivityDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", region='" + region + '\'' +
+                ", participantsNumber=" + participantsNumber +
+                ", description='" + description + '\'' +
+                ", startingDate='" + startingDate + '\'' +
+                ", endingDate='" + endingDate + '\'' +
+                ", applicationDeadline='" + applicationDeadline + '\'' +
+                ", state='" + state + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                ", themes=" + themes +
+                ", institution=" + institution +
+                '}';
+    }
 }

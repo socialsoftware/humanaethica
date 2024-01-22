@@ -5,6 +5,8 @@ public class AuthDto {
 
     private AuthUserDto user;
 
+    public AuthDto() {}
+
     public AuthDto(String token, AuthUserDto user) {
         this.token = token;
         this.user = user;

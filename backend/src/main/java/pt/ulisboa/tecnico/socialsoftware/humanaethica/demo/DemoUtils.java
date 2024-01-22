@@ -28,7 +28,8 @@ public class DemoUtils {
     DemoService demoService;
 
     public void populateDemo() {
-        if (environment.acceptsProfiles(Profiles.of("dev")) || environment.acceptsProfiles(Profiles.of("test-int"))) {
+        if (environment.acceptsProfiles(Profiles.of("dev"))
+                || environment.acceptsProfiles(Profiles.of("test-int"))) {
             demoService.getDemoAdmin();
         }
 
