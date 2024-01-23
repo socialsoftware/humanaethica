@@ -8,6 +8,7 @@
         disable-pagination
         :hide-default-footer="true"
         :mobile-breakpoint="0"
+        data-cy="volunteerActivitiesTable"
       >
         <template v-slot:top>
           <v-card-title>

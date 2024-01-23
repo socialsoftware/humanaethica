@@ -16,3 +16,18 @@ Cypress.Commands.add('deleteUsersButArs', () => {
     credentials: credentials,
   });
 });
+
+Cypress.Commands.add('deleteActivities', () => {
+  cy.task('queryDatabase', {
+    query: "DELETE FROM ACTIVITY",
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM AUTH_USERS WHERE NOT (username = 'ars')",
+    credentials: credentials,
+  });
+  cy.task('queryDatabase', {
+    query: "DELETE FROM USERS WHERE NOT (name = 'ars')",
+    credentials: credentials,
+  });
+});

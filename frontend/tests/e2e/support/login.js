@@ -13,6 +13,16 @@ Cypress.Commands.add('userLogin', (username, password) => {
   cy.wait('@userLogin');
 });
 
+Cypress.Commands.add('demoAdminLogin', () => {
+  cy.visit('/');
+
+  cy.intercept('POST', '/auth/user').as(
+    'authAdmin'
+  );
+  cy.get('[data-cy="demoAdminLoginButton"]').click();
+  cy.wait('@authAdmin');
+});
+
 Cypress.Commands.add('demoMemberLogin', () => {
   cy.visit('/');
 

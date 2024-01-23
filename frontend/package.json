@@ -33,6 +33,7 @@
     "vuex": "~3.6.2"
   },
   "devDependencies": {
+    "@cypress/vue": "^2.2.3",
     "@mdi/font": "~5.9.55",
     "@types/plotly.js-dist-min": "~2.3.4",
     "@typescript-eslint/eslint-plugin": "~5.62.0",
@@ -48,7 +49,7 @@
     "@vue/eslint-config-typescript": "~12.0.0",
     "codecov": "~4.0.0-0",
     "compression-webpack-plugin": "~10.0.0",
-    "cypress": "^13.6.2",
+    "cypress": "^13.6.3",
     "eslint": "~8.56.0",
     "eslint-plugin-prettier": "~5.1.2",
     "eslint-plugin-vue": "~9.19.2",

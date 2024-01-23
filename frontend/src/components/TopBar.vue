@@ -26,7 +26,7 @@
             text
             color="orange"
             v-on="on"
-            data-cy=""
+            data-cy="volunteerActivities"
             @click="manageActivities"
           >
             Activities

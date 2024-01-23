@@ -7,6 +7,7 @@
       disable-pagination
       :hide-default-footer="true"
       :mobile-breakpoint="0"
+      data-cy="adminActivitiesTable"
     >
       <template v-slot:top>
         <v-card-title>
@@ -104,6 +105,12 @@ export default class ActivitiesView extends Vue {
       value: 'participantsNumber',
       align: 'left',
       width: '5%',
+    },
+    {
+      text: 'Description',
+      value: 'description',
+      align: 'left',
+      width: '10%',
     },
     {
       text: 'Themes',

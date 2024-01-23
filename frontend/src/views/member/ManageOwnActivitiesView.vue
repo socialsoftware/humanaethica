@@ -7,6 +7,7 @@
       disable-pagination
       :hide-default-footer="true"
       :mobile-breakpoint="0"
+      data-cy="memberActivitiesTable"
     >
       <template v-slot:top>
         <v-card-title>
@@ -17,7 +18,9 @@
             class="mx-2"
           />
           <v-spacer />
-          <v-btn color="primary" dark @click="newActivity">New Activity</v-btn>
+          <v-btn color="primary" dark @click="newActivity" data-cy="newActivity"
+            >New Activity</v-btn
+          >
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">

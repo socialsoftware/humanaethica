@@ -42,7 +42,7 @@
         depressed
         color="blue accent-1"
         @click="loginAdmin"
-        data-cy="arsAdminLoginButton"
+        data-cy="demoAdminLoginButton"
       >
         <i class="fa fa-graduation-cap" />Login as admin
       </v-btn>
