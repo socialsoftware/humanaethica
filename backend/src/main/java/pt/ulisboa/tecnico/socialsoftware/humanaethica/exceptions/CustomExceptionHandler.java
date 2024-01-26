@@ -21,22 +21,22 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(HEException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public TutorExceptionDto tutorException(HEException e) {
-        return new TutorExceptionDto(e);
+    public HEExceptionDto tutorException(HEException e) {
+        return new HEExceptionDto(e);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public TutorExceptionDto accessDeniedException(AccessDeniedException e) {
+    public HEExceptionDto accessDeniedException(AccessDeniedException e) {
         myLogger.error(e.getMessage());
-        return new TutorExceptionDto(ACCESS_DENIED);
+        return new HEExceptionDto(ACCESS_DENIED);
     }
 
     @ExceptionHandler(LockAcquisitionException.class)
     @ResponseStatus(HttpStatus.OK)
-    public TutorExceptionDto lockAcquisitionException(LockAcquisitionException e) {
+    public HEExceptionDto lockAcquisitionException(LockAcquisitionException e) {
         myLogger.error("LockAcquisitionException");
-        return new TutorExceptionDto(e);
+        return new HEExceptionDto(e);
     }
 
     @ExceptionHandler(ClientAbortException.class)
@@ -47,8 +47,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public TutorExceptionDto randomException(Exception e) {
+    public HEExceptionDto randomException(Exception e) {
         myLogger.error(e.getMessage(), e);
-        return new TutorExceptionDto(e);
+        return new HEExceptionDto(e);
     }
 }
