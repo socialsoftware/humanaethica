@@ -7,10 +7,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-interface TutorExceptionSubError extends Serializable {
+interface HEExceptionSubError extends Serializable {
 }
 
-public class TutorExceptionDto implements TutorExceptionSubError {
+public class HEExceptionDto implements HEExceptionSubError {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime timestamp;
 
@@ -18,21 +18,21 @@ public class TutorExceptionDto implements TutorExceptionSubError {
 
     private String debugMessage;
 
-    private List<TutorExceptionSubError> subErrors;
+    private List<HEExceptionSubError> subErrors;
 
 
-    TutorExceptionDto(Throwable ex) {
+    HEExceptionDto(Throwable ex) {
         this.timestamp = DateHandler.now();
         this.message = "Unexpected error";
         this.debugMessage = ex.getLocalizedMessage();
     }
 
-    public TutorExceptionDto(HEException e) {
+    public HEExceptionDto(HEException e) {
         this.timestamp = DateHandler.now();
         this.message = e.getMessage();
     }
 
-    public TutorExceptionDto(ErrorMessage errorMessage) {
+    public HEExceptionDto(ErrorMessage errorMessage) {
         this.timestamp = DateHandler.now();
         this.message = errorMessage.label;
     }
@@ -61,11 +61,11 @@ public class TutorExceptionDto implements TutorExceptionSubError {
         this.debugMessage = debugMessage;
     }
 
-    public List<TutorExceptionSubError> getSubErrors() {
+    public List<HEExceptionSubError> getSubErrors() {
         return subErrors;
     }
 
-    public void setSubErrors(List<TutorExceptionSubError> subErrors) {
+    public void setSubErrors(List<HEExceptionSubError> subErrors) {
         this.subErrors = subErrors;
     }
 }
