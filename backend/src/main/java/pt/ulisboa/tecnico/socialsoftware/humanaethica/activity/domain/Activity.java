@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.application.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
@@ -28,19 +29,17 @@ public class Activity {
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
-
     @Enumerated(EnumType.STRING)
     private Activity.State state = Activity.State.APPROVED;
-
     @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(name = "activity_themes")
     private List<Theme> themes = new ArrayList<>();
-
     @ManyToOne
     private Institution institution;
-
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
+    @OneToMany(mappedBy = "activity")
+    private List<Enrollment> enrollments;
 
     public Activity() {
     }
@@ -149,6 +148,18 @@ public class Activity {
 
     public void setState(Activity.State state) {
         this.state = state;
+    }
+
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    public void addEnrollment(Enrollment enrollment) {
+        this.enrollments.add(enrollment);
     }
 
     public void suspend() {
@@ -266,7 +277,7 @@ public class Activity {
 
     private void hasApplicationDate() {
         if (this.applicationDeadline == null) {
-            throw new HEException(ACTIVITY_INVALID_DATE, "application deadline");
+            throw new HEException(ACTIVITY_INVALID_DATE, "Enrollment deadline");
         }
     }
 

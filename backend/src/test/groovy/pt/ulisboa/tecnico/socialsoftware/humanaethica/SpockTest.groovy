@@ -70,6 +70,8 @@ class SpockTest extends Specification {
     public static final String ACTIVITY_DESCRIPTION_1 = "activity description 1"
     public static final String ACTIVITY_DESCRIPTION_2 = "activity description 2"
 
+    public static final String ENROLLMENT_MOTIVATION_1 = "enrollment motivation 1"
+
     @Autowired
     AuthUserService authUserService
 

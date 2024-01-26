@@ -34,12 +34,15 @@ public enum ErrorMessage {
     ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS("Activity should have one to five participants"),
     ACTIVITY_DESCRIPTION_INVALID("Activity description is missing"),
     ACTIVITY_INVALID_DATE("Date format for %s is invalid"),
-    ACTIVITY_APPLICATION_DEADLINE_AFTER_START("Activity application deadline is after start"),
+    ACTIVITY_APPLICATION_DEADLINE_AFTER_START("Activity Enrollment deadline is after start"),
     ACTIVITY_START_AFTER_END("Activity start is after end"),
     ACTIVITY_ALREADY_APPROVED("Activity is already approved with name %s"),
     ACTIVITY_ALREADY_EXISTS("Activity already exists in database"),
     ACTIVITY_ALREADY_SUSPENDED("Activity is already suspended with name %s"),
-    ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s");
+    ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s"),
+    ENROLLMENT_REQUIRES_MOTIVATION("To apply to an activity you have to write a motivation longer than 10 characters"),
+    ENROLLMENT_VOLUNTEER_IS_ALREADY_ENROLLED("The volunteer is already enrolled"),
+    ENROLLMENT_AFTER_DEADLINE("The enrollment period is already closed");
 
     public final String label;
 
