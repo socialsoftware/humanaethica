@@ -53,7 +53,7 @@ class ReportActivityMethodTest extends SpockTest {
     }
 
     @Unroll
-    def "report reported activity"() {
+    def "violate report precondition"() {
         given:
         institution.getActivities() >> []
         def themes = []

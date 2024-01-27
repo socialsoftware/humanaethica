@@ -50,7 +50,6 @@ class UpdateActivityMethodTest extends SpockTest {
         activityDtoTwo.startingDate = DateHandler.toISOString(IN_ONE_DAY)
         activityDtoTwo.endingDate = DateHandler.toISOString(IN_TWO_DAYS)
         activityDtoTwo.applicationDeadline = DateHandler.toISOString(NOW)
-
     }
 
     def "update activity"() {
