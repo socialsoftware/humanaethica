@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
 
 @DataJpaTest
-class ValidateActivityMeyhodTest extends SpockTest {
+class ValidateActivityMethodTest extends SpockTest {
     Institution institution = Mock()
     Theme theme = Mock()
     Activity activity
@@ -53,7 +53,7 @@ class ValidateActivityMeyhodTest extends SpockTest {
     }
 
     @Unroll
-    def "validate activity: activityState=#activityState | themeState=#themeState || message=#message"() {
+    def "violate validate precondition: activityState=#activityState | themeState=#themeState || message=#message"() {
         given:
         institution.getActivities() >> []
         theme.getState() >> themeState

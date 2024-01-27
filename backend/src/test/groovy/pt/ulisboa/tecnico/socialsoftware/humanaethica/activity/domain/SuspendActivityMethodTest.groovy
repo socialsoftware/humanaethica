@@ -51,7 +51,7 @@ class SuspendActivityMethodTest extends SpockTest {
     }
 
     @Unroll
-    def "suspend suspended activity"() {
+    def "violate suspend precondition"() {
         given:
         institution.getActivities() >> []
         def themes = []

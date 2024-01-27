@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 class CreateActivityMethodTest extends SpockTest {
     Institution institution = Mock()
     Theme theme = Mock()
-    Activity activity = Mock()
+    Activity otherActivity = Mock()
     def activityDto
 
     def setup() {
@@ -35,15 +35,15 @@ class CreateActivityMethodTest extends SpockTest {
 
     def "create activity with theme and institution has another activity"() {
         given:
-        activity.getName() >> ACTIVITY_NAME_2
-        institution.getActivities() >> [activity]
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
         theme.getState() >> Theme.State.APPROVED
         def themes = [theme]
 
         when:
         def result = new Activity(activityDto, institution, themes)
 
-        then: "checks if activity"
+        then: "check result"
         result.getInstitution() == institution
         result.getName() == ACTIVITY_NAME_1
         result.getRegion() == ACTIVITY_REGION_1
@@ -54,21 +54,90 @@ class CreateActivityMethodTest extends SpockTest {
         result.getApplicationDeadline() == IN_ONE_DAY
         result.getThemes().size() == 1
         result.getThemes().get(0) == theme
+        and: "invocations"
+        1 * institution.addActivity(_)
+        1 * theme.addActivity(_)
     }
 
     @Unroll
-    def "create activity and violate invariants for arguments: name=#name | region=#region | participants=#participants | description=#description | deadline=#deadline | start=#start | end=#end | themeStatus=#themeStatus"() {
+    def "create activity and violate invariants name, region, and description are required: name=#name | region=#region | description=#description"() {
         given:
-        activity.getName() >> ACTIVITY_NAME_2
-        institution.getActivities() >> [activity]
-        theme.getState() >> themeStatus
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
+        theme.getState() >> Theme.State.APPROVED
         def themes = [theme]
         and: "an activity dto"
         activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
-        activityDto.setParticipantsNumber(participants)
+        activityDto.setParticipantsNumber(1)
         activityDto.setDescription(description)
+        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+
+        when:
+        new Activity(activityDto, institution, themes)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        name            | region            | description            || errorMessage
+        null            | ACTIVITY_REGION_1 | ACTIVITY_DESCRIPTION_1 || ErrorMessage.ACTIVITY_NAME_INVALID
+        " "             | ACTIVITY_REGION_1 | ACTIVITY_DESCRIPTION_1 || ErrorMessage.ACTIVITY_NAME_INVALID
+        ACTIVITY_NAME_1 | null              | ACTIVITY_DESCRIPTION_1 || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | " "               | ACTIVITY_DESCRIPTION_1 || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | null                   || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
+        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | "  "                   || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
+    }
+
+    @Unroll
+    def "create activity and violate has 1 to 5 participants : participants=#participants"() {
+        given:
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
+        theme.getState() >> Theme.State.APPROVED
+        def themes = [theme]
+        and: "an activity dto"
+        activityDto = new ActivityDto()
+        activityDto.setName(ACTIVITY_NAME_1)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(participants)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+
+        when:
+        new Activity(activityDto, institution, themes)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        participants || errorMessage
+        -5           || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        0            || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        6            || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        10           || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+      }
+
+    @Unroll
+    def "create activity and violate dates are required invariant: deadline=#deadline | start=#start | end=#end"() {
+        given:
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
+        theme.getState() >> Theme.State.APPROVED
+        def themes = [theme]
+        and: "an activity dto"
+        activityDto = new ActivityDto()
+        activityDto.setName(ACTIVITY_NAME_1)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(1)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
         activityDto.setApplicationDeadline(deadline instanceof LocalDateTime ? DateHandler.toISOString(deadline) : deadline as String)
         activityDto.setStartingDate(start instanceof LocalDateTime ? DateHandler.toISOString(start) : start as String)
         activityDto.setEndingDate(end instanceof LocalDateTime ? DateHandler.toISOString(end) : end as String)
@@ -81,28 +150,103 @@ class CreateActivityMethodTest extends SpockTest {
         error.getErrorMessage() == errorMessage
 
         where:
-        name            | region            | participants | description            | deadline   | start       | end           | themeStatus           || errorMessage
-        null            | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_NAME_INVALID
-        " "             | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_NAME_INVALID
-        ACTIVITY_NAME_1 | null              | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
-        ACTIVITY_NAME_1 | " "               | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_REGION_NAME_INVALID
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | -5           | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 0            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 6            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 10           | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | null                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | "  "                   | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_DESCRIPTION_INVALID
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | null       | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | "  "       | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | null        | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | "   "       | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | null          | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | "     "       | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_INVALID_DATE
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | NOW         | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_TWO_DAYS   | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_START_AFTER_END
-        ACTIVITY_NAME_2 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.APPROVED  || ErrorMessage.ACTIVITY_ALREADY_EXISTS
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.DELETED   || ErrorMessage.THEME_NOT_APPROVED
-        ACTIVITY_NAME_1 | ACTIVITY_REGION_1 | 1            | ACTIVITY_DESCRIPTION_1 | IN_ONE_DAY | IN_TWO_DAYS | IN_THREE_DAYS | Theme.State.SUBMITTED || ErrorMessage.THEME_NOT_APPROVED
+        deadline     | start                 | end           || errorMessage
+        null         | IN_TWO_DAYS           | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        "  "         | IN_TWO_DAYS           | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        "2024-01-12" | IN_TWO_DAYS           | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        IN_ONE_DAY   | null                  | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        IN_ONE_DAY   | "   "                 | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        IN_ONE_DAY   | "2024-01-12 12:00:00" | IN_THREE_DAYS || ErrorMessage.ACTIVITY_INVALID_DATE
+        IN_ONE_DAY   | IN_TWO_DAYS           | null          || ErrorMessage.ACTIVITY_INVALID_DATE
+        IN_ONE_DAY   | IN_TWO_DAYS           | "     "       || ErrorMessage.ACTIVITY_INVALID_DATE
+        IN_ONE_DAY   | IN_TWO_DAYS           | "12:00:00"    || ErrorMessage.ACTIVITY_INVALID_DATE
+     }
+
+    @Unroll
+    def "create activity violate date precedence invariants: deadline=#deadline | start=#start | end=#end"() {
+        given:
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
+        theme.getState() >> Theme.State.APPROVED
+        def themes = [theme]
+        and: "an activity dto"
+        activityDto = new ActivityDto()
+        activityDto.setName(ACTIVITY_NAME_1)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(1)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setApplicationDeadline(deadline instanceof LocalDateTime ? DateHandler.toISOString(deadline) : deadline as String)
+        activityDto.setStartingDate(start instanceof LocalDateTime ? DateHandler.toISOString(start) : start as String)
+        activityDto.setEndingDate(end instanceof LocalDateTime ? DateHandler.toISOString(end) : end as String)
+
+        when:
+        new Activity(activityDto, institution, themes)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        deadline   | start       | end           || errorMessage
+        IN_ONE_DAY | NOW         | IN_THREE_DAYS || ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START
+        IN_ONE_DAY | IN_ONE_DAY  | IN_THREE_DAYS || ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START
+        IN_ONE_DAY | IN_TWO_DAYS | NOW           || ErrorMessage.ACTIVITY_START_AFTER_END
+        IN_ONE_DAY | IN_TWO_DAYS | IN_TWO_DAYS   || ErrorMessage.ACTIVITY_START_AFTER_END
+     }
+
+    @Unroll
+    def "create activity and violate themes are approved invariant: themeStatus=#themeStatus"() {
+        given:
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
+        theme.getState() >> themeStatus
+        def themes = [theme]
+        and: "an activity dto"
+        activityDto = new ActivityDto()
+        activityDto.setName(ACTIVITY_NAME_1)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(1)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+
+        when:
+        new Activity(activityDto, institution, themes)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        themeStatus           || errorMessage
+        Theme.State.DELETED   || ErrorMessage.THEME_NOT_APPROVED
+        Theme.State.SUBMITTED || ErrorMessage.THEME_NOT_APPROVED
+    }
+
+    @Unroll
+    def "create activity violate unique name invariant"() {
+        given:
+        otherActivity.getName() >> ACTIVITY_NAME_2
+        institution.getActivities() >> [otherActivity]
+        theme.getState() >> Theme.State.APPROVED
+        def themes = [theme]
+        and: "an activity dto"
+        activityDto = new ActivityDto()
+        activityDto.setName(ACTIVITY_NAME_2)
+        activityDto.setRegion(ACTIVITY_REGION_1)
+        activityDto.setParticipantsNumber(1)
+        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
+        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
+        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
+        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
+
+        when:
+        new Activity(activityDto, institution, themes)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_EXISTS
     }
 
     @TestConfiguration

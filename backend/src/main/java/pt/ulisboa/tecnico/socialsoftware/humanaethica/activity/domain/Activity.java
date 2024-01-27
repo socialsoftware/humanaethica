@@ -87,12 +87,7 @@ public class Activity {
     }
 
     public void setName(String name) {
-       if (this.institution.getActivities().stream()
-                .anyMatch(activity -> activity != this && activity.getName().equals(name))) {
-           throw new HEException(ACTIVITY_ALREADY_EXISTS);
-       }
-
-        this.name = name;
+       this.name = name;
     }
 
     public String getRegion() {
@@ -152,21 +147,35 @@ public class Activity {
     }
 
     public void suspend() {
-        if (this.state == State.SUSPENDED) {
-            throw new HEException(ACTIVITY_ALREADY_SUSPENDED, this.name);
-        }
+        activityCannotBeSuspended();
         this.setState(State.SUSPENDED);
     }
 
-    public void report() {
-        if (this.state == State.REPORTED) {
-            throw new HEException(ACTIVITY_ALREADY_REPORTED, this.name);
+    private void activityCannotBeSuspended() {
+        if (this.state == State.SUSPENDED) {
+            throw new HEException(ACTIVITY_ALREADY_SUSPENDED, this.name);
         }
+    }
+
+    public void report() {
+        activityCannotBeReported();
         this.setState(State.REPORTED);
     }
 
+    private void activityCannotBeReported() {
+        if (this.state == State.REPORTED) {
+            throw new HEException(ACTIVITY_ALREADY_REPORTED, this.name);
+        }
+    }
+
     public void validate() {
-        if (getState() == Activity.State.APPROVED) {
+        activityAndThemesMustBeApproved();
+
+        setState(Activity.State.APPROVED);
+    }
+
+    private void activityAndThemesMustBeApproved() {
+        if (getState() == State.APPROVED) {
             throw new HEException(ACTIVITY_ALREADY_APPROVED, this.name);
         }
 
@@ -175,8 +184,6 @@ public class Activity {
                 throw new HEException(THEME_NOT_APPROVED, theme.getCompleteName());
             }
         }
-
-        setState(Activity.State.APPROVED);
     }
 
     public LocalDateTime getCreationDate() {
@@ -226,32 +233,33 @@ public class Activity {
         return institution;
     }
 
-    public void verifyInvariants() {
-        hasName();
-        hasRegion();
-        hasDescription();
+    private void verifyInvariants() {
+        nameIsRequired();
+        regionIsRequired();
+        descriptionIsRequired();
         hasOneToFiveParticipants();
-        hasApplicationDate();
-        hasStartingDate();
-        hasEndingDate();
+        applicationDeadlineIsRequired();
+        startingDateIsRequired();
+        endingDateIsRequired();
         applicationBeforeStart();
         startBeforeEnd();
         themesAreApproved();
+        nameIsUnique();
     }
 
-    private void hasName() {
+    private void nameIsRequired() {
         if (this.name == null || this.name.trim().isEmpty()) {
             throw new HEException(ACTIVITY_NAME_INVALID, this.name);
         }
     }
 
-    private void hasRegion() {
+    private void regionIsRequired() {
         if (this.region == null || this.region.trim().isEmpty()) {
             throw new HEException(ACTIVITY_REGION_NAME_INVALID, this.region);
         }
     }
 
-    private void hasDescription() {
+    private void descriptionIsRequired() {
         if (this.description == null || this.description.trim().isEmpty()) {
             throw new HEException(ACTIVITY_DESCRIPTION_INVALID, this.description);
         }
@@ -264,19 +272,19 @@ public class Activity {
         }
     }
 
-    private void hasApplicationDate() {
+    private void applicationDeadlineIsRequired() {
         if (this.applicationDeadline == null) {
             throw new HEException(ACTIVITY_INVALID_DATE, "application deadline");
         }
     }
 
-    private void hasStartingDate() {
+    private void startingDateIsRequired() {
         if (this.startingDate == null) {
             throw new HEException(ACTIVITY_INVALID_DATE, "starting date");
         }
     }
 
-    private void hasEndingDate() {
+    private void endingDateIsRequired() {
         if (this.endingDate == null) {
             throw new HEException(ACTIVITY_INVALID_DATE, "ending date");
         }
@@ -299,6 +307,13 @@ public class Activity {
             if (theme.getState() != Theme.State.APPROVED) {
                 throw new HEException(THEME_NOT_APPROVED, theme.getCompleteName());
             }
+        }
+    }
+
+    private void nameIsUnique() {
+        if (this.institution.getActivities().stream()
+                .anyMatch(activity -> activity != this && activity.getName().equals(this.getName()))) {
+            throw new HEException(ACTIVITY_ALREADY_EXISTS);
         }
     }
 }
