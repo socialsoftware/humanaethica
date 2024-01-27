@@ -17,7 +17,6 @@ class ReportActivityServiceTest extends SpockTest {
     def activity
 
     def setup() {
-        def member = authUserService.loginDemoMemberAuth().getUser()
         def institution = institutionService.getDemoInstitution()
         given: "activity info"
         def activityDto = new ActivityDto()

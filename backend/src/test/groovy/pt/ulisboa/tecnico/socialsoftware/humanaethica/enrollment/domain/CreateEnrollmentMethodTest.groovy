@@ -7,8 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.application.domain.Enrollment
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.application.dto.EnrollmentDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import spock.lang.Unroll
 
@@ -16,8 +15,6 @@ import java.time.LocalDateTime
 
 @DataJpaTest
 class CreateEnrollmentMethodTest extends SpockTest {
-    static final String THIS_VOLUNTEER = "THIS"
-    static final String OTHER_VOLUNTEER = "OTHER"
     Activity activity = Mock()
     Volunteer volunteer = Mock()
     Volunteer otherVolunteer = Mock()
@@ -50,11 +47,11 @@ class CreateEnrollmentMethodTest extends SpockTest {
     }
 
     @Unroll
-    def "create enrollment and violate invariants: motivation=#motivation | enrollmentDateTime=#enrolmentDateTime | volunteerParam=#volunteerParam"() {
+    def "create enrollment and violate motivation is required invariant: motivation=#motivation"() {
         given:
         activity.getEnrollments() >> [otherEnrollment]
-        activity.getApplicationDeadline() >> enrolmentDateTime
-        otherEnrollment.getVolunteer() >> getVolunteer(volunteerParam)
+        activity.getApplicationDeadline() >> IN_ONE_DAY
+        otherEnrollment.getVolunteer() >> otherVolunteer
         and:
         enrolmentDto.motivation = motivation
 
@@ -66,16 +63,42 @@ class CreateEnrollmentMethodTest extends SpockTest {
         error.getErrorMessage() == errorMessage
 
         where:
-        motivation              | enrolmentDateTime | volunteerParam  || errorMessage
-        null                    | IN_ONE_DAY        | OTHER_VOLUNTEER || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
-        "   "                   | IN_ONE_DAY        | OTHER_VOLUNTEER || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
-        "< 10"                  | IN_ONE_DAY        | OTHER_VOLUNTEER || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
-        ENROLLMENT_MOTIVATION_1 | ONE_DAY_AGO       | OTHER_VOLUNTEER || ErrorMessage.ENROLLMENT_AFTER_DEADLINE
-        ENROLLMENT_MOTIVATION_1 | IN_ONE_DAY        | THIS_VOLUNTEER  || ErrorMessage.ENROLLMENT_VOLUNTEER_IS_ALREADY_ENROLLED
+        motivation || errorMessage
+        null       || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
+        "   "      || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
+        "< 10"     || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
     }
 
-    def getVolunteer(value) {
-        return value == OTHER_VOLUNTEER ? otherVolunteer : volunteer
+    def "create enrollment and violate enrollment before deadline invariant"() {
+        given:
+        activity.getEnrollments() >> [otherEnrollment]
+        activity.getApplicationDeadline() >> ONE_DAY_AGO
+        otherEnrollment.getVolunteer() >> otherVolunteer
+        and:
+        enrolmentDto.motivation = ENROLLMENT_MOTIVATION_1
+
+        when:
+        new Enrollment(activity, volunteer, enrolmentDto)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.ENROLLMENT_AFTER_DEADLINE
+    }
+
+    def "create enrollment and violate enroll once invariant"() {
+        given:
+        activity.getEnrollments() >> [otherEnrollment]
+        activity.getApplicationDeadline() >> IN_ONE_DAY
+        otherEnrollment.getVolunteer() >> volunteer
+        and:
+        enrolmentDto.motivation = ENROLLMENT_MOTIVATION_1
+
+        when:
+        new Enrollment(activity, volunteer, enrolmentDto)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.ENROLLMENT_VOLUNTEER_IS_ALREADY_ENROLLED
     }
 
     @TestConfiguration

@@ -1,6 +1,6 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.application.dto;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.application.domain.Enrollment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class EnrollmentDto {

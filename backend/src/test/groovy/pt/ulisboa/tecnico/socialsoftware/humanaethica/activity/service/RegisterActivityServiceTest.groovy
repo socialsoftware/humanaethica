@@ -13,8 +13,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
 
-import java.time.LocalDateTime
-
 @DataJpaTest
 class RegisterActivityServiceTest extends SpockTest {
     def activityDto

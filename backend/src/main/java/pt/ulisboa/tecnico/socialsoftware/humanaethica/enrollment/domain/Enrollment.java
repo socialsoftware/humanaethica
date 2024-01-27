@@ -1,8 +1,8 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.application.domain;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain;
 
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.application.dto.EnrollmentDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
