@@ -14,6 +14,8 @@ import spock.lang.Unroll
 
 @DataJpaTest
 class UpdateActivityServiceTest extends SpockTest {
+    public static final String EXIST = "exist"
+    public static final String NO_EXIST = "noExist"
     def activity
 
     def setup() {
@@ -79,7 +81,7 @@ class UpdateActivityServiceTest extends SpockTest {
                 NOW,IN_ONE_DAY,IN_TWO_DAYS,themesDto)
 
         when:
-        activityService.updateActivity(getId(activityId), activityDto)
+        activityService.updateActivity(getActivityId(activityId), activityDto)
 
         then:
         def error = thrown(HEException)
@@ -88,32 +90,32 @@ class UpdateActivityServiceTest extends SpockTest {
         activityRepository.findAll().size() == 1
 
         where:
-        name            | activityId   | themeId   || errorMessage
-        null            | "activityId" | "themeId" || ErrorMessage.ACTIVITY_NAME_INVALID
-        ACTIVITY_NAME_2 | null         | "themeId" || ErrorMessage.ACTIVITY_NOT_FOUND
-        ACTIVITY_NAME_2 | "otherId"    | "themeId" || ErrorMessage.ACTIVITY_NOT_FOUND
-        ACTIVITY_NAME_2 | "activityId" | null      || ErrorMessage.THEME_NOT_FOUND
-        ACTIVITY_NAME_2 | "activityId" | "otherId" || ErrorMessage.THEME_NOT_FOUND
+        name            | activityId | themeId || errorMessage
+        null            | EXIST      | EXIST   || ErrorMessage.ACTIVITY_NAME_INVALID
+        ACTIVITY_NAME_2 | null       | EXIST   || ErrorMessage.ACTIVITY_NOT_FOUND
+        ACTIVITY_NAME_2 | NO_EXIST   | EXIST   || ErrorMessage.ACTIVITY_NOT_FOUND
+        ACTIVITY_NAME_2 | EXIST      | null    || ErrorMessage.THEME_NOT_FOUND
+        ACTIVITY_NAME_2 | EXIST     | NO_EXIST || ErrorMessage.THEME_NOT_FOUND
     }
 
-    def getId(activityId){
-        if (activityId == null)
-            return null
-        else if (activityId == "otherId")
+    def getActivityId(activityId){
+        if (activityId == EXIST)
+            return activity.id
+        else if (activityId == NO_EXIST)
             return 222
-        return activity.id
+        return null
     }
 
     def getThemeDto(themeId, theme) {
-        if (themeId == null)
-            return new ThemeDto()
-        else if (themeId == "otherId") {
+        if (themeId == 'exist')
+            return new ThemeDto(theme,false,false,false)
+        else if (themeId == NO_EXIST) {
             def themeDto = new ThemeDto()
             themeDto.id = 222
             return themeDto
         }
         else
-            return new ThemeDto(theme,false,false,false)
+            return new ThemeDto()
     }
 
     @TestConfiguration
