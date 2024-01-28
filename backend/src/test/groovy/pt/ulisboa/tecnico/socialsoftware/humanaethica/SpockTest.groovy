@@ -14,9 +14,12 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
@@ -162,6 +165,12 @@ class SpockTest extends Specification {
         return result.getUser()
     }
 
+    def createVolunteer(name, userName, email, type, state) {
+        def volunteer = new Volunteer(name, userName, email, type, state)
+        userRepository.save(volunteer)
+        return volunteer
+    }
+
     // theme
 
     public static final String THEME_NAME_1 = "THEME_NAME 1"
@@ -215,6 +224,15 @@ class SpockTest extends Specification {
     EnrollmentService enrollmentService
     @Autowired
     EnrollmentRepository enrollmentRepository
+
+    def createEnrollment(activity, volunteer, motivation) {
+        def enrollmentDto = new EnrollmentDto()
+        enrollmentDto.setMotivation(motivation)
+        def enrollment = new Enrollment(activity, volunteer, enrollmentDto)
+        enrollmentRepository.save(enrollment)
+        return enrollment
+    }
+
 
     // clean database
 

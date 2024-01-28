@@ -5,13 +5,8 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 @DataJpaTest
 class GetEnrollmentsByActivityServiceTest extends SpockTest {
@@ -21,22 +16,14 @@ class GetEnrollmentsByActivityServiceTest extends SpockTest {
     def setup() {
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = new ActivityDto()
-        activityDto.name = ACTIVITY_NAME_1
-        activityDto.region = ACTIVITY_REGION_1
-        activityDto.participantsNumber = 1
-        activityDto.description = ACTIVITY_DESCRIPTION_1
-        activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
-        activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
-        activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS,IN_THREE_DAYS,null)
 
-        def themes = new ArrayList<>()
-
-        activity = new Activity(activityDto, institution, themes)
+        activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         activityDto.name = ACTIVITY_NAME_2
-        otherActivity = new Activity(activityDto, institution, themes)
+        otherActivity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(otherActivity)
     }
 
@@ -57,7 +44,7 @@ class GetEnrollmentsByActivityServiceTest extends SpockTest {
         enrollments.get(1).motivation == ENROLLMENT_MOTIVATION_2
     }
 
-    def "get one enrollments of an activity"() {
+    def "get one enrollment of an activity"() {
         given:
         def volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         and:
@@ -72,19 +59,6 @@ class GetEnrollmentsByActivityServiceTest extends SpockTest {
         enrollments.get(0).motivation == ENROLLMENT_MOTIVATION_1
     }
 
-    def createVolunteer(name, userName, email, type, state) {
-        def volunteer = new Volunteer(name, userName, email, type, state)
-        userRepository.save(volunteer)
-        return volunteer
-    }
-
-    def createEnrollment(activity, volunteer, motivation) {
-        def enrollmentDto = new EnrollmentDto()
-        enrollmentDto.setMotivation(motivation)
-        def enrollment = new Enrollment(activity, volunteer, enrollmentDto)
-        enrollmentRepository.save(enrollment)
-        return enrollment
-    }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
