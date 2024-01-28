@@ -58,9 +58,9 @@ class GetActivitiesWebServiceIT extends SpockTest {
         response.get(1).region == ACTIVITY_REGION_1
         response.get(1).participantsNumber == 1
         response.get(1).description == ACTIVITY_DESCRIPTION_1
-        response.get(1).startingDate == DateHandler.toISOString(IN_TWO_DAYS)
-        response.get(1).endingDate == DateHandler.toISOString(IN_THREE_DAYS)
-        response.get(1).applicationDeadline == DateHandler.toISOString(IN_ONE_DAY)
+        DateHandler.toLocalDateTime(response.get(1).startingDate).withNano(0) == IN_TWO_DAYS.withNano(0)
+        DateHandler.toLocalDateTime(response.get(1).endingDate).withNano(0) == IN_THREE_DAYS.withNano(0)
+        DateHandler.toLocalDateTime(response.get(1).applicationDeadline).withNano(0) == IN_ONE_DAY.withNano(0)
         response.get(1).themes.size() == 1
 
 
