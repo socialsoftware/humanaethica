@@ -85,6 +85,7 @@ class SpockTest extends Specification {
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
 
+    @Autowired
     AuthUserService authUserService
 
     @Autowired
@@ -205,9 +206,7 @@ class SpockTest extends Specification {
         activityDto.setApplicationDeadline(DateHandler.toISOString(deadline))
         activityDto.setThemes(themesDto)
         activityDto
-    }
-
-    // enrollment
+    }    // enrollment
 
     public static final String ENROLLMENT_MOTIVATION_1 = "enrollment motivation 1"
     public static final String ENROLLMENT_MOTIVATION_2 = "enrollment motivation 2"
