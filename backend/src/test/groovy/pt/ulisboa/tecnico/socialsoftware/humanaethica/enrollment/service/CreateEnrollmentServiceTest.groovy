@@ -12,6 +12,8 @@ import spock.lang.Unroll
 
 @DataJpaTest
 class CreateEnrollmentServiceTest extends SpockTest {
+    public static final String EXIST = 'exist'
+    public static final String NO_EXIST = 'noExist'
     def volunteer
     def activity
 
@@ -62,25 +64,25 @@ class CreateEnrollmentServiceTest extends SpockTest {
 
         where:
         volunteerId | activityId || errorMessage
-        null        | 'this'     || ErrorMessage.USER_NOT_FOUND
-        'other'     | 'this'     || ErrorMessage.USER_NOT_FOUND
-        'this'      | null       || ErrorMessage.ACTIVITY_NOT_FOUND
-        'this'      | 'other'    || ErrorMessage.ACTIVITY_NOT_FOUND
+        null        | EXIST      || ErrorMessage.USER_NOT_FOUND
+        NO_EXIST    | EXIST      || ErrorMessage.USER_NOT_FOUND
+        EXIST       | null       || ErrorMessage.ACTIVITY_NOT_FOUND
+        EXIST       | NO_EXIST   || ErrorMessage.ACTIVITY_NOT_FOUND
     }
 
     def getVolunteerId(volunteerId) {
-        if (volunteerId == 'this')
+        if (volunteerId == EXIST)
             return volunteer.id
-        else if (volunteerId == 'other')
+        else if (volunteerId == NO_EXIST)
             return 222
         else
             return null
     }
 
     def getActivityId(activityId) {
-        if (activityId == 'this')
+        if (activityId == EXIST)
             return activity.id
-        else if (activityId == 'other')
+        else if (activityId == NO_EXIST)
             return 222
         else
             return null
