@@ -42,7 +42,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
 
         when:
         def response = webClient.post()
-                .uri('/activity/register')
+                .uri('/activities')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(activityDto)
                 .retrieve()
@@ -82,7 +82,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
 
         when: 'the member registers the activity'
         webClient.post()
-                .uri('/activity/register')
+                .uri('/activities')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(activityDto)
                 .retrieve()
@@ -104,7 +104,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
 
         when: 'the volunteer registers the activity'
         webClient.post()
-                .uri('/activity/register')
+                .uri('/activities')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(activityDto)
                 .retrieve()
@@ -126,7 +126,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
 
         when: 'the admin registers the activity'
         webClient.post()
-                .uri('/activity/register')
+                .uri('/activities')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(activityDto)
                 .retrieve()

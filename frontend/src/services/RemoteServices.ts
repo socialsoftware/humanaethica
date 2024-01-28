@@ -400,7 +400,7 @@ export default class RemoteServices {
 
   static async registerActivity(userId: number, activity: Activity) {
     return httpClient
-      .post('/activity/register', activity)
+      .post('/activities', activity)
       .then((response) => {
         return new Activity(response.data);
       })
@@ -422,9 +422,20 @@ export default class RemoteServices {
       });
   }
 
+  static async updateActivityAsMember(activityId: number, activity: Activity) {
+    return httpClient
+      .put(`/activities/${activityId}`, activity)
+      .then((response) => {
+        return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async validateActivity(activityId: number) {
     return httpClient
-      .put(`/activity/${activityId}/validate`)
+      .put(`/activities/${activityId}/validate`)
       .then((response) => {
         return new Activity(response.data);
       })
@@ -435,7 +446,18 @@ export default class RemoteServices {
 
   static async suspendActivity(activityId: number) {
     return httpClient
-      .put(`/activity/${activityId}/suspend`)
+      .put(`/activities/${activityId}/suspend`)
+      .then((response) => {
+        return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async reportActivity(userId: number, activityId: number) {
+    return httpClient
+      .put(`/activities/${activityId}/report`)
       .then((response) => {
         return new Activity(response.data);
       })
@@ -483,17 +505,6 @@ export default class RemoteServices {
       });
   }
 
-  static async updateActivityAsMember(activityId: number, activity: Activity) {
-    return httpClient
-      .put(`/activity/${activityId}/update`, activity)
-      .then((response) => {
-        return new Activity(response.data);
-      })
-      .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
   static async registerThemeInstitution(theme: Theme) {
     return httpClient
       .post('/themes/registerInstitution', theme)
@@ -520,17 +531,6 @@ export default class RemoteServices {
         return response.data.map((theme: any) => {
           return new Theme(theme);
         });
-      })
-      .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
-  static async reportActivity(userId: number, activityId: number) {
-    return httpClient
-      .put(`/activity/${activityId}/report`)
-      .then((response) => {
-        return new Activity(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));

@@ -13,7 +13,7 @@ describe('Activity', () => {
     const NUMBER = '3';
     const DESCRIPTION = 'Play card games with elderly over 80';
 
-    cy.intercept('POST', '/activity/register', (req) => {
+    cy.intercept('POST', '/activities', (req) => {
       req.body = {
         applicationDeadline: '2024-01-13T12:00:00+00:00',
         startingDate: '2024-01-14T12:00:00+00:00',
