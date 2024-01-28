@@ -4,7 +4,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
@@ -15,11 +14,9 @@ import spock.lang.Unroll
 
 @DataJpaTest
 class RegisterActivityServiceTest extends SpockTest {
-    def activityDto
-    def theme
-    def themesDto
     def institution
     def member
+    def theme
 
     def setup() {
         member = authUserService.loginDemoMemberAuth().getUser()
@@ -27,22 +24,15 @@ class RegisterActivityServiceTest extends SpockTest {
 
         theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
         themeRepository.save(theme)
-        themesDto = new ArrayList<>()
     }
 
     def "register activity"() {
         given: "an activity dto"
-        activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_NAME_1)
-        activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(1)
-        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
-
+        def themesDto = new ArrayList<>()
         themesDto.add(new ThemeDto(theme,false,false,false))
-        activityDto.setThemes(themesDto)
+
+        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY,IN_TWO_DAYS,IN_THREE_DAYS,themesDto)
 
         when:
         def result = activityService.registerActivity(member.getId(), activityDto)
@@ -75,17 +65,11 @@ class RegisterActivityServiceTest extends SpockTest {
     @Unroll
     def 'invalid arguments: name=#name | memberId=#memberId | themeId=#themeId'() {
         given: "an activity dto"
-        activityDto = new ActivityDto()
-        activityDto.setName(name)
-        activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(1)
-        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
-
+        def themesDto = new ArrayList<>()
         themesDto.add(getThemeDto(themeId))
-        activityDto.setThemes(themesDto)
+
+        def activityDto = createActivityDto(name,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY,IN_TWO_DAYS,IN_THREE_DAYS,themesDto)
 
         when:
         activityService.registerActivity(getId(memberId), activityDto)

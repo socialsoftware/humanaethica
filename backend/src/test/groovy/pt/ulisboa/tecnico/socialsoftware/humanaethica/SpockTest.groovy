@@ -5,6 +5,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
@@ -13,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
@@ -29,8 +31,41 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 class SpockTest extends Specification {
+    // remote requests
+
+    WebClient webClient
+    HttpHeaders headers
+
+    // send email mocking
+
     @Value('${spring.mail.username}')
     public String mailerUsername
+
+    @Autowired
+    Mailer mailer
+
+    // dates
+
+    public static final LocalDateTime TWO_DAYS_AGO = DateHandler.now().minusDays(2)
+    public static final LocalDateTime ONE_DAY_AGO = DateHandler.now().minusDays(1)
+    public static final LocalDateTime NOW = DateHandler.now()
+    public static final LocalDateTime IN_ONE_DAY = DateHandler.now().plusDays(1)
+    public static final LocalDateTime IN_TWO_DAYS = DateHandler.now().plusDays(2)
+    public static final LocalDateTime IN_THREE_DAYS = DateHandler.now().plusDays(3)
+
+    // institution
+
+    public static final String INSTITUTION_1_EMAIL = "institution1@mail.com"
+    public static final String INSTITUTION_1_NAME = "institution1"
+    public static final String INSTITUTION_1_NIF = "123456789"
+
+    @Autowired
+    InstitutionService institutionService
+
+    @Autowired
+    InstitutionRepository institutionRepository
+
+    // login and demo
 
     public static final String ROLE_VOLUNTEER = "ROLE_VOLUNTEER"
     public static final String ROLE_MEMBER = "ROLE_MEMBER"
@@ -50,39 +85,10 @@ class SpockTest extends Specification {
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
 
-    public static final LocalDateTime TWO_DAYS_AGO = DateHandler.now().minusDays(2)
-    public static final LocalDateTime ONE_DAY_AGO = DateHandler.now().minusDays(1)
-    public static final LocalDateTime NOW = DateHandler.now()
-    public static final LocalDateTime IN_ONE_DAY = DateHandler.now().plusDays(1)
-    public static final LocalDateTime IN_TWO_DAYS = DateHandler.now().plusDays(2)
-    public static final LocalDateTime IN_THREE_DAYS = DateHandler.now().plusDays(3)
-
-    public static final String INSTITUTION_1_EMAIL = "institution1@mail.com"
-    public static final String INSTITUTION_1_NAME = "institution1"
-    public static final String INSTITUTION_1_NIF = "123456789"
-
-    public static final String THEME_NAME_1 = "THEME_NAME 1"
-    public static final String THEME_NAME_2 = "THEME_NAME 2"
-
-    public static final String ACTIVITY_NAME_1 = "activity name 1"
-    public static final String ACTIVITY_NAME_2 = "activity name 2"
-    public static final String ACTIVITY_NAME_3 = "activity name 3"
-    public static final String ACTIVITY_REGION_1 = "activity region 1"
-    public static final String ACTIVITY_REGION_2 = "activity region 2"
-    public static final String ACTIVITY_DESCRIPTION_1 = "activity description 1"
-    public static final String ACTIVITY_DESCRIPTION_2 = "activity description 2"
-
-    public static final String ENROLLMENT_MOTIVATION_1 = "enrollment motivation 1"
-    public static final String ENROLLMENT_MOTIVATION_2 = "enrollment motivation 2"
-
-    @Autowired
     AuthUserService authUserService
 
     @Autowired
     UserRepository userRepository
-
-    @Autowired
-    ThemeRepository themeRepository
 
     @Autowired
     UserService userService
@@ -91,43 +97,16 @@ class SpockTest extends Specification {
     AuthUserRepository authUserRepository
 
     @Autowired
-    UserApplicationalService userServiceApplicational    
-
-    @Autowired
-    InstitutionService institutionService    
-
-    @Autowired
-    InstitutionRepository institutionRepository
-
-    @Autowired
-    ActivityRepository activityRepository
-
-    @Autowired
-    ActivityService activityService
-
-    @Autowired
-    EnrollmentRepository enrollmentRepository
-
-    @Autowired
-    EnrollmentService enrollmentService
-
-    @Autowired
-    ThemeService themeService
-
-    @Autowired
-    DemoService demoService;
-
-    @Autowired
-    Mailer mailer
+    UserApplicationalService userServiceApplicational
 
     @Autowired
     PasswordEncoder passwordEncoder
 
     @Autowired
-    DemoUtils demoUtils
+    DemoService demoService;
 
-    WebClient webClient
-    HttpHeaders headers
+    @Autowired
+    DemoUtils demoUtils
 
     def demoVolunteerLogin() {
         def result = webClient.get()
@@ -181,6 +160,64 @@ class SpockTest extends Specification {
 
         return result.getUser()
     }
+
+    // theme
+
+    public static final String THEME_NAME_1 = "THEME_NAME 1"
+    public static final String THEME_NAME_2 = "THEME_NAME 2"
+
+    @Autowired
+    ThemeRepository themeRepository
+
+    @Autowired
+    ThemeService themeService
+
+    protected Theme createTheme(name, type, parent) {
+        def theme = new Theme(name, type, parent)
+        themeRepository.save(theme)
+        theme
+    }
+
+    // activity
+
+    public static final String ACTIVITY_NAME_1 = "activity name 1"
+    public static final String ACTIVITY_NAME_2 = "activity name 2"
+    public static final String ACTIVITY_NAME_3 = "activity name 3"
+    public static final String ACTIVITY_REGION_1 = "activity region 1"
+    public static final String ACTIVITY_REGION_2 = "activity region 2"
+    public static final String ACTIVITY_DESCRIPTION_1 = "activity description 1"
+    public static final String ACTIVITY_DESCRIPTION_2 = "activity description 2"
+
+    @Autowired
+    ActivityRepository activityRepository
+
+    @Autowired
+    ActivityService activityService
+
+    protected ActivityDto createActivityDto(name, region, number, description, deadline, start, end, themesDto) {
+        def activityDto = new ActivityDto()
+        activityDto.setName(name)
+        activityDto.setRegion(region)
+        activityDto.setParticipantsNumber(number)
+        activityDto.setDescription(description)
+        activityDto.setStartingDate(DateHandler.toISOString(start))
+        activityDto.setEndingDate(DateHandler.toISOString(end))
+        activityDto.setApplicationDeadline(DateHandler.toISOString(deadline))
+        activityDto.setThemes(themesDto)
+        activityDto
+    }
+
+    // enrollment
+
+    public static final String ENROLLMENT_MOTIVATION_1 = "enrollment motivation 1"
+    public static final String ENROLLMENT_MOTIVATION_2 = "enrollment motivation 2"
+
+    @Autowired
+    EnrollmentService enrollmentService
+    @Autowired
+    EnrollmentRepository enrollmentRepository
+
+    // clean database
 
     def deleteAll() {
         activityRepository.deleteAllActivityTheme()
