@@ -47,7 +47,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         def response = webClient.put()
-                .uri('/activity/' + activityId + '/suspend')
+                .uri('/activities/' + activityId + '/suspend')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -67,7 +67,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activity/' + "222" + '/suspend')
+                .uri('/activities/' + "222" + '/suspend')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -87,7 +87,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activity/' + activityId + '/suspend')
+                .uri('/activities/' + activityId + '/suspend')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -107,7 +107,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activity/' + activityId + '/suspend')
+                .uri('/activities/' + activityId + '/suspend')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
