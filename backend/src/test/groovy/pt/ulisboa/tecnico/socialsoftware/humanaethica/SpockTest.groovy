@@ -19,6 +19,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentD
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
@@ -77,7 +79,7 @@ class SpockTest extends Specification {
     public static final String USER_1_NAME = "User 1 Name"
     public static final String USER_2_NAME = "User 2 Name"
     public static final String USER_3_NAME = "User 3 Name"
-    public static final String USER_1_USERNAME = "ars"
+    public static final String USER_1_USERNAME = "rfs"
     public static final String USER_2_USERNAME = "jps"
     public static final String USER_3_USERNAME = "amm"
     public static final String USER_1_EMAIL = "user1@mail.com"
@@ -163,6 +165,13 @@ class SpockTest extends Specification {
         headers.setBearerAuth(result.token)
 
         return result.getUser()
+    }
+
+    def createMember(name, userName, email, type, institution, state) {
+        def member = new Member(name, userName, email, type, institution, state)
+        member.getAuthUser().setPassword(passwordEncoder.encode(USER_1_PASSWORD))
+        userRepository.save(member)
+        return member
     }
 
     def createVolunteer(name, userName, email, type, state) {
