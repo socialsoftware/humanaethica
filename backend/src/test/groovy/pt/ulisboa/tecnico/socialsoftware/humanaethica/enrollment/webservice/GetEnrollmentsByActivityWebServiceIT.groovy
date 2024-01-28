@@ -4,14 +4,15 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
@@ -59,6 +60,27 @@ class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
         response.size() == 2
         response.get(0).motivation == ENROLLMENT_MOTIVATION_1
         response.get(1).motivation == ENROLLMENT_MOTIVATION_2
+    }
+
+    def 'member of another institution cannot get enrollments'() {
+        given:
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
+        institutionRepository.save(otherInstitution)
+        createMember(USER_3_NAME,USER_3_USERNAME,USER_3_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_3_USERNAME, USER_3_PASSWORD)
+
+        when:
+        def response = webClient.get()
+                .uri('/activities/' + activity.id + '/enrollments')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToFlux(EnrollmentDto.class)
+                .collectList()
+                .block()
+
+        then:
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
     }
 
     def 'volunteer cannot get enrollments'() {
