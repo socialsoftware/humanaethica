@@ -28,20 +28,12 @@ class RegisterActivityWebServiceIT extends SpockTest {
         headers = new HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_JSON)
 
-        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
-        themeRepository.save(theme)
-        def themes = new ArrayList<ThemeDto>()
-        themes.add(new ThemeDto(theme,false, false, false))
+        def theme = createTheme(THEME_NAME_1, Theme.State.APPROVED,null)
+        def themesDto = new ArrayList<ThemeDto>()
+        themesDto.add(new ThemeDto(theme,false, false, false))
 
-        activityDto = new ActivityDto()
-        activityDto.name = ACTIVITY_NAME_1
-        activityDto.region = ACTIVITY_REGION_1
-        activityDto.participantsNumber = 2
-        activityDto.description = ACTIVITY_DESCRIPTION_1
-        activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
-        activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
-        activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
-        activityDto.themes = themes
+        activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,2,ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY,IN_TWO_DAYS,IN_THREE_DAYS,themesDto)
     }
 
     def "login as member, and create an activity"() {

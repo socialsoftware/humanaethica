@@ -18,9 +18,8 @@ class UpdateActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
-    def themes
+    def activityDto
     def activityId
-    def activityDto2
 
     def setup() {
         deleteAll()
@@ -31,33 +30,19 @@ class UpdateActivityWebServiceIT extends SpockTest {
 
         def user = demoMemberLogin()
 
-        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
-        themeRepository.save(theme)
-        themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme,false,false,false))
+        def theme = createTheme(THEME_NAME_1, Theme.State.APPROVED,null)
+        def themesDto = new ArrayList<>()
+        themesDto.add(new ThemeDto(theme,false,false,false))
 
-        def activityDto1 = new ActivityDto()
-        activityDto1.setName(ACTIVITY_NAME_1)
-        activityDto1.setRegion(ACTIVITY_REGION_1)
-        activityDto1.setParticipantsNumber(2)
-        activityDto1.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto1.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
-        activityDto1.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto1.setApplicationDeadline(DateHandler.toISOString(NOW))
-        activityDto1.setThemes(themes)
-        def activity = activityService.registerActivity(user.id, activityDto1)
+        activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,2,ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY,IN_TWO_DAYS,IN_THREE_DAYS,themesDto)
+
+        def activity = activityService.registerActivity(user.id, activityDto)
 
         activityId = activity.id
 
-        activityDto2 = new ActivityDto()
-        activityDto2.setName(ACTIVITY_NAME_2)
-        activityDto2.setRegion(ACTIVITY_REGION_2)
-        activityDto2.setParticipantsNumber(4)
-        activityDto2.setDescription(ACTIVITY_DESCRIPTION_2)
-        activityDto2.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto2.setEndingDate(DateHandler.toISOString(IN_THREE_DAYS))
-        activityDto2.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
-        activityDto2.setThemes(new ArrayList<>())
+        activityDto = createActivityDto(ACTIVITY_NAME_2,ACTIVITY_REGION_2,4,ACTIVITY_DESCRIPTION_2,
+                NOW,IN_ONE_DAY,IN_TWO_DAYS,new ArrayList<>())
     }
 
     def "login as member, and update an activity"() {
@@ -68,7 +53,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         def response = webClient.put()
                 .uri('/activity/' + activityId + '/update')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(activityDto2)
+                .bodyValue(activityDto)
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
                 .block()
@@ -78,9 +63,9 @@ class UpdateActivityWebServiceIT extends SpockTest {
         response.region == ACTIVITY_REGION_2
         response.participantsNumber == 4
         response.description == ACTIVITY_DESCRIPTION_2
-        response.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
-        response.endingDate== DateHandler.toISOString(IN_THREE_DAYS)
-        response.applicationDeadline == DateHandler.toISOString(IN_ONE_DAY)
+        response.startingDate == DateHandler.toISOString(IN_ONE_DAY)
+        response.endingDate== DateHandler.toISOString(IN_TWO_DAYS)
+        response.applicationDeadline == DateHandler.toISOString(NOW)
         response.themes.isEmpty()
         and: 'check database'
         activityRepository.count() == 1
@@ -89,9 +74,9 @@ class UpdateActivityWebServiceIT extends SpockTest {
         activity.getRegion() == ACTIVITY_REGION_2
         activity.getParticipantsNumber() == 4
         activity.getDescription() == ACTIVITY_DESCRIPTION_2
-        activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
-        activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)
-        activity.getApplicationDeadline().withNano(0) == IN_ONE_DAY.withNano(0)
+        activity.getStartingDate().withNano(0) == IN_ONE_DAY.withNano(0)
+        activity.getEndingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
+        activity.getApplicationDeadline().withNano(0) == NOW.withNano(0)
         activity.themes.isEmpty()
 
         cleanup:
@@ -102,13 +87,13 @@ class UpdateActivityWebServiceIT extends SpockTest {
         given: 'a member'
         demoMemberLogin()
         and:
-        activityDto2.setParticipantsNumber(10)
+        activityDto.setParticipantsNumber(10)
 
         when: 'the member registers the activity'
         webClient.put()
                 .uri('/activity/' + activityId + '/update')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(activityDto2)
+                .bodyValue(activityDto)
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
                 .block()
@@ -123,9 +108,9 @@ class UpdateActivityWebServiceIT extends SpockTest {
         activity.getRegion() == ACTIVITY_REGION_1
         activity.getParticipantsNumber() == 2
         activity.getDescription() == ACTIVITY_DESCRIPTION_1
-        activity.getStartingDate().withNano(0) == IN_ONE_DAY.withNano(0)
-        activity.getEndingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
-        activity.getApplicationDeadline().withNano(0) == NOW.withNano(0)
+        activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
+        activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)
+        activity.getApplicationDeadline().withNano(0) == IN_ONE_DAY.withNano(0)
         activity.themes.get(0).getName() == THEME_NAME_1
 
         cleanup:
@@ -140,7 +125,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         webClient.put()
                 .uri('/activity/' + activityId + '/update')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(activityDto2)
+                .bodyValue(activityDto)
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
                 .block()
@@ -162,7 +147,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         webClient.put()
                 .uri('/activity/' + activityId + '/update')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(activityDto2)
+                .bodyValue(activityDto)
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
                 .block()

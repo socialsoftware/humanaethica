@@ -12,7 +12,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReportActivityWebServiceIT extends SpockTest {
@@ -30,20 +29,13 @@ class ReportActivityWebServiceIT extends SpockTest {
 
         def user = demoMemberLogin()
 
-        def theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
-        themeRepository.save(theme)
-        def themes = new ArrayList<>()
-        themes.add(new ThemeDto(theme,false,false,false))
+        def theme = createTheme(THEME_NAME_1, Theme.State.APPROVED,null)
+        def themesDto = new ArrayList<>()
+        themesDto.add(new ThemeDto(theme,false,false,false))
 
-        def activityDto = new ActivityDto()
-        activityDto.setName(ACTIVITY_NAME_1)
-        activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(2)
-        activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
-        activityDto.setStartingDate(DateHandler.toISOString(IN_ONE_DAY))
-        activityDto.setEndingDate(DateHandler.toISOString(IN_TWO_DAYS))
-        activityDto.setApplicationDeadline(DateHandler.toISOString(NOW))
-        activityDto.setThemes(themes)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,2,ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY,IN_TWO_DAYS,IN_THREE_DAYS,themesDto)
+
         def activity = activityService.registerActivity(user.id, activityDto)
 
         activityId = activity.id
