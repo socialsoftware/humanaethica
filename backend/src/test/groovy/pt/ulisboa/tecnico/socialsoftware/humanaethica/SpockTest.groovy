@@ -167,9 +167,9 @@ class SpockTest extends Specification {
         return result.getUser()
     }
 
-    def createMember(name, userName, email, type, institution, state) {
+    def createMember(name, userName, password, email, type, institution, state) {
         def member = new Member(name, userName, email, type, institution, state)
-        member.getAuthUser().setPassword(passwordEncoder.encode(USER_1_PASSWORD))
+        member.getAuthUser().setPassword(passwordEncoder.encode(password))
         userRepository.save(member)
         return member
     }
