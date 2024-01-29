@@ -54,7 +54,7 @@ class CreateEnrollmentServiceTest extends SpockTest {
         enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
 
         when:
-        def result = enrollmentService.createEnrollment(getVolunteerId(volunteerId), getActivityId(activityId), enrollmentDto)
+        def result = enrollmentService.createEnrollment(getVolunteerId(volunteerId), getActivityId(activityId), getEnrollmentDto(enrollmentValue,enrollmentDto))
 
         then:
         def error = thrown(HEException)
@@ -63,11 +63,12 @@ class CreateEnrollmentServiceTest extends SpockTest {
         enrollmentRepository.findAll().size() == 0
 
         where:
-        volunteerId | activityId || errorMessage
-        null        | EXIST      || ErrorMessage.USER_NOT_FOUND
-        NO_EXIST    | EXIST      || ErrorMessage.USER_NOT_FOUND
-        EXIST       | null       || ErrorMessage.ACTIVITY_NOT_FOUND
-        EXIST       | NO_EXIST   || ErrorMessage.ACTIVITY_NOT_FOUND
+        volunteerId | activityId | enrollmentValue || errorMessage
+        null        | EXIST      | EXIST           || ErrorMessage.USER_NOT_FOUND
+        NO_EXIST    | EXIST      | EXIST           || ErrorMessage.USER_NOT_FOUND
+        EXIST       | null       | EXIST           || ErrorMessage.ACTIVITY_NOT_FOUND
+        EXIST       | NO_EXIST   | EXIST           || ErrorMessage.ACTIVITY_NOT_FOUND
+        EXIST       | EXIST      | null            || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
     }
 
     def getVolunteerId(volunteerId) {
@@ -86,6 +87,13 @@ class CreateEnrollmentServiceTest extends SpockTest {
             return 222
         else
             return null
+    }
+
+    def getEnrollmentDto(value, enrollmentDto) {
+        if (value == EXIST) {
+            return enrollmentDto
+        }
+        return null
     }
 
     @TestConfiguration

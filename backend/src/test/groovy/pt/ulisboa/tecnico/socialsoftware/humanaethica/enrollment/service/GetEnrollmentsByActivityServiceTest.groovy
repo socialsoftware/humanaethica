@@ -6,6 +6,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @DataJpaTest
@@ -58,6 +60,21 @@ class GetEnrollmentsByActivityServiceTest extends SpockTest {
         enrollments.size() == 1
         enrollments.get(0).motivation == ENROLLMENT_MOTIVATION_1
     }
+
+    def "activity does not exist or is null: activityId=#activityId"() {
+        when:
+        enrollmentService.getEnrollmentsByActivity(activityId)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        activityId || errorMessage
+        null       || ErrorMessage.ACTIVITY_NOT_FOUND
+        222        || ErrorMessage.ACTIVITY_NOT_FOUND
+    }
+
 
 
     @TestConfiguration
