@@ -1,21 +1,21 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.webservice
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.webservice
 
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
+class GetParticipationsByActivityWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
@@ -30,8 +30,8 @@ class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
-                IN_ONE_DAY, IN_TWO_DAYS,IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,3,ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
@@ -39,30 +39,30 @@ class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
         def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         and:
-        createEnrollment(activity, volunteerOne, ENROLLMENT_MOTIVATION_1)
-        createEnrollment(activity, volunteerTwo, ENROLLMENT_MOTIVATION_2)
+        createParticipation(activity, volunteerOne, 1)
+        createParticipation(activity, volunteerTwo, 2)
     }
 
-    def 'member gets two enrollments'() {
+    def 'member gets two participations'() {
         given:
         demoMemberLogin()
 
         when:
         def response = webClient.get()
-                .uri('/activities/' + activity.id + '/enrollments')
+                .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
-                .bodyToFlux(EnrollmentDto.class)
+                .bodyToFlux(ParticipationDto.class)
                 .collectList()
                 .block()
 
         then:
         response.size() == 2
-        response.get(0).motivation == ENROLLMENT_MOTIVATION_1
-        response.get(1).motivation == ENROLLMENT_MOTIVATION_2
+        response.get(0).rating == 1
+        response.get(1).rating == 2
     }
 
-    def 'member of another institution cannot get enrollments'() {
+    def 'member of another institution cannot get participations'() {
         given:
         def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
@@ -70,11 +70,11 @@ class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
         normalUserLogin(USER_3_USERNAME, USER_3_PASSWORD)
 
         when:
-        webClient.get()
-                .uri('/activities/' + activity.id + '/enrollments')
+       webClient.get()
+                .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
-                .bodyToFlux(EnrollmentDto.class)
+                .bodyToFlux(ParticipationDto.class)
                 .collectList()
                 .block()
 
@@ -83,16 +83,16 @@ class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
     }
 
-    def 'volunteer cannot get enrollments'() {
+    def 'volunteer cannot get participations'() {
         given:
         demoVolunteerLogin()
 
         when:
         webClient.get()
-                .uri('/activities/' + activity.id + '/enrollments')
+                .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
-                .bodyToFlux(EnrollmentDto.class)
+                .bodyToFlux(ParticipationDto.class)
                 .collectList()
                 .block()
 
@@ -101,16 +101,16 @@ class GetEnrollmentsByActivityWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
     }
 
-    def 'admin cannot get enrollments'() {
+    def 'admin cannot get participations'() {
         given:
         demoAdminLogin()
 
         when:
-        webClient.get()
-                .uri('/activities/' + activity.id + '/enrollments')
+        def response = webClient.get()
+                .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
-                .bodyToFlux(EnrollmentDto.class)
+                .bodyToFlux(ParticipationDto.class)
                 .collectList()
                 .block()
 

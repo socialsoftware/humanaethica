@@ -29,7 +29,7 @@ class UpdateActivityMethodTest extends SpockTest {
         activityDtoOne = new ActivityDto()
         activityDtoOne.name = ACTIVITY_NAME_1
         activityDtoOne.region = ACTIVITY_REGION_1
-        activityDtoOne.participantsNumber = 2
+        activityDtoOne.participantsNumberLimit = 2
         activityDtoOne.description = ACTIVITY_DESCRIPTION_1
         activityDtoOne.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
         activityDtoOne.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
@@ -45,7 +45,7 @@ class UpdateActivityMethodTest extends SpockTest {
         activityDtoTwo = new ActivityDto()
         activityDtoTwo.name = ACTIVITY_NAME_2
         activityDtoTwo.region = ACTIVITY_REGION_2
-        activityDtoTwo.participantsNumber = 4
+        activityDtoTwo.participantsNumberLimit = 4
         activityDtoTwo.description = ACTIVITY_DESCRIPTION_2
         activityDtoTwo.startingDate = DateHandler.toISOString(IN_ONE_DAY)
         activityDtoTwo.endingDate = DateHandler.toISOString(IN_TWO_DAYS)
@@ -64,7 +64,7 @@ class UpdateActivityMethodTest extends SpockTest {
         activity.getInstitution() == institution
         activity.getName() == ACTIVITY_NAME_2
         activity.getRegion() == ACTIVITY_REGION_2
-        activity.getParticipantsNumber() == 4
+        activity.getParticipantsNumberLimit() == 4
         activity.getDescription() == ACTIVITY_DESCRIPTION_2
         activity.getStartingDate() == IN_ONE_DAY
         activity.getEndingDate() == IN_TWO_DAYS
@@ -82,7 +82,7 @@ class UpdateActivityMethodTest extends SpockTest {
         activityDtoTwo = new ActivityDto()
         activityDtoTwo.setName(name)
         activityDtoTwo.setRegion(region)
-        activityDtoTwo.setParticipantsNumber(participants)
+        activityDtoTwo.setParticipantsNumberLimit(participants)
         activityDtoTwo.setDescription(description)
         activityDtoTwo.setApplicationDeadline(deadline instanceof LocalDateTime ? DateHandler.toISOString(deadline) : deadline as String)
         activityDtoTwo.setStartingDate(start instanceof LocalDateTime ? DateHandler.toISOString(start) : start as String)

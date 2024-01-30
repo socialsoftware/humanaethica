@@ -1,17 +1,17 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.service
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import spock.lang.Unroll
 
 @DataJpaTest
-class CreateEnrollmentServiceTest extends SpockTest {
+class CreateParticipationServiceTest extends SpockTest {
     public static final String EXIST = 'exist'
     public static final String NO_EXIST = 'noExist'
     def volunteer
@@ -21,53 +21,53 @@ class CreateEnrollmentServiceTest extends SpockTest {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
-                IN_ONE_DAY, IN_TWO_DAYS,IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,3,ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
     }
 
-    def 'create enrollment' () {
+    def 'create participant' () {
         given:
-        def enrollmentDto = new EnrollmentDto()
-        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
+        def participationDto = new ParticipationDto()
+        participationDto.rating = 5
 
         when:
-        def result = enrollmentService.createEnrollment(volunteer.id, activity.id, enrollmentDto)
+        def result = participationService.createParticipation(volunteer.id, activity.id, participationDto)
 
         then:
-        result.motivation == ENROLLMENT_MOTIVATION_1
+        result.rating == 5
         and:
-        enrollmentRepository.findAll().size() == 1
-        def storedEnrollment = enrollmentRepository.findAll().get(0)
-        storedEnrollment.motivation == ENROLLMENT_MOTIVATION_1
-        storedEnrollment.activity.id == activity.id
-        storedEnrollment.volunteer.id == volunteer.id
+        participationRepository.findAll().size() == 1
+        def storedParticipation = participationRepository.findAll().get(0)
+        storedParticipation.rating == 5
+        storedParticipation.activity.id == activity.id
+        storedParticipation.volunteer.id == volunteer.id
     }
 
     @Unroll
     def 'invalid arguments: volunteerId=#volunteerId | activityId=#activityId'() {
         given:
-        def enrollmentDto = new EnrollmentDto()
-        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
+        def participationDto = new ParticipationDto()
+        participationDto.rating = 5
 
         when:
-        enrollmentService.createEnrollment(getVolunteerId(volunteerId), getActivityId(activityId), getEnrollmentDto(enrollmentValue,enrollmentDto))
+        participationService.createParticipation(getVolunteerId(volunteerId), getActivityId(activityId), getParticipationDto(participationValue,participationDto))
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == errorMessage
         and:
-        enrollmentRepository.findAll().size() == 0
+        participationRepository.findAll().size() == 0
 
         where:
-        volunteerId | activityId | enrollmentValue || errorMessage
-        null        | EXIST      | EXIST           || ErrorMessage.USER_NOT_FOUND
-        NO_EXIST    | EXIST      | EXIST           || ErrorMessage.USER_NOT_FOUND
-        EXIST       | null       | EXIST           || ErrorMessage.ACTIVITY_NOT_FOUND
-        EXIST       | NO_EXIST   | EXIST           || ErrorMessage.ACTIVITY_NOT_FOUND
-        EXIST       | EXIST      | null            || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
+        volunteerId | activityId | participationValue || errorMessage
+        null        | EXIST      | EXIST              || ErrorMessage.USER_NOT_FOUND
+        NO_EXIST    | EXIST      | EXIST              || ErrorMessage.USER_NOT_FOUND
+        EXIST       | null       | EXIST              || ErrorMessage.ACTIVITY_NOT_FOUND
+        EXIST       | NO_EXIST   | EXIST              || ErrorMessage.ACTIVITY_NOT_FOUND
+        EXIST       | EXIST      | null               || ErrorMessage.PARTICIPATION_REQUIRES_INFORMATION
     }
 
     def getVolunteerId(volunteerId) {
@@ -88,9 +88,9 @@ class CreateEnrollmentServiceTest extends SpockTest {
             return null
     }
 
-    def getEnrollmentDto(value, enrollmentDto) {
+    def getParticipationDto(value, participationDto) {
         if (value == EXIST) {
-            return enrollmentDto
+            return participationDto
         }
         return null
     }

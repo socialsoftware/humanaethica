@@ -24,7 +24,7 @@ class ValidateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.name = ACTIVITY_NAME_1
         activityDto.region = ACTIVITY_REGION_1
-        activityDto.participantsNumber = 2
+        activityDto.participantsNumberLimit = 2
         activityDto.description = ACTIVITY_DESCRIPTION_1
         activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
         activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)

@@ -26,7 +26,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.name = ACTIVITY_NAME_1
         activityDto.region = ACTIVITY_REGION_1
-        activityDto.participantsNumber = 2
+        activityDto.participantsNumberLimit = 2
         activityDto.description = ACTIVITY_DESCRIPTION_1
         activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
         activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
@@ -47,7 +47,7 @@ class CreateActivityMethodTest extends SpockTest {
         result.getInstitution() == institution
         result.getName() == ACTIVITY_NAME_1
         result.getRegion() == ACTIVITY_REGION_1
-        result.getParticipantsNumber() == 2
+        result.getParticipantsNumberLimit() == 2
         result.getDescription() == ACTIVITY_DESCRIPTION_1
         result.getStartingDate() == IN_TWO_DAYS
         result.getEndingDate() == IN_THREE_DAYS
@@ -70,7 +70,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
-        activityDto.setParticipantsNumber(1)
+        activityDto.setParticipantsNumberLimit(1)
         activityDto.setDescription(description)
         activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
@@ -104,7 +104,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_NAME_1)
         activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(participants)
+        activityDto.setParticipantsNumberLimit(participants)
         activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
         activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
@@ -136,7 +136,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_NAME_1)
         activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(1)
+        activityDto.setParticipantsNumberLimit(1)
         activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
         activityDto.setApplicationDeadline(deadline instanceof LocalDateTime ? DateHandler.toISOString(deadline) : deadline as String)
         activityDto.setStartingDate(start instanceof LocalDateTime ? DateHandler.toISOString(start) : start as String)
@@ -173,7 +173,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_NAME_1)
         activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(1)
+        activityDto.setParticipantsNumberLimit(1)
         activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
         activityDto.setApplicationDeadline(deadline instanceof LocalDateTime ? DateHandler.toISOString(deadline) : deadline as String)
         activityDto.setStartingDate(start instanceof LocalDateTime ? DateHandler.toISOString(start) : start as String)
@@ -205,7 +205,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_NAME_1)
         activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(1)
+        activityDto.setParticipantsNumberLimit(1)
         activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
         activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))
@@ -235,7 +235,7 @@ class CreateActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.setName(ACTIVITY_NAME_2)
         activityDto.setRegion(ACTIVITY_REGION_1)
-        activityDto.setParticipantsNumber(1)
+        activityDto.setParticipantsNumberLimit(1)
         activityDto.setDescription(ACTIVITY_DESCRIPTION_1)
         activityDto.setApplicationDeadline(DateHandler.toISOString(IN_ONE_DAY))
         activityDto.setStartingDate(DateHandler.toISOString(IN_TWO_DAYS))

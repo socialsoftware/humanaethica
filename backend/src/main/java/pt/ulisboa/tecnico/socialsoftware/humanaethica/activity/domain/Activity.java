@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
@@ -25,7 +26,7 @@ public class Activity {
     private String name;
     private String region;
     private String description;
-    private Integer participantsNumber;
+    private Integer participantsNumberLimit;
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
@@ -41,6 +42,9 @@ public class Activity {
     @OneToMany(mappedBy = "activity")
     private List<Enrollment> enrollments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "activity")
+    private List<Participation> participations = new ArrayList<>();
+
     public Activity() {
     }
 
@@ -48,7 +52,7 @@ public class Activity {
         setInstitution(institution);
         setName(activityDto.getName());
         setRegion(activityDto.getRegion());
-        setParticipantsNumber(activityDto.getParticipantsNumber());
+        setParticipantsNumberLimit(activityDto.getParticipantsNumberLimit());
         setDescription(activityDto.getDescription());
         setCreationDate(DateHandler.now());
         setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
@@ -65,7 +69,7 @@ public class Activity {
     public void update(ActivityDto activityDto, List<Theme> themes) {
         setName(activityDto.getName());
         setRegion(activityDto.getRegion());
-        setParticipantsNumber(activityDto.getParticipantsNumber());
+        setParticipantsNumberLimit(activityDto.getParticipantsNumberLimit());
         setDescription(activityDto.getDescription());
         setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
         setEndingDate(DateHandler.toLocalDateTime(activityDto.getEndingDate()));
@@ -97,12 +101,12 @@ public class Activity {
         this.region = region;
     }
 
-    public Integer getParticipantsNumber() {
-        return participantsNumber;
+    public Integer getParticipantsNumberLimit() {
+        return participantsNumberLimit;
     }
 
-    public void setParticipantsNumber(Integer participantsNumber) {
-        this.participantsNumber = participantsNumber;
+    public void setParticipantsNumberLimit(Integer participantsNumberLimit) {
+        this.participantsNumberLimit = participantsNumberLimit;
     }
 
     public String getDescription() {
@@ -160,6 +164,21 @@ public class Activity {
     public void suspend() {
         activityCannotBeSuspended();
         this.setState(State.SUSPENDED);
+    }
+
+    public List<Participation> getParticipations() {
+        return participations;
+    }
+
+    public void addParticipation(Participation participation) {
+        this.participations.add(participation);
+    }
+
+    public int getNumberOfParticipatingVolunteers() {
+        return this.participations.size();
+    }
+    public void setParticipations(List<Participation> participations) {
+        this.participations = participations;
     }
 
     private void activityCannotBeSuspended() {
@@ -278,7 +297,7 @@ public class Activity {
 
 
     private void hasOneToFiveParticipants() {
-        if (this.participantsNumber <= 0 || this.participantsNumber > 5) {
+        if (this.participantsNumberLimit <= 0 || this.participantsNumberLimit > 5) {
             throw new HEException(ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS);
         }
     }

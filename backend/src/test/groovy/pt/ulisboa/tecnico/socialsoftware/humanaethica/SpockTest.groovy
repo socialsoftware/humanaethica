@@ -16,6 +16,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentRepos
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
@@ -217,14 +221,17 @@ class SpockTest extends Specification {
         def activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
-        activityDto.setParticipantsNumber(number)
+        activityDto.setParticipantsNumberLimit(number)
         activityDto.setDescription(description)
         activityDto.setStartingDate(DateHandler.toISOString(start))
         activityDto.setEndingDate(DateHandler.toISOString(end))
         activityDto.setApplicationDeadline(DateHandler.toISOString(deadline))
         activityDto.setThemes(themesDto)
         activityDto
-    }    // enrollment
+    }
+
+
+    // enrollment
 
     public static final String ENROLLMENT_MOTIVATION_1 = "enrollment motivation 1"
     public static final String ENROLLMENT_MOTIVATION_2 = "enrollment motivation 2"
@@ -242,10 +249,25 @@ class SpockTest extends Specification {
         return enrollment
     }
 
+    // participation
+
+    @Autowired
+    ParticipationService participationService
+    @Autowired
+    ParticipationRepository participationRepository
+
+    def createParticipation(activity, volunteer, rating) {
+        def participationDto = new ParticipationDto()
+        participationDto.setRating(rating)
+        def participation = new Participation(activity, volunteer, participationDto)
+        participationRepository.save(participation)
+        return participation
+    }
 
     // clean database
 
     def deleteAll() {
+        participationRepository.deleteAll()
         enrollmentRepository.deleteAll()
         activityRepository.deleteAllActivityTheme()
         activityRepository.deleteAll()

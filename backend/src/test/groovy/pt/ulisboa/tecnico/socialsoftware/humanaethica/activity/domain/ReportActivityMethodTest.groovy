@@ -8,11 +8,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
-
-import java.time.LocalDateTime
 
 @DataJpaTest
 class ReportActivityMethodTest extends SpockTest {
@@ -25,7 +22,7 @@ class ReportActivityMethodTest extends SpockTest {
         activityDto = new ActivityDto()
         activityDto.name = ACTIVITY_NAME_1
         activityDto.region = ACTIVITY_REGION_1
-        activityDto.participantsNumber = 2
+        activityDto.participantsNumberLimit = 2
         activityDto.description = ACTIVITY_DESCRIPTION_1
         activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
         activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
