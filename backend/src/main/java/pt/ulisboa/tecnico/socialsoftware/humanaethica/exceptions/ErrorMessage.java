@@ -43,13 +43,16 @@ public enum ErrorMessage {
     ENROLLMENT_REQUIRES_MOTIVATION("To apply to an activity you have to write a motivation longer than 10 characters"),
     ENROLLMENT_VOLUNTEER_IS_ALREADY_ENROLLED("The volunteer is already enrolled"),
     ENROLLMENT_AFTER_DEADLINE("The enrollment period is already closed"),
-    PARTICIPATION_RATING_IS_NOT_BETWEEN_1_AND_5("Rating 5% is not a value between 1 and 5"),
     PARTICIPATION_IS_FULL("No vacancies"),
     PARTICIPATION_ACCEPTANCE_BEFORE_DEADLINE("The enrollment period is still open"),
     PARTICIPATION_RATING_BEFORE_END("Rate only after activity end"),
     PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE("Rating %d is not in the range 1 to 5"),
     PARTICIPATION_VOLUNTEER_IS_ALREADY_PARTICIPATING("The volunteer is already participating"),
     PARTICIPATION_REQUIRES_INFORMATION("Information about participation is required"),
+    ASSESSMENT_VOLUNTEER_CAN_ASSESS_INSTITUTION_ONLY_ONCE("Volunteer has already assessed the institution"),
+    ASSESSMENT_ONLY_IF_INSTITUTION_HAS_FINISHED_ACTIVITIES("Institution does not have any finished activity"),
+    ASSESSMENT_REQUIRES_REVIEW("To do an assessment have to write a review longer than 10 characters"),
+
     ;
 
     public final String label;

@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.dto.AssessmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthPasswordDto
@@ -16,6 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentRepos
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation
@@ -72,6 +77,12 @@ class SpockTest extends Specification {
 
     @Autowired
     InstitutionRepository institutionRepository
+
+    def createInstitution(String name, String email, String nif) {
+        def institution = new Institution(name, email, nif)
+        institutionRepository.save(institution)
+        return institution
+    }
 
     // login and demo
 
@@ -264,9 +275,28 @@ class SpockTest extends Specification {
         return participation
     }
 
+    // assessment
+
+    public static final String ASSESSMENT_REVIEW_1 = "assessment review 1"
+    public static final String ASSESSMENT_REVIEW_2 = "assessment review 2"
+
+    @Autowired
+    AssessmentService assessmentService
+    @Autowired
+    AssessmentRepository assessmentRepository
+
+    def createAssessment(institution, volunteer, review) {
+        def assessmentDto = new AssessmentDto()
+        assessmentDto.setReview(review)
+        def assessment = new Assessment(institution, volunteer, assessmentDto)
+        activityRepository.save(assessment)
+        return assessment
+    }
+
     // clean database
 
     def deleteAll() {
+        assessmentRepository.deleteAll()
         participationRepository.deleteAll()
         enrollmentRepository.deleteAll()
         activityRepository.deleteAllActivityTheme()

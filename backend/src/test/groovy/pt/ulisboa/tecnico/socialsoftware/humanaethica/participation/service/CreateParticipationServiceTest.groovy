@@ -10,6 +10,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import spock.lang.Unroll
 
+import java.time.LocalDateTime
+
 @DataJpaTest
 class CreateParticipationServiceTest extends SpockTest {
     public static final String EXIST = 'exist'
@@ -42,6 +44,7 @@ class CreateParticipationServiceTest extends SpockTest {
         participationRepository.findAll().size() == 1
         def storedParticipation = participationRepository.findAll().get(0)
         storedParticipation.rating == 5
+        storedParticipation.acceptanceDate.isBefore(LocalDateTime.now())
         storedParticipation.activity.id == activity.id
         storedParticipation.volunteer.id == volunteer.id
     }
