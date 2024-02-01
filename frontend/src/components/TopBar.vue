@@ -148,17 +148,6 @@
       </v-toolbar>
 
       <v-list class="pt-0" dense>
-        <!-- Member Group-->
-        <v-list-group
-          v-if="isMember"
-          :value="false"
-          prepend-icon="account_circle"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>Member</v-list-item-title>
-          </template>
-        </v-list-group>
-
         <!-- Volunteer Group-->
         <v-list-group
           v-if="isVolunteer"
@@ -166,8 +155,45 @@
           prepend-icon="account_circle"
         >
           <template v-slot:activator>
-            <v-list-item-title>Volunteer</v-list-item-title>
+            <v-list-item-title @click="manageActivities"
+              >Volunteer</v-list-item-title
+            >
           </template>
+        </v-list-group>
+
+        <!-- Member Group-->
+        <v-list-group
+          v-if="isMember"
+          :value="false"
+          prepend-icon="account_circle"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>Institution</v-list-item-title>
+          </template>
+          <v-list-item to="/member/register">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Register Member</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/member/theme">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Themes</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/member/manageActivities">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Activities</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
 
         <!-- Administration Group-->
@@ -184,7 +210,7 @@
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Manage Users</v-list-item-title>
+              <v-list-item-title>Users</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/admin/institutions">
@@ -192,15 +218,23 @@
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Manage Institutions</v-list-item-title>
+              <v-list-item-title>Institutions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/admin/members" data-cy="adminMembers">
+          <v-list-item to="/admin/manageTheme">
             <v-list-item-action>
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Manage Members</v-list-item-title>
+              <v-list-item-title>Themes</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/admin/activities">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
