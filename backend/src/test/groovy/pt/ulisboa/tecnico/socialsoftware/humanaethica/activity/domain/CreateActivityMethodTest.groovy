@@ -115,14 +115,10 @@ class CreateActivityMethodTest extends SpockTest {
 
         then:
         def error = thrown(HEException)
-        error.getErrorMessage() == errorMessage
+        error.getErrorMessage() == ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
 
         where:
-        participants || errorMessage
-        -5           || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        0            || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        6            || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
-        10           || ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS
+        participants << [null, -5, 0, 6, 10]
       }
 
     @Unroll

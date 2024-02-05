@@ -1,7 +1,6 @@
 describe('Activity', () => {
   beforeEach(() => {
     cy.deleteActivities()
-
   });
 
   afterEach(() => {

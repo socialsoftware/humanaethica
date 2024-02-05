@@ -11,7 +11,7 @@ public class ActivityDto {
     private Integer id;
     private String name;
     private String region;
-    private int participantsNumberLimit;
+    private Integer participantsNumberLimit;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -132,11 +132,12 @@ public class ActivityDto {
         this.institution = institution;
     }
 
-    public int getParticipantsNumberLimit() {
+
+    public Integer getParticipantsNumberLimit() {
         return participantsNumberLimit;
     }
 
-    public void setParticipantsNumberLimit(int participantsNumberLimit) {
+    public void setParticipantsNumberLimit(Integer participantsNumberLimit) {
         this.participantsNumberLimit = participantsNumberLimit;
     }
 

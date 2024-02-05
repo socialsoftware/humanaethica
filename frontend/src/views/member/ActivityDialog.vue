@@ -40,7 +40,7 @@
                     'Number of participants between 1 and 5 is required',
                 ]"
                 required
-                v-model="editActivity.participantsNumber"
+                v-model="editActivity.participantsNumberLimit"
                 data-cy="participantsNumberInput"
               ></v-text-field>
             </v-col>
@@ -150,7 +150,7 @@ export default class ActivityDialog extends Vue {
       this.cypressCondition ||
       (!!this.editActivity.name &&
         !!this.editActivity.region &&
-        !!this.editActivity.participantsNumber &&
+        !!this.editActivity.participantsNumberLimit &&
         !!this.editActivity.description &&
         !!this.editActivity.startingDate &&
         !!this.editActivity.endingDate &&

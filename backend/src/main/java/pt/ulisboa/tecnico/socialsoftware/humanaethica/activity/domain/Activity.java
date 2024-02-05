@@ -297,7 +297,7 @@ public class Activity {
 
 
     private void hasOneToFiveParticipants() {
-        if (this.participantsNumberLimit <= 0 || this.participantsNumberLimit > 5) {
+        if (this.participantsNumberLimit == null || this.participantsNumberLimit <= 0 || this.participantsNumberLimit > 5) {
             throw new HEException(ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS);
         }
     }
