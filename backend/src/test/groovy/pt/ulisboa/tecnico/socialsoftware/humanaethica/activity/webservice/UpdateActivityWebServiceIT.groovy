@@ -64,7 +64,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         then: "check response"
         response.name == ACTIVITY_NAME_2
         response.region == ACTIVITY_REGION_2
-        response.participantsNumber == 4
+        response.participantsNumberLimit == 4
         response.description == ACTIVITY_DESCRIPTION_2
         response.startingDate == DateHandler.toISOString(IN_ONE_DAY)
         response.endingDate== DateHandler.toISOString(IN_TWO_DAYS)
@@ -75,7 +75,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         def activity = activityRepository.findAll().get(0)
         activity.getName() == ACTIVITY_NAME_2
         activity.getRegion() == ACTIVITY_REGION_2
-        activity.getParticipantsNumber() == 4
+        activity.getParticipantsNumberLimit() == 4
         activity.getDescription() == ACTIVITY_DESCRIPTION_2
         activity.getStartingDate().withNano(0) == IN_ONE_DAY.withNano(0)
         activity.getEndingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
@@ -90,7 +90,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         given: 'a member'
         demoMemberLogin()
         and:
-        activityDto.setParticipantsNumber(10)
+        activityDto.setParticipantsNumberLimit(10)
 
         when: 'the member registers the activity'
         webClient.put()
@@ -109,7 +109,7 @@ class UpdateActivityWebServiceIT extends SpockTest {
         def activity = activityRepository.findAll().get(0)
         activity.getName() == ACTIVITY_NAME_1
         activity.getRegion() == ACTIVITY_REGION_1
-        activity.getParticipantsNumber() == 2
+        activity.getParticipantsNumberLimit() == 2
         activity.getDescription() == ACTIVITY_DESCRIPTION_1
         activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
         activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)

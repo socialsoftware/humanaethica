@@ -1,21 +1,17 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_DESCRIPTION_INVALID;
-
 public class ActivityDto {
     private Integer id;
     private String name;
     private String region;
-    private int participantsNumber;
+    private Integer participantsNumberLimit;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -32,7 +28,7 @@ public class ActivityDto {
         setId(activity.getId());
         setName(activity.getName());
         setRegion(activity.getRegion());
-        setParticipantsNumber(activity.getParticipantsNumber());
+        setParticipantsNumberLimit(activity.getParticipantsNumberLimit());
         setDescription(activity.getDescription());
 
         this.themes = activity.getThemes().stream()
@@ -136,12 +132,12 @@ public class ActivityDto {
         this.institution = institution;
     }
 
-    public int getParticipantsNumber() {
-        return participantsNumber;
+    public Integer getParticipantsNumberLimit() {
+        return participantsNumberLimit;
     }
 
-    public void setParticipantsNumber(int participantsNumber) {
-        this.participantsNumber = participantsNumber;
+    public void setParticipantsNumberLimit(Integer participantsNumberLimit) {
+        this.participantsNumberLimit = participantsNumberLimit;
     }
 
     @Override
@@ -150,7 +146,7 @@ public class ActivityDto {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", region='" + region + '\'' +
-                ", participantsNumber=" + participantsNumber +
+                ", participantsNumber=" + participantsNumberLimit +
                 ", description='" + description + '\'' +
                 ", startingDate='" + startingDate + '\'' +
                 ", endingDate='" + endingDate + '\'' +

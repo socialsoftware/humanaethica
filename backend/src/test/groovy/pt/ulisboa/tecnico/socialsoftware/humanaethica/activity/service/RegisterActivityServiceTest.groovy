@@ -43,7 +43,7 @@ class RegisterActivityServiceTest extends SpockTest {
         then: "the returned data is correct"
         result.name == ACTIVITY_NAME_1
         result.region == ACTIVITY_REGION_1
-        result.participantsNumber == 1
+        result.participantsNumberLimit == 1
         result.description == ACTIVITY_DESCRIPTION_1
         result.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
         result.endingDate == DateHandler.toISOString(IN_THREE_DAYS)
@@ -57,7 +57,7 @@ class RegisterActivityServiceTest extends SpockTest {
         def storedActivity = activityRepository.findById(result.id).get()
         storedActivity.name == ACTIVITY_NAME_1
         storedActivity.region == ACTIVITY_REGION_1
-        storedActivity.participantsNumber == 1
+        storedActivity.participantsNumberLimit == 1
         storedActivity.description == ACTIVITY_DESCRIPTION_1
         storedActivity.startingDate == IN_TWO_DAYS
         storedActivity.endingDate == IN_THREE_DAYS

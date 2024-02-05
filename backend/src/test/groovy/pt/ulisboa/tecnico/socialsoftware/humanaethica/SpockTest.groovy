@@ -16,8 +16,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository
@@ -207,7 +205,7 @@ class SpockTest extends Specification {
         def activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
-        activityDto.setParticipantsNumber(number)
+        activityDto.setParticipantsNumberLimit(number)
         activityDto.setDescription(description)
         activityDto.setStartingDate(DateHandler.toISOString(start))
         activityDto.setEndingDate(DateHandler.toISOString(end))

@@ -52,7 +52,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         then: "check response data"
         response.name == ACTIVITY_NAME_1
         response.region == ACTIVITY_REGION_1
-        response.participantsNumber == 2
+        response.participantsNumberLimit == 2
         response.description == ACTIVITY_DESCRIPTION_1
         response.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
         response.endingDate == DateHandler.toISOString(IN_THREE_DAYS)
@@ -63,7 +63,7 @@ class RegisterActivityWebServiceIT extends SpockTest {
         def activity = activityRepository.findAll().get(0)
         activity.getName() == ACTIVITY_NAME_1
         activity.getRegion() == ACTIVITY_REGION_1
-        activity.getParticipantsNumber() == 2
+        activity.getParticipantsNumberLimit() == 2
         activity.getDescription() == ACTIVITY_DESCRIPTION_1
         activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
         activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)

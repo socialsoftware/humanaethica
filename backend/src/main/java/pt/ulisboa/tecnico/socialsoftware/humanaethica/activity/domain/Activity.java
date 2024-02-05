@@ -24,7 +24,7 @@ public class Activity {
     private String name;
     private String region;
     private String description;
-    private Integer participantsNumber;
+    private Integer participantsNumberLimit;
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
@@ -49,7 +49,7 @@ public class Activity {
         setInstitution(institution);
         setName(activityDto.getName());
         setRegion(activityDto.getRegion());
-        setParticipantsNumber(activityDto.getParticipantsNumber());
+        setParticipantsNumberLimit(activityDto.getParticipantsNumberLimit());
         setDescription(activityDto.getDescription());
         setCreationDate(DateHandler.now());
         setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
@@ -66,7 +66,7 @@ public class Activity {
     public void update(ActivityDto activityDto, List<Theme> themes) {
         setName(activityDto.getName());
         setRegion(activityDto.getRegion());
-        setParticipantsNumber(activityDto.getParticipantsNumber());
+        setParticipantsNumberLimit(activityDto.getParticipantsNumberLimit());
         setDescription(activityDto.getDescription());
         setStartingDate(DateHandler.toLocalDateTime(activityDto.getStartingDate()));
         setEndingDate(DateHandler.toLocalDateTime(activityDto.getEndingDate()));
@@ -98,12 +98,12 @@ public class Activity {
         this.region = region;
     }
 
-    public Integer getParticipantsNumber() {
-        return participantsNumber;
+    public Integer getParticipantsNumberLimit() {
+        return participantsNumberLimit;
     }
 
-    public void setParticipantsNumber(Integer participantsNumber) {
-        this.participantsNumber = participantsNumber;
+    public void setParticipantsNumberLimit(Integer participantsNumberLimit) {
+        this.participantsNumberLimit = participantsNumberLimit;
     }
 
     public String getDescription() {
@@ -267,7 +267,7 @@ public class Activity {
 
 
     private void hasOneToFiveParticipants() {
-        if (this.participantsNumber <= 0 || this.participantsNumber > 5) {
+        if (this.participantsNumberLimit == null || this.participantsNumberLimit <= 0 || this.participantsNumberLimit > 5) {
             throw new HEException(ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS);
         }
     }
