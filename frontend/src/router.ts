@@ -9,17 +9,17 @@ import HomeView from '@/views/HomeView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 
 import LoginView from '@/views/user/LoginView.vue';
-import UsersView from '@/views/admin/users/UsersView.vue';
-import InstitutionsView from '@/views/admin/institutions/InstitutionsView.vue';
-import ThemesView from '@/views/admin/manageTheme/ThemesView.vue';
+import AdminUsersView from '@/views/admin/AdminUsersView.vue';
+import AdminInstitutionsView from '@/views/admin/AdminInstitutionsView.vue';
+import AdminThemesView from '@/views/admin/AdminThemesView.vue';
 import AdminView from '@/views/admin/AdminView.vue';
-import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView.vue';
+import RegisterInstitutionView from '@/views/member/RegisterInstitutionView.vue';
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
-import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
-import VolunteerActivitiesView from '@/views/volunteer/VolunteerActivitiesView.vue';
 import InstitutionActivitiesView from '@/views/member/InstitutionActivitiesView.vue';
-import ThemeView from '@/views/member/ThemeView.vue';
+import AdminActivitiesView from '@/views/admin/AdminActivitiesView.vue';
+import VolunteerActivitiesView from '@/views/volunteer/VolunteerActivitiesView.vue';
+import InstitutionThemeView from '@/views/member/InstitutionThemeView.vue';
 import MemberView from '@/views/member/MemberView.vue';
 import VolunteerView from '@/views/volunteer/VolunteerView.vue';
 
@@ -80,8 +80,8 @@ const router = new Router({
       children: [
         {
           path: 'users',
-          name: 'usersAdmin',
-          component: UsersView,
+          name: 'admin-users',
+          component: AdminUsersView,
           meta: {
             title: APP_NAME + ' - Manage Users',
             requiredAuth: 'Admin',
@@ -89,17 +89,17 @@ const router = new Router({
         },
         {
           path: 'institutions',
-          name: 'institutionsAdmin',
-          component: InstitutionsView,
+          name: 'admin-institutions',
+          component: AdminInstitutionsView,
           meta: {
             title: APP_NAME + ' - Manage Institutions',
             requiredAuth: 'Admin',
           },
         },
         {
-          path: 'manageTheme',
-          name: 'manageThemeAdmin',
-          component: ThemesView,
+          path: 'themes',
+          name: 'admin-themes',
+          component: AdminThemesView,
           meta: {
             title: APP_NAME + ' - Manage Theme',
             requiredAuth: 'Admin',
@@ -107,8 +107,8 @@ const router = new Router({
         },
         {
           path: 'activities',
-          name: 'activitiesAdmin',
-          component: ActivitiesView,
+          name: 'admin-activities',
+          component: AdminActivitiesView,
           meta: {
             title: APP_NAME + ' - Manage Activities',
             requiredAuth: 'Admin',
@@ -131,8 +131,8 @@ const router = new Router({
           },
         },
         {
-          path: 'manageActivities',
-          name: 'manage-activities-member',
+          path: 'activities',
+          name: 'institution-activities',
           component: InstitutionActivitiesView,
           meta: {
             requiredAuth: 'None',
@@ -140,9 +140,9 @@ const router = new Router({
           },
         },
         {
-          path: 'theme',
-          name: 'theme',
-          component: ThemeView,
+          path: 'themes',
+          name: 'institution-themes',
+          component: InstitutionThemeView,
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Theme',
@@ -156,8 +156,8 @@ const router = new Router({
       component: VolunteerView,
       children: [
         {
-          path: 'manageActivities',
-          name: 'manage-activities',
+          path: 'activities',
+          name: 'volunteer-activities',
           component: VolunteerActivitiesView,
           meta: {
             requiredAuth: 'None',
