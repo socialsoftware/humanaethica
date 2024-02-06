@@ -79,8 +79,9 @@ import Enrollment from '@/models/enrollment/Enrollment';
   components: { 'enrollment-dialog': EnrollmentDialog },
   methods: { show },
 })
-export default class ManageActivitiesView extends Vue {
+export default class VolunteerActivitiesView extends Vue {
   activities: Activity[] = [];
+  enrollments: Enrollment[] = [];
   search: string = '';
 
   currentEnrollment: Enrollment | null = null;
@@ -154,6 +155,7 @@ export default class ManageActivitiesView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.activities = await RemoteServices.getActivities();
+      this.enrollments = await RemoteServices.getVolunteerEnrollments();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -181,9 +183,7 @@ export default class ManageActivitiesView extends Vue {
 
     return (
       deadline > now &&
-      !activity.enrollments.some(
-        (e: Enrollment) => e.volunteerId === this.$store.getters.getUser.id,
-      )
+      !this.enrollments.some((e: Enrollment) => e.activityId === activity.id)
     );
   }
 
@@ -199,10 +199,7 @@ export default class ManageActivitiesView extends Vue {
   }
 
   async onSaveEnrollment(enrollment: Enrollment) {
-    const activity = this.activities.find(
-      (a) => a.id === enrollment.activityId,
-    );
-    activity?.enrollments.push(enrollment);
+    this.enrollments.push(enrollment);
     this.editEnrollmentDialog = false;
     this.currentEnrollment = null;
   }

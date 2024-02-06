@@ -22,7 +22,6 @@ public class ActivityDto {
     private String creationDate;
     private List<ThemeDto> themes;
     private InstitutionDto institution;
-    private List<EnrollmentDto> enrollments;
 
     public ActivityDto(){
     }
@@ -49,10 +48,6 @@ public class ActivityDto {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
 
         }
-
-        this.enrollments = activity.getEnrollments().stream()
-                .map(EnrollmentDto::new)
-                .toList();
     }
 
     public void setThemes(List<ThemeDto> themes) {
@@ -156,15 +151,7 @@ public class ActivityDto {
     public void setNumberOfEnrollments(Integer numberOfEnrollments) {
         this.numberOfEnrollments = numberOfEnrollments;
     }
-
-    public List<EnrollmentDto> getEnrollments() {
-        return enrollments;
-    }
-
-    public void setEnrollments(List<EnrollmentDto> enrollments) {
-        this.enrollments = enrollments;
-    }
-
+    
     @Override
     public String toString() {
         return "ActivityDto{" +
@@ -180,7 +167,6 @@ public class ActivityDto {
                 ", creationDate='" + creationDate + '\'' +
                 ", themes=" + themes +
                 ", institution=" + institution +
-                ", enrollments=" + enrollments +
                 '}';
     }
 }

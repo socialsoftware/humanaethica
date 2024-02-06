@@ -469,6 +469,19 @@ export default class RemoteServices {
 
   // Enrollment controller
 
+  static async getVolunteerEnrollments(): Promise<Enrollment[]> {
+    return httpClient
+      .get('/enrollments/volunteer')
+      .then((response) => {
+        return response.data.map((enrollment: any) => {
+          return new Enrollment(enrollment);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createEnrollment(activityId: number, enrollment: Enrollment) {
     return httpClient
       .post(`/activities/${activityId}/enrollments`, enrollment)

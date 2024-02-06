@@ -17,8 +17,8 @@ import RegisterInstitutionView from '@/views/institution/RegisterInstitutionView
 import RegisterVolunteerView from '@/views/volunteer/RegisterVolunteerView.vue';
 import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
 import ActivitiesView from '@/views/admin/activity/ActivitiesView.vue';
-import ManageActivitiesView from '@/views/volunteer/ManageActivitiesView.vue';
-import ManageOwnActivitiesView from '@/views/member/ManageOwnActivitiesView.vue';
+import VolunteerActivitiesView from '@/views/volunteer/VolunteerActivitiesView.vue';
+import InstitutionActivitiesView from '@/views/member/InstitutionActivitiesView.vue';
 import ThemeView from '@/views/member/ThemeView.vue';
 import MemberView from '@/views/member/MemberView.vue';
 import VolunteerView from '@/views/volunteer/VolunteerView.vue';
@@ -133,7 +133,7 @@ const router = new Router({
         {
           path: 'manageActivities',
           name: 'manage-activities-member',
-          component: ManageOwnActivitiesView,
+          component: InstitutionActivitiesView,
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Activities - Member',
@@ -158,7 +158,7 @@ const router = new Router({
         {
           path: 'manageActivities',
           name: 'manage-activities',
-          component: ManageActivitiesView,
+          component: VolunteerActivitiesView,
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Volunteer Activities',
