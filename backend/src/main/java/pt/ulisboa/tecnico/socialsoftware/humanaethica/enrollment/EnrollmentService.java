@@ -9,7 +9,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.Activi
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
@@ -33,6 +32,16 @@ public class EnrollmentService {
         activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
 
         return enrollmentRepository.getEnrollmentsByActivityId(activityId).stream()
+                .sorted(Comparator.comparing(Enrollment::getEnrollmentDateTime))
+                .map(EnrollmentDto::new)
+                .toList();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<EnrollmentDto> getVolunteerEnrollments(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+
+        return enrollmentRepository.getEnrollmentsForVolunteerId(userId).stream()
                 .sorted(Comparator.comparing(Enrollment::getEnrollmentDateTime))
                 .map(EnrollmentDto::new)
                 .toList();

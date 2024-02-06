@@ -13,18 +13,25 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController()
-@RequestMapping(value = "/activities/{activityId}/enrollments")
+@RequestMapping
 public class EnrollmentController {
     @Autowired
     EnrollmentService enrollmentService;
 
-    @GetMapping()
+    @GetMapping("/activities/{activityId}/enrollments")
     @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
     public List<EnrollmentDto> getActivityEnrollments(@PathVariable Integer activityId) {
         return enrollmentService.getEnrollmentsByActivity(activityId);
     }
 
-    @PostMapping()
+    @GetMapping("/enrollments/volunteer")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
+    public List<EnrollmentDto> getVolunteerEnrollments(Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return enrollmentService.getVolunteerEnrollments(userId);
+    }
+
+    @PostMapping("/activities/{activityId}/enrollments")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public EnrollmentDto createEnrollment(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
