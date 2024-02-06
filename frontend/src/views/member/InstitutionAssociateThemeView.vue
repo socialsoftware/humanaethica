@@ -54,7 +54,7 @@ import Theme from '@/models/theme/Theme';
 @Component({
   components: {},
 })
-export default class AssociateThemeView extends Vue {
+export default class InstitutionAssociateThemeView extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   valid = true;
   success = false;

@@ -7,7 +7,7 @@ describe('Activity', () => {
   afterEach(() => {
   });
 
-  it('create activity', () => {
+  it('create activities', () => {
     const NAME = 'Elderly Assistance';
     const REGION = 'Lisbon';
     const NUMBER = '3';

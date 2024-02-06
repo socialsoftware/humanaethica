@@ -55,7 +55,7 @@ import { show } from 'cli-cursor';
 @Component({
   methods: { show },
 })
-export default class ManageActivitiesView extends Vue {
+export default class VolunteerActivitiesView extends Vue {
   activities: Activity[] = [];
   search: string = '';
   headers: object = [

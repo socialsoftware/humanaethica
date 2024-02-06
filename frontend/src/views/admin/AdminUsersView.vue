@@ -75,7 +75,7 @@ import RemoteServices from '@/services/RemoteServices';
 import User from '@/models/user/User';
 
 @Component
-export default class UsersView extends Vue {
+export default class AdminUsersView extends Vue {
   users: User[] = [];
   search: string = '';
   headers: object = [
