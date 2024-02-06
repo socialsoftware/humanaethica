@@ -15,7 +15,7 @@ public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
     private LocalDateTime acceptanceDate;
     private Integer rating;
     @ManyToOne
@@ -34,11 +34,11 @@ public class Participation {
         verifyInvariants();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

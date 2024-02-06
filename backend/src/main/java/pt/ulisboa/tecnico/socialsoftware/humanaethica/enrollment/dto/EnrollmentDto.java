@@ -4,7 +4,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class EnrollmentDto {
-    private Long id;
+    private Integer id;
     private String motivation;
 
     private String enrollmentDateTime;
@@ -18,11 +18,11 @@ public class EnrollmentDto {
         this.enrollmentDateTime = DateHandler.toISOString(enrollment.getEnrollmentDateTime());
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

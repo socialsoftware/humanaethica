@@ -15,7 +15,7 @@ public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
     private String motivation;
     private LocalDateTime enrollmentDateTime;
     @ManyToOne
@@ -34,11 +34,11 @@ public class Enrollment {
         verifyInvariants();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

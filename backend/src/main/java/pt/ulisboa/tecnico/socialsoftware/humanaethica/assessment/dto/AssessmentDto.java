@@ -7,7 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 import java.time.LocalDateTime;
 
 public class AssessmentDto {
-    private Long id;
+    private Integer id;
     private String review;
     private String reviewDate;
 
@@ -20,11 +20,11 @@ public class AssessmentDto {
         this.reviewDate = DateHandler.toISOString(assessment.getReviewDate());
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

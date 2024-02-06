@@ -4,7 +4,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Parti
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class ParticipationDto {
-    private Long id;
+    private Integer id;
     private Integer rating;
     private String acceptanceDate;
 
@@ -17,11 +17,11 @@ public class ParticipationDto {
         this.rating = participation.getRating();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
