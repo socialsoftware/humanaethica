@@ -94,6 +94,12 @@ export default class ManageOwnActivitiesView extends Vue {
       width: '5%',
     },
     {
+      text: 'Applications',
+      value: 'numberOfEnrollments',
+      align: 'left',
+      width: '5%',
+    },
+    {
       text: 'Themes',
       value: 'themes',
       align: 'left',

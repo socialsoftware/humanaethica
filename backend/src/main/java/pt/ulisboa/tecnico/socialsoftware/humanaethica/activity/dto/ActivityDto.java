@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -12,6 +13,7 @@ public class ActivityDto {
     private String name;
     private String region;
     private Integer participantsNumberLimit;
+    private Integer numberOfEnrollments;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -20,6 +22,7 @@ public class ActivityDto {
     private String creationDate;
     private List<ThemeDto> themes;
     private InstitutionDto institution;
+    private List<EnrollmentDto> enrollments;
 
     public ActivityDto(){
     }
@@ -29,6 +32,7 @@ public class ActivityDto {
         setName(activity.getName());
         setRegion(activity.getRegion());
         setParticipantsNumberLimit(activity.getParticipantsNumberLimit());
+        setNumberOfEnrollments(activity.getEnrollments().size());
         setDescription(activity.getDescription());
 
         this.themes = activity.getThemes().stream()
@@ -45,6 +49,10 @@ public class ActivityDto {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
 
         }
+
+        this.enrollments = activity.getEnrollments().stream()
+                .map(EnrollmentDto::new)
+                .toList();
     }
 
     public void setThemes(List<ThemeDto> themes) {
@@ -141,13 +149,29 @@ public class ActivityDto {
         this.participantsNumberLimit = participantsNumberLimit;
     }
 
+    public Integer getNumberOfEnrollments() {
+        return numberOfEnrollments;
+    }
+
+    public void setNumberOfEnrollments(Integer numberOfEnrollments) {
+        this.numberOfEnrollments = numberOfEnrollments;
+    }
+
+    public List<EnrollmentDto> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(List<EnrollmentDto> enrollments) {
+        this.enrollments = enrollments;
+    }
+
     @Override
     public String toString() {
         return "ActivityDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", region='" + region + '\'' +
-                ", participantsNumber=" + participantsNumberLimit +
+                ", participantsNumberLimit=" + participantsNumberLimit +
                 ", description='" + description + '\'' +
                 ", startingDate='" + startingDate + '\'' +
                 ", endingDate='" + endingDate + '\'' +
@@ -156,6 +180,7 @@ public class ActivityDto {
                 ", creationDate='" + creationDate + '\'' +
                 ", themes=" + themes +
                 ", institution=" + institution +
+                ", enrollments=" + enrollments +
                 '}';
     }
 }

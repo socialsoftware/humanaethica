@@ -40,8 +40,29 @@
             </template>
             <span>Report Activity</span>
           </v-tooltip>
+          <v-tooltip v-if="item.state === 'APPROVED'" bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                v-if="canEnroll(item)"
+                class="mr-2 action-button"
+                color="blue"
+                v-on="on"
+                data-cy="applyButton"
+                @click="applyForActivity(item)"
+                >fa-sign-in-alt</v-icon
+              >
+            </template>
+            <span>Apply for Activity</span>
+          </v-tooltip>
         </template>
       </v-data-table>
+      <enrollment-dialog
+        v-if="currentEnrollment && editEnrollmentDialog"
+        v-model="editEnrollmentDialog"
+        :enrollment="currentEnrollment"
+        v-on:save-enrollment="onSaveEnrollment"
+        v-on:close-enrollment-dialog="onCloseEnrollmentDialog"
+      />
     </v-card>
   </div>
 </template>
@@ -51,13 +72,20 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import { show } from 'cli-cursor';
+import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
+import Enrollment from '@/models/enrollment/Enrollment';
 
 @Component({
+  components: { 'enrollment-dialog': EnrollmentDialog },
   methods: { show },
 })
 export default class ManageActivitiesView extends Vue {
   activities: Activity[] = [];
   search: string = '';
+
+  currentEnrollment: Enrollment | null = null;
+  editEnrollmentDialog: boolean = false;
+
   headers: object = [
     {
       text: 'Name',
@@ -145,6 +173,38 @@ export default class ManageActivitiesView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  canEnroll(activity: Activity) {
+    let deadline = new Date(activity.applicationDeadline);
+    let now = new Date();
+
+    return (
+      deadline > now &&
+      !activity.enrollments.some(
+        (e: Enrollment) => e.volunteerId === this.$store.getters.getUser.id,
+      )
+    );
+  }
+
+  applyForActivity(activity: Activity) {
+    this.currentEnrollment = new Enrollment();
+    this.currentEnrollment.activityId = activity.id;
+    this.editEnrollmentDialog = true;
+  }
+
+  onCloseEnrollmentDialog() {
+    this.editEnrollmentDialog = false;
+    this.currentEnrollment = null;
+  }
+
+  async onSaveEnrollment(enrollment: Enrollment) {
+    const activity = this.activities.find(
+      (a) => a.id === enrollment.activityId,
+    );
+    activity?.enrollments.push(enrollment);
+    this.editEnrollmentDialog = false;
+    this.currentEnrollment = null;
   }
 }
 </script>

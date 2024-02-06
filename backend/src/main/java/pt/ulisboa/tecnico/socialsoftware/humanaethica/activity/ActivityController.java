@@ -22,7 +22,7 @@ public class ActivityController {
     private static final Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
     @GetMapping()
-    public List<ActivityDto> getActivities() {
+    public List<ActivityDto> getActivities(Principal principal) {
         return activityService.getActivities();
     }
 
