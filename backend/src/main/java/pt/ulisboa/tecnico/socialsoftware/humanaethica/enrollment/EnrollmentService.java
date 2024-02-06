@@ -38,6 +38,16 @@ public class EnrollmentService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<EnrollmentDto> getVolunteerEnrollments(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+
+        return enrollmentRepository.getEnrollmentsForVolunteerId(userId).stream()
+                .sorted(Comparator.comparing(Enrollment::getEnrollmentDateTime))
+                .map(EnrollmentDto::new)
+                .toList();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public EnrollmentDto createEnrollment(Integer userId, Integer activityId, EnrollmentDto enrollmentDto) {
         if (enrollmentDto == null) throw  new HEException(ENROLLMENT_REQUIRES_MOTIVATION);
 
