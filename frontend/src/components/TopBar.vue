@@ -27,7 +27,7 @@
             color="orange"
             v-on="on"
             data-cy="volunteerActivities"
-            @click="manageActivities"
+            @click="volunteerActivities"
           >
             Activities
             <v-icon>fas fa-user</v-icon>
@@ -47,12 +47,12 @@
               <v-list-item-title>Register Member</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/member/theme" data-cy="themes">
+          <v-list-item to="/member/themes" data-cy="themes">
             <v-list-item-content>
               <v-list-item-title>Themes</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/member/manageActivities" data-cy="activities">
+          <v-list-item to="/member/activities" data-cy="activities">
             <v-list-item-content>
               <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
@@ -83,7 +83,7 @@
               <v-list-item-title>Institutions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/admin/manageTheme" data-cy="themeManageTheme">
+          <v-list-item to="/admin/themes" data-cy="themeManageTheme">
             <v-list-item-action>
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
@@ -155,7 +155,7 @@
           prepend-icon="account_circle"
         >
           <template v-slot:activator>
-            <v-list-item-title @click="manageActivities"
+            <v-list-item-title @click="volunteerActivities"
               >Volunteer</v-list-item-title
             >
           </template>
@@ -178,7 +178,7 @@
               <v-list-item-title>Register Member</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/member/theme">
+          <v-list-item to="/member/themes">
             <v-list-item-action>
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
@@ -186,7 +186,7 @@
               <v-list-item-title>Themes</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/member/manageActivities">
+          <v-list-item to="/member/activities">
             <v-list-item-action>
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
@@ -221,7 +221,7 @@
               <v-list-item-title>Institutions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/admin/manageTheme">
+          <v-list-item to="/admin/themes">
             <v-list-item-action>
               <v-icon>fas fa-users</v-icon>
             </v-list-item-action>
@@ -293,8 +293,8 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'register-volunteer' }).catch(() => {});
   }
 
-  async manageActivities() {
-    await this.$router.push({ name: 'manage-activities' }).catch(() => {});
+  async volunteerActivities() {
+    await this.$router.push({ name: 'volunteer-activities' }).catch(() => {});
   }
 
   async logout() {

@@ -66,7 +66,7 @@ import ActivityDialog from '@/views/member/ActivityDialog.vue';
     'activity-dialog': ActivityDialog,
   },
 })
-export default class ManageOwnActivitiesView extends Vue {
+export default class InstitutionActivitiesView extends Vue {
   institution: Institution = new Institution();
   themes: Theme[] = [];
   search: string = '';

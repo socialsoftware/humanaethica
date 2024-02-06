@@ -77,7 +77,7 @@ import Institution from '@/models/institution/Institution';
 @Component({
   components: {},
 })
-export default class InstitutionsView extends Vue {
+export default class AdminInstitutionsView extends Vue {
   institutions: Institution[] = [];
   search: string = '';
   headers: object = [

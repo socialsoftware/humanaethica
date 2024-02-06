@@ -69,7 +69,7 @@ import Theme from '@/models/theme/Theme';
 @Component({
   components: {},
 })
-export default class AddTheme extends Vue {
+export default class AdminAddTheme extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   valid = true;
   success = false;

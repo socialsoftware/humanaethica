@@ -97,7 +97,7 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
-          @click="$emit('close-activity-dialog')"
+          @click="$emit('close-activities-dialog')"
         >
           Close
         </v-btn>

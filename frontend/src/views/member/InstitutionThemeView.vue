@@ -64,16 +64,16 @@
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
-import RegisterTheme from '@/views/member/RegisterTheme.vue';
-import AssociateThemeView from '@/views/member/AssociateThemeView.vue';
+import RegisterTheme from '@/views/member/InstitutionAddTheme.vue';
+import InstitutionAssociateThemeView from '@/views/member/InstitutionAssociateThemeView.vue';
 
 @Component({
   components: {
     'register-theme': RegisterTheme,
-    'associate-theme': AssociateThemeView,
+    'associate-theme': InstitutionAssociateThemeView,
   },
 })
-export default class ThemeView extends Vue {
+export default class InstitutionThemeView extends Vue {
   themes: Theme[] = [];
   addTheme: boolean = false;
   associateTheme: boolean = false;

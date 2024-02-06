@@ -90,17 +90,17 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import AddTheme from '@/views/admin/manageTheme/AddTheme.vue';
-import ThemesTreeView from '@/views/admin/manageTheme/ThemesTreeView.vue';
+import AdminAddTheme from '@/views/admin/AdminAddTheme.vue';
+import ThemesTreeView from '@/views/admin/ThemesTreeView.vue';
 import Theme from '@/models/theme/Theme';
 
 @Component({
   components: {
-    'add-theme': AddTheme,
+    'add-theme': AdminAddTheme,
     'tree-view': ThemesTreeView,
   },
 })
-export default class ThemeView extends Vue {
+export default class AdminThemeView extends Vue {
   themes: Theme[] = [];
   addTheme: boolean = false;
   treeView: boolean = false;

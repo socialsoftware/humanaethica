@@ -76,7 +76,7 @@ import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
 
 @Component({})
-export default class ActivitiesView extends Vue {
+export default class AdminActivitiesView extends Vue {
   activities: Activity[] = [];
   themes: Theme[] = [];
   institutions: Institution[] = [];
