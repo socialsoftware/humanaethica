@@ -34,9 +34,10 @@ class CreateParticipationServiceTest extends SpockTest {
         given:
         def participationDto = new ParticipationDto()
         participationDto.rating = 5
+        participationDto.volunteerId = volunteer.id
 
         when:
-        def result = participationService.createParticipation(volunteer.id, activity.id, participationDto)
+        def result = participationService.createParticipation(activity.id, participationDto)
 
         then:
         result.rating == 5
@@ -54,9 +55,10 @@ class CreateParticipationServiceTest extends SpockTest {
         given:
         def participationDto = new ParticipationDto()
         participationDto.rating = 5
+        participationDto.volunteerId = getVolunteerId(volunteerId)
 
         when:
-        participationService.createParticipation(getVolunteerId(volunteerId), getActivityId(activityId), getParticipationDto(participationValue,participationDto))
+        participationService.createParticipation(getActivityId(activityId), getParticipationDto(participationValue,participationDto))
 
         then:
         def error = thrown(HEException)
