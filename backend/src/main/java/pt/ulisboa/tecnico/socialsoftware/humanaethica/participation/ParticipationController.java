@@ -26,7 +26,6 @@ public class ParticipationController {
     @PostMapping()
     @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
     public ParticipationDto createParticipation(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return participationService.createParticipation(userId, activityId, participationDto);
+        return participationService.createParticipation(activityId, participationDto);
     }
 }

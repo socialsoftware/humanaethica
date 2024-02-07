@@ -9,7 +9,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CreateParticipationWebServiceIT extends SpockTest {
@@ -34,13 +36,16 @@ class CreateParticipationWebServiceIT extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
+        def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
+
         participationDto = new ParticipationDto()
         participationDto.rating = 5
+        participationDto.volunteerId = volunteer.id
     }
 
-    def 'volunteer create participation'() {
+    def 'member create participation'() {
         given:
-        demoVolunteerLogin()
+        demoMemberLogin()
 
         when:
         def response = webClient.post()
@@ -62,9 +67,9 @@ class CreateParticipationWebServiceIT extends SpockTest {
         deleteAll()
     }
 
-    def 'volunteer create participation with error'() {
+    def 'member create participation with error'() {
         given:
-        demoVolunteerLogin()
+        demoMemberLogin()
         and:
         participationDto.rating = 10
 
@@ -86,9 +91,9 @@ class CreateParticipationWebServiceIT extends SpockTest {
         deleteAll()
     }
 
-    def 'member cannot create participation'() {
+    def 'volunteer cannot create participation'() {
         given:
-        demoMemberLogin()
+        demoVolunteerLogin()
 
         when:
         def response = webClient.post()
