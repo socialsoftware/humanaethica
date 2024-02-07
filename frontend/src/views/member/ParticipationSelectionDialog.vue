@@ -3,11 +3,7 @@
     <v-card>
       <v-card-title>
         <span class="headline">
-          {{
-            editEnrollment && editEnrollment.id === null
-              ? 'New Application'
-              : 'Edit Application'
-          }}
+          Select Participant
         </span>
       </v-card-title>
       <v-card-text>
@@ -15,11 +11,15 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                label="*Motivation"
-                :rules="[(v) => !!v || 'Motivation is required']"
+                label="Rating"
+                :rules="[
+                  (v) =>
+                    isNumberValid(v) ||
+                    'Rating between 1 and 5',
+                ]"
                 required
-                v-model="editEnrollment.motivation"
-                data-cy="motivationInput"
+                v-model="editParticipation.rating"
+                data-cy="participantsNumberInput"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -30,16 +30,15 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
-          @click="$emit('close-enrollment-dialog')"
+          @click="$emit('close-participation-dialog')"
         >
           Close
         </v-btn>
         <v-btn
-          v-if="canSave"
           color="blue-darken-1"
           variant="text"
-          @click="updateEnrollment"
-          data-cy="saveEnrollment"
+          @click="createParticipation"
+          data-cy="createParticipation"
         >
           Save
         </v-btn>
@@ -52,38 +51,40 @@ import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Enrollment from '@/models/enrollment/Enrollment';
+import Participation from '@/models/participant/Participation';
 
 @Component({
   methods: { ISOtoString },
 })
-export default class ActivityDialog extends Vue {
+export default class ParticipationSelectionDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Enrollment, required: true }) readonly enrollment!: Enrollment;
+  @Prop({ type: Participation, required: true }) readonly participation!: Participation;
 
-  editEnrollment: Enrollment = new Enrollment();
+  editParticipation: Participation = new Participation();
 
   async created() {
-    this.editEnrollment = new Enrollment(this.enrollment);
+    this.editParticipation.activityId = this.participation.activityId;
+    this.editParticipation.volunteerId = this.participation.volunteerId;
   }
 
-  get canSave(): boolean {
-    return (
-      !!this.editEnrollment.motivation &&
-      this.editEnrollment.motivation.length >= 10
-    );
+  isNumberValid(value: any) {
+    if (value === null) return true;
+    if (!/^\d+$/.test(value)) return false;
+    const parsedValue = parseInt(value);
+    return parsedValue >= 1 && parsedValue <= 5;
   }
 
-  async updateEnrollment() {
+  async createParticipation() {
     if (
-      this.editEnrollment.activityId !== null &&
+      this.editParticipation.activityId !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
-        const result = await RemoteServices.createEnrollment(
-          this.editEnrollment.activityId,
-          this.editEnrollment,
+        const result = await RemoteServices.createParticipation(
+          this.editParticipation.activityId,
+          this.editParticipation,
         );
-        this.$emit('save-enrollment', result);
+        this.$emit('save-participation', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

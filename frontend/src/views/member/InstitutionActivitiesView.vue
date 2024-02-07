@@ -40,6 +40,17 @@
           </template>
           <span>Edit Activity</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              @click="showApplications(item)"
+              v-on="on"
+              >fa-solid fa-people-group
+            </v-icon>
+          </template>
+          <span>Show Applications</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <activity-dialog
@@ -185,6 +196,10 @@ export default class InstitutionActivitiesView extends Vue {
     this.institution.activities.unshift(activity);
     this.editActivityDialog = false;
     this.currentActivity = null;
+  }
+
+  showApplications(activity: Activity) {
+    this.$router.push({name: 'activity-enrollments', params: {activity}, }).catch(() => {});
   }
 }
 </script>
