@@ -14,6 +14,8 @@ public class ActivityDto {
     private String region;
     private Integer participantsNumberLimit;
     private Integer numberOfEnrollments;
+
+    private Integer numberOfParticipations;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -32,6 +34,7 @@ public class ActivityDto {
         setRegion(activity.getRegion());
         setParticipantsNumberLimit(activity.getParticipantsNumberLimit());
         setNumberOfEnrollments(activity.getEnrollments().size());
+        setNumberOfParticipations(activity.getParticipations().size());
         setDescription(activity.getDescription());
 
         this.themes = activity.getThemes().stream()
@@ -151,7 +154,15 @@ public class ActivityDto {
     public void setNumberOfEnrollments(Integer numberOfEnrollments) {
         this.numberOfEnrollments = numberOfEnrollments;
     }
-    
+
+    public Integer getNumberOfParticipations() {
+        return numberOfParticipations;
+    }
+
+    public void setNumberOfParticipations(Integer numberOfParticipations) {
+        this.numberOfParticipations = numberOfParticipations;
+    }
+
     @Override
     public String toString() {
         return "ActivityDto{" +
@@ -159,6 +170,8 @@ public class ActivityDto {
                 ", name='" + name + '\'' +
                 ", region='" + region + '\'' +
                 ", participantsNumberLimit=" + participantsNumberLimit +
+                ", numberOfEnrollments=" + numberOfEnrollments +
+                ", numberOfParticipations=" + numberOfParticipations +
                 ", description='" + description + '\'' +
                 ", startingDate='" + startingDate + '\'' +
                 ", endingDate='" + endingDate + '\'' +

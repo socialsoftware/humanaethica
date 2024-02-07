@@ -7,6 +7,7 @@ export default class Enrollment {
   volunteerName: string | null = null;
   motivation!: string;
   enrollmentDateTime!: string;
+  participating: boolean = false;
 
   constructor(jsonObj?: Enrollment) {
     if (jsonObj) {
@@ -16,6 +17,7 @@ export default class Enrollment {
       this.volunteerName = jsonObj.volunteerName;
       this.motivation = jsonObj.motivation;
       this.enrollmentDateTime = ISOtoString(jsonObj.enrollmentDateTime);
+      this.participating = jsonObj.participating;
     }
   }
 }

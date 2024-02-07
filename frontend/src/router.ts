@@ -144,7 +144,6 @@ const router = new Router({
           path: 'enrollments',
           name: 'activity-enrollments',
           component: InstitutionActivityEnrollmentsView,
-          props: true,
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Enrollments - Member',

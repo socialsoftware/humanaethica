@@ -44,7 +44,7 @@
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
-              @click="showApplications(item)"
+              @click="showEnrollments(item)"
               v-on="on"
               >fa-solid fa-people-group
             </v-icon>
@@ -99,7 +99,7 @@ export default class InstitutionActivitiesView extends Vue {
       width: '5%',
     },
     {
-      text: 'Participants',
+      text: 'Participants Limit',
       value: 'participantsNumberLimit',
       align: 'left',
       width: '5%',
@@ -107,6 +107,12 @@ export default class InstitutionActivitiesView extends Vue {
     {
       text: 'Applications',
       value: 'numberOfEnrollments',
+      align: 'left',
+      width: '5%',
+    },
+    {
+      text: 'Participations',
+      value: 'numberOfParticipations',
       align: 'left',
       width: '5%',
     },
@@ -189,7 +195,7 @@ export default class InstitutionActivitiesView extends Vue {
     this.editActivityDialog = false;
   }
 
-  async onSaveActivity(activity: Activity) {
+  onSaveActivity(activity: Activity) {
     this.institution.activities = this.institution.activities.filter(
       (a) => a.id !== activity.id,
     );
@@ -198,8 +204,9 @@ export default class InstitutionActivitiesView extends Vue {
     this.currentActivity = null;
   }
 
-  showApplications(activity: Activity) {
-    this.$router.push({name: 'activity-enrollments', params: {activity}, }).catch(() => {});
+  async showEnrollments(activity: Activity) {
+    await this.$store.dispatch('setActivity', activity);
+    await this.$router.push({ name: 'activity-enrollments' });
   }
 }
 </script>

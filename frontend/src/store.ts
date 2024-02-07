@@ -4,6 +4,7 @@ import RemoteServices from '@/services/RemoteServices';
 import TokenAuthUser from '@/models/user/TokenAuthUser';
 import AuthUser from '@/models/user/AuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
+import Activity from '@/models/activity/Activity';
 
 interface State {
   token: string;
@@ -13,6 +14,7 @@ interface State {
   notification: boolean;
   notificationMessageList: string[];
   loading: boolean;
+  activity: Activity | null;
 }
 
 const state: State = {
@@ -23,6 +25,7 @@ const state: State = {
   notification: false,
   notificationMessageList: [],
   loading: false,
+  activity: null,
 };
 
 Vue.use(Vuex);
@@ -40,6 +43,10 @@ export default new Vuex.Store({
       if (user) {
         state.user = JSON.parse(user);
       }
+      const activity = localStorage.getItem('activity');
+      if (activity) {
+        state.activity = JSON.parse(activity);
+      }
     },
     login(state, authResponse: TokenAuthUser) {
       localStorage.setItem('token', authResponse.token);
@@ -52,6 +59,8 @@ export default new Vuex.Store({
       state.token = '';
       localStorage.setItem('user', '');
       state.user = null;
+      localStorage.setItem('activity', '');
+      state.activity = null;
     },
     error(state, errorMessage: string) {
       state.error = true;
@@ -74,6 +83,10 @@ export default new Vuex.Store({
     },
     clearLoading(state) {
       state.loading = false;
+    },
+    setActivity(state: State, activity: Activity) {
+      localStorage.setItem('activity', JSON.stringify(activity));
+      state.activity = activity;
     },
   },
   actions: {
@@ -120,6 +133,9 @@ export default new Vuex.Store({
         resolve();
       });
     },
+    async setActivity({ commit }, activity: Activity) {
+      commit('setActivity', activity);
+    },
   },
   getters: {
     isLoggedIn(state): boolean {
@@ -158,6 +174,9 @@ export default new Vuex.Store({
     },
     getLoading(state): boolean {
       return state.loading;
+    },
+    getActivity(state: State): Activity | null {
+      return state.activity;
     },
   },
 });

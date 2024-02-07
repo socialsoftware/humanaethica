@@ -509,7 +509,10 @@ export default class RemoteServices {
 
   // Participation Controller
 
-  static async createParticipation(activityId: number, participation: Participation) {
+  static async createParticipation(
+    activityId: number,
+    participation: Participation,
+  ) {
     return httpClient
       .post(`/activities/${activityId}/participations`, participation)
       .then((response) => {
@@ -609,6 +612,4 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
-
-
 }

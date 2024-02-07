@@ -29,7 +29,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip v-if="canParticipate(item)" bottom>
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Enrollment from '@/models/enrollment/Enrollment';
@@ -66,7 +66,7 @@ import Participation from '@/models/participant/Participation';
   },
 })
 export default class InstitutionActivityEnrollmentsView extends Vue {
-  @Prop({ type: Activity, required: true }) readonly activity!: Activity;
+  activity!: Activity;
   enrollments: Enrollment[] = [];
   search: string = '';
 
@@ -87,6 +87,12 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
       width: '50%',
     },
     {
+      text: 'Participating',
+      value: 'participating',
+      align: 'left',
+      width: '50%',
+    },
+    {
       text: 'Application Date',
       value: 'enrollmentDateTime',
       align: 'left',
@@ -102,7 +108,8 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   ];
 
   async created() {
-    if (this.activity.id !== null) {
+    this.activity = this.$store.getters.getActivity;
+    if (this.activity !== null && this.activity.id !== null) {
       await this.$store.dispatch('loading');
       try {
         this.enrollments = await RemoteServices.getActivityEnrollments(
@@ -128,16 +135,26 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
     this.editParticipationSelectionDialog = false;
   }
 
-  async onSaveParticipation(enrollment: Enrollment) {
-    // this.institution.activities = this.institution.activities.filter(
-    //   (a) => a.id !== activity.id,
-    // );
-    // this.institution.activities.unshift(activity);
+  async onSaveParticipation(participation: Participation) {
+    let enrollment = this.enrollments.find(
+      (e) => e.volunteerId === participation.volunteerId,
+    );
+    if (enrollment) enrollment.participating = true;
+
     this.currentParticipation = null;
     this.editParticipationSelectionDialog = false;
   }
 
-  getActivities() {
+  canParticipate(enrollment: Enrollment) {
+    return (
+      !enrollment.participating &&
+      this.activity.participantsNumberLimit >
+        this.enrollments.filter((e) => e.participating).length
+    );
+  }
+
+  async getActivities() {
+    await this.$store.dispatch('setActivity', null);
     this.$router.push({ name: 'institution-activities' }).catch(() => {});
   }
 }
