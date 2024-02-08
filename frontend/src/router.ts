@@ -23,6 +23,7 @@ import InstitutionThemeView from '@/views/member/InstitutionThemeView.vue';
 import MemberView from '@/views/member/MemberView.vue';
 import VolunteerView from '@/views/volunteer/VolunteerView.vue';
 import InstitutionActivityEnrollmentsView from '@/views/member/InstitutionActivityEnrollmentsView.vue';
+import InstitutionAssessmentsView from '@/views/member/InstitutionAssessmentsView.vue';
 
 Vue.use(Router);
 
@@ -147,6 +148,15 @@ const router = new Router({
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Enrollments - Member',
+          },
+        },
+        {
+          path: 'assessments',
+          name: 'institution-assessments',
+          component: InstitutionAssessmentsView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Manage Assessments - Member',
           },
         },
         {

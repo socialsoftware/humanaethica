@@ -4,9 +4,9 @@
       <v-card-title>
         <span class="headline">
           {{
-            editEnrollment && editEnrollment.id === null
-              ? 'New Application'
-              : 'Edit Application'
+            editAssessment && editAssessment.id === null
+              ? 'New Assessment'
+              : 'Edit Assessment'
           }}
         </span>
       </v-card-title>
@@ -15,11 +15,11 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                label="*Motivation"
-                :rules="[(v) => !!v || 'Motivation is required']"
+                label="*Review"
+                :rules="[(v) => !!v || 'Review is required']"
                 required
-                v-model="editEnrollment.motivation"
-                data-cy="motivationInput"
+                v-model="editAssessment.review"
+                data-cy="reviewInput"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -30,7 +30,7 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
-          @click="$emit('close-enrollment-dialog')"
+          @click="$emit('close-assessment-dialog')"
         >
           Close
         </v-btn>
@@ -38,8 +38,8 @@
           v-if="canSave"
           color="blue-darken-1"
           variant="text"
-          @click="updateEnrollment"
-          data-cy="saveEnrollment"
+          @click="updateAssessment"
+          data-cy="saveAssessment"
         >
           Save
         </v-btn>
@@ -51,39 +51,38 @@
 import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
-import Enrollment from '@/models/enrollment/Enrollment';
+import Assessment from '@/models/assessment/Assessment';
 
 @Component({
   methods: { ISOtoString },
 })
-export default class EnrollmentDialog extends Vue {
+export default class AssessmentDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Enrollment, required: true }) readonly enrollment!: Enrollment;
+  @Prop({ type: Assessment, required: true }) readonly assessment!: Assessment;
 
-  editEnrollment: Enrollment = new Enrollment();
+  editAssessment: Assessment = new Assessment();
 
   async created() {
-    this.editEnrollment = new Enrollment(this.enrollment);
+    this.editAssessment = new Assessment(this.assessment);
   }
 
   get canSave(): boolean {
     return (
-      !!this.editEnrollment.motivation &&
-      this.editEnrollment.motivation.length >= 10
+      !!this.editAssessment.review && this.editAssessment.review.length >= 10
     );
   }
 
-  async updateEnrollment() {
+  async updateAssessment() {
     if (
-      this.editEnrollment.activityId !== null &&
+      this.editAssessment.institutionId !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
-        const result = await RemoteServices.createEnrollment(
-          this.editEnrollment.activityId,
-          this.editEnrollment,
+        const result = await RemoteServices.createAssessment(
+          this.editAssessment.institutionId,
+          this.editAssessment,
         );
-        this.$emit('save-enrollment', result);
+        this.$emit('save-assessment', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

@@ -12,7 +12,8 @@ import RegisterMember from '@/models/member/RegisterMember';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 import Theme from '@/models/theme/Theme';
 import Enrollment from '@/models/enrollment/Enrollment';
-import Participation from '@/models/participant/Participation';
+import Participation from '@/models/participation/Participation';
+import Assessment from '@/models/assessment/Assessment';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -523,6 +524,45 @@ export default class RemoteServices {
       });
   }
 
+  // Assessment Controller
+
+  static async getVolunteerAssessments(): Promise<Assessment[]> {
+    return httpClient
+      .get('/assessments/volunteer')
+      .then((response) => {
+        return response.data.map((assessment: any) => {
+          return new Assessment(assessment);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getInstitutionAssessments(institutionId: number | null): Promise<Assessment[]> {
+    return httpClient
+      .get(`/institutions/${institutionId}/assessments`)
+      .then((response) => {
+        return response.data.map((assessment: any) => {
+          return new Assessment(assessment);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createAssessment(institutionId: number, assessment: Assessment) {
+    return httpClient
+      .post(`/institutions/${institutionId}/assessments`, assessment)
+      .then((response) => {
+        return new Assessment(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   // Theme Controller
 
   static async getThemes(): Promise<Theme[]> {
@@ -612,4 +652,5 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
+
 }

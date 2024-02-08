@@ -42,7 +42,7 @@
 import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
-import Participation from '@/models/participant/Participation';
+import Participation from '@/models/participation/Participation';
 
 @Component({
   methods: { ISOtoString },

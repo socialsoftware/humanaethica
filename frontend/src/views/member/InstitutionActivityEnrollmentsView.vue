@@ -58,7 +58,7 @@ import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Enrollment from '@/models/enrollment/Enrollment';
 import ParticipationSelectionDialog from '@/views/member/ParticipationSelectionDialog.vue';
-import Participation from '@/models/participant/Participation';
+import Participation from '@/models/participation/Participation';
 
 @Component({
   components: {

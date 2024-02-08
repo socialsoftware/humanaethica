@@ -38,6 +38,17 @@ public class AssessmentService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<AssessmentDto> getAssessmentsByVolunteer(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+       userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+
+        return assessmentRepository.getAssessmentsByVolunteerId(userId).stream()
+                .sorted(Comparator.comparing(Assessment::getReviewDate))
+                .map(AssessmentDto::new)
+                .toList();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public AssessmentDto createAssessment(Integer userId, Integer institutionId, AssessmentDto assessmentDto) {
         if (assessmentDto == null) throw  new HEException(ASSESSMENT_REQUIRES_REVIEW);
 
@@ -52,4 +63,5 @@ public class AssessmentService {
 
         return new AssessmentDto(assessment);
     }
+
 }
