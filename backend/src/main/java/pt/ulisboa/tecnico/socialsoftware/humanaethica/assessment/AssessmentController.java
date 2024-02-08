@@ -18,7 +18,7 @@ public class AssessmentController {
     AssessmentService assessmentService;
 
     @GetMapping()
-    public List<AssessmentDto> getInstitutionAssessment(@PathVariable Integer institutionId) {
+    public List<AssessmentDto> getInstitutionAssessments(@PathVariable Integer institutionId) {
         return assessmentService.getAssessmentsByInstitution(institutionId);
     }
 
