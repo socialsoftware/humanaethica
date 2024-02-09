@@ -6,18 +6,7 @@ const credentials = {
   port: Cypress.env('psql_db_port'),
 };
 
-Cypress.Commands.add('deleteUsersButArs', () => {
-  cy.task('queryDatabase', {
-    query: "DELETE FROM AUTH_USERS WHERE NOT (username = 'ars')",
-    credentials: credentials,
-  });
-  cy.task('queryDatabase', {
-    query: "DELETE FROM USERS WHERE NOT (name = 'ars')",
-    credentials: credentials,
-  });
-});
-
-Cypress.Commands.add('deleteActivities', () => {
+Cypress.Commands.add('deleteAllButArs', () => {
   cy.task('queryDatabase', {
     query: "DELETE FROM ACTIVITY",
     credentials: credentials,
