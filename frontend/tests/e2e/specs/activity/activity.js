@@ -49,13 +49,14 @@ describe('Activity', () => {
       .eq(0)
       .children()
       .should('have.length', 13)
-      .eq(0).should('contain', NAME)
-      .parent().children()
-      .eq(1).should('contain', REGION)
-      .parent().children()
-      .eq(2).should('contain', NUMBER)
-      .parent().children()
-      .eq(6).should('contain', DESCRIPTION);
+    cy.get('[data-cy="memberActivitiesTable"] tbody tr')
+      .eq(0).children().eq(0).should('contain', NAME)
+    cy.get('[data-cy="memberActivitiesTable"] tbody tr')
+      .eq(0).children().eq(1).should('contain', REGION)
+    cy.get('[data-cy="memberActivitiesTable"] tbody tr')
+      .eq(0).children().eq(2).should('contain', NUMBER)
+    cy.get('[data-cy="memberActivitiesTable"] tbody tr')
+      .eq(0).children().eq(4).should('contain', DESCRIPTION);
     cy.logout();
 
     cy.demoVolunteerLogin();
@@ -71,13 +72,14 @@ describe('Activity', () => {
       .eq(0)
       .children()
       .should('have.length', 11)
-      .eq(0).should('contain', NAME)
-      .parent().children()
-      .eq(1).should('contain', REGION)
-      .parent().children()
-      .eq(3).should('contain', NUMBER)
-      .parent().children()
-      .eq(5).should('contain', DESCRIPTION);
+    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+      .eq(0).children().eq(0).should('contain', NAME)
+    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+      .eq(0).children().eq(1).should('contain', REGION)
+    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+      .eq(0).children().eq(2).should('contain', NUMBER)
+    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+      .eq(0).children().eq(4).should('contain', DESCRIPTION);
     cy.logout();
 
     cy.demoAdminLogin();
@@ -99,13 +101,14 @@ describe('Activity', () => {
       .eq(0)
       .children()
       .should('have.length', 14)
-      .eq(1).should('contain', NAME)
-      .parent().children()
-      .eq(2).should('contain', REGION)
-      .parent().children()
-      .eq(3).should('contain', NUMBER)
-      .parent().children()
-      .eq(4).should('contain', DESCRIPTION);
+    cy.get('[data-cy="adminActivitiesTable"] tbody tr')
+      .eq(0).children().eq(1).should('contain', NAME)
+    cy.get('[data-cy="adminActivitiesTable"] tbody tr')
+      .eq(0).children().eq(2).should('contain', REGION)
+    cy.get('[data-cy="adminActivitiesTable"] tbody tr')
+      .eq(0).children().eq(3).should('contain', NUMBER)
+    cy.get('[data-cy="adminActivitiesTable"] tbody tr')
+      .eq(0).children().eq(4).should('contain', DESCRIPTION);
     cy.logout();
   });
 });
