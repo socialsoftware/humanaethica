@@ -157,3 +157,4 @@ function generateEnrollmentTuple(id, activityId, volunteerId) {
     + activityId + ", "
     + volunteerId + ")";
 }
+

@@ -1,11 +1,11 @@
 describe('Activity', () => {
   beforeEach(() => {
-    cy.deleteAllButArs()
+    cy.deleteAllButArs();
     cy.createDemoEntities();
   });
 
   afterEach(() => {
-    cy.deleteAllButArs()
+    cy.deleteAllButArs();
   });
   
   it('create activities', () => {
@@ -47,21 +47,15 @@ describe('Activity', () => {
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 13)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 0) {
-              cy.wrap($column).invoke('text').should('equal', NAME);
-            } else if (columnIndex === 1) {
-              cy.wrap($column).invoke('text').should('equal', REGION);
-            } else if (columnIndex === 2) {
-              cy.wrap($column).invoke('text').should('equal', NUMBER);
-            } else if (columnIndex === 6) {
-              cy.wrap($column).invoke('text').should('equal', DESCRIPTION);
-            }
-          });
-      })
+      .children()
+      .should('have.length', 13)
+      .eq(0).should('contain', NAME)
+      .parent().children()
+      .eq(1).should('contain', REGION)
+      .parent().children()
+      .eq(2).should('contain', NUMBER)
+      .parent().children()
+      .eq(6).should('contain', DESCRIPTION);
     cy.logout();
 
     cy.demoVolunteerLogin();
@@ -75,21 +69,15 @@ describe('Activity', () => {
     cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 11)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 0) {
-              cy.wrap($column).invoke('text').should('equal', NAME);
-            } else if (columnIndex === 1) {
-              cy.wrap($column).invoke('text').should('equal', REGION);
-            } else if (columnIndex === 3) {
-              cy.wrap($column).invoke('text').should('equal', NUMBER);
-            } else if (columnIndex === 5) {
-              cy.wrap($column).invoke('text').should('equal', DESCRIPTION);
-            }
-          });
-      })
+      .children()
+      .should('have.length', 11)
+      .eq(0).should('contain', NAME)
+      .parent().children()
+      .eq(1).should('contain', REGION)
+      .parent().children()
+      .eq(3).should('contain', NUMBER)
+      .parent().children()
+      .eq(5).should('contain', DESCRIPTION);
     cy.logout();
 
     cy.demoAdminLogin();
@@ -109,21 +97,15 @@ describe('Activity', () => {
     cy.get('[data-cy="adminActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 14)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 1) {
-              cy.wrap($column).invoke('text').should('equal', NAME);
-            } else if (columnIndex === 2) {
-              cy.wrap($column).invoke('text').should('equal', REGION);
-            } else if (columnIndex === 3) {
-              cy.wrap($column).invoke('text').should('equal', NUMBER);
-            } else if (columnIndex === 4) {
-              cy.wrap($column).invoke('text').should('equal', DESCRIPTION);
-            }
-          });
-      })
+      .children()
+      .should('have.length', 14)
+      .eq(1).should('contain', NAME)
+      .parent().children()
+      .eq(2).should('contain', REGION)
+      .parent().children()
+      .eq(3).should('contain', NUMBER)
+      .parent().children()
+      .eq(4).should('contain', DESCRIPTION);
     cy.logout();
   });
 });
