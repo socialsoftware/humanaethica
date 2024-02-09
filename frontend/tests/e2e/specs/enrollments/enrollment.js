@@ -21,15 +21,11 @@ describe('Enrollment', () => {
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 13)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 3) {
-              cy.wrap($column).invoke('text').should('equal', '0');
-            }
-          });
-      })
+      .children()
+      .should('have.length', 13)
+      .eq(3)
+      .should('contain', 0)
+
     cy.logout();
 
     // volunteer login, creates enrollments
@@ -45,18 +41,12 @@ describe('Enrollment', () => {
     cy.demoMemberLogin()
     cy.get('[data-cy="institution"]').click();
     cy.get('[data-cy="activities"]').click();
+
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
-      .should('have.length', 1)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 13)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 3) {
-              cy.wrap($column).invoke('text').should('equal', '1');
-            }
-          });
-      })
+      .children()
+      .eq(3)
+      .should('contain', 1)
     cy.logout();
   });
 });

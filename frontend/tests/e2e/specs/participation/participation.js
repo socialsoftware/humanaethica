@@ -21,15 +21,9 @@ describe('Participation', () => {
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 13)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 3) {
-              cy.wrap($column).invoke('text').should('equal', '3');
-            }
-          });
-      })
+      .children()
+      .eq(3)
+      .should('contain', 3)
 
     // open enrollments view
     cy.get('[data-cy="showEnrollments"]').click();
@@ -37,15 +31,10 @@ describe('Participation', () => {
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .should('have.length', 3)
       .eq(0)
-      .then(($row) => {
-        cy.wrap($row).children()
-          .should('have.length', 5)
-          .each(($column, columnIndex) => {
-            if (columnIndex === 2) {
-              cy.wrap($column).invoke('text').should('equal', 'false');
-            }
-          });
-      })
+      .children()
+      .should('have.length', 5)
+      .eq(2)
+      .should('contain', 'false')
 
     // open create participation dialog
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')

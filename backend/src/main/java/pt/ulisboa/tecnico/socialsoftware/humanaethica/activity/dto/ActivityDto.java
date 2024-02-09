@@ -14,7 +14,6 @@ public class ActivityDto {
     private String region;
     private Integer participantsNumberLimit;
     private Integer numberOfEnrollments;
-
     private Integer numberOfParticipations;
     private String description;
     private String startingDate;

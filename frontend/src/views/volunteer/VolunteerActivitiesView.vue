@@ -40,10 +40,9 @@
             </template>
             <span>Report Activity</span>
           </v-tooltip>
-          <v-tooltip v-if="item.state === 'APPROVED'" bottom>
+          <v-tooltip v-if="item.state === 'APPROVED' && canEnroll(item)" bottom>
             <template v-slot:activator="{ on }">
               <v-icon
-                v-if="canEnroll(item)"
                 class="mr-2 action-button"
                 color="blue"
                 v-on="on"
@@ -54,10 +53,9 @@
             </template>
             <span>Apply for Activity</span>
           </v-tooltip>
-          <v-tooltip v-if="item.state === 'APPROVED'" bottom>
+          <v-tooltip v-if="item.state === 'APPROVED' && canAssess(item)" bottom>
             <template v-slot:activator="{ on }">
               <v-icon
-                v-if="canAssess(item)"
                 class="mr-2 action-button"
                 color="blue"
                 v-on="on"
@@ -97,6 +95,7 @@ import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
 import Enrollment from '@/models/enrollment/Enrollment';
 import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
 import Assessment from '@/models/assessment/Assessment';
+import Participation from '@/models/participation/Participation';
 
 @Component({
   components: {
@@ -108,6 +107,7 @@ import Assessment from '@/models/assessment/Assessment';
 export default class VolunteerActivitiesView extends Vue {
   activities: Activity[] = [];
   enrollments: Enrollment[] = [];
+  participations: Participation[] = [];
   assessments: Assessment[] = [];
   search: string = '';
 
@@ -192,6 +192,7 @@ export default class VolunteerActivitiesView extends Vue {
     try {
       this.activities = await RemoteServices.getActivities();
       this.enrollments = await RemoteServices.getVolunteerEnrollments();
+      this.participations = await RemoteServices.getVolunteerParticipations();
       this.assessments = await RemoteServices.getVolunteerAssessments();
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -247,6 +248,9 @@ export default class VolunteerActivitiesView extends Vue {
 
     return (
       now > endDate &&
+      this.participations.some(
+        (p: Participation) => p.activityId === activity.id,
+      ) &&
       !this.assessments.some(
         (a: Assessment) => a.institutionId === activity.institution.id,
       )
