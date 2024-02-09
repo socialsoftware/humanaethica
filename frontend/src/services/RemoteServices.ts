@@ -539,7 +539,9 @@ export default class RemoteServices {
       });
   }
 
-  static async getInstitutionAssessments(institutionId: number | null): Promise<Assessment[]> {
+  static async getInstitutionAssessments(
+    institutionId: number | null,
+  ): Promise<Assessment[]> {
     return httpClient
       .get(`/institutions/${institutionId}/assessments`)
       .then((response) => {
@@ -652,5 +654,4 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
-
 }

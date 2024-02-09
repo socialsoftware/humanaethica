@@ -61,7 +61,9 @@ export default class InstitutionAssessmentsView extends Vue {
     try {
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
-      this.assessments = await RemoteServices.getInstitutionAssessments(this.institution.id);
+      this.assessments = await RemoteServices.getInstitutionAssessments(
+        this.institution.id,
+      );
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

@@ -4,6 +4,7 @@ describe('Activity', () => {
   });
 
   afterEach(() => {
+    cy.deleteActivities()
   });
 
   it('create activities', () => {
@@ -66,7 +67,7 @@ describe('Activity', () => {
       .eq(0)
       .then(($row) => {
         cy.wrap($row).children()
-          .should('have.length', 11)
+          .should('have.length', 13)
           .each(($column, columnIndex) => {
             if (columnIndex === 0) {
               cy.wrap($column).invoke('text').should('equal', NAME);
@@ -74,7 +75,7 @@ describe('Activity', () => {
               cy.wrap($column).invoke('text').should('equal', REGION);
             } else if (columnIndex === 2) {
               cy.wrap($column).invoke('text').should('equal', NUMBER);
-            } else if (columnIndex === 4) {
+            } else if (columnIndex === 6) {
               cy.wrap($column).invoke('text').should('equal', DESCRIPTION);
             }
           });
@@ -94,15 +95,15 @@ describe('Activity', () => {
       .eq(0)
       .then(($row) => {
         cy.wrap($row).children()
-          .should('have.length', 10)
+          .should('have.length', 11)
           .each(($column, columnIndex) => {
             if (columnIndex === 0) {
               cy.wrap($column).invoke('text').should('equal', NAME);
             } else if (columnIndex === 1) {
               cy.wrap($column).invoke('text').should('equal', REGION);
-            } else if (columnIndex === 2) {
+            } else if (columnIndex === 3) {
               cy.wrap($column).invoke('text').should('equal', NUMBER);
-            } else if (columnIndex === 4) {
+            } else if (columnIndex === 5) {
               cy.wrap($column).invoke('text').should('equal', DESCRIPTION);
             }
           });
