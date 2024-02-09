@@ -1,10 +1,10 @@
 describe('Activity', () => {
   beforeEach(() => {
-    cy.deleteActivities()
-
+    cy.deleteAllButArs()
   });
 
   afterEach(() => {
+    cy.deleteAllButArs()
   });
 
   it('create activities', () => {
@@ -13,6 +13,7 @@ describe('Activity', () => {
     const NUMBER = '3';
     const DESCRIPTION = 'Play card games with elderly over 80';
 
+    // intercept create activity request and inject date values in the request body
     cy.intercept('POST', '/activities', (req) => {
       req.body = {
         applicationDeadline: '2024-01-13T12:00:00+00:00',
@@ -22,46 +23,26 @@ describe('Activity', () => {
     }).as('register');
 
     cy.demoMemberLogin()
-
+    // go to create activity form
     cy.get('[data-cy="institution"]').click();
     cy.get('[data-cy="activities"]').click();
     cy.get('[data-cy="newActivity"]').click();
-
+    // fill form
     cy.get('[data-cy="nameInput"]').type(NAME);
     cy.get('[data-cy="regionInput"]').type(REGION);
     cy.get('[data-cy="participantsNumberInput"]').type(NUMBER);
     cy.get('[data-cy="descriptionInput"]').type(DESCRIPTION);
-
     cy.get('#applicationDeadlineInput-input').click();
-    cy.get(
-      '.datetimepicker > .datepicker > .datepicker-buttons-container > .datepicker-button > .datepicker-button-content'
-    )
-      .first()
-      .click();
-
+    cy.selectDateTimePickerDate();
     cy.get('#startingDateInput-input').click();
-    cy.get(
-      '.datetimepicker > .datepicker > .datepicker-buttons-container > .datepicker-button > .datepicker-button-content'
-    )
-      .first()
-      .click({force: true});
-
+    cy.selectDateTimePickerDate();
     cy.get('#endingDateInput-input').click();
-    cy.get(
-      '.datetimepicker > .datepicker > .datepicker-buttons-container > .datepicker-button > .datepicker-button-content'
-    )
-      .first()
-      .click({force: true});
-
-    // cy.get('#activityDialog').invoke('cypressCondition', true);
-
-    // cy.window().then((win) => {
-    //   win.app.canSave = true;
-    // });
-
+    cy.selectDateTimePickerDate();
+    // save form
     cy.get('[data-cy="saveActivity"]').click()
+    // check request was done
     cy.wait('@register')
-
+    // check results
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
@@ -80,16 +61,16 @@ describe('Activity', () => {
             }
           });
       })
-
     cy.logout();
 
     cy.demoVolunteerLogin();
-
+    // intercept get activities request
     cy.intercept('GET', '/activities').as('getActivities');
-
+    // go to volunteer activities view
     cy.get('[data-cy="volunteerActivities"]').click();
+    // check request was done
     cy.wait('@getActivities');
-
+    // check results
     cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
@@ -108,24 +89,22 @@ describe('Activity', () => {
             }
           });
       })
-
     cy.logout();
 
     cy.demoAdminLogin();
-
+    // intercept get requests
     cy.intercept('GET', '/activities').as('getActivities');
     cy.intercept('GET', '/themes').as('getThemes');
     cy.intercept('GET', '/institutions').as('getInstitutions');
-
+    // go to admin activities view
     cy.get('[data-cy="admin"]').click();
     cy.get('[data-cy="adminActivities"]').click();
-
+    // check requests were done
     cy.wait('@getActivities');
     cy.wait('@getThemes');
     cy.wait('@getInstitutions');
-
     cy.wait(1000);
-
+    // check results
     cy.get('[data-cy="adminActivitiesTable"] tbody tr')
       .should('have.length', 1)
       .eq(0)
@@ -144,7 +123,6 @@ describe('Activity', () => {
             }
           });
       })
-
     cy.logout();
   });
 });
