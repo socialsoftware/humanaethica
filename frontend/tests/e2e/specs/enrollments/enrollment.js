@@ -1,15 +1,13 @@
 describe('Activity', () => {
   beforeEach(() => {
-    cy.deleteEnrollments()
-    cy.deleteActivities()
+    cy.deleteAllButArs()
     cy.demoMemberLogin()
     cy.logout();
     cy.createActivitiesForEnrollments()
   });
 
   afterEach(() => {
-    cy.deleteEnrollments()
-    cy.deleteActivities()
+    cy.deleteAllButArs()
   });
 
   it('create enrollment', () => {
