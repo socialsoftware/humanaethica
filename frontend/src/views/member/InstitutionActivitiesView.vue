@@ -46,6 +46,7 @@
               class="mr-2 action-button"
               @click="showEnrollments(item)"
               v-on="on"
+              data-cy="showEnrollments"
               >fa-solid fa-people-group
             </v-icon>
           </template>

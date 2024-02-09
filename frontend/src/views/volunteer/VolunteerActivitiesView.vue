@@ -137,7 +137,7 @@ export default class VolunteerActivitiesView extends Vue {
       width: '5%',
     },
     {
-      text: 'Participants',
+      text: 'Participants Limit',
       value: 'participantsNumberLimit',
       align: 'left',
       width: '5%',

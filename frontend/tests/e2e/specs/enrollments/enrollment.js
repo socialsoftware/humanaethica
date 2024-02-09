@@ -1,9 +1,8 @@
-describe('Activity', () => {
+describe('Enrollment', () => {
   beforeEach(() => {
     cy.deleteAllButArs()
-    cy.demoMemberLogin()
-    cy.logout();
-    cy.createActivitiesForEnrollments()
+    cy.createDemoEntities();
+    cy.createDatabaseInfoForEnrollments()
   });
 
   afterEach(() => {

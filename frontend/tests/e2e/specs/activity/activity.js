@@ -1,6 +1,7 @@
 describe('Activity', () => {
   beforeEach(() => {
     cy.deleteAllButArs()
+    cy.createDemoEntities();
   });
 
   afterEach(() => {
