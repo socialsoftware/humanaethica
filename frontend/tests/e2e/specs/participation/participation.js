@@ -12,7 +12,8 @@ describe('Participation', () => {
   it('create participation', () => {
     const MOTIVATION = 'I am very keen to help other people.';
 
-    cy.intercept('POST', '/activities/1/enrollments').as('enroll');
+    cy.intercept('GET', '/activities/1/enrollments').as('enrollments');
+    cy.intercept('POST', '/activities/1/participations').as('participation');
 
     // member login and check that there is activity with 3 enrollments
     cy.demoMemberLogin()
@@ -27,6 +28,7 @@ describe('Participation', () => {
 
     // open enrollments view
     cy.get('[data-cy="showEnrollments"]').click();
+    cy.wait('@enrollments');
     // check that there are 3 enrollments
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .should('have.length', 3)
@@ -41,13 +43,11 @@ describe('Participation', () => {
       .eq(0)
       .find('[data-cy="selectParticipantButton"]')
       .click();
-
     // write ranking
     cy.get('[data-cy="participantsNumberInput"]').type(3);
-
     // create participation
     cy.get('[data-cy="createParticipation"]').click();
-
+    cy.wait('@participation');
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
