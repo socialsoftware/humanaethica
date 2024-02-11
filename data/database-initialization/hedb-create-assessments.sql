@@ -55,9 +55,12 @@ DEMO	3	t	demo_volunteer@mail.com	\N	\N	demo-volunteer	\N	\N	3
 --
 
 COPY public.activity (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id) FROM stdin;
-1	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Inserted-by-sql	2024-02-08 10:58:21.402146	A1	1	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
-2	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Inserted-by-sql	2024-02-08 10:58:21.402146	A2	2	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
-3	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Inserted-by-sql	2024-02-08 10:58:21.402146	A3	3	Lisbon	2024-02-07 17:58:21.402146	APPROVED	2
+1	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Same institution is enrolled and participates	2024-02-08 10:58:21.402146	A1	1	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
+2	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Same institution is enrolled and participates	2024-02-08 10:58:21.402146	A2	1	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
+3	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Same institution is enrolled and does not participate	2024-02-08 10:58:21.402146	A3	2	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
+4	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Same institution is not enrolled	2024-02-08 10:58:21.402146	A4	2	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
+5	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Same institution before end date	2024-08-08 10:58:21.402146	A5	2	Lisbon	2024-02-07 17:58:21.402146	APPROVED	1
+6	2024-02-06 17:58:21.402146	2024-02-06 17:58:21.402146	Other institution is enrolled and participates	2024-02-08 10:58:21.402146	A6	3	Lisbon	2024-02-07 17:58:21.402146	APPROVED	2
 \.
 
 
@@ -67,6 +70,9 @@ COPY public.activity (id, application_deadline, creation_date, description, endi
 
 COPY public.enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id) FROM stdin;
 1	2024-02-06 18:51:37.595713	sql-inserted-motivation	1	3
+2	2024-02-06 18:51:37.595713	sql-inserted-motivation	2	3
+3	2024-02-06 18:51:37.595713	sql-inserted-motivation	3	3
+4	2024-02-06 18:51:37.595713	sql-inserted-motivation	6	3
 \.
 
 
@@ -76,6 +82,8 @@ COPY public.enrollment (id, enrollment_date_time, motivation, activity_id, volun
 
 COPY public.participation (id, acceptance_date, rating, activity_id, volunteer_id) FROM stdin;
 1	2024-02-06 18:51:37.595713	5	1	3
+2	2024-02-06 18:51:37.595713	5	2	3
+3	2024-02-06 18:51:37.595713	5	6	3
 \.
 
 --
