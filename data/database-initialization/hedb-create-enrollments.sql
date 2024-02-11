@@ -54,13 +54,19 @@ DEMO	3	t	demo_volunteer@mail.com	\N	\N	demo-volunteer	\N	\N	3
 --
 
 COPY public.activity (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id) FROM stdin;
-1	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Inserted-by-sql	2024-08-08 17:58:21.402146	A1	1	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
-2	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Inserted-by-sql	2024-08-08 17:58:21.402146	A2	2	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
-3	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Inserted-by-sql	2024-08-08 17:58:21.402146	A3	3	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
-4	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Inserted-by-sql	2024-08-08 17:58:21.402146	A4	4	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
-5	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Inserted-by-sql	2024-08-08 17:58:21.402146	A5	5	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
+1	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Enrollment is open	2024-08-08 17:58:21.402146	A1	1	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
+2	2024-08-06 17:58:21.402146	2024-08-06 17:58:21.402146	Enrollment is open and it is already enrolled	2024-08-08 17:58:21.402146	A2	2	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
+3	2024-02-06 17:58:21.402146	2024-08-06 17:58:21.402146	Enrollment is closed	2024-08-08 17:58:21.402146	A3	3	Lisbon	2024-08-07 17:58:21.402146	APPROVED	1
 \.
 
+
+--
+-- Data for Name: enrollment; Type: TABLE DATA; Schema: public; Owner: ars
+--
+
+COPY public.enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id) FROM stdin;
+5	2024-02-06 18:51:37.595713	sql-inserted-motivation	2	3
+\.
 
 --
 -- PostgreSQL database dump complete

@@ -147,6 +147,7 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   }
 
   canParticipate(enrollment: Enrollment) {
+    console.log(this.enrollments.filter((e) => e.participating).length)
     return (
       !enrollment.participating &&
       this.activity.participantsNumberLimit >

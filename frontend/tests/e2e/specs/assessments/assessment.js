@@ -26,7 +26,7 @@ describe('Assessment', () => {
     cy.wait('@assessments');
     // verify that activity A1 is in row 0
     cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
-      .should('have.length', 3)
+      .should('have.length', 6)
       .eq(0)
       .children()
       .eq(0)

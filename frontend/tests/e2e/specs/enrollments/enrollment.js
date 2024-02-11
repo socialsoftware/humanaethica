@@ -19,19 +19,20 @@ describe('Enrollment', () => {
     cy.get('[data-cy="institution"]').click();
     cy.get('[data-cy="activities"]').click();
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
-      .should('have.length', 1)
+      .should('have.length', 3)
       .eq(0)
       .children()
       .should('have.length', 13)
       .eq(3)
       .should('contain', 0)
-
     cy.logout();
 
     // volunteer login, creates enrollments
     cy.demoVolunteerLogin()
     cy.get('[data-cy="volunteerActivities"]').click();
-    cy.get('[data-cy="applyButton"]').click();
+    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+      .eq(0)
+      .find('[data-cy="applyButton"]').click();
     cy.get('[data-cy="motivationInput"]').type(MOTIVATION);
     cy.get('[data-cy="saveEnrollment"]').click()
     cy.wait('@enroll')

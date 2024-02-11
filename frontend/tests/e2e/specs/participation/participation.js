@@ -15,23 +15,30 @@ describe('Participation', () => {
     cy.intercept('GET', '/activities/1/enrollments').as('enrollments');
     cy.intercept('POST', '/activities/1/participations').as('participation');
 
-    // member login and check that there is activity with 3 enrollments
+    // member login and check that there are 2 activities with 2 enrollments
     cy.demoMemberLogin()
     cy.get('[data-cy="institution"]').click();
     cy.get('[data-cy="activities"]').click();
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
-      .should('have.length', 1)
+      .should('have.length', 2)
       .eq(0)
       .children()
       .eq(3)
-      .should('contain', 3)
+      .should('contain', 2)
+    cy.get('[data-cy="memberActivitiesTable"] tbody tr')
+      .eq(1)
+      .children()
+      .eq(3)
+      .should('contain', 2)
 
-    // open enrollments view
-    cy.get('[data-cy="showEnrollments"]').click();
+    // open enrollments view for first activity
+    cy.get('[data-cy="memberActivitiesTable"] tbody tr')
+      .eq(0)
+      .find('[data-cy="showEnrollments"]').click()
     cy.wait('@enrollments');
-    // check that there are 3 enrollments
+    // check that there are 2 enrollments
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
-      .should('have.length', 3)
+      .should('have.length', 2)
       .eq(0)
       .children()
       .should('have.length', 5)
@@ -55,11 +62,11 @@ describe('Participation', () => {
 
     // return to activities view
     cy.get('[data-cy="getActivities"]').click();
-    // check that there is 1 participation
+    // check that there is 2 participations
     cy.get('[data-cy="memberActivitiesTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(4).should('contain', '1')
+      .eq(4).should('contain', '2')
     
     cy.logout();
 
