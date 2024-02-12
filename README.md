@@ -64,7 +64,7 @@ npm start
 
 The [following video](https://youtu.be/D0JABlXCdlo) shows how setup when you install the software in your machine. Requires the software mentioned above.
 
-[![Watch the video](https://img.youtube.com/vi/D0JABlXCdlo/maxresdefault.jpg)](https://youtu.be/D0JABlXCdlo)
+[![Watch the video](https://img.youtube.com/vi/D0JABlXCdlo/mqdefault.jpg)](https://youtu.be/D0JABlXCdlo)
 
 # Development Container
 An easy way to obtain a working development environment is to use the _development container_ provided (see folder `.devcontainer`). This requires [Docker](https://docs.docker.com/get-docker/).
