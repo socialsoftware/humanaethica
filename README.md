@@ -66,7 +66,8 @@ An easy way to obtain a working development environment is to use the _developme
 
 The following video shows how to setup the dev container using IDE IntelliJ IDEA (Ultimate Edition).
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![How to setup HumanaEthica in IntelliJ using a dev container](https://i9.ytimg.com/vi_webp/ISNCrQ1r-Nw/mq2.webp?sqp=CJCdqa4G-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEYgVShyMA8=&rs=AOn4CLAVQ3NVAYVa08_qFJmu2xSqyOCUIw)](https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k)
+<iframe width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 # Contributing
 
