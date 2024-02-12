@@ -61,6 +61,12 @@ npm start
 ```
 * **Access http://localhost:8081**
 
+# Development Container
+An easy way to obtain a working development environment is to use the _development container_ provided (see folder `.devcontainer`). This requires [Docker](https://docs.docker.com/get-docker/).
+
+The following video shows how to setup the dev container using IDE IntelliJ IDEA (Ultimate Edition).
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 # Contributing
 
