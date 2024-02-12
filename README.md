@@ -59,8 +59,19 @@ cd frontend
 npm i
 npm start
 ```
+
 * **Access http://localhost:8081**
 
+The [following video](https://youtu.be/D0JABlXCdlo) shows how setup when you install the software in your machine. Requires the software mentioned above.
+
+[![Watch the video](https://img.youtube.com/vi/D0JABlXCdlo/maxresdefault.jpg)](https://youtu.be/D0JABlXCdlo)
+
+# Development Container
+An easy way to obtain a working development environment is to use the _development container_ provided (see folder `.devcontainer`). This requires [Docker](https://docs.docker.com/get-docker/).
+
+The [following video](https://www.youtube.com/watch?v=ISNCrQ1r-Nw) shows how to setup the dev container using IDE IntelliJ IDEA (Ultimate Edition).
+
+[![How to setup HumanaEthica in IntelliJ using a dev container](https://i9.ytimg.com/vi_webp/ISNCrQ1r-Nw/mq2.webp?sqp=CJCdqa4G-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEYgVShyMA8=&rs=AOn4CLAVQ3NVAYVa08_qFJmu2xSqyOCUIw)](https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k)
 
 # Contributing
 
