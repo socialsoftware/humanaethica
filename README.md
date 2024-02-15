@@ -10,7 +10,7 @@
 
 # About
 
-**HumanaEthica** ...
+**HumanaEthica** is an open-source broker that aims to connect charities and non-profit organizations with volunteers.
 
 # Technologies
 
@@ -71,7 +71,7 @@ An easy way to obtain a working development environment is to use the _developme
 
 The [following video](https://www.youtube.com/watch?v=ISNCrQ1r-Nw) shows how to setup the dev container using IDE IntelliJ IDEA (Ultimate Edition).
 
-[![How to setup HumanaEthica in IntelliJ using a dev container](https://i9.ytimg.com/vi_webp/ISNCrQ1r-Nw/mq2.webp?sqp=CJCdqa4G-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEYgVShyMA8=&rs=AOn4CLAVQ3NVAYVa08_qFJmu2xSqyOCUIw)](https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k)
+[![How to setup HumanaEthica in IntelliJ using a dev container](https://img.youtube.com/vi/ISNCrQ1r-Nw/mqdefault.jpg)](https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k)
 
 # Contributing
 

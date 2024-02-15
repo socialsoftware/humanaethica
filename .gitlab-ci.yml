@@ -1,0 +1,83 @@
+image:
+  name: "registry.rnl.tecnico.ulisboa.pt/es/humanaethica"
+
+stages:
+  - prepare
+  - build
+
+variables:
+  POSTGRES_DB: hedb
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_HOST_AUTH_METHOD: trust
+  PSQL_INT_TEST_DB_USERNAME: "postgres"
+  PSQL_INT_TEST_DB_PASSWORD: "postgres"
+  cypress_psql_db_name: "hedb"
+  cypress_psql_db_username: "postgres"
+  cypress_psql_db_password: "postgres"
+  cypress_psql_db_host: "localhost"
+  cypress_psql_db_port: "5432"
+
+
+# Docker-in-Docker is broken on gitlab ATM
+# https://gitlab.com/gitlab-org/gitlab-runner/-/issues/29130
+# JFF: RNL's runners do not have permission for this. We pushed the
+#      container manually.
+gitlab-build-image:
+  image: docker:stable
+  services:
+    - docker:dind
+  stage: prepare
+  when: manual
+  script:
+    - echo $CI_REGISTRY
+    - echo $CI_REGISTRY_USER
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/es/humanaethica .
+    - docker push $CI_REGISTRY/es/humanaethica
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - Dockerfile
+
+
+build-and-test:
+  stage: build
+  script:
+    # Backend unit tests incl coverage report
+    - cd backend
+    - mvn clean -Ptest test
+
+    # Convert Jacoco's report into a format that Gitlab understands
+    - python2 /bin/cover2cover.py target/site/jacoco/jacoco.xml src/main/java > ../cobertura.xml
+    #- sed -i 's;filename=";filename="backend/src/main/java/;g' ../cobertura.xml
+    #- sed -i 's;<sources>.*</sources>;;'  ../cobertura.xml
+    - grep -o '<coverage branch-rate="[0-9.]\+" complexity="[0-9.]\+" line-rate="[0-9.]\+"' ../cobertura.xml | gawk '{match($0, "line-rate=\"([0-9.]+)", m)}END{print "Java code coverage:" m[1]*100}'
+
+    # Backend integration tests
+    - /etc/init.d/postgresql start
+    - mvn clean verify -Ptest-int
+    - sudo -u postgres psql -d hedb -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+    # Frontend tests
+    - cd ../frontend
+    - npm install
+    #- npm run test:unit
+
+    # Cypress tests
+    - cd ../backend
+    - mvn clean -Ptest-int spring-boot:run &
+    - cd ../frontend
+    - npm start &
+    - wget --tries=0 --timeout=1 --retry-connrefused -q http://localhost:8081
+    - npx cypress run
+
+  coverage: '/Java code coverage:[0-9.]+/'
+
+  artifacts:
+    paths:
+      - target/site/jacoco/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml
