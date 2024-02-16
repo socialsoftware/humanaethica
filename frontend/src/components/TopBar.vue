@@ -161,7 +161,7 @@
         >
           <template v-slot:activator>
             <v-list-item-title @click="volunteerActivities"
-              >Volunteer</v-list-item-title
+            >Volunteer</v-list-item-title
             >
           </template>
         </v-list-group>
