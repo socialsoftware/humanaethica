@@ -67,12 +67,18 @@ describe('Activity', () => {
     cy.logout();
 
     cy.demoVolunteerLogin();
-    // intercept get activities request
+    // intercept requests
     cy.intercept('GET', '/activities').as('getActivities');
+    cy.intercept('GET', '/assessments/volunteer').as('getVolunteerAssessments');
+    cy.intercept('GET', '/participations/volunteer').as('getVolunteerParticipations');
+    cy.intercept('GET', '/enrollments/volunteer').as('getVolunteerEnrollments');
     // go to volunteer activities view
     cy.get('[data-cy="volunteerActivities"]').click();
     // check request was done
     cy.wait('@getActivities');
+    cy.wait('@getVolunteerEnrollments');
+    cy.wait('@getVolunteerParticipations');
+    cy.wait('@getVolunteerAssessments');
     // check results
     cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
       .should('have.length', 1)

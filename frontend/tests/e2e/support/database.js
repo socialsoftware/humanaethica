@@ -94,7 +94,7 @@ Cypress.Commands.add('createDatabaseInfoForEnrollments', () => {
     credentials: credentials,
   })
   cy.task('queryDatabase',  {
-    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(1, 2, 3),
+    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(5, 2, 3),
     credentials: credentials,
   })
 });
