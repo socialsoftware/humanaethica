@@ -22,6 +22,7 @@ import InstitutionActivitiesView from '@/views/member/InstitutionActivitiesView.
 import InstitutionThemeView from '@/views/member/InstitutionThemeView.vue';
 import MemberView from '@/views/member/MemberView.vue';
 import VolunteerView from '@/views/volunteer/VolunteerView.vue';
+import InstitutionActivityEnrollmentsView from '@/views/member/InstitutionActivityEnrollmentsView.vue';
 
 Vue.use(Router);
 
@@ -137,6 +138,15 @@ const router = new Router({
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Activities - Member',
+          },
+        },
+        {
+          path: 'enrollments',
+          name: 'activity-enrollments',
+          component: InstitutionActivityEnrollmentsView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Manage Enrollments - Member',
           },
         },
         {

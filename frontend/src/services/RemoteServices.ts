@@ -11,6 +11,7 @@ import RegisterVolunteer from '@/models/volunteer/RegisterVolunteer';
 import RegisterMember from '@/models/member/RegisterMember';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 import Theme from '@/models/theme/Theme';
+import Enrollment from '@/models/enrollment/Enrollment';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -465,6 +466,23 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  // Enrollment controller
+
+  static async getActivityEnrollments(activityId: number) {
+    return httpClient
+      .get(`/activities/${activityId}/enrollments`)
+      .then((response) => {
+        return response.data.map((enrollment: any) => {
+          return new Enrollment(enrollment);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  // Theme Controller
 
   static async getThemes(): Promise<Theme[]> {
     return httpClient
