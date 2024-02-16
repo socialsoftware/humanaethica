@@ -12,6 +12,7 @@ import RegisterMember from '@/models/member/RegisterMember';
 import AuthPasswordDto from '@/models/user/AuthPasswordDto';
 import Theme from '@/models/theme/Theme';
 import Enrollment from '@/models/enrollment/Enrollment';
+import Assessment from '@/models/assessment/Assessment';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -481,6 +482,24 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  // Assessment Controller
+
+  static async getInstitutionAssessments(
+    institutionId: number | null,
+  ): Promise<Assessment[]> {
+    return httpClient
+      .get(`/institutions/${institutionId}/assessments`)
+      .then((response) => {
+        return response.data.map((assessment: any) => {
+          return new Assessment(assessment);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
 
   // Theme Controller
 

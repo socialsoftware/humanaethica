@@ -57,6 +57,11 @@
               <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/member/assessments" data-cy="assessments">
+            <v-list-item-content>
+              <v-list-item-title>Assessments</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-menu>
 
@@ -238,6 +243,14 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
+        <v-list-item to="/member/assessments">
+          <v-list-item-action>
+            <v-icon>fas fa-users</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Assessments</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
 
       <v-list-item v-if="!isLoggedIn" @click="login">

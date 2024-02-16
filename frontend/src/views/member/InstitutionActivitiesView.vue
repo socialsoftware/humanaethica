@@ -100,7 +100,7 @@ export default class InstitutionActivitiesView extends Vue {
       width: '5%',
     },
     {
-      text: 'Participants',
+      text: 'Participants Limit',
       value: 'participantsNumberLimit',
       align: 'left',
       width: '5%',
