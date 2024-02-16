@@ -500,7 +500,6 @@ export default class RemoteServices {
       });
   }
 
-
   // Theme Controller
 
   static async getThemes(): Promise<Theme[]> {
