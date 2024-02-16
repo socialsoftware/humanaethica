@@ -14,6 +14,7 @@ describe('Activity', () => {
     const NUMBER = '3';
     const DESCRIPTION = 'Play card games with elderly over 80';
 
+    cy.demoMemberLogin()
     // intercept create activity request and inject date values in the request body
     cy.intercept('POST', '/activities', (req) => {
       req.body = {
@@ -22,12 +23,18 @@ describe('Activity', () => {
         endingDate: '2024-01-15T12:00:00+00:00'
       };
     }).as('register');
-
-    cy.demoMemberLogin()
+    // intercept get institutions
+    cy.intercept('GET', '/users/*/getInstitution').as('getInstitutions');
+    cy.intercept('GET', '/themes/availableThemes').as('availableTeams')
     // go to create activity form
     cy.get('[data-cy="institution"]').click();
+
     cy.get('[data-cy="activities"]').click();
+    cy.wait('@getInstitutions');
+
     cy.get('[data-cy="newActivity"]').click();
+    cy.wait('@availableTeams');
+
     // fill form
     cy.get('[data-cy="nameInput"]').type(NAME);
     cy.get('[data-cy="regionInput"]').type(REGION);
