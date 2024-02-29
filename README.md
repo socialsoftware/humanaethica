@@ -24,7 +24,7 @@
   * [Spring-boot](https://spring.io/)
   * [Vue.js](https://vuejs.org/)
 
-# Installation
+# Bare Metal Installation
 
 * **Install**
 ```
@@ -65,6 +65,35 @@ npm start
 The [following video](https://youtu.be/D0JABlXCdlo) shows how setup when you install the software in your machine. Requires the software mentioned above.
 
 [![Watch the video](https://img.youtube.com/vi/D0JABlXCdlo/mqdefault.jpg)](https://youtu.be/D0JABlXCdlo)
+
+# Docker Compose Installation
+
+* Install [Docker](https://docs.docker.com/engine/install/) in you machine.
+
+* Copy data/access.log.example to data/access.log
+```
+cp data/access.log.example data/access.log
+```
+
+* Copy data/access.log.example to data/access.log
+```
+cp data/error.log.example data/error.log
+```
+
+* Build HumanaEthica in project top directory, where docker-compose.yml is
+```
+docker-compose build
+```
+
+* Run HumanaEthica
+```
+docker-compose up frontend
+```
+
+* Shutdown HumanaEthica
+```
+docker-compose down
+```
 
 # Development Container
 An easy way to obtain a working development environment is to use the _development container_ provided (see folder `.devcontainer`). This requires [Docker](https://docs.docker.com/get-docker/).
