@@ -16,9 +16,9 @@
 
 * Require download
   * [Postgres >= 14](https://www.postgresql.org/)
-  * [Java 17](https://openjdk.org/projects/jdk/17/)
+  * [Java 21](https://openjdk.org/projects/jdk/21/)
   * [Maven](https://maven.apache.org/download.cgi)
-  * [Node 16.14](https://nodejs.org/en/) ([Node Version Manager](https://github.com/nvm-sh/nvm) recommended)
+  * [Node 21.6](https://nodejs.org/en/) ([Node Version Manager](https://github.com/nvm-sh/nvm) recommended)
   * [Docker](https://www.docker.com/)
 * No download required
   * [Spring-boot](https://spring.io/)
@@ -29,7 +29,7 @@
 * **Install**
 ```
 sudo apt update && sudo apt upgrade
-sudo apt install openjdk-17-jdk postgresql
+sudo apt install openjdk-21-jdk postgresql
 ```
 * **Start db, change to postgres user and create DB**
 ```

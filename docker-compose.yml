@@ -57,7 +57,7 @@ services:
       - ./data/access.log:/var/log/nginx/access.log
 
   be-unit-tests:
-    image: maven:3-openjdk-17
+    image: maven:3.9.6-eclipse-temurin-21
     stop_signal: SIGKILL
     stdin_open: true
     tty: true
@@ -68,7 +68,7 @@ services:
     command: mvn -Ptest test
 
   integration-tests:
-    image: maven:3-openjdk-17
+    image: maven:3.9.6-eclipse-temurin-21
     stop_signal: SIGKILL
     stdin_open: true
     tty: true
