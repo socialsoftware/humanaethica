@@ -97,8 +97,8 @@
     "last 2 versions"
   ],
   "engines": {
-    "node": ">=16.14.2",
-    "npm": ">=8.1.2"
+    "node": ">=21.6.1",
+    "npm": ">=10.2.4"
   },
   "license": "MIT"
 }
