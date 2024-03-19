@@ -4,16 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthUserDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer;
 
@@ -43,7 +35,7 @@ public class UserApplicationalService {
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
-        mailer.sendSimpleMail(mailUsername, email, Mailer.QUIZZES_TUTOR_SUBJECT + UserService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
+        mailer.sendSimpleMail(mailUsername, email, Mailer.HUMANAETHICA_SUBJECT + UserService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
     }
 
     private String buildMailBody(String username, String token) {

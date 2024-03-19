@@ -27,7 +27,7 @@ public class SwaggerConfig {
                                 )
                 )
                 .info(new Info()
-                        .title("Quizzes Tutor API")
+                        .title("HumanaEthica API")
                         .termsOfService("http://swagger.io/terms/")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
     }

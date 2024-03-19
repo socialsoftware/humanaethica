@@ -151,7 +151,7 @@ public class InstitutionService {
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
-        mailer.sendSimpleMail(mailUsername, email, Mailer.QUIZZES_TUTOR_SUBJECT + PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
+        mailer.sendSimpleMail(mailUsername, email, Mailer.HUMANAETHICA_SUBJECT + PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
     }
 
     private String buildMailBody(String username, String token) {
