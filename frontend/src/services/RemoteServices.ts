@@ -401,7 +401,7 @@ export default class RemoteServices {
       });
   }
 
-  static async registerActivity(userId: number, activity: Activity) {
+  static async registerActivity(activity: Activity) {
     return httpClient
       .post('/activities', activity)
       .then((response) => {

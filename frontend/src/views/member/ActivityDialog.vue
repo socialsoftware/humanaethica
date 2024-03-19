@@ -167,10 +167,7 @@ export default class ActivityDialog extends Vue {
                 this.editActivity.id,
                 this.editActivity,
               )
-            : await RemoteServices.registerActivity(
-                this.$store.getters.getUser.id,
-                this.editActivity,
-              );
+            : await RemoteServices.registerActivity(this.editActivity);
         this.$emit('save-activity', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
