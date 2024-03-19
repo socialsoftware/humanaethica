@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class Mailer {
     private static final Logger logger = LoggerFactory.getLogger(Mailer.class);
 
-    public static final String QUIZZES_TUTOR_SUBJECT = "Quizzes Tutor: ";
+    public static final String HUMANAETHICA_SUBJECT = "HumanaEthica: ";
 
     @Value("${spring.mail.host}")
     private String host;

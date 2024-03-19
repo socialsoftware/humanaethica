@@ -8,13 +8,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.Mailer
 import spock.mock.DetachedMockFactory
-import spock.lang.Unroll
 
 @DataJpaTest
 class ValidateUserTest extends SpockTest {
@@ -67,7 +65,7 @@ class ValidateUserTest extends SpockTest {
         def user = userRepository.findAll().get(0)
         user.getState().equals(User.State.APPROVED)
         and: "an email is sent"
-        1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
+        1 * mailerMock.sendSimpleMail(mailerUsername, USER_1_EMAIL, Mailer.HUMANAETHICA_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
     }
 
     def "validate volunteer with success"() {
@@ -88,7 +86,7 @@ class ValidateUserTest extends SpockTest {
         user.getId() == volunteer.getId()
         user.getState().equals(User.State.APPROVED)
         and: "an email is sent"
-        1 * mailerMock.sendSimpleMail(mailerUsername, USER_2_EMAIL, Mailer.QUIZZES_TUTOR_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
+        1 * mailerMock.sendSimpleMail(mailerUsername, USER_2_EMAIL, Mailer.HUMANAETHICA_SUBJECT + userService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, _)
     }
 
     def "the user doesn't exist"() {
