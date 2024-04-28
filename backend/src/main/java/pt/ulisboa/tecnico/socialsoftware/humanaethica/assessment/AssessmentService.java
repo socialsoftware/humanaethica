@@ -72,4 +72,14 @@ public class AssessmentService {
 
         return getAssessmentsByVolunteer(userId);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public AssessmentDto updateAssessment(Integer assessmentId, AssessmentDto assessmentDto) {
+        if (assessmentId == null) throw new HEException(ASSESSMENT_NOT_FOUND);
+        Assessment assessment = assessmentRepository.findById(assessmentId).orElseThrow(() -> new HEException(ASSESSMENT_NOT_FOUND, assessmentId));
+
+        assessment.update(assessmentDto);
+
+        return new AssessmentDto(assessment);
+    }
 }
