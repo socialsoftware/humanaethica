@@ -41,4 +41,10 @@ public class AssessmentController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return assessmentService.deleteAssessment(userId, assessmentId);
     }
+
+    @PutMapping("/{assessmentId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public AssessmentDto updateAssessment(@PathVariable int assessmentId, @Valid @RequestBody AssessmentDto assessmentDto){
+        return assessmentService.updateAssessment(assessmentId, assessmentDto);
+    }
 }

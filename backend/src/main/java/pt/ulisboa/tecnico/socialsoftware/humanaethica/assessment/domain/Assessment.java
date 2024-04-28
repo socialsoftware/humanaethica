@@ -76,6 +76,11 @@ public class Assessment {
         this.volunteer.addAssessment(this);
     }
 
+    public void update(AssessmentDto assessmentDto) {
+        setReview(assessmentDto.getReview());
+        setReviewDate(LocalDateTime.parse(assessmentDto.getReviewDate()));
+    }
+
     private void verifyInvariants() {
         reviewIsRequired();
         assessOnlyOnce();
