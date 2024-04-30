@@ -34,6 +34,13 @@ public class Enrollment {
         verifyInvariants();
     }
 
+    public void edit(EnrollmentDto enrollmentDto) {
+        setMotivation(enrollmentDto.getMotivation());
+
+        verifyInvariants();
+
+    }
+
     public Integer getId() {
         return id;
     }
