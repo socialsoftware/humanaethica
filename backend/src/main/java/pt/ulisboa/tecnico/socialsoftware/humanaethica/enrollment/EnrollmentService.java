@@ -62,4 +62,19 @@ public class EnrollmentService {
 
         return new EnrollmentDto(enrollment);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public EnrollmentDto editEnrollment(Integer enrollmentId, EnrollmentDto enrollmentDto) {
+        if (enrollmentDto == null) throw  new HEException(ENROLLMENT_REQUIRES_MOTIVATION);
+
+        if (enrollmentId == null) throw  new HEException(ENROLLMENT_NOT_FOUND);
+
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new HEException(ENROLLMENT_NOT_FOUND, enrollmentId));
+
+        enrollment.edit(enrollmentDto);
+
+        return new EnrollmentDto(enrollment);
+
+    }
 }
