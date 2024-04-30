@@ -37,4 +37,10 @@ public class EnrollmentController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return enrollmentService.createEnrollment(userId, activityId, enrollmentDto);
     }
+
+    @PutMapping("/activities/{activityId}/enrollments")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
+    public EnrollmentDto editEnrollemt(@PathVariable Integer enrollmentId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
+        return enrollmentService.editEnrollment(enrollmentId, enrollmentDto);
+    }
 }
