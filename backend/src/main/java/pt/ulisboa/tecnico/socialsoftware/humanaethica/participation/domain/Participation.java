@@ -34,6 +34,12 @@ public class Participation {
         verifyInvariants();
     }
 
+    public void update(ParticipationDto participationDto) {
+        setRating(participationDto.getRating());
+
+        verifyInvariants();
+    }
+
     public Integer getId() {
         return id;
     }
