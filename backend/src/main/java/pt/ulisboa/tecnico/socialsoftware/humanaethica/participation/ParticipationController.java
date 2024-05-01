@@ -34,4 +34,10 @@ public class ParticipationController {
     public ParticipationDto createParticipation(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto) {
         return participationService.createParticipation(activityId, participationDto);
     }
+
+    @PutMapping("/activities/{activityId}/participations/{participationId}")
+    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
+    public ParticipationDto updateParticipation(Principal principal, @PathVariable Integer activityId, @PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto) {
+        return participationService.updateParticipation(participationId, participationDto);
+    }
 }
