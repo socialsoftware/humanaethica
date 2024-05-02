@@ -40,4 +40,11 @@ public class ParticipationController {
     public ParticipationDto updateParticipation(Principal principal, @PathVariable Integer activityId, @PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto) {
         return participationService.updateParticipation(participationId, participationDto);
     }
+
+    @DeleteMapping("/activities/{activityId}/participations/{participationId}")
+    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
+    public ParticipationDto deleteParticipation(Principal principal, @PathVariable Integer activityId, @PathVariable Integer participationId) {
+        return participationService.deleteParticipation(participationId);
+    }
+
 }
