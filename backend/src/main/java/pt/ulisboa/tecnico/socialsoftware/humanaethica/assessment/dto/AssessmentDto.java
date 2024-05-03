@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class AssessmentDto {
     private Integer id;
     private Integer institutionId;
+    private String institutionName;
     private Integer volunteerId;
     private String volunteerName;
     private String review;
@@ -16,7 +18,11 @@ public class AssessmentDto {
 
     public AssessmentDto(Assessment assessment) {
         this.id = assessment.getId();
-        this.institutionId = assessment.getInstitution().getId();
+
+        Institution institution = assessment.getInstitution();
+        this.institutionId = institution.getId();
+        this.institutionName = institution.getName();
+
         this.volunteerId = assessment.getVolunteer().getId();
         this.volunteerName = assessment.getVolunteer().getName();
         this.review = assessment.getReview();
@@ -38,6 +44,8 @@ public class AssessmentDto {
     public void setInstitutionId(Integer institutionId) {
         this.institutionId = institutionId;
     }
+
+    public String getInstitutionName(){ return institutionName; }
 
     public Integer getVolunteerId() {
         return volunteerId;
