@@ -78,7 +78,7 @@ public class Assessment {
 
     public void update(AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        setReviewDate(LocalDateTime.parse(assessmentDto.getReviewDate()));
+        setReviewDate(LocalDateTime.now());
     }
 
     private void verifyInvariants() {

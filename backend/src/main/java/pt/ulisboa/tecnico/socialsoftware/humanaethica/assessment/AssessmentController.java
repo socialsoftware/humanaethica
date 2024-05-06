@@ -42,7 +42,7 @@ public class AssessmentController {
         return assessmentService.deleteAssessment(userId, assessmentId);
     }
 
-    @PutMapping("/{assessmentId}")
+    @PutMapping("/assessments/{assessmentId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public AssessmentDto updateAssessment(@PathVariable int assessmentId, @Valid @RequestBody AssessmentDto assessmentDto){
         return assessmentService.updateAssessment(assessmentId, assessmentDto);
