@@ -66,6 +66,19 @@
             </template>
             <span>Write Assessment</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="red"
+                v-on="on"
+                data-cy="deleteAssessmentButton"
+                @click="deleteAssessment(item)"
+                >fa-solid fa-trash</v-icon
+              >
+            </template>
+            <span>Delete Assessment</span>
+          </v-tooltip>
         </template>
       </v-data-table>
       <enrollment-dialog
@@ -262,6 +275,26 @@ export default class VolunteerActivitiesView extends Vue {
     this.currentAssessment = new Assessment();
     this.currentAssessment.institutionId = activity.institution.id;
     this.editAssessmentDialog = true;
+  }
+
+  async deleteAssessment(assessment: Assessment) {
+    if (
+      assessment.id !== null &&
+      confirm('Are you sure you want to delete the assessment?')
+    ) {
+      try {
+        await RemoteServices.deleteAssessment(assessment.id);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+
+      const index = this.assessments.findIndex(
+        (a: Assessment) => a.id == assessment.id,
+      );
+      if (index == -1) return;
+
+      this.assessments.splice(index, 1);
+    }
   }
 
   onCloseAssessmentDialog() {
