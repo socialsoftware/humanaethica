@@ -629,9 +629,9 @@ export default class RemoteServices {
       });
   }
 
-  static async createAssessment(institutionId: number, assessment: Assessment) {
+  static async updateAssessment(assessment: Assessment) {
     return httpClient
-      .post(`/institutions/${institutionId}/assessments`, assessment)
+      .put(`/assessments/${assessment.id}`, assessment)
       .then((response) => {
         return new Assessment(response.data);
       })

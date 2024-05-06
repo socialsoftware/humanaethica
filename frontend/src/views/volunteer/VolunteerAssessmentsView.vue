@@ -26,29 +26,22 @@
             {{ theme.completeName }}
           </v-chip>
         </template>
-<!--        <template v-slot:[`item.action`]="{ item }">-->
-<!--          <v-tooltip v-if="item.state === 'APPROVED'" bottom>-->
-<!--            <template v-slot:activator="{ on }">-->
-<!--              <v-icon-->
-<!--                class="mr-2 action-button"-->
-<!--                color="red"-->
-<!--                v-on="on"-->
-<!--                data-cy="reportButton"-->
-<!--                @click="reportAssessment(item)"-->
-<!--                >warning</v-icon-->
-<!--              >-->
-<!--            </template>-->
-<!--            <span>Report Assessment</span>-->
-<!--          </v-tooltip>-->
-<!--        </template>-->
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="blue"
+                v-on="on"
+                data-cy="writeAssessmentButton"
+                @click="editAssessment(item)"
+                >fa-solid fa-pen-to-square</v-icon
+              >
+            </template>
+            <span>Edit Assessment</span>
+          </v-tooltip>
+        </template>
       </v-data-table>
-      <enrollment-dialog
-        v-if="currentEnrollment && editEnrollmentDialog"
-        v-model="editEnrollmentDialog"
-        :enrollment="currentEnrollment"
-        v-on:save-enrollment="onSaveEnrollment"
-        v-on:close-enrollment-dialog="onCloseEnrollmentDialog"
-      />
       <assessment-dialog
         v-if="currentAssessment && editAssessmentDialog"
         v-model="editAssessmentDialog"
@@ -65,25 +58,17 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Assessment from '@/models/assessment/Assessment';
 import { show } from 'cli-cursor';
-import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
-import Enrollment from '@/models/enrollment/Enrollment';
 import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
-import Participation from '@/models/participation/Participation';
-import Institution from '@/models/institution/Institution';
 
 @Component({
   components: {
     'assessment-dialog': AssessmentDialog,
-    'enrollment-dialog': EnrollmentDialog,
   },
   methods: { show },
 })
 export default class VolunteerAssessmentsView extends Vue {
   assessments: Assessment[] = [];
   search: string = '';
-
-  currentEnrollment: Enrollment | null = null;
-  editEnrollmentDialog: boolean = false;
 
   currentAssessment: Assessment | null = null;
   editAssessmentDialog: boolean = false;
@@ -128,9 +113,9 @@ export default class VolunteerAssessmentsView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  onCloseEnrollmentDialog() {
-    this.editEnrollmentDialog = false;
-    this.currentEnrollment = null;
+  editAssessment(item: Assessment) {
+    this.currentAssessment = item;
+    this.editAssessmentDialog = true;
   }
 
   onCloseAssessmentDialog() {
@@ -139,7 +124,15 @@ export default class VolunteerAssessmentsView extends Vue {
   }
 
   async onSaveAssessment(assessment: Assessment) {
-    this.assessments.push(assessment);
+    const index = this.assessments.findIndex(
+      (a: Assessment) => a.id == assessment.id,
+    );
+    if (index == -1) return;
+
+    let currentAssessment = this.assessments[index];
+    currentAssessment.review = assessment.review;
+    currentAssessment.reviewDate = assessment.reviewDate;
+
     this.editAssessmentDialog = false;
     this.currentAssessment = null;
   }
