@@ -44,6 +44,10 @@ public class Volunteer extends User {
         this.enrollments.add(enrollment);
     }
 
+    public void removeEnrollment(Enrollment enrollment) {
+        this.enrollments.remove(enrollment);
+    }
+
     public List<Participation> getParticipations() {
         return participations;
     }

@@ -41,6 +41,12 @@ public class Enrollment {
 
     }
 
+    public void delete(){
+        this.activity = null;
+        this.volunteer = null;
+        
+    }
+
     public Integer getId() {
         return id;
     }

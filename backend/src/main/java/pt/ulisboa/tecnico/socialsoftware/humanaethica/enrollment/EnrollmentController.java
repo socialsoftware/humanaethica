@@ -38,9 +38,18 @@ public class EnrollmentController {
         return enrollmentService.createEnrollment(userId, activityId, enrollmentDto);
     }
 
-    @PutMapping("/activities/{activityId}/enrollments")
+    @PutMapping("/activities/{activityId}/enrollments/{enrollmentId}")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public EnrollmentDto editEnrollemt(@PathVariable Integer enrollmentId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
         return enrollmentService.editEnrollment(enrollmentId, enrollmentDto);
     }
+
+    @DeleteMapping("/activities/{activityId}/enrollments/{enrollmentId}")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
+    public void removeEnrollment(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody EnrollmentDto enrollmentDto){
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        enrollmentService.removeEnrollment(userId, activityId, enrollmentDto);
+    }
+
+
 }
