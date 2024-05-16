@@ -174,9 +174,14 @@ public class Activity {
         this.participations.add(participation);
     }
 
+    public void deleteParticipation(Participation participation) {
+        this.participations.remove(participation);
+    }
+
     public int getNumberOfParticipatingVolunteers() {
         return this.participations.size();
     }
+
     public void setParticipations(List<Participation> participations) {
         this.participations = participations;
     }

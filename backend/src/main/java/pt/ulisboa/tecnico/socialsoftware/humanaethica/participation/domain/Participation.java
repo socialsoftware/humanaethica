@@ -40,6 +40,11 @@ public class Participation {
         verifyInvariants();
     }
 
+    public void delete(){
+        volunteer.deleteParticipation(this);
+        activity.deleteParticipation(this);
+    }
+
     public Integer getId() {
         return id;
     }

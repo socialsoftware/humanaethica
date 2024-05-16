@@ -83,6 +83,7 @@ public class ParticipationService {
         Participation participation = participationRepository.findById(participationId)
                 .orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
+        participation.delete();
         participationRepository.delete(participation);
         return new ParticipationDto(participation);
     }
