@@ -78,7 +78,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
     }
 
     def getEnrollmentId(enrollmentId){
-        if(enrollmentId == EXIT)
+        if(enrollmentId == EXIST)
             return enrollment.id
         else if (enrollmentId == NO_EXIST)
             return 222
