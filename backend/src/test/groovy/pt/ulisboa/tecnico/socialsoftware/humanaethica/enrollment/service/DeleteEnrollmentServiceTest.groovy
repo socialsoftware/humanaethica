@@ -26,7 +26,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         def institution = institutionService.getDemoInstitution()
 
         given: "activity info"
-        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 0, ACTIVITY_DESCRIPTION_1,
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 2, ACTIVITY_DESCRIPTION_1,
                 IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS, null)
         
         activity = new Activity(activityDto, institution, new ArrayList<>())

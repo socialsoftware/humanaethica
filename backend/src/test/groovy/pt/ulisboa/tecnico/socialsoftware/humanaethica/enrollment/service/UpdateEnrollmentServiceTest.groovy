@@ -55,7 +55,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
     }    
 
     @Unroll
-    def 'invalid arguments: motivation=#motivation | enrollmentId=#enrollmentID' () {
+    def 'invalid arguments: motivation=#motivation | enrollmentId=#enrollmentId' () {
         given: "an enrollment dto"
         def editedEnrollmentDto = new EnrollmentDto()
         editedEnrollmentDto.motivation = motivation
