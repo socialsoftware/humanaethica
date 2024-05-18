@@ -14,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
