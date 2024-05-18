@@ -25,7 +25,7 @@ class DeleteEnrollmentMethodTest extends SpockTest {
         given:
         enrollmentDtoOne = new EnrollmentDto()
         enrollmentDtoOne.motivation = ENROLLMENT_MOTIVATION_1
-        enrollmentDtoOne.enrollmentDateTime = DateHandler.toISOString(ONE_DAY_AGO)
+        enrollmentDtoOne.enrollmentDateTime = DateHandler.toISOString(TWO_DAYS_AGO)
 
         and: "enrollment"
         otherEnrollment.getMotivation() >> ENROLLMENT_MOTIVATION_2 
@@ -60,8 +60,6 @@ class DeleteEnrollmentMethodTest extends SpockTest {
         error.getErrorMessage() == ErrorMessage.ENROLLMENT_AFTER_DEADLINE
     }
     
-    
-
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }

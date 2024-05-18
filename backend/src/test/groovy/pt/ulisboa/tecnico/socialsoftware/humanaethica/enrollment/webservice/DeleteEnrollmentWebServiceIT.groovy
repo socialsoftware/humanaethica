@@ -9,7 +9,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-/*import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService*/
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient

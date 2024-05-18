@@ -42,7 +42,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         firstEnrollment = enrollmentRepository.findAll().get(0)
         when:
         enrollmentService.removeEnrollment(volunteer.id, activity.id, firstEnrollment.dto)
-        then: "enrollment deleted"
+        then: "check that enrollment was deleted"
         enrollmentRepository.findAll().size() == 0
 
     }
