@@ -32,7 +32,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = authUserService.loginDemoVolunteerAuth().getUser() // SQUE TA MAL
+        volunteer = authUserService.loginDemoVolunteerAuth().getUser()
         and: "enrollment"
         enrollment = createEnrollment(activity, volunteer, ENROLLMENT_MOTIVATION_1)
     }
