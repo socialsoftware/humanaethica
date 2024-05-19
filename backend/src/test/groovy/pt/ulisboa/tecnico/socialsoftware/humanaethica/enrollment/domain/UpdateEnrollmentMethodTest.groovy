@@ -19,7 +19,7 @@ class UpdateEnrollmentMethodTest extends SpockTest {
     Activity activity = Mock()
     Volunteer volunteer = Mock()
     Enrollment otherEnrollment = Mock()
-    def enrolment
+    def enrollment
     def enrollmentDtoOne
     def enrollmentDtoTwo
 
