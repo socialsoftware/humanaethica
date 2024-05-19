@@ -8,6 +8,9 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import spock.lang.Unroll
 
 
@@ -32,7 +35,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = authUserService.loginDemoVolunteerAuth().getUser()
+        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         and: "enrollment"
         enrollment = createEnrollment(activity, volunteer, ENROLLMENT_MOTIVATION_1)
     }
@@ -41,7 +44,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         given:
         firstEnrollment = enrollmentRepository.findAll().get(0)
         when:
-        enrollmentService.removeEnrollment(volunteer.id, activity.id, firstEnrollment.dto)
+        enrollmentService.removeEnrollment(volunteer.id, activity.id, firstEnrollment.id)
         then: "check that enrollment was deleted"
         enrollmentRepository.findAll().size() == 0
 
@@ -67,16 +70,16 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         remainingEnrollment.motivation == remainingMotivation
 
         where: "check the motivation of the remainingEnrollment and of the removedEnrollment"
-        enrollmentId        || removedMotivation    || remainingMotivation
-        FIRST_ENROLLMENT    || FIRST_ENROLLMENT     || SECOND_ENROLLMENT
-        SECOND_ENROLLMENT   || SECOND_ENROLLMENT    || FIRST_ENROLLMENT
+        enrollmentId        || removedMotivation        || remainingMotivation
+        FIRST_ENROLLMENT    || ENROLLMENT_MOTIVATION_1  || ENROLLMENT_MOTIVATION_2
+        SECOND_ENROLLMENT   || ENROLLMENT_MOTIVATION_2  || ENROLLMENT_MOTIVATION_1
 
     }
 
     def 'two enrollments exist and are both deleted'() {
         given:
         def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def enrollment2 = createEnrollment(activity, volunteer2)
+        def enrollment2 = createEnrollment(activity, volunteer2, ENROLLMENT_MOTIVATION_2)
         enrollmentRepository.save(enrollment2)
         firstEnrollment = enrollmentRepository.findAll().get(0)
         secondEnrollment = enrollmentRepository.findAll().get(1)

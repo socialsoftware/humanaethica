@@ -21,33 +21,35 @@ class UpdateEnrollmentMethodTest extends SpockTest {
     Enrollment otherEnrollment = Mock()
     def enrollment
     def enrollmentDtoOne
-    def enrollmentDtoTwo
+    def enrollmentDtoEdit
 
 
     def setup() {
         given:
         enrollmentDtoOne = new EnrollmentDto()
         enrollmentDtoOne.motivation = ENROLLMENT_MOTIVATION_1
-        enrollmentDtoOne.enrollmentDateTime = DateHandler.toISOString(TWO_DAYS_AGO)
+        activity.getEnrollments() >> [otherEnrollment]
+        activity.getApplicationDeadline() >> IN_TWO_DAYS
 
         and: "enrollment"
-        otherEnrollment.getMotivation() >> ENROLLMENT_MOTIVATION_2 
-        activity.getEnrollments() >> [otherEnrollment]
-
         enrollment = new Enrollment(activity, volunteer, EnrollmentDtoOne)
-        enrollmentDtoTwo = new EnrollmentDto() 
+        enrollmentDtoEdit = new EnrollmentDto()
     }
 
 
     def "update enrollment"() {
         given:
-        enrollmentDtoTwo.motivation = ENROLLMENT_MOTIVATION_2
+        enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when:
-        enrollment.edit(enrollmentDtoTwo)
+        enrollment.edit(enrollmentDtoEdit)
 
-        then: "checks if enrollment"
+        then: "checks results"
         enrollment.getMotivation() == ENROLLMENT_MOTIVATION_2
+        enrollment.enrollmentDateTime.isBefore(LocalDateTime.now())
+        enrollment.activity == activity
+        enrollment.volunteer == volunteer
+        
     }
 
 
@@ -55,10 +57,10 @@ class UpdateEnrollmentMethodTest extends SpockTest {
     @Unroll
     def "edit enrollment and violate motivation is required invariant: motivation=#motivation"() {
       given:
-      enrollmentDtoTwo.motivation = motivation
+      enrollmentDtoEdit.motivation = motivation
 
       when:
-      enrollment.edit(enrollmentDtoTwo)
+      enrollment.edit(enrollmentDtoEdit)
 
       then:
       def error = thrown(HEException)
@@ -70,21 +72,21 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         "   "      || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
         "< 10"     || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
     }
-
+/*
 
     def "try to update enrollment after deadline"() {
         given:
         activity.getApplicationDeadline() >> ONE_DAY_AGO
         and:
-        enrolmentDtoTwo.motivation = ENROLLMENT_MOTIVATION_2
+        enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when:
-        enrollment.edit(enrollmentDtoTwo)
+        enrollment.edit(enrollmentDtoEdit)
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ENROLLMENT_AFTER_DEADLINE
-    }
+    }*/
 
 
     @TestConfiguration

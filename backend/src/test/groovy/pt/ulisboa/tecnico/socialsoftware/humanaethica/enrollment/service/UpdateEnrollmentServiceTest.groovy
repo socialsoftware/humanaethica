@@ -5,9 +5,15 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentRepository
+
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import spock.lang.Unroll
 import java.time.LocalDateTime
 
@@ -27,10 +33,11 @@ class UpdateEnrollmentServiceTest extends SpockTest {
                 IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS, null)
         and: "an activity"
         activity = new Activity(activityDto, institution, new ArrayList<>())
+        activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = authUserService.loginDemoVolunteerAuth().getUser()
-        and "an enrollment dto"
-        def enrollmentDto = createEnrollment(activity, volunteer, ENROLLMENT_MOTIVATION_1)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        and: "an enrollment"
+        enrollment = createEnrollment(activity, volunteer, ENROLLMENT_MOTIVATION_1)
     }
 
 
@@ -43,7 +50,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
         def result = enrollmentService.editEnrollment(enrollment.id, editedEnrollmentDto)
 
         then: "the returned data is correct"
-        result.motivation == ENROLLMENT_MOTIVATION_1
+        result.motivation == ENROLLMENT_MOTIVATION_2
         and: "the enrollment  is stored"
         enrollmentRepository.findAll().size() == 1
         and: "contains the correct data"
@@ -55,7 +62,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
     }    
 
     @Unroll
-    def 'invalid arguments: motivation=#motivation | enrollmentId=#enrollmentId' () {
+    def 'invalid arguments: motivation=#motivation | enrollmentId=#enrollmentId'() {
         given: "an enrollment dto"
         def editedEnrollmentDto = new EnrollmentDto()
         editedEnrollmentDto.motivation = motivation
@@ -70,11 +77,11 @@ class UpdateEnrollmentServiceTest extends SpockTest {
         enrollmentRepository.findAll().size() == 1
 
         where:
-        motivation | enrollmentId || errorMessage
-        null       | EXIST        || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
-        NO_EXIST   | EXIST        || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
-        EXIST      | null         || ErrorMessage.ENROLLMENT_NOT_FOUND
-        EXIST      | NO_EXIST     || ErrorMessage.ENROLLMENT_NOT_FOUND
+        motivation                  | enrollmentId || errorMessage
+        null                        | EXIST        || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
+        "  "                        | EXIST        || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
+        ENROLLMENT_MOTIVATION_1     | null         || ErrorMessage.ENROLLMENT_NOT_FOUND
+        ENROLLMENT_MOTIVATION_1     | NO_EXIST     || ErrorMessage.ENROLLMENT_NOT_FOUND
     }
 
     def getEnrollmentId(enrollmentId){
