@@ -79,15 +79,9 @@ public class EnrollmentService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public EnrollmentDto removeEnrollment(Integer userId, Integer activityId, Integer enrollmentId) {
-        if (enrollmentId == null) throw  new HEException(ENROLLMENT_NOT_FOUND);
+    public EnrollmentDto removeEnrollment(Integer enrollmentId) {
+        if (enrollmentId == null) throw new HEException(ENROLLMENT_NOT_FOUND);
 
-        if (userId == null) throw new HEException(USER_NOT_FOUND);
-        Volunteer volunteer = (Volunteer) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
-
-        if (activityId == null) throw  new HEException(ACTIVITY_NOT_FOUND);
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
-        
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new HEException(ENROLLMENT_NOT_FOUND, enrollmentId));
         
         enrollment.delete();

@@ -44,7 +44,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         given:
         firstEnrollment = enrollmentRepository.findAll().get(0)
         when:
-        enrollmentService.removeEnrollment(volunteer.id, activity.id, firstEnrollment.id)
+        enrollmentService.removeEnrollment(firstEnrollment.id)
         then: "check that enrollment was deleted"
         enrollmentRepository.findAll().size() == 0
 
@@ -61,7 +61,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         secondEnrollment = enrollmentRepository.findAll().get(1)
 
         when:
-        def result = enrollmentService.removeEnrollment(volunteer.id, activity.id, getFirstOrSecondEnrollment(enrollmentId))
+        def result = enrollmentService.removeEnrollment(getFirstOrSecondEnrollment(enrollmentId))
     
         then: "the enrollment was deleted"
         enrollmentRepository.findAll().size() == 1
@@ -85,29 +85,29 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         secondEnrollment = enrollmentRepository.findAll().get(1)
 
         when:
-        enrollmentService.removeEnrollment(volunteer.id, activity.id, firstEnrollment.id)
-        enrollmentService.removeEnrollment(volunteer2.id, activity.id, secondEnrollment.id)
+        enrollmentService.removeEnrollment(firstEnrollment.id)
+        enrollmentService.removeEnrollment(secondEnrollment.id)
 
         then: "confirm that enrollments were removed"
         enrollmentRepository.findAll().size() == 0
     }
 
     @Unroll
-    def 'invalid arguments: enrollmentId:#enrollmentId'() {
+    def 'invalid arguments: enrollmentId=#enrollmentId'() {
 
         when:
-        enrollmentService.removeEnrollment(volunteer.id, activity.id, enrollmentId)
+        enrollmentService.removeEnrollment(enrollmentId)
 
         then:
-        def error = thrown(HEExcpetion)
+        def error = thrown(HEException)
         error.getErrorMessage() == errorMessage
         and: "the enrollment is in the database"
         enrollmentRepository.findAll().size() == 1
 
         where:
-        enrollmentId   || errorMessage
-        null           || ErrorMessage.ENROLLMENT_NOT_FOUND
-        222            || ErrorMessage.ENROLLMENT_NOT_FOUND
+        enrollmentId   ||  errorMessage
+        null           ||  ErrorMessage.ENROLLMENT_NOT_FOUND
+        222            ||  ErrorMessage.ENROLLMENT_NOT_FOUND
 
     }
 

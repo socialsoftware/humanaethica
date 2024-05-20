@@ -6,22 +6,34 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import spock.lang.Unroll
 
 import java.time.LocalDateTime
 
 @DataJpaTest
 class UpdateEnrollmentMethodTest extends SpockTest {
+    Institution institution = Mock()
     Activity activity = Mock()
-    Volunteer volunteer = Mock()
+//    Volunteer volunteer = Mock()
     Enrollment otherEnrollment = Mock()
+    Theme theme = Mock()
+
     def enrollment
     def enrollmentDtoOne
     def enrollmentDtoEdit
+
+    def activity2
+    def enrollmentTwo
+    def volunteer
 
 
     def setup() {
@@ -30,6 +42,9 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         enrollmentDtoOne.motivation = ENROLLMENT_MOTIVATION_1
         activity.getEnrollments() >> [otherEnrollment]
         activity.getApplicationDeadline() >> IN_TWO_DAYS
+
+        and: "volunteer"
+        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
 
         and: "enrollment"
         enrollment = new Enrollment(activity, volunteer, EnrollmentDtoOne)
@@ -52,8 +67,6 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         
     }
 
-
-
     @Unroll
     def "edit enrollment and violate motivation is required invariant: motivation=#motivation"() {
       given:
@@ -72,21 +85,40 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         "   "      || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
         "< 10"     || ErrorMessage.ENROLLMENT_REQUIRES_MOTIVATION
     }
-/*
+
 
     def "try to update enrollment after deadline"() {
         given:
-        activity.getApplicationDeadline() >> ONE_DAY_AGO
-        and:
+        institution.getActivities() >> []
+        theme.getState() >> Theme.State.APPROVED
+
+        def activityDtoTwo
+        def themes = [theme]
+        activityDtoTwo = new ActivityDto()
+        activityDtoTwo.name = ACTIVITY_NAME_1
+        activityDtoTwo.region = ACTIVITY_REGION_1
+        activityDtoTwo.participantsNumberLimit = 2
+        activityDtoTwo.description = ACTIVITY_DESCRIPTION_1
+        activityDtoTwo.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
+        activityDtoTwo.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
+        activityDtoTwo.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+        
+        activity2 = new Activity(activityDtoTwo, institution, themes)
+        
+        and: "enrollment"
+        def enrollmentDtoTwo = new EnrollmentDto()
+        enrollmentDtoTwo.motivation = ENROLLMENT_MOTIVATION_1
+        enrollmentTwo = new Enrollment(activity2, volunteer, enrollmentDtoTwo)
+        activity2.setApplicationDeadline(ONE_DAY_AGO)
         enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when:
-        enrollment.edit(enrollmentDtoEdit)
+        enrollmentTwo.edit(enrollmentDtoEdit)
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ENROLLMENT_AFTER_DEADLINE
-    }*/
+    }
 
 
     @TestConfiguration

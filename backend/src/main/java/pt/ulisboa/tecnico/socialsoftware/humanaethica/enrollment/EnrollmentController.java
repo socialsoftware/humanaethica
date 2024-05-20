@@ -46,9 +46,8 @@ public class EnrollmentController {
 
     @DeleteMapping("/activities/{activityId}/enrollments/{enrollmentId}")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
-    public EnrollmentDto removeEnrollment(Principal principal, @PathVariable Integer activityId, @PathVariable Integer enrollmentId){
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return enrollmentService.removeEnrollment(userId, activityId, enrollmentId);
+    public EnrollmentDto removeEnrollment(@PathVariable Integer enrollmentId){
+        return enrollmentService.removeEnrollment(enrollmentId);
     }
 
 

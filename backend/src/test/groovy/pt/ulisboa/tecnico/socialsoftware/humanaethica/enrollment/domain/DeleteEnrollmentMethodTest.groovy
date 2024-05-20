@@ -23,16 +23,15 @@ import java.time.LocalDateTime
 class DeleteEnrollmentMethodTest extends SpockTest {
     Institution institution = Mock()
     Theme theme = Mock()
- //   Activity otherActivity = Mock()
     def enrollmentOne
     def volunteer
     def activity
-//    def enrollmentTwo
+    def activity2
+    def enrollmentTwo
 
     def setup() {
         theme.getState() >> Theme.State.APPROVED
         institution.getActivities() >> []
-     //   otherActivity.getName() >> ACTIVITY_NAME_2
 
         given:"activity"
         def themes = [theme]
@@ -67,18 +66,34 @@ class DeleteEnrollmentMethodTest extends SpockTest {
         activity.getEnrollments().size() == 0
 
     }
-   /* 
+   
     def "try to delete enrollment after deadline"() {
         given:
-        activity.getApplicationDeadline() >> ONE_DAY_AGO
+        def activityDtoTwo
+        def themes = [theme]
+        activityDtoTwo = new ActivityDto()
+        activityDtoTwo.name = ACTIVITY_NAME_1
+        activityDtoTwo.region = ACTIVITY_REGION_1
+        activityDtoTwo.participantsNumberLimit = 2
+        activityDtoTwo.description = ACTIVITY_DESCRIPTION_1
+        activityDtoTwo.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
+        activityDtoTwo.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
+        activityDtoTwo.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+        activity2 = new Activity(activityDtoTwo, institution, themes)
+        
+        and: "enrollment"
+        def enrollmentDtoTwo = new EnrollmentDto()
+        enrollmentDtoTwo.motivation = ENROLLMENT_MOTIVATION_1
+        enrollmentTwo = new Enrollment(activity2, volunteer, enrollmentDtoTwo)
+        activity2.setApplicationDeadline(ONE_DAY_AGO)
 
         when:
-        enrollment.delete()
+        enrollmentTwo.delete()
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ENROLLMENT_AFTER_DEADLINE
-    }*/
+    }
    
     
     @TestConfiguration
