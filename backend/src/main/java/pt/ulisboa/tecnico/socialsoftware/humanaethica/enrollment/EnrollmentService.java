@@ -65,7 +65,7 @@ public class EnrollmentService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public EnrollmentDto editEnrollment(Integer enrollmentId, EnrollmentDto enrollmentDto) {
-        if (enrollmentDto.getMotivation() == null) throw new HEException(ENROLLMENT_REQUIRES_MOTIVATION);
+        if (enrollmentDto == null) throw new HEException(ENROLLMENT_REQUIRES_MOTIVATION);
 
         if (enrollmentId == null) throw new HEException(ENROLLMENT_NOT_FOUND);
 

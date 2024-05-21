@@ -23,7 +23,6 @@ import java.time.LocalDateTime
 class UpdateEnrollmentMethodTest extends SpockTest {
     Institution institution = Mock()
     Activity activity = Mock()
-//    Volunteer volunteer = Mock()
     Enrollment otherEnrollment = Mock()
     Theme theme = Mock()
 
