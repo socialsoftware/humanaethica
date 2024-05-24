@@ -79,6 +79,7 @@
         v-if="currentAssessment && editAssessmentDialog"
         v-model="editAssessmentDialog"
         :assessment="currentAssessment"
+        :is_update="false"
         v-on:save-assessment="onSaveAssessment"
         v-on:close-assessment-dialog="onCloseAssessmentDialog"
       />
