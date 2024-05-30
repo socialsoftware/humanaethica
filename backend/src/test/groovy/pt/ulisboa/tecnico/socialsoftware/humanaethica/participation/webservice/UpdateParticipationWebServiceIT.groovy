@@ -67,7 +67,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the member edits the participation'
         def response = webClient.put()
-                .uri("/activities/" + activity.id + "/participations/" + participationId)
+                .uri("/participations/" + participationId + "?activityId=" + activity.Id)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -94,7 +94,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the member edits the participation'
         def response = webClient.put()
-                .uri("/activities/" + activity.id + "/participations/" + participationId)
+                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -125,7 +125,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the member tries to edit the participation'
         def response = webClient.put()
-                .uri("/activities/" + activity.id + "/participations/" + participationId)
+                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -151,7 +151,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the volunteer edits the participation'
         def response = webClient.put()
-                .uri("/activities/" + activity.id + "/participations/" + participationId)
+                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -177,7 +177,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the admin edits the participation'
         def response = webClient.put()
-                .uri("/activities/" + activity.id + "/participations/" + participationId)
+                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()

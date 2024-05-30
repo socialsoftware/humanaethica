@@ -50,7 +50,6 @@ public class ParticipationService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ParticipationDto updateParticipation(Integer participationId, ParticipationDto participationDto) {
         if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
-        if (participationDto.getRating() == null) throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE);
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
         participation.update(participationDto);

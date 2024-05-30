@@ -121,10 +121,13 @@ public class Participation {
         }
     }
 
+
+
     private void ratingBetweenOneAndFive() {
-        if (this.rating != null && (this.rating < 1 || this.rating > 5)) {
-            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, this.rating);
+        if (this.rating == null || this.rating < 1 || this.rating > 5) {
+            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, this.rating != null ? this.rating : -1);
         }
     }
+
 
 }
