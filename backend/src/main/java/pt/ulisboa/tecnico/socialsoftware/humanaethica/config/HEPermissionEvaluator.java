@@ -9,6 +9,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.Activi
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 
 import java.io.Serializable;
@@ -16,9 +18,9 @@ import java.io.Serializable;
 @Component
 public class HEPermissionEvaluator implements PermissionEvaluator {
     @Autowired
-    private InstitutionRepository institutionRepository;
-    @Autowired
     private ActivityRepository activityRepository;
+    @Autowired
+    private ParticipationRepository participationRepository;
 
 
     @Override
@@ -33,6 +35,10 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
                     Activity activity = activityRepository.findById(id).orElse(null);
                     if (activity == null) return false;
                     return activity.getInstitution().getId().equals(((Member)authUser.getUser()).getInstitution().getId());
+                case "PARTICIPATION.MANAGER":
+                    Participation participation = participationRepository.findById(id).orElse(null);
+                    if (participation == null) return false;
+                    return participation.getActivity().getInstitution().getId().equals(((Member)authUser.getUser()).getInstitution().getId());
                 default:
                     return false;
             }
