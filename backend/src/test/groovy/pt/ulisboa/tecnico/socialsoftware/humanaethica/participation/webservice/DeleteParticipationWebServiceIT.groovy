@@ -57,7 +57,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
         when: 'the member deletes the participation'
         def response = webClient.delete()
-                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
+                .uri("/participations/" + participationId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
@@ -78,7 +78,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
         when: 'the member deletes the participation'
         webClient.delete()
-                .uri("/participations/" + 222  + "?activityId=" + activity.Id)
+                .uri("/participations/" + 222)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
@@ -86,7 +86,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
         then: "check response status"
         def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.BAD_REQUEST
+        error.statusCode == HttpStatus.FORBIDDEN
         and: 'check database'
         participationRepository.count() == 1
 
@@ -103,7 +103,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
         when: 'the member deletes the participation'
         webClient.delete()
-                .uri("/participations/" + participationId + "?activityId=" + activity.Id)
+                .uri("/participations/" + participationId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
@@ -125,7 +125,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
         when: 'the volunteer tries to delete the participation'
        webClient.delete()
-                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
+                .uri("/participations/" + participationId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
@@ -147,7 +147,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
         when: 'the admin tries to delete the participation'
         webClient.delete()
-                .uri("/participations/" + participationId  + "?activityId=" + activity.Id)
+                .uri("/participations/" + participationId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
