@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
@@ -50,6 +48,18 @@ public class ParticipationService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ParticipationDto updateParticipation(Integer participationId, ParticipationDto participationDto) {
+        if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
+        Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
+
+        participation.update(participationDto);
+
+        return new ParticipationDto(participation);
+    }
+
+
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ParticipationDto createParticipation(Integer activityId, ParticipationDto participationDto) {
         if (participationDto == null) throw  new HEException(PARTICIPATION_REQUIRES_INFORMATION);
 
@@ -62,6 +72,18 @@ public class ParticipationService {
         Participation participation = new Participation(activity, volunteer, participationDto);
         participationRepository.save(participation);
 
+        return new ParticipationDto(participation);
+    }
+
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ParticipationDto deleteParticipation(Integer participationId) {
+        if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
+        Participation participation = participationRepository.findById(participationId)
+                .orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
+
+        participation.delete();
+        participationRepository.delete(participation);
         return new ParticipationDto(participation);
     }
 }

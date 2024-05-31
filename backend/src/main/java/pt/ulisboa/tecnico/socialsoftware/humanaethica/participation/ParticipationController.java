@@ -31,7 +31,20 @@ public class ParticipationController {
 
     @PostMapping("/activities/{activityId}/participations")
     @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
-    public ParticipationDto createParticipation(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto) {
+    public ParticipationDto createParticipation(@PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto) {
         return participationService.createParticipation(activityId, participationDto);
     }
+
+    @PutMapping("/participations/{participationId}")
+    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#participationId, 'PARTICIPATION.MANAGER')")
+    public ParticipationDto updateParticipation(@PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto) {
+        return participationService.updateParticipation(participationId, participationDto);
+    }
+
+    @DeleteMapping("/participations/{participationId}")
+    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#participationId, 'PARTICIPATION.MANAGER')")
+    public ParticipationDto deleteParticipation(@PathVariable Integer participationId) {
+        return participationService.deleteParticipation(participationId);
+    }
+
 }
