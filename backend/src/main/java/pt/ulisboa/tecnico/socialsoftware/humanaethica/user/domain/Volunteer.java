@@ -56,6 +56,10 @@ public class Volunteer extends User {
         this.participations.add(participation);
     }
 
+    public void deleteParticipation(Participation participation) {
+        this.participations.remove(participation);
+    }
+
     public void addAssessment(Assessment assessment) {
         this.assessments.add(assessment);
     }

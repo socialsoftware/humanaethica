@@ -45,6 +45,7 @@ public enum ErrorMessage {
     ENROLLMENT_AFTER_DEADLINE("The enrollment period is already closed"),
     PARTICIPATION_IS_FULL("No vacancies"),
     PARTICIPATION_ACCEPTANCE_BEFORE_DEADLINE("The enrollment period is still open"),
+    PARTICIPATION_NOT_FOUND("Participation not found with id %d"),
     PARTICIPATION_RATING_BEFORE_END("Rate only after activity end"),
     PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE("Rating %d is not in the range 1 to 5"),
     PARTICIPATION_VOLUNTEER_IS_ALREADY_PARTICIPATING("The volunteer is already participating"),
