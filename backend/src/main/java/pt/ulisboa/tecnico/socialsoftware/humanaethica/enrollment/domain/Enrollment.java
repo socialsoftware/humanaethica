@@ -34,20 +34,18 @@ public class Enrollment {
         verifyInvariants();
     }
 
-    public void edit(EnrollmentDto enrollmentDto) {  
-        editOrDeleteEnrollmentBeforeDeadline();
-
-        setEnrollmentDateTime(LocalDateTime.now());
+    public void update(EnrollmentDto enrollmentDto) {  
         setMotivation(enrollmentDto.getMotivation());
 
         motivationIsRequired();
-
+        editOrDeleteEnrollmentBeforeDeadline();
     }
 
     public void delete(){
-        editOrDeleteEnrollmentBeforeDeadline();
         volunteer.removeEnrollment(this);
         activity.removeEnrollment(this);
+
+        editOrDeleteEnrollmentBeforeDeadline();
     }
 
     public Integer getId() {

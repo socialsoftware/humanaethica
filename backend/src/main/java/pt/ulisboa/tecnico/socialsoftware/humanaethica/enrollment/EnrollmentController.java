@@ -38,14 +38,14 @@ public class EnrollmentController {
         return enrollmentService.createEnrollment(userId, activityId, enrollmentDto);
     }
 
-    @PutMapping("/activities/{activityId}/enrollments/{enrollmentId}")
-    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
-    public EnrollmentDto editEnrollemt(@PathVariable Integer enrollmentId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
-        return enrollmentService.editEnrollment(enrollmentId, enrollmentDto);
+    @PutMapping("/enrollments/{enrollmentId}")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER')) and hasPermission(#enrollmentId, 'ENROLLMENT.MANAGER')")
+    public EnrollmentDto updateEnrollemt(@PathVariable Integer enrollmentId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
+        return enrollmentService.updateEnrollment(enrollmentId, enrollmentDto);
     }
 
-    @DeleteMapping("/activities/{activityId}/enrollments/{enrollmentId}")
-    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
+    @DeleteMapping("/enrollments/{enrollmentId}")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER')) and hasPermission(#enrollmentId, 'ENROLLMENT.MANAGER')")
     public EnrollmentDto removeEnrollment(@PathVariable Integer enrollmentId){
         return enrollmentService.removeEnrollment(enrollmentId);
     }

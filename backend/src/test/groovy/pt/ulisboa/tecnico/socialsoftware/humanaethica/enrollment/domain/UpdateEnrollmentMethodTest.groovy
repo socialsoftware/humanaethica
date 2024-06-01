@@ -56,7 +56,7 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when:
-        enrollment.edit(enrollmentDtoEdit)
+        enrollment.update(enrollmentDtoEdit)
 
         then: "checks results"
         enrollment.getMotivation() == ENROLLMENT_MOTIVATION_2
@@ -72,7 +72,7 @@ class UpdateEnrollmentMethodTest extends SpockTest {
       enrollmentDtoEdit.motivation = motivation
 
       when:
-      enrollment.edit(enrollmentDtoEdit)
+      enrollment.update(enrollmentDtoEdit)
 
       then:
       def error = thrown(HEException)
@@ -112,7 +112,7 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when:
-        enrollmentTwo.edit(enrollmentDtoEdit)
+        enrollmentTwo.update(enrollmentDtoEdit)
 
         then:
         def error = thrown(HEException)

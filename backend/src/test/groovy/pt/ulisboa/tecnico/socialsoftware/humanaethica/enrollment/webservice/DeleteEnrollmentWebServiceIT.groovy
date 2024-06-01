@@ -57,7 +57,7 @@ class DeleteEnrollmentWebServiceIT extends SpockTest {
 
         when: 'then volunteer deletes the enrollment'
         def response = webClient.delete()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri("/enrollments/" + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(EnrollmentDto.class)
@@ -78,7 +78,7 @@ class DeleteEnrollmentWebServiceIT extends SpockTest {
 
         when: 'the member deletes the enrollment'
         webClient.delete()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri("/enrollments/" + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(EnrollmentDto.class)
@@ -100,7 +100,7 @@ class DeleteEnrollmentWebServiceIT extends SpockTest {
 
         when: 'the admin deletes the enrollment'
         webClient.delete()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri("/enrollments/" + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(EnrollmentDto.class)

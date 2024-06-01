@@ -61,7 +61,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
 
         when: 'then volunteer edits the enrollment'
         def response = webClient.put()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri('/enrollments/' + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(enrollmentDtoEdit)
                 .retrieve()
@@ -88,7 +88,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
 
         when: 'the volunteer edits the enrollment'
         webClient.put()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri('/enrollments/' + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(enrollmentDtoEdit)
                 .retrieve()
@@ -117,7 +117,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
 
         when: 'the member edits the enrollment'
         webClient.put()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri('/enrollments/' + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(enrollmentDtoEdit)
                 .retrieve()
@@ -143,7 +143,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
 
         when: 'the admin edits the enrollment'
         webClient.put()
-                .uri('/activities/' + activity.id + "/enrollments/" + enrollmentId)
+                .uri('/enrollments/' + enrollmentId)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(enrollmentDtoEdit)
                 .retrieve()

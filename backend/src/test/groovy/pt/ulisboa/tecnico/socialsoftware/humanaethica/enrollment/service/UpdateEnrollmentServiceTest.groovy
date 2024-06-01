@@ -47,7 +47,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
         editedEnrollmentDto.motivation = ENROLLMENT_MOTIVATION_2
 
         when:
-        def result = enrollmentService.editEnrollment(enrollment.id, editedEnrollmentDto)
+        def result = enrollmentService.updateEnrollment(enrollment.id, editedEnrollmentDto)
 
         then: "the returned data is correct"
         result.motivation == ENROLLMENT_MOTIVATION_2
@@ -68,7 +68,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
         editedEnrollmentDto.motivation = motivation
 
         when:
-        enrollmentService.editEnrollment(getEnrollmentId(enrollmentId), editedEnrollmentDto)
+        enrollmentService.updateEnrollment(getEnrollmentId(enrollmentId), editedEnrollmentDto)
 
         then:
         def error = thrown(HEException)
