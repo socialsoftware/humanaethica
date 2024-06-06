@@ -276,10 +276,12 @@ export default class VolunteerActivitiesView extends Vue {
     this.currentAssessment = null;
   }
 
-  updateActivitiesList(){
-      this.activities = this.activities.filter((a: Activity) => 
-        !this.enrollments.some((e: Enrollment) => e.activityId === a.id))
-    }
+  updateActivitiesList() {
+    this.activities = this.activities.filter(
+      (a: Activity) =>
+        !this.enrollments.some((e: Enrollment) => e.activityId === a.id),
+    );
+  }
 }
 </script>
 
