@@ -37,8 +37,8 @@ public class Enrollment {
     public void update(EnrollmentDto enrollmentDto) {  
         setMotivation(enrollmentDto.getMotivation());
 
-        motivationIsRequired();
         editOrDeleteEnrollmentBeforeDeadline();
+        verifyInvariants();
     }
 
     public void delete(){
@@ -46,6 +46,7 @@ public class Enrollment {
         activity.removeEnrollment(this);
 
         editOrDeleteEnrollmentBeforeDeadline();
+        verifyInvariants();
     }
 
     public Integer getId() {
