@@ -2,7 +2,13 @@
   <v-dialog v-model="dialog" persistent width="800">
     <v-card>
       <v-card-title>
-        <span class="headline"> Select Participant </span>
+        <span class="headline">
+          {{
+            editParticipation && editParticipation.id === null
+              ? 'Create Participation'
+              : 'Edit Participation'
+          }}
+        </span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form" lazy-validation>
@@ -19,20 +25,23 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
         <v-btn
-          color="blue-darken-1"
+          color="primary"
+          dark
           variant="text"
           @click="$emit('close-participation-dialog')"
         >
           Close
         </v-btn>
         <v-btn
-          color="blue-darken-1"
+          color="primary"
+          dark
           variant="text"
           @click="createParticipation"
           data-cy="createParticipation"
-          >Make Participant
+        >
+          {{ buttonText }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -55,8 +64,15 @@ export default class ParticipationSelectionDialog extends Vue {
   editParticipation: Participation = new Participation();
 
   async created() {
+    this.editParticipation = new Participation(this.participation);
     this.editParticipation.activityId = this.participation.activityId;
     this.editParticipation.volunteerId = this.participation.volunteerId;
+  }
+
+  get buttonText(): string {
+    return this.editParticipation && this.editParticipation.id
+      ? 'Edit Participant'
+      : 'Make Participant';
   }
 
   isNumberValid(value: any) {
@@ -67,22 +83,28 @@ export default class ParticipationSelectionDialog extends Vue {
   }
 
   async createParticipation() {
-    if (
-      this.editParticipation.activityId !== null &&
-      (this.$refs.form as Vue & { validate: () => boolean }).validate()
-    ) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try {
-        const result = await RemoteServices.createParticipation(
-          this.editParticipation.activityId,
-          this.editParticipation,
-        );
+        const result =
+          this.editParticipation.id !== null
+            ? await RemoteServices.updateParticipation(
+              this.editParticipation.id,
+              this.editParticipation,
+            )
+            : await RemoteServices.createParticipation(
+              this.editParticipation.activityId!,
+              this.editParticipation,
+            );
         this.$emit('save-participation', result);
+        this.$emit('close-participation-dialog');
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
     }
   }
 }
+
+
 </script>
 
 <style scoped lang="scss"></style>
