@@ -198,6 +198,7 @@ export default class VolunteerActivitiesView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+    this.updateActivitiesList();
   }
 
   async reportActivity(activity: Activity) {
@@ -240,6 +241,7 @@ export default class VolunteerActivitiesView extends Vue {
     this.enrollments.push(enrollment);
     this.editEnrollmentDialog = false;
     this.currentEnrollment = null;
+    this.updateActivitiesList();
   }
 
   canAssess(activity: Activity) {
@@ -273,6 +275,11 @@ export default class VolunteerActivitiesView extends Vue {
     this.editAssessmentDialog = false;
     this.currentAssessment = null;
   }
+
+  updateActivitiesList(){
+      this.activities = this.activities.filter((a: Activity) => 
+        !this.enrollments.some((e: Enrollment) => e.activityId === a.id))
+    }
 }
 </script>
 

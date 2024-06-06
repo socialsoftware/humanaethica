@@ -74,7 +74,23 @@ export default class EnrollmentDialog extends Vue {
   }
 
   async updateEnrollment() {
+    //editar
     if (
+        this.editEnrollment.id !== null &&
+        (this.$refs.form as Vue & { validate: () => boolean }).validate()
+      ){
+        try {
+          const result = await RemoteServices.editEnrollment(
+            this.editEnrollment.id,
+            this.editEnrollment,
+          );
+          this.$emit('update-enrollment', result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
+      }
+    //criar
+    else if (
       this.editEnrollment.activityId !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
