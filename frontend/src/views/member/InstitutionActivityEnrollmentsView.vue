@@ -189,12 +189,6 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   }
 
   async onDeleteParticipation(enrollment: Enrollment) {
-    let index = this.enrollments.findIndex(
-      (e) => e.volunteerId === enrollment.volunteerId,
-    );
-    if (index !== -1) {
-      this.enrollments[index].participating = false;
-    }
     this.enrollments = await RemoteServices.getActivityEnrollments(
       enrollment.activityId!,
     );
