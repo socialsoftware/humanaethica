@@ -80,6 +80,10 @@ public class Activity {
         verifyInvariants();
     }
 
+    public void removeEnrollment(Enrollment enrollment) {
+        enrollments.remove(enrollment);
+    }
+
 
     public Integer getId() {
         return id;

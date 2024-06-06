@@ -37,4 +37,18 @@ public class EnrollmentController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return enrollmentService.createEnrollment(userId, activityId, enrollmentDto);
     }
+
+    @PutMapping("/enrollments/{enrollmentId}")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER')) and hasPermission(#enrollmentId, 'ENROLLMENT.MANAGER')")
+    public EnrollmentDto updateEnrollemt(@PathVariable Integer enrollmentId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
+        return enrollmentService.updateEnrollment(enrollmentId, enrollmentDto);
+    }
+
+    @DeleteMapping("/enrollments/{enrollmentId}")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER')) and hasPermission(#enrollmentId, 'ENROLLMENT.MANAGER')")
+    public EnrollmentDto removeEnrollment(@PathVariable Integer enrollmentId){
+        return enrollmentService.removeEnrollment(enrollmentId);
+    }
+
+
 }

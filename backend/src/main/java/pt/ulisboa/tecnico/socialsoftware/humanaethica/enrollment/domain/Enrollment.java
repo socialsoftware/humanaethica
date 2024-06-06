@@ -34,6 +34,21 @@ public class Enrollment {
         verifyInvariants();
     }
 
+    public void update(EnrollmentDto enrollmentDto) {  
+        setMotivation(enrollmentDto.getMotivation());
+
+        editOrDeleteEnrollmentBeforeDeadline();
+        verifyInvariants();
+    }
+
+    public void delete(){
+        volunteer.removeEnrollment(this);
+        activity.removeEnrollment(this);
+
+        editOrDeleteEnrollmentBeforeDeadline();
+        verifyInvariants();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -97,6 +112,12 @@ public class Enrollment {
 
     private void enrollBeforeDeadline() {
         if (this.enrollmentDateTime.isAfter(this.activity.getApplicationDeadline())) {
+            throw new HEException(ENROLLMENT_AFTER_DEADLINE);
+        }
+    }
+
+    private void editOrDeleteEnrollmentBeforeDeadline() {
+        if (LocalDateTime.now().isAfter(this.activity.getApplicationDeadline())) {
             throw new HEException(ENROLLMENT_AFTER_DEADLINE);
         }
     }
