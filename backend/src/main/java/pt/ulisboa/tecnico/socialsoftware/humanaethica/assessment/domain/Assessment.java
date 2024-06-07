@@ -7,6 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institu
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
@@ -27,7 +28,13 @@ public class Assessment {
 
     public Assessment(Institution institution, Volunteer volunteer, AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        setReviewDate(LocalDateTime.parse(assessmentDto.getReviewDate()));
+        LocalDateTime reviewDate;
+        try {
+            reviewDate = LocalDateTime.parse(assessmentDto.getReviewDate());
+        } catch(DateTimeParseException ex) {
+            reviewDate = LocalDateTime.now();
+        }
+        setReviewDate(reviewDate);
         setInstitution(institution);
         setVolunteer(volunteer);
 

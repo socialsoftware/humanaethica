@@ -629,11 +629,35 @@ export default class RemoteServices {
       });
   }
 
+  static async createAssessment(institutionId: number, assessment: Assessment) {
+    return httpClient
+      .post(`/institutions/${institutionId}/assessments`, assessment)
+      .then((response) => {
+        return new Assessment(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async updateAssessment(assessment: Assessment) {
     return httpClient
       .put(`/assessments/${assessment.id}`, assessment)
       .then((response) => {
         return new Assessment(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteAssessment(assessmentId: number): Promise<User[]> {
+    return httpClient
+      .delete(`/assessments/${assessmentId}`)
+      .then((response) => {
+        return response.data.map((assessment: any) => {
+          return new Assessment(assessment);
+        });
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
