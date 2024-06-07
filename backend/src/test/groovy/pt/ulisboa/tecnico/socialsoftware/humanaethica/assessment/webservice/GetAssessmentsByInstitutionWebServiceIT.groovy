@@ -31,10 +31,11 @@ class GetAssessmentsByInstitutionWebServiceIT extends SpockTest {
         institution = institutionService.getDemoInstitution()
 
         def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
-                TWO_DAYS_AGO, ONE_DAY_AGO,NOW,null)
+                THREE_DAYS_AGO,TWO_DAYS_AGO, ONE_DAY_AGO, null)
 
         def activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
+        institution.addActivity(activity)
 
         def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)

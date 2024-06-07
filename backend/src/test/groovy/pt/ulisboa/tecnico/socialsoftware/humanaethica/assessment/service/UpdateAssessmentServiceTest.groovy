@@ -29,10 +29,16 @@ class UpdateAssessmentServiceTest extends SpockTest {
 
         given: "activity info"
         def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 2, ACTIVITY_DESCRIPTION_1,
-                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS, null)
+                THREE_DAYS_AGO, TWO_DAYS_AGO, ONE_DAY_AGO, null)
+
+        and: "an activity"
+        activity = new Activity(activityDto, institution, new ArrayList<>())
+        activityRepository.save(activity)
+
+        institution.addActivity(activity)
 
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
 
         and: "an assessment"
         assessment = createAssessment(institution, volunteer, ASSESSMENT_REVIEW_1)
@@ -54,7 +60,7 @@ class UpdateAssessmentServiceTest extends SpockTest {
         and: "contains the correct data"
         def storedAssessment = assessmentRepository.findAll().get(0)
         storedAssessment.review == ASSESSMENT_REVIEW_2
-        storedAssessment.assessmentDateTime.isBefore(LocalDateTime.now())
+        storedAssessment.reviewDate.isBefore(LocalDateTime.now())
     }
 
     @TestConfiguration

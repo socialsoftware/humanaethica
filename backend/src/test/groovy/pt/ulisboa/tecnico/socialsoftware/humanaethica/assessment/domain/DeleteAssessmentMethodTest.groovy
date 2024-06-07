@@ -24,12 +24,17 @@ class DeleteAssessmentMethodTest extends SpockTest {
     Volunteer volunteer = Mock()
     Volunteer otherVolunteer = Mock()
     Assessment otherAssessment = Mock()
+    Activity otherActivity = Mock()
+    Theme theme = Mock()
     def assessment
 
     def setup() {
         otherActivity.getName() >> ACTIVITY_NAME_2
+        otherActivity.getEndingDate() >> LocalDateTime.now()
         theme.getState() >> Theme.State.APPROVED
         institution.getActivities() >> [otherActivity]
+        institution.getAssessments() >> [otherAssessment]
+
         given: "an activity"
         def themes = [theme]
         def activityDto

@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
@@ -34,10 +35,11 @@ class UpdateAssessmentMethodTest extends SpockTest {
 
     def setup() {
         given:
-        enrollmentDtoOne = new EnrollmentDto()
-        enrollmentDtoOne.motivation = ENROLLMENT_MOTIVATION_1
         activity.getEnrollments() >> [otherEnrollment]
         activity.getApplicationDeadline() >> IN_TWO_DAYS
+        activity.getEndingDate() >> LocalDateTime.now()
+        institution.getActivities() >> [activity]
+        institution.getAssessments() >> []
 
         and: "volunteer"
         volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
