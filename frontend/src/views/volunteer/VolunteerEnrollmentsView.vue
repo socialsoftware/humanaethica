@@ -72,6 +72,19 @@
             </template>
             <span>Edit Enrollment</span>
           </v-tooltip>
+          <v-tooltip v-if="item.state === 'APPROVED' && canAssess(item)" bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="blue"
+                v-on="on"
+                data-cy="writeAssessmentButton"
+                @click="writeAssessment(item)"
+                >fa-solid fa-pen-to-square</v-icon
+              >
+            </template>
+            <span>Write Assessment</span>
+          </v-tooltip>
         </template>
       </v-data-table>
       <enrollment-dialog
@@ -80,6 +93,13 @@
         :enrollment="currentEnrollment"
         v-on:update-enrollment="onUpdateEnrollment"
         v-on:close-enrollment-dialog="onCloseEnrollmentDialog"
+      />
+      <assessment-dialog
+        v-if="currentAssessment && editAssessmentDialog"
+        v-model="editAssessmentDialog"
+        :assessment="currentAssessment"
+        v-on:save-assessment="onSaveAssessment"
+        v-on:close-assessment-dialog="onCloseAssessmentDialog"
       />
     </v-card>
   </div>
@@ -92,9 +112,13 @@ import Activity from '@/models/activity/Activity';
 import { show } from 'cli-cursor';
 import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
 import Enrollment from '@/models/enrollment/Enrollment';
+import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
+import Assessment from '@/models/assessment/Assessment';
+import Participation from '@/models/participation/Participation';
 
 @Component({
   components: {
+    'assessment-dialog': AssessmentDialog,
     'enrollment-dialog': EnrollmentDialog,
   },
   methods: { show },
@@ -102,10 +126,15 @@ import Enrollment from '@/models/enrollment/Enrollment';
 export default class VolunteerEnrollmentsView extends Vue {
   activities: Activity[] = [];
   enrollments: Enrollment[] = [];
+  participations: Participation[] = [];
+  assessments: Assessment[] = [];
   search: string = '';
 
   currentEnrollment: Enrollment | null = null;
   editEnrollmentDialog: boolean = false;
+
+  currentAssessment: Assessment | null = null;
+  editAssessmentDialog: boolean = false;
 
   headers: object = [
     {
@@ -182,6 +211,8 @@ export default class VolunteerEnrollmentsView extends Vue {
     try {
       this.activities = await RemoteServices.getActivities();
       this.enrollments = await RemoteServices.getVolunteerEnrollments();
+      this.participations = await RemoteServices.getVolunteerParticipations();
+      this.assessments = await RemoteServices.getVolunteerAssessments();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -255,6 +286,38 @@ export default class VolunteerEnrollmentsView extends Vue {
     this.activities = this.activities.filter((a: Activity) =>
       this.enrollments.some((e: Enrollment) => e.activityId === a.id),
     );
+  }
+
+  canAssess(activity: Activity) {
+    let endDate = new Date(activity.endingDate);
+    let now = new Date();
+
+    return (
+      now > endDate &&
+      this.participations.some(
+        (p: Participation) => p.activityId === activity.id,
+      ) &&
+      !this.assessments.some(
+        (a: Assessment) => a.institutionId === activity.institution.id,
+      )
+    );
+  }
+
+  writeAssessment(activity: Activity) {
+    this.currentAssessment = new Assessment();
+    this.currentAssessment.institutionId = activity.institution.id;
+    this.editAssessmentDialog = true;
+  }
+
+  onCloseAssessmentDialog() {
+    this.editAssessmentDialog = false;
+    this.currentAssessment = null;
+  }
+
+  async onSaveAssessment(assessment: Assessment) {
+    this.assessments.push(assessment);
+    this.editAssessmentDialog = false;
+    this.currentAssessment = null;
   }
 }
 </script>
