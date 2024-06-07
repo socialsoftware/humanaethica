@@ -27,7 +27,7 @@ class CreateAssessmentServiceTest extends SpockTest {
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
         def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
-                TWO_DAYS_AGO,ONE_DAY_AGO,NOW,null)
+                THREE_DAYS_AGO,TWO_DAYS_AGO,ONE_DAY_AGO,null)
 
         def activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)

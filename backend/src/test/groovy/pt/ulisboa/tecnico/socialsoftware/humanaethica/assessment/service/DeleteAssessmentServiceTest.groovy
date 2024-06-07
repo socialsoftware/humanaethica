@@ -24,7 +24,7 @@ class DeleteAssessmentServiceTest extends SpockTest {
 
         given: "activity info"
         def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 2, ACTIVITY_DESCRIPTION_1,
-                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS, null)
+                THREE_DAYS_AGO, TWO_DAYS_AGO, ONE_DAY_AGO, null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
@@ -40,7 +40,7 @@ class DeleteAssessmentServiceTest extends SpockTest {
         given:
         assessment = assessmentRepository.findAll().get(0)
         when:
-        assessmentService.removeAssessment(assessment.id)
+        assessmentService.deleteAssessment(volunteer.id, assessment.id)
         then: "check that assessment was deleted"
         assessmentRepository.findAll().size() == 0
 

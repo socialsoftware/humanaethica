@@ -27,7 +27,7 @@ public class Assessment {
 
     public Assessment(Institution institution, Volunteer volunteer, AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        setReviewDate(LocalDateTime.now());
+        setReviewDate(LocalDateTime.parse(assessmentDto.getReviewDate()));
         setInstitution(institution);
         setVolunteer(volunteer);
 
@@ -79,6 +79,10 @@ public class Assessment {
     public void update(AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
         setReviewDate(LocalDateTime.now());
+    }
+
+    public void delete() {
+        volunteer.deleteAssessment(this);
     }
 
     private void verifyInvariants() {

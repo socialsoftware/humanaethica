@@ -37,7 +37,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
         def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,2,ACTIVITY_DESCRIPTION_1,
-                IN_ONE_DAY,IN_TWO_DAYS,IN_THREE_DAYS,null)
+                THREE_DAYS_AGO,TWO_DAYS_AGO, ONE_DAY_AGO, null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
@@ -46,7 +46,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         assessmentDto.review = ASSESSMENT_REVIEW_1
         assessmentDto.volunteerId = volunteer.id
 
-        assessmentService.createAssessment(volunteer.id ,activity.id, assessmentDto)
+        assessmentService.createAssessment(volunteer.id ,institution.id, assessmentDto)
 
         def storedAssessment = assessmentRepository.findAll().get(0)
         assessmentId = storedAssessment.id

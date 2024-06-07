@@ -4,6 +4,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
+import java.time.LocalDateTime;
+
 public class AssessmentDto {
     private Integer id;
     private Integer institutionId;
@@ -14,7 +16,9 @@ public class AssessmentDto {
     private String reviewDate;
 
 
-    public AssessmentDto() {}
+    public AssessmentDto() {
+        this.reviewDate = LocalDateTime.now().toString();
+    }
 
     public AssessmentDto(Assessment assessment) {
         this.id = assessment.getId();
