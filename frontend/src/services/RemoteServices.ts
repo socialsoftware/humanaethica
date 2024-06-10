@@ -651,13 +651,11 @@ export default class RemoteServices {
       });
   }
 
-  static async deleteAssessment(assessmentId: number): Promise<User[]> {
+  static async deleteAssessment(assessmentId: number): Promise<Assessment> {
     return httpClient
       .delete(`/assessments/${assessmentId}`)
       .then((response) => {
-        return response.data.map((assessment: any) => {
-          return new Assessment(assessment);
-        });
+          return new Assessment(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));

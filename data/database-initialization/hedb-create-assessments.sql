@@ -92,6 +92,7 @@ COPY public.participation (id, acceptance_date, rating, activity_id, volunteer_i
 
 COPY public.assessment (id, review, review_date, institution_id, volunteer_id) FROM stdin;
 1	Foi bom	2024-02-06 18:51:37.595713	1	2
+2	Isto é um test	2024-02-06 18:51:37.595713	1	2
 \.
 
 --
