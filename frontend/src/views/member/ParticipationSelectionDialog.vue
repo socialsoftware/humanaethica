@@ -25,7 +25,7 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-      <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
         <v-btn
           color="primary"
           dark
@@ -38,7 +38,7 @@
           color="primary"
           dark
           variant="text"
-          @click="createParticipation"
+          @click="createUpdateParticipation"
           data-cy="createParticipation"
         >
           {{ buttonText }}
@@ -82,19 +82,19 @@ export default class ParticipationSelectionDialog extends Vue {
     return parsedValue >= 1 && parsedValue <= 5;
   }
 
-  async createParticipation() {
+  async createUpdateParticipation() {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try {
         const result =
           this.editParticipation.id !== null
             ? await RemoteServices.updateParticipation(
-              this.editParticipation.id,
-              this.editParticipation,
-            )
+                this.editParticipation.id,
+                this.editParticipation,
+              )
             : await RemoteServices.createParticipation(
-              this.editParticipation.activityId!,
-              this.editParticipation,
-            );
+                this.editParticipation.activityId!,
+                this.editParticipation,
+              );
         this.$emit('save-participation', result);
         this.$emit('close-participation-dialog');
       } catch (error) {
@@ -103,8 +103,6 @@ export default class ParticipationSelectionDialog extends Vue {
     }
   }
 }
-
-
 </script>
 
 <style scoped lang="scss"></style>
