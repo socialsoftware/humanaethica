@@ -545,12 +545,53 @@ export default class RemoteServices {
       });
   }
 
+  static async getActivityParticipations(activityId: number | null): Promise<Participation[]> {
+    return httpClient
+      .get(`/activities/${activityId}/participations`)
+      .then((response) => {
+        return response.data.map((participation: any) => {
+          return new Participation(participation);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createParticipation(
     activityId: number,
     participation: Participation,
   ) {
     return httpClient
       .post(`/activities/${activityId}/participations`, participation)
+      .then((response) => {
+        return new Participation(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteParticipation(participationId: number) {
+    return httpClient
+      .delete(`participations/${participationId}`)
+      .then((response) => {
+        return new Participation(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateParticipation(
+    participationId: number,
+    participation: Participation,
+  ) {
+    return httpClient
+      .put(
+        `/participations/${participationId}`,
+        participation,
+      )
       .then((response) => {
         return new Participation(response.data);
       })

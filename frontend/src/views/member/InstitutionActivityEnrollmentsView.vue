@@ -41,6 +41,33 @@
           </template>
           <span>Select Participant</span>
         </v-tooltip>
+        <v-tooltip v-if="isParticipating(item)" bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="blue"
+              @click="selectParticipant(item)"
+              v-on="on"
+              data-cy="editParticipantButton"
+              >edit
+            </v-icon>
+          </template>
+          <span>Edit Participant</span>
+        </v-tooltip>
+        <v-tooltip v-if="isParticipating(item)" bottom :key="`delete-${item.volunteerId}-${item.participating}`">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="action-button"
+              color="red"
+              @click="deleteParticipation(item)"
+              v-on="on"
+              data-cy="deleteParticipantButton"
+            >
+              delete
+            </v-icon>
+          </template>
+          <span>Delete Participant</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <participation-selection-dialog
@@ -123,10 +150,25 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
     }
   }
 
-  selectParticipant(enrollment: Enrollment) {
-    this.currentParticipation = new Participation();
-    this.currentParticipation.activityId = enrollment.activityId;
-    this.currentParticipation.volunteerId = enrollment.volunteerId;
+  async selectParticipant(enrollment: Enrollment) {
+    let activityId = enrollment.activityId;
+    let volunteerId = enrollment.volunteerId;
+    let participations =
+      await RemoteServices.getActivityParticipations(activityId);
+
+    let existingParticipation = participations.find(
+      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    );
+
+    if (existingParticipation) {
+      this.currentParticipation = existingParticipation;
+      this.currentParticipation.activityId = activityId;
+      this.currentParticipation.volunteerId = volunteerId;
+    } else {
+      this.currentParticipation = new Participation();
+      this.currentParticipation.activityId = activityId;
+      this.currentParticipation.volunteerId = volunteerId;
+    }
 
     this.editParticipationSelectionDialog = true;
   }
@@ -146,6 +188,32 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
     this.editParticipationSelectionDialog = false;
   }
 
+  async onDeleteParticipation(enrollment: Enrollment) {
+    this.enrollments = await RemoteServices.getActivityEnrollments(
+      enrollment.activityId!,
+    );
+  }
+
+  async deleteParticipation(enrollment: Enrollment) {
+    let activityId = enrollment.activityId;
+    let volunteerId = enrollment.volunteerId;
+    let participations =
+      await RemoteServices.getActivityParticipations(activityId);
+
+    let existingParticipation = participations.find(
+      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    );
+    if (existingParticipation && existingParticipation.id !== null) {
+      try {
+        await RemoteServices.deleteParticipation(existingParticipation.id);
+        this.onDeleteParticipation(enrollment);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+        console.error('Error deleting participation:', error);
+      }
+    }
+  }
+
   canParticipate(enrollment: Enrollment) {
     console.log(this.enrollments.filter((e) => e.participating).length);
     return (
@@ -153,6 +221,12 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
       this.activity.participantsNumberLimit >
         this.enrollments.filter((e) => e.participating).length
     );
+  }
+
+  isParticipating(enrollment: Enrollment) {
+    if (enrollment.participating) {
+      return true;
+    }
   }
 
   async getActivities() {
