@@ -28,8 +28,8 @@ class UpdateParticipationServiceTest extends SpockTest {
     def setup() {
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,3,ACTIVITY_DESCRIPTION_1,
-                THREE_DAYS_AGO,TWO_DAYS_AGO, ONE_DAY_AGO, null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 3, ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW, null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
