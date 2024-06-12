@@ -40,7 +40,7 @@ class DeleteAssessmentServiceTest extends SpockTest {
         given:
         assessment = assessmentRepository.findAll().get(0)
         when:
-        assessmentService.deleteAssessment(volunteer.id, assessment.id)
+        assessmentService.deleteAssessment(assessment.id)
         then: "check that assessment was deleted"
         assessmentRepository.findAll().size() == 0
 
