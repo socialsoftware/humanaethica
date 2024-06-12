@@ -28,13 +28,7 @@ public class Assessment {
 
     public Assessment(Institution institution, Volunteer volunteer, AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        LocalDateTime reviewDate;
-        try {
-            reviewDate = LocalDateTime.parse(assessmentDto.getReviewDate());
-        } catch(DateTimeParseException ex) {
-            reviewDate = LocalDateTime.now();
-        }
-        setReviewDate(reviewDate);
+        setReviewDate(LocalDateTime.now());
         setInstitution(institution);
         setVolunteer(volunteer);
 
@@ -86,10 +80,15 @@ public class Assessment {
     public void update(AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
         setReviewDate(LocalDateTime.now());
+
+        verifyInvariants();
     }
 
     public void delete() {
         volunteer.deleteAssessment(this);
+        institution.deleteAssessment(this);
+
+        verifyInvariants();
     }
 
     private void verifyInvariants() {
