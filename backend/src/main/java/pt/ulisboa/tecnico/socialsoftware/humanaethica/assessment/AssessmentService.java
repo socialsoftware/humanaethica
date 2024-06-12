@@ -65,7 +65,7 @@ public class AssessmentService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AssessmentDto deleteAssessment(int userId, int assessmentId) {
+    public AssessmentDto deleteAssessment(int assessmentId) {
         Assessment assessment = assessmentRepository.findById(assessmentId).orElseThrow(() -> new HEException(ASSESSMENT_NOT_FOUND));
 
         assessmentRepository.delete(assessment);
