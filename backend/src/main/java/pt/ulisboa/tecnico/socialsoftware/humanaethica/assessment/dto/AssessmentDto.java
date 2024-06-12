@@ -17,7 +17,6 @@ public class AssessmentDto {
 
 
     public AssessmentDto() {
-        this.reviewDate = LocalDateTime.now().toString();
     }
 
     public AssessmentDto(Assessment assessment) {
