@@ -36,14 +36,14 @@ public class AssessmentController {
     }
 
     @DeleteMapping("/assessments/{assessmentId}")
-    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER') and hasPermission(#assessmentId, 'ASSESSMENT.WRITER')")
     public AssessmentDto deleteAssessment(Principal principal, @PathVariable int assessmentId) {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return assessmentService.deleteAssessment(userId, assessmentId);
+        return assessmentService.deleteAssessment(assessmentId);
     }
 
     @PutMapping("/assessments/{assessmentId}")
-    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER') and hasPermission(#assessmentId, 'ASSESSMENT.WRITER')")
     public AssessmentDto updateAssessment(@PathVariable int assessmentId, @Valid @RequestBody AssessmentDto assessmentDto){
         return assessmentService.updateAssessment(assessmentId, assessmentDto);
     }
