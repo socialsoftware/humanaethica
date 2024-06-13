@@ -545,7 +545,9 @@ export default class RemoteServices {
       });
   }
 
-  static async getActivityParticipations(activityId: number | null): Promise<Participation[]> {
+  static async getActivityParticipations(
+    activityId: number | null,
+  ): Promise<Participation[]> {
     return httpClient
       .get(`/activities/${activityId}/participations`)
       .then((response) => {
@@ -588,10 +590,7 @@ export default class RemoteServices {
     participation: Participation,
   ) {
     return httpClient
-      .put(
-        `/participations/${participationId}`,
-        participation,
-      )
+      .put(`/participations/${participationId}`, participation)
       .then((response) => {
         return new Participation(response.data);
       })
