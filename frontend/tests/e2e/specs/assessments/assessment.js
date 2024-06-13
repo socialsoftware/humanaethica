@@ -20,19 +20,19 @@ describe('Assessment', () => {
 
     // volunteer writes assessment
     cy.demoVolunteerLogin();
-    cy.get('[data-cy="volunteerActivities"]').click();
+    cy.get('[data-cy="volunteerEnrollments"]').click();
     cy.wait('@enrollments');
     cy.wait('@participations');
     cy.wait('@assessments');
     // verify that activity A1 is in row 0
-    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
-      .should('have.length', 6)
+    cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
+      .should('have.length', 4)
       .eq(0)
       .children()
       .eq(0)
       .should('contain', "A1")
     // open write assessment dialog
-    cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+    cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
       .eq(0)
       .find('[data-cy="writeAssessmentButton"]')
       .click();
