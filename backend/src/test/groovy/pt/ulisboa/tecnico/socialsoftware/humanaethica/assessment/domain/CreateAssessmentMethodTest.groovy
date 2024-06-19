@@ -64,10 +64,13 @@ class CreateAssessmentMethodTest extends SpockTest {
 
         then:
         def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.ASSESSMENT_REQUIRES_REVIEW
+        error.getErrorMessage() == errorMessage
 
         where:
-        review << [null, "                   ", "<10"]
+        review || errorMessage
+        "<10" || ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        "                   " || ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        null || ErrorMessage.ASSESSMENT_REQUIRES_REVIEW
     }
 
     def "create assessment and violate assessment only if there are finished a activity invariant"() {
