@@ -98,8 +98,10 @@ public class Assessment {
     }
 
     private void reviewIsRequired() {
-        if (this.review == null || this.review.trim().length() < 10) {
+        if (this.review == null) {
             throw new HEException(ASSESSMENT_REQUIRES_REVIEW);
+        } else if (this.review.trim().length() < 10) {
+            throw new HEException(ASSESSMENT_REVIEW_TOO_SHORT);
         }
     }
 

@@ -55,7 +55,6 @@ class UpdateAssessmentMethodTest extends SpockTest {
         assessmentDtoEdit.review = ASSESSMENT_REVIEW_2
     }
 
-
     def "update assessment"() {
         given:
         assessment.review = ASSESSMENT_REVIEW_1
@@ -66,6 +65,27 @@ class UpdateAssessmentMethodTest extends SpockTest {
         then: "checks results"
         assessment.getReview() == ASSESSMENT_REVIEW_2
         assessment.getReviewDate().isBefore(LocalDateTime.now())
+    }
+
+    @Unroll
+    def "invalid review message=#message"() {
+        given:
+        def assessmentDtoMessage = new AssessmentDto()
+        assessmentDtoMessage.review = message
+
+        when:
+        assessment.update(assessmentDtoMessage)
+        assessment.reviewIsRequired()
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        message || errorMessage
+        "short" || ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        " a d w"|| ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        null || ErrorMessage.ASSESSMENT_REQUIRES_REVIEW
     }
 
     @TestConfiguration
