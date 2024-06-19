@@ -68,14 +68,13 @@ class UpdateAssessmentMethodTest extends SpockTest {
     }
 
     @Unroll
-    def "invalid review message=#message"() {
+    def 'invalid review message=#message'() {
         given:
         def assessmentDtoMessage = new AssessmentDto()
         assessmentDtoMessage.review = message
 
         when:
         assessment.update(assessmentDtoMessage)
-        assessment.reviewIsRequired()
 
         then:
         def error = thrown(HEException)
