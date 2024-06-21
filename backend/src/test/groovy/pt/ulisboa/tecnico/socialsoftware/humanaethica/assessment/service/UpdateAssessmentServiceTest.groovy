@@ -14,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
 import java.time.LocalDateTime
 
@@ -60,7 +61,7 @@ class UpdateAssessmentServiceTest extends SpockTest {
         and: "contains the correct data"
         def storedAssessment = assessmentRepository.findAll().get(0)
         storedAssessment.review == ASSESSMENT_REVIEW_2
-        storedAssessment.reviewDate.isBefore(LocalDateTime.now())
+        storedAssessment.reviewDate.isBefore(DateHandler.now())
     }
 
     @TestConfiguration

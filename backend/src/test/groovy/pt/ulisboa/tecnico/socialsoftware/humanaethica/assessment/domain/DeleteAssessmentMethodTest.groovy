@@ -30,7 +30,7 @@ class DeleteAssessmentMethodTest extends SpockTest {
 
     def setup() {
         otherActivity.getName() >> ACTIVITY_NAME_2
-        otherActivity.getEndingDate() >> LocalDateTime.now()
+        otherActivity.getEndingDate() >> DateHandler.now()
         theme.getState() >> Theme.State.APPROVED
         institution.getActivities() >> [otherActivity]
         institution.getAssessments() >> [otherAssessment]
@@ -45,7 +45,7 @@ class DeleteAssessmentMethodTest extends SpockTest {
         activityDto.description = ACTIVITY_DESCRIPTION_1
         activityDto.startingDate = DateHandler.toISOString(TWO_DAYS_AGO)
         activityDto.endingDate = DateHandler.toISOString(ONE_DAY_AGO)
-        activityDto.applicationDeadline = DateHandler.toISOString(LocalDateTime.now().minusDays(3))
+        activityDto.applicationDeadline = DateHandler.toISOString(DateHandler.now().minusDays(3))
         activity = new Activity(activityDto, institution, themes)
         and: "a volunteer"
         volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)

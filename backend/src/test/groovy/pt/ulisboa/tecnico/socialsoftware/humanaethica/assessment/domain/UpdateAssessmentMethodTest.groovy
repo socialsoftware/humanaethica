@@ -37,7 +37,7 @@ class UpdateAssessmentMethodTest extends SpockTest {
         given:
         activity.getEnrollments() >> [otherEnrollment]
         activity.getApplicationDeadline() >> IN_TWO_DAYS
-        activity.getEndingDate() >> LocalDateTime.now()
+        activity.getEndingDate() >> DateHandler.now()
         institution.getActivities() >> [activity]
         institution.getAssessments() >> []
 
@@ -64,7 +64,7 @@ class UpdateAssessmentMethodTest extends SpockTest {
 
         then: "checks results"
         assessment.getReview() == ASSESSMENT_REVIEW_2
-        assessment.getReviewDate().isBefore(LocalDateTime.now())
+        assessment.getReviewDate().isBefore(DateHandler.now())
     }
 
     @Unroll
