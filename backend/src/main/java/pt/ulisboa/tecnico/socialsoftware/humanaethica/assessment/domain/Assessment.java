@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.dto.AssessmentD
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -28,7 +29,7 @@ public class Assessment {
 
     public Assessment(Institution institution, Volunteer volunteer, AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        setReviewDate(LocalDateTime.now());
+        setReviewDate(DateHandler.now());
         setInstitution(institution);
         setVolunteer(volunteer);
 
@@ -79,7 +80,7 @@ public class Assessment {
 
     public void update(AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        setReviewDate(LocalDateTime.now());
+        setReviewDate(DateHandler.now());
 
         verifyInvariants();
     }
