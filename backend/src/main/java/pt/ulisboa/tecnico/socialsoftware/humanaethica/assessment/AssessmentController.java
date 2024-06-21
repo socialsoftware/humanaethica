@@ -38,7 +38,6 @@ public class AssessmentController {
     @DeleteMapping("/assessments/{assessmentId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER') and hasPermission(#assessmentId, 'ASSESSMENT.WRITER')")
     public AssessmentDto deleteAssessment(Principal principal, @PathVariable int assessmentId) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return assessmentService.deleteAssessment(assessmentId);
     }
 
