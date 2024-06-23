@@ -73,6 +73,31 @@ class DeleteAssessmentWebServiceIT extends SpockTest {
         deleteAll()
     }
 
+    def 'login as a volunteer that did not do the assessment'() {
+        given: 'another volunteer'
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
+        institutionRepository.save(otherInstitution)
+        def otherMember = createMember(USER_1_NAME,USER_1_USERNAME,USER_1_PASSWORD,USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
+
+        when: 'the other volunteer deletes the assessment'
+        webClient.delete()
+                .uri("/assessments/" + assessmentId)
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(AssessmentDto.class)
+                .block()
+
+        then: 'check response status'
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
+        and: 'check database'
+        assessmentRepository.count() == 1
+
+        cleanup:
+        deleteAll()
+    }
+
     def 'login as a member and try to delete an assessment'() {
         given: 'a member'
         demoMemberLogin()
