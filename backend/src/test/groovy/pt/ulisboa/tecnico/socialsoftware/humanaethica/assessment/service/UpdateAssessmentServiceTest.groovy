@@ -64,6 +64,35 @@ class UpdateAssessmentServiceTest extends SpockTest {
         storedAssessment.reviewDate.isBefore(DateHandler.now())
     }
 
+    @Unroll
+    def 'invalid arguments: review=#review | assessmentId=#assessmentId'() {
+        given:
+        def editedAssessmentDto = new AssessmentDto()
+        editedAssessmentDto.review = review
+
+        when:
+        def result = assessmentService.updateAssessment(getAssessmentId(assessmentId), editedAssessmentDto)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        review                  | assessmentId          || errorMessage
+        "too short"             | EXIST                 || ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        "This is a bin review!" | null                  || ErrorMessage.ASSESSMENT_NOT_FOUND
+        "This is a bin review!" | NO_EXIST              || ErrorMessage.ASSESSMENT_NOT_FOUND
+    }
+
+    def getAssessmentId(assessmentId) {
+        if (assessmentId == EXIST)
+            return assessment.id
+        else if (assessmentId == NO_EXIST)
+            return 222
+
+        return null
+    }
+
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }
