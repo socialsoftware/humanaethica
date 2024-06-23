@@ -105,6 +105,33 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         deleteAll()
     }
 
+    def 'login as a volunteer that did not do the assessment'() {
+        given: 'another volunteer'
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
+        institutionRepository.save(otherInstitution)
+        def otherMember = createMember(USER_1_NAME,USER_1_USERNAME,USER_1_PASSWORD,USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
+
+        def assessmentDtoEdit = new AssessmentDto()
+        assessmentDtoEdit.review = ASSESSMENT_REVIEW_2
+
+        when: 'the other volunteer update the assessment'
+        webClient.put()
+                .uri('/assessments/' + assessmentId)
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(assessmentDtoEdit)
+                .retrieve()
+                .bodyToMono(AssessmentDto.class)
+                .block()
+
+        then: "check response status"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
+
+        cleanup:
+        deleteAll()
+    }
+
     def 'login as a admin and edit an assessment'() {
         given: 'a demo'
         demoMemberLogin()
