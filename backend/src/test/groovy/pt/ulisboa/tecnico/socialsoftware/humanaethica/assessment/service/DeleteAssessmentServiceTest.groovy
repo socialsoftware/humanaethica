@@ -43,8 +43,23 @@ class DeleteAssessmentServiceTest extends SpockTest {
         assessmentService.deleteAssessment(assessment.id)
         then: "check that assessment was deleted"
         assessmentRepository.findAll().size() == 0
-
     }
+
+    @Unroll
+    def 'invalid arguments: assessmentId:#assessmentId'() {
+        when:
+        assessmentService.deleteAssessment(assessmentId);
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        assessmentId    ||  errorMessage
+        null            ||  ErrorMessage.ASSESSMENT_NOT_FOUND
+        222             ||  ErrorMessage.ASSESSMENT_NOT_FOUND
+    }
+
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
