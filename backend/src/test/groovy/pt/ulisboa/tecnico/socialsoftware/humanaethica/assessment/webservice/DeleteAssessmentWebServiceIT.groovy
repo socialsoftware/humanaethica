@@ -77,8 +77,10 @@ class DeleteAssessmentWebServiceIT extends SpockTest {
         given: 'another volunteer'
         def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def otherMember = createMember(USER_1_NAME,USER_1_USERNAME,USER_1_PASSWORD,USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
-        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
+        def volunteer = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
+        userRepository.save(volunteer)
+        normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
 
         when: 'the other volunteer deletes the assessment'
         webClient.delete()
