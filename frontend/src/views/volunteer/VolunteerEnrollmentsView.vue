@@ -8,7 +8,7 @@
         disable-pagination
         :hide-default-footer="true"
         :mobile-breakpoint="0"
-        data-cy="volunteerActivitiesTable"
+        data-cy="volunteerEnrollmentsTable"
       >
         <template v-slot:top>
           <v-card-title>
@@ -40,18 +40,37 @@
             </template>
             <span>Report Activity</span>
           </v-tooltip>
-          <v-tooltip v-if="item.state === 'APPROVED' && canEnroll(item)" bottom>
+          <v-tooltip
+            v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)"
+            bottom
+          >
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="red"
+                v-on="on"
+                data-cy="deleteEnrollmentButton"
+                @click="deleteEnrollmentForActivity(item)"
+                >fa-sign-in-alt</v-icon
+              >
+            </template>
+            <span>Delete Enrollment</span>
+          </v-tooltip>
+          <v-tooltip
+            v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)"
+            bottom
+          >
             <template v-slot:activator="{ on }">
               <v-icon
                 class="mr-2 action-button"
                 color="blue"
                 v-on="on"
-                data-cy="applyButton"
-                @click="applyForActivity(item)"
-                >fa-sign-in-alt</v-icon
+                data-cy="updateEnrollmentButton"
+                @click="editEnrollmentForActivity(item)"
+                >edit</v-icon
               >
             </template>
-            <span>Apply for Activity</span>
+            <span>Edit Enrollment</span>
           </v-tooltip>
           <v-tooltip v-if="item.state === 'APPROVED' && canAssess(item)" bottom>
             <template v-slot:activator="{ on }">
@@ -72,7 +91,7 @@
         v-if="currentEnrollment && editEnrollmentDialog"
         v-model="editEnrollmentDialog"
         :enrollment="currentEnrollment"
-        v-on:save-enrollment="onSaveEnrollment"
+        v-on:update-enrollment="onUpdateEnrollment"
         v-on:close-enrollment-dialog="onCloseEnrollmentDialog"
       />
       <assessment-dialog
@@ -104,7 +123,7 @@ import Participation from '@/models/participation/Participation';
   },
   methods: { show },
 })
-export default class VolunteerActivitiesView extends Vue {
+export default class VolunteerEnrollmentsView extends Vue {
   activities: Activity[] = [];
   enrollments: Enrollment[] = [];
   participations: Participation[] = [];
@@ -216,19 +235,38 @@ export default class VolunteerActivitiesView extends Vue {
     }
   }
 
-  canEnroll(activity: Activity) {
+  async deleteEnrollmentForActivity(activity: Activity) {
+    const index = this.enrollments.findIndex(
+      (e: Enrollment) => e.activityId == activity.id,
+    );
+    this.currentEnrollment = this.enrollments[index];
+    if (this.currentEnrollment.id !== null) {
+      try {
+        await RemoteServices.removeEnrollment(this.currentEnrollment.id);
+        this.enrollments = await RemoteServices.getVolunteerEnrollments();
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+    this.currentEnrollment = null;
+    this.updateActivitiesList();
+  }
+
+  canEditOrRemoveEnroll(activity: Activity) {
     let deadline = new Date(activity.applicationDeadline);
     let now = new Date();
 
     return (
       deadline > now &&
-      !this.enrollments.some((e: Enrollment) => e.activityId === activity.id)
+      this.enrollments.some((e: Enrollment) => e.activityId === activity.id)
     );
   }
 
-  applyForActivity(activity: Activity) {
-    this.currentEnrollment = new Enrollment();
-    this.currentEnrollment.activityId = activity.id;
+  editEnrollmentForActivity(activity: Activity) {
+    const index = this.enrollments.findIndex(
+      (e: Enrollment) => e.activityId == activity.id,
+    );
+    this.currentEnrollment = this.enrollments[index];
     this.editEnrollmentDialog = true;
   }
 
@@ -237,11 +275,17 @@ export default class VolunteerActivitiesView extends Vue {
     this.currentEnrollment = null;
   }
 
-  async onSaveEnrollment(enrollment: Enrollment) {
+  async onUpdateEnrollment(enrollment: Enrollment) {
     this.enrollments.push(enrollment);
     this.editEnrollmentDialog = false;
     this.currentEnrollment = null;
-    this.updateActivitiesList();
+    this.enrollments = await RemoteServices.getVolunteerEnrollments();
+  }
+
+  updateActivitiesList() {
+    this.activities = this.activities.filter((a: Activity) =>
+      this.enrollments.some((e: Enrollment) => e.activityId === a.id),
+    );
   }
 
   canAssess(activity: Activity) {
@@ -274,13 +318,6 @@ export default class VolunteerActivitiesView extends Vue {
     this.assessments.push(assessment);
     this.editAssessmentDialog = false;
     this.currentAssessment = null;
-  }
-
-  updateActivitiesList() {
-    this.activities = this.activities.filter(
-      (a: Activity) =>
-        !this.enrollments.some((e: Enrollment) => e.activityId === a.id),
-    );
   }
 }
 </script>

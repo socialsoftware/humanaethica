@@ -54,7 +54,11 @@
           </template>
           <span>Edit Participant</span>
         </v-tooltip>
-        <v-tooltip v-if="isParticipating(item)" bottom :key="`delete-${item.volunteerId}-${item.participating}`">
+        <v-tooltip
+          v-if="isParticipating(item)"
+          bottom
+          :key="`delete-${item.volunteerId}-${item.participating}`"
+        >
           <template v-slot:activator="{ on }">
             <v-icon
               class="action-button"

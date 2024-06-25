@@ -508,6 +508,28 @@ export default class RemoteServices {
       });
   }
 
+  static async editEnrollment(enrollmentId: number, enrollment: Enrollment) {
+    return httpClient
+      .put(`/enrollments/${enrollmentId}`, enrollment)
+      .then((response) => {
+        return new Enrollment(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async removeEnrollment(enrollmentId: number) {
+    return httpClient
+      .delete(`/enrollments/${enrollmentId}`)
+      .then((response) => {
+        return new Enrollment(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   // Participation Controller
 
   static async getVolunteerParticipations(): Promise<Participation[]> {
@@ -523,7 +545,10 @@ export default class RemoteServices {
       });
   }
 
-  static async getActivityParticipations(activityId: number | null): Promise<Participation[]> {
+
+  static async getActivityParticipations(
+    activityId: number | null,
+  ): Promise<Participation[]> {
     return httpClient
       .get(`/activities/${activityId}/participations`)
       .then((response) => {
@@ -566,10 +591,7 @@ export default class RemoteServices {
     participation: Participation,
   ) {
     return httpClient
-      .put(
-        `/participations/${participationId}`,
-        participation,
-      )
+      .put(`/participations/${participationId}`, participation)
       .then((response) => {
         return new Participation(response.data);
       })
