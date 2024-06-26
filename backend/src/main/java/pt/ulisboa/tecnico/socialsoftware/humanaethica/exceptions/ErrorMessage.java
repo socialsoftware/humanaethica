@@ -53,8 +53,9 @@ public enum ErrorMessage {
     PARTICIPATION_REQUIRES_INFORMATION("Information about participation is required"),
     ASSESSMENT_VOLUNTEER_CAN_ASSESS_INSTITUTION_ONLY_ONCE("Volunteer has already assessed the institution"),
     ASSESSMENT_ONLY_IF_INSTITUTION_HAS_FINISHED_ACTIVITIES("Institution does not have any finished activity"),
-    ASSESSMENT_REQUIRES_REVIEW("To do an assessment have to write a review longer than 10 characters"),
-
+    ASSESSMENT_REQUIRES_REVIEW("To do an assessment have to write a review message"),
+    ASSESSMENT_REVIEW_TOO_SHORT("To do an assessment have to write a review message longer than 10 characters"),
+    ASSESSMENT_NOT_FOUND("Assessment not found with id %d"),
     ;
 
     public final String label;

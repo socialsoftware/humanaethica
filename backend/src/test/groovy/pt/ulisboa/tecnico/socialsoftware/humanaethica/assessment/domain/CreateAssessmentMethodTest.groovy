@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
 import spock.lang.Unroll
 
 import java.time.LocalDateTime
@@ -41,7 +42,7 @@ class CreateAssessmentMethodTest extends SpockTest {
 
         then: "checks results"
         result.review == ASSESSMENT_REVIEW_1
-        result.reviewDate.isBefore(LocalDateTime.now())
+        result.reviewDate.isBefore(DateHandler.now())
         result.institution == institution
         result.volunteer == volunteer
         and: "check that it is added"
@@ -64,10 +65,13 @@ class CreateAssessmentMethodTest extends SpockTest {
 
         then:
         def error = thrown(HEException)
-        error.getErrorMessage() == ErrorMessage.ASSESSMENT_REQUIRES_REVIEW
+        error.getErrorMessage() == errorMessage
 
         where:
-        review << [null, "                   ", "<10"]
+        review || errorMessage
+        "<10" || ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        "                   " || ErrorMessage.ASSESSMENT_REVIEW_TOO_SHORT
+        null || ErrorMessage.ASSESSMENT_REQUIRES_REVIEW
     }
 
     def "create assessment and violate assessment only if there are finished a activity invariant"() {

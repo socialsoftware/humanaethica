@@ -48,7 +48,7 @@ class CreateAssessmentServiceTest extends SpockTest {
         assessmentRepository.findAll().size() == 1
         def storedAssessment = assessmentRepository.findAll().get(0)
         storedAssessment.review == ASSESSMENT_REVIEW_1
-        storedAssessment.reviewDate.isBefore(LocalDateTime.now())
+        storedAssessment.reviewDate.isBefore(DateHandler.now())
         storedAssessment.institution.id == institution.id
         storedAssessment.volunteer.id == volunteer.id
     }

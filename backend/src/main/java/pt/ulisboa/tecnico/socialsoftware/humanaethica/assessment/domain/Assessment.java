@@ -5,8 +5,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.dto.AssessmentD
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
@@ -27,7 +29,7 @@ public class Assessment {
 
     public Assessment(Institution institution, Volunteer volunteer, AssessmentDto assessmentDto) {
         setReview(assessmentDto.getReview());
-        setReviewDate(LocalDateTime.now());
+        setReviewDate(DateHandler.now());
         setInstitution(institution);
         setVolunteer(volunteer);
 
@@ -76,6 +78,20 @@ public class Assessment {
         this.volunteer.addAssessment(this);
     }
 
+    public void update(AssessmentDto assessmentDto) {
+        setReview(assessmentDto.getReview());
+        setReviewDate(DateHandler.now());
+
+        verifyInvariants();
+    }
+
+    public void delete() {
+        volunteer.deleteAssessment(this);
+        institution.deleteAssessment(this);
+
+        verifyInvariants();
+    }
+
     private void verifyInvariants() {
         reviewIsRequired();
         assessOnlyOnce();
@@ -83,8 +99,10 @@ public class Assessment {
     }
 
     private void reviewIsRequired() {
-        if (this.review == null || this.review.trim().length() < 10) {
+        if (this.review == null) {
             throw new HEException(ASSESSMENT_REQUIRES_REVIEW);
+        } else if (this.review.trim().length() < 10) {
+            throw new HEException(ASSESSMENT_REVIEW_TOO_SHORT);
         }
     }
 
