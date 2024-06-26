@@ -42,6 +42,16 @@
             Enrollments
             <v-icon>fas fa-user</v-icon>
           </v-btn>
+          <v-btn
+            text
+            color="orange"
+            v-on="on"
+            data-cy="volunteerAssessments"
+            @click="volunteerAssessments"
+          >
+            Assessments
+            <v-icon>fas fa-user</v-icon>
+          </v-btn>
         </template>
       </v-menu>
 
@@ -322,6 +332,10 @@ export default class TopBar extends Vue {
 
   async volunteerEnrollments() {
     await this.$router.push({ name: 'volunteer-enrollments' }).catch(() => {});
+  }
+
+  async volunteerAssessments() {
+    await this.$router.push({ name: 'volunteer-assessments' }).catch(() => {});
   }
 
   async logout() {

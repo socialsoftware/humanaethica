@@ -6,6 +6,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.dto.AssessmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
@@ -25,7 +28,8 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
     private ParticipationRepository participationRepository;
     @Autowired
     private EnrollmentRepository enrollmentRepository;
-
+    @Autowired
+    private AssessmentRepository assessmentRepository;
 
 
     @Override
@@ -48,6 +52,10 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
                     Enrollment enrollment = enrollmentRepository.findById(id).orElse(null);
                     if (enrollment == null) return false;
                     return enrollment.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
+                case "ASSESSMENT.WRITER":
+                    Assessment assessment = assessmentRepository.findById(id).orElse(null);
+                    if (assessment == null) return false;
+                    return assessment.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
                 default:
                     return false;
             }

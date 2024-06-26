@@ -59,6 +59,7 @@ import Assessment from '@/models/assessment/Assessment';
 export default class AssessmentDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Assessment, required: true }) readonly assessment!: Assessment;
+  @Prop({ type: Boolean, required: true }) readonly is_update!: Boolean;
 
   editAssessment: Assessment = new Assessment();
 
@@ -78,10 +79,16 @@ export default class AssessmentDialog extends Vue {
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
-        const result = await RemoteServices.createAssessment(
-          this.editAssessment.institutionId,
-          this.editAssessment,
-        );
+        let result;
+        if (this.is_update) {
+          result = await RemoteServices.updateAssessment(this.editAssessment);
+        } else {
+          result = await RemoteServices.createAssessment(
+            this.editAssessment.institutionId,
+            this.editAssessment,
+          );
+        }
+
         this.$emit('save-assessment', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
