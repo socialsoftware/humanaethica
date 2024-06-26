@@ -34,4 +34,16 @@ public class AssessmentController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return assessmentService.createAssessment(userId, institutionId, assessmentDto);
     }
+
+    @DeleteMapping("/assessments/{assessmentId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER') and hasPermission(#assessmentId, 'ASSESSMENT.WRITER')")
+    public AssessmentDto deleteAssessment(Principal principal, @PathVariable int assessmentId) {
+        return assessmentService.deleteAssessment(assessmentId);
+    }
+
+    @PutMapping("/assessments/{assessmentId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER') and hasPermission(#assessmentId, 'ASSESSMENT.WRITER')")
+    public AssessmentDto updateAssessment(@PathVariable int assessmentId, @Valid @RequestBody AssessmentDto assessmentDto){
+        return assessmentService.updateAssessment(assessmentId, assessmentDto);
+    }
 }

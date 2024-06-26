@@ -19,6 +19,7 @@ import RegisterMemberView from '@/views/member/RegisterMemberView.vue';
 import InstitutionActivitiesView from '@/views/member/InstitutionActivitiesView.vue';
 import AdminActivitiesView from '@/views/admin/AdminActivitiesView.vue';
 import VolunteerActivitiesView from '@/views/volunteer/VolunteerActivitiesView.vue';
+import VolunteerAssessmentsView from '@/views/volunteer/VolunteerAssessmentsView.vue';
 import InstitutionThemeView from '@/views/member/InstitutionThemeView.vue';
 import MemberView from '@/views/member/MemberView.vue';
 import VolunteerView from '@/views/volunteer/VolunteerView.vue';
@@ -192,6 +193,15 @@ const router = new Router({
           meta: {
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Volunteer Enrollments',
+          },
+        },
+        {
+          path: 'assessments',
+          name: 'volunteer-assessments',
+          component: VolunteerAssessmentsView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Manage Volunteer Assessments',
           },
         },
       ],

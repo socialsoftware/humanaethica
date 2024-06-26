@@ -186,4 +186,8 @@ public class Institution {
         setConfirmationToken(token);
         return token;
     }
+
+    public void deleteAssessment(Assessment assessment) {
+        this.assessments.remove(assessment);
+    }
 }

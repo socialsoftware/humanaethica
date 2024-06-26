@@ -12,6 +12,7 @@ const AUTH_USERS_COLUMNS = "auth_users (auth_type, id, active, email, username, 
 const ACTIVITY_COLUMNS = "activity (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id)";
 const ENROLLMENT_COLUMNS = "enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id)"
 const PARTICIPATION_COLUMNS = "participation (id, acceptance_date, rating, activity_id, volunteer_id)"
+const ASSESSMENT_COLUMNS = "assessment (id, review, review_date, institution_id, volunteer_id)";
 
 const now = new Date();
 const tomorrow = new Date(now);
@@ -217,6 +218,13 @@ Cypress.Commands.add('createDatabaseInfoForAssessments', () => {
   })
 });
 
+Cypress.Commands.add('createDatabaseInfoForVolunteerAssessments', () => {
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ASSESSMENT_COLUMNS + generateAssessmentTuple(1, "Muito bom!", 2, 3),
+    credentials: credentials,
+  })
+});
+
 function generateAuthUserTuple(id, authType, username, userId) {
   return "VALUES ('"
     + authType + "', '"
@@ -269,3 +277,6 @@ function generateParticipationTuple(id, activityId, volunteerId) {
     volunteerId + ")";
 }
 
+function generateAssessmentTuple(id, review, institutionId, volunteerId) {
+  return "VALUES (" + id + ", '" + review + "', '2024-02-07 18:51:37.595713', '" + institutionId + "', " + volunteerId + ")";
+}

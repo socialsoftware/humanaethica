@@ -35,6 +35,7 @@ class GetAssessmentsByInstitutionWebServiceIT extends SpockTest {
 
         def activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
+        institution.addActivity(activity)
 
         def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
