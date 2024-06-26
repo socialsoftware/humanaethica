@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.report.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
-//import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class ReportDto {
