@@ -54,6 +54,9 @@ public enum ErrorMessage {
     ASSESSMENT_VOLUNTEER_CAN_ASSESS_INSTITUTION_ONLY_ONCE("Volunteer has already assessed the institution"),
     ASSESSMENT_ONLY_IF_INSTITUTION_HAS_FINISHED_ACTIVITIES("Institution does not have any finished activity"),
     ASSESSMENT_REQUIRES_REVIEW("To do an assessment have to write a review longer than 10 characters"),
+    REPORT_REQUIRES_JUSTIFICATION("To do a report have to write a justification shorter than 256 characters"),
+    REPORT_ACTIVTIY_IS_ALREADY_REPORTED("The activity is already reported"),
+    REPORT_AFTER_ACTIVTY_CLOSED("The activity period is already closed"),
 
     ;
 
