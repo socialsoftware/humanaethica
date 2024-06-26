@@ -58,7 +58,7 @@ public enum ErrorMessage {
     ASSESSMENT_NOT_FOUND("Assessment not found with id %d"),
     REPORT_REQUIRES_JUSTIFICATION("To do a report have to write a justification shorter than 256 characters"),
     REPORT_ACTIVTIY_IS_ALREADY_REPORTED("The activity is already reported"),
-    REPORT_AFTER_ACTIVTY_CLOSED("The activity period is already closed")
+    REPORT_AFTER_ACTIVTY_CLOSED("The activity period is already closed"),
     ;
 
     public final String label;
