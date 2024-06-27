@@ -39,6 +39,7 @@ public enum ErrorMessage {
     ACTIVITY_ALREADY_APPROVED("Activity is already approved with name %s"),
     ACTIVITY_ALREADY_EXISTS("Activity already exists in database"),
     ACTIVITY_ALREADY_SUSPENDED("Activity is already suspended with name %s"),
+    ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID("Activity suspension justification is too short or too long."),
     ACTIVITY_ALREADY_REPORTED("Activity is already reported with name %s"),
     ENROLLMENT_NOT_FOUND("Enrollment not found with id %d"),
     ENROLLMENT_REQUIRES_MOTIVATION("To apply to an activity you have to write a motivation longer than 10 characters"),

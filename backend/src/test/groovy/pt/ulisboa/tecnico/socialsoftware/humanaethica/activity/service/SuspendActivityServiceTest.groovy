@@ -32,7 +32,7 @@ class SuspendActivityServiceTest extends SpockTest {
         activity.setState(state)
 
         when:
-        def result = activityService.suspendActivity(activity.id)
+        def result = activityService.suspendActivity(activity.id, ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then: "the activity and theme are validated"
         result.state == Activity.State.SUSPENDED.name()
@@ -44,7 +44,7 @@ class SuspendActivityServiceTest extends SpockTest {
     @Unroll
     def "arguments: activityId=#activityId"() {
         when:
-        activityService.suspendActivity(activityId)
+        activityService.suspendActivity(activityId, ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         def error = thrown(HEException)

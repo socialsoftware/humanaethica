@@ -18,6 +18,9 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 @Entity
 @Table(name = "activity")
 public class Activity {
+    private static final int MIN_JUSTIFICATION_SIZE = 10;
+    private static final int MAX_JUSTIFICATION_SIZE = 250;
+
     public enum State {REPORTED, APPROVED, SUSPENDED}
 
     @Id
@@ -30,6 +33,7 @@ public class Activity {
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
+    private String suspensionJustification;
     @Enumerated(EnumType.STRING)
     private Activity.State state = Activity.State.APPROVED;
     @ManyToMany (fetch = FetchType.EAGER)
@@ -165,9 +169,15 @@ public class Activity {
         this.enrollments.add(enrollment);
     }
 
-    public void suspend() {
+    public void suspend(String justification) {
         activityCannotBeSuspended();
+
         this.setState(State.SUSPENDED);
+        this.suspensionJustification = justification;
+    }
+
+    public String getSuspensionJustification() {
+        return this.suspensionJustification;
     }
 
     public List<Participation> getParticipations() {
@@ -284,6 +294,7 @@ public class Activity {
         startBeforeEnd();
         themesAreApproved();
         nameIsUnique();
+        suspensionJustificationTextSize();
     }
 
     private void nameIsRequired() {
@@ -353,6 +364,21 @@ public class Activity {
         if (this.institution.getActivities().stream()
                 .anyMatch(activity -> activity != this && activity.getName().equals(this.getName()))) {
             throw new HEException(ACTIVITY_ALREADY_EXISTS);
+        }
+    }
+
+    private void suspensionJustificationTextSize() {
+        if (this.state != State.SUSPENDED) {
+            return;
+        }
+
+        if (this.suspensionJustification == null) {
+            throw new HEException(ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID);
+        }
+
+        var textSize = this.suspensionJustification.length();
+        if (textSize < MIN_JUSTIFICATION_SIZE || textSize > MAX_JUSTIFICATION_SIZE) {
+            throw new HEException(ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID);
         }
     }
 }

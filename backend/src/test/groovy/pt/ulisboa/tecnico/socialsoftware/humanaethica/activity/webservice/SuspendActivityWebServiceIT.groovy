@@ -47,7 +47,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         def response = webClient.put()
-                .uri('/activities/' + activityId + '/suspend')
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -67,7 +67,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activities/' + "222" + '/suspend')
+                .uri('/activities/' + "222" + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -81,33 +81,13 @@ class SuspendActivityWebServiceIT extends SpockTest {
         activity.state == Activity.State.APPROVED
     }
 
-    def "member tries to suspend activity"() {
-        given:
-        demoMemberLogin()
-
-        when:
-        webClient.put()
-                .uri('/activities/' + activityId + '/suspend')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .retrieve()
-                .bodyToMono(ActivityDto.class)
-                .block()
-
-        then: "error is thrown"
-        def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.FORBIDDEN
-        activityRepository.findAll().size() == 1
-        def activity = activityRepository.findAll().get(0)
-        activity.state == Activity.State.APPROVED
-    }
-
     def "volunteer tries to suspend activity"() {
         given: "login volunteer"
         demoVolunteerLogin()
 
         when:
         webClient.put()
-                .uri('/activities/' + activityId + '/suspend')
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)

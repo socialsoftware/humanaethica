@@ -21,6 +21,7 @@ public class ActivityDto {
     private String applicationDeadline;
     private String state;
     private String creationDate;
+    private String suspensionJustification;
     private List<ThemeDto> themes;
     private InstitutionDto institution;
 
@@ -45,6 +46,7 @@ public class ActivityDto {
         setStartingDate(DateHandler.toISOString(activity.getStartingDate()));
         setEndingDate(DateHandler.toISOString(activity.getEndingDate()));
         setApplicationDeadline(DateHandler.toISOString(activity.getApplicationDeadline()));
+        setSuspensionJustification(activity.getSuspensionJustification());
 
         if (deepCopyInstitution && (activity.getInstitution() != null)) {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
@@ -127,6 +129,14 @@ public class ActivityDto {
 
     public void setApplicationDeadline(String applicationDeadline) {
         this.applicationDeadline = applicationDeadline;
+    }
+
+    public void setSuspensionJustification(String justification) {
+        this.suspensionJustification = justification;
+    }
+
+    public String getSuspensionJustification() {
+        return this.suspensionJustification;
     }
 
     public InstitutionDto getInstitution() {
