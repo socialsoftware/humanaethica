@@ -174,6 +174,8 @@ public class Activity {
 
         this.setState(State.SUSPENDED);
         this.suspensionJustification = justification;
+
+        suspensionJustificationTextSize();
     }
 
     public String getSuspensionJustification() {

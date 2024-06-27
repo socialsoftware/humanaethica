@@ -38,7 +38,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setState(state)
 
         when:
-        activity.suspend()
+        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         activity.getState() == resultState
@@ -58,7 +58,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setState(Activity.State.SUSPENDED)
 
         when:
-        activity.suspend()
+        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         def error = thrown(HEException)
