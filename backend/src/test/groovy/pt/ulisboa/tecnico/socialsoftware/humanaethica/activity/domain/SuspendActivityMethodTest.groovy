@@ -66,6 +66,31 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.getState() == Activity.State.SUSPENDED
     }
 
+    @Unroll
+    def "suspend activity with an invalid justification:#justification"() {
+        given: "activity"
+        institution.getActivities() >> []
+        def themes = []
+        activity = new Activity(activityDto, institution, themes)
+
+        when:
+        activity.suspend(justification)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        justification           || errorMessage
+        null                    || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
+        "too short"             || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
+        generateLongString()    || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
+    }
+
+    def generateLongString(){
+        return 'a'* 257
+    }
+
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }
