@@ -49,6 +49,7 @@ public enum ErrorMessage {
     PARTICIPATION_NOT_FOUND("Participation not found with id %d"),
     PARTICIPATION_RATING_BEFORE_END("Rate only after activity end"),
     PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE("Rating %d is not in the range 1 to 5"),
+    PARTICIPATION_REVIEW_LENGTH_INVALID("Invalid review with length %d"),
     PARTICIPATION_VOLUNTEER_IS_ALREADY_PARTICIPATING("The volunteer is already participating"),
     PARTICIPATION_REQUIRES_INFORMATION("Information about participation is required"),
     ASSESSMENT_VOLUNTEER_CAN_ASSESS_INSTITUTION_ONLY_ONCE("Volunteer has already assessed the institution"),

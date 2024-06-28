@@ -13,6 +13,7 @@ import spock.lang.Unroll
 
 import java.time.LocalDateTime
 
+
 @DataJpaTest
 class CreateParticipationMethodTest extends SpockTest {
     Activity activity = Mock()
@@ -21,13 +22,17 @@ class CreateParticipationMethodTest extends SpockTest {
     Participation otherParticipation = Mock()
     def participationDto
 
+    public static final int MAX_REVIEW_LENGTH = 256
+
+
     def setup() {
         given:
         participationDto = new ParticipationDto()
-        participationDto.rating = 4
+        participationDto.volunteerRating = 5
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
     }
 
-    def "create participation"() {
+    def "volunteer creates a participation"() {
         given:
         activity.getParticipations() >> [otherParticipation]
         activity.getNumberOfParticipatingVolunteers() >> 2
@@ -40,7 +45,39 @@ class CreateParticipationMethodTest extends SpockTest {
         def result = new Participation(activity, volunteer, participationDto)
 
         then: "checks results"
-        result.rating == 4
+        result.memberRating == null
+        result.memberReview ==  null
+        result.volunteerRating == 5
+        result.volunteerReview == VOLUNTEER_REVIEW
+        result.acceptanceDate.isBefore(LocalDateTime.now())
+        result.activity == activity
+        result.volunteer == volunteer
+        and: "check that it is added"
+        1 * activity.addParticipation(_)
+        1 * volunteer.addParticipation(_)
+    }
+
+    def "member creates a participation"() {
+        given:
+        participationDto.volunteerRating = null
+        participationDto.volunteerReview = null
+        participationDto.memberRating = 5
+        participationDto.memberReview = null
+        activity.getParticipations() >> [otherParticipation]
+        activity.getNumberOfParticipatingVolunteers() >> 2
+        activity.getApplicationDeadline() >> TWO_DAYS_AGO
+        activity.getEndingDate() >> ONE_DAY_AGO
+        activity.getParticipantsNumberLimit() >> 3
+        otherParticipation.getVolunteer() >> otherVolunteer
+
+        when:
+        def result = new Participation(activity, volunteer, participationDto)
+
+        then: "checks results"
+        result.memberRating == 5
+        result.memberReview ==  null
+        result.volunteerRating == null
+        result.volunteerReview == null
         result.acceptanceDate.isBefore(LocalDateTime.now())
         result.activity == activity
         result.volunteer == volunteer
@@ -75,7 +112,7 @@ class CreateParticipationMethodTest extends SpockTest {
         activity.getParticipantsNumberLimit() >> 3
         otherParticipation.getVolunteer() >> otherVolunteer
         and:
-        participationDto.rating = null
+        participationDto.memberRating = null
 
         when:
         new Participation(activity, volunteer, participationDto)
@@ -120,7 +157,7 @@ class CreateParticipationMethodTest extends SpockTest {
     }
 
     @Unroll
-    def "create participation and violate rating in range 1..5: rating=#rating"() {
+    def "create participation and violate member rating in range 1..5: rating=#rating"() {
         given:
         activity.getParticipations() >> [otherParticipation]
         activity.getNumberOfParticipatingVolunteers() >> 2
@@ -129,7 +166,7 @@ class CreateParticipationMethodTest extends SpockTest {
         activity.getParticipantsNumberLimit() >> 3
         otherParticipation.getVolunteer() >> otherVolunteer
         and:
-        participationDto.rating = rating
+        participationDto.memberRating = rating
 
         when:
         new Participation(activity, volunteer, participationDto)
@@ -140,6 +177,75 @@ class CreateParticipationMethodTest extends SpockTest {
 
         where:
         rating << [-5,0,6,20]
+    }
+
+    @Unroll
+    def "create participation and violate volunteer rating in range 1..5: rating=#rating"() {
+        given:
+        activity.getParticipations() >> [otherParticipation]
+        activity.getNumberOfParticipatingVolunteers() >> 2
+        activity.getApplicationDeadline() >> TWO_DAYS_AGO
+        activity.getEndingDate() >> ONE_DAY_AGO
+        activity.getParticipantsNumberLimit() >> 3
+        otherParticipation.getVolunteer() >> otherVolunteer
+        and:
+        participationDto.volunteerRating = rating
+
+        when:
+        new Participation(activity, volunteer, participationDto)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
+
+        where:
+        rating << [-5,0,6,20]
+    }
+
+    @Unroll
+    def "create participation and violate volunteer review length: review=#review"() {
+        given:
+        activity.getParticipations() >> [otherParticipation]
+        activity.getNumberOfParticipatingVolunteers() >> 2
+        activity.getApplicationDeadline() >> TWO_DAYS_AGO
+        activity.getEndingDate() >> ONE_DAY_AGO
+        activity.getParticipantsNumberLimit() >> 3
+        otherParticipation.getVolunteer() >> otherVolunteer
+        and:
+        participationDto.volunteerReview = review
+
+        when:
+        new Participation(activity, volunteer, participationDto)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+
+        where:
+        review << ["", "123456789","a".repeat(MAX_REVIEW_LENGTH + 1)]
+    }
+
+    @Unroll
+    def "create participation and violate member review length: review=#review"() {
+        given:
+        activity.getParticipations() >> [otherParticipation]
+        activity.getNumberOfParticipatingVolunteers() >> 2
+        activity.getApplicationDeadline() >> TWO_DAYS_AGO
+        activity.getEndingDate() >> ONE_DAY_AGO
+        activity.getParticipantsNumberLimit() >> 3
+        otherParticipation.getVolunteer() >> otherVolunteer
+        and:
+        participationDto.memberReview = review
+
+        when:
+        new Participation(activity, volunteer, participationDto)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+
+        where:
+        review << ["", "123456789","a".repeat(MAX_REVIEW_LENGTH + 1)]
     }
 
     @TestConfiguration

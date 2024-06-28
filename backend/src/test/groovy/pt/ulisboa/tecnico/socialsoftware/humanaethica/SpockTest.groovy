@@ -263,6 +263,10 @@ class SpockTest extends Specification {
 
     // participation
 
+    public static final String MEMBER_REVIEW = "The volunteer did an excellent job."
+    public static final String VOLUNTEER_REVIEW = "The activity was fun."
+
+
     @Autowired
     ParticipationService participationService
     @Autowired

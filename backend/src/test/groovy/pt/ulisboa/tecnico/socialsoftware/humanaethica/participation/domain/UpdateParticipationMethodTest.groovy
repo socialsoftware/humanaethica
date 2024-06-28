@@ -23,39 +23,78 @@ class UpdateParticipationMethodTest extends SpockTest {
     def participationDto
     def participationDtoUpdated
 
+    public static final int MAX_REVIEW_LENGTH = 100
+
+
     def setup() {
         given:
-        participationDto = new ParticipationDto()
-        participationDto.rating = 4
+
         activity.getParticipations() >> [otherParticipation]
         activity.getNumberOfParticipatingVolunteers() >> 2
         activity.getApplicationDeadline() >> TWO_DAYS_AGO
         activity.getEndingDate() >> ONE_DAY_AGO
         activity.getParticipantsNumberLimit() >> 3
-        participation = new Participation(activity, volunteer, participationDto)
         participationDtoUpdated = new ParticipationDto()
     }
 
-    def "update participation"() {
+    def "volunteer updates a participation"() {
         given:
-        participationDtoUpdated.rating = 3
+        participationDto = new ParticipationDto()
+        participationDto.memberRating = 4
+        participation = new Participation(activity, volunteer, participationDto)
+
+        participationDtoUpdated.volunteerRating = 3
+        participationDtoUpdated.volunteerReview = VOLUNTEER_REVIEW
+
 
         when:
         participation.update(participationDtoUpdated)
 
         then: "checks results"
-        participation.rating == 3
+        participation.volunteerRating == 3
+        participation.volunteerReview == VOLUNTEER_REVIEW
+        participation.memberRating == 4
+        participation.memberReview == null
         participation.acceptanceDate.isBefore(LocalDateTime.now())
         participation.activity == activity
         participation.volunteer == volunteer
-
     }
 
+
+    def "member updates a participation"() {
+        given:
+        participationDto = new ParticipationDto()
+        participationDto.memberRating = 4
+        participationDto.volunteerRating = 3
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
+        participation = new Participation(activity, volunteer, participationDto)
+
+        participationDtoUpdated.memberReview = MEMBER_REVIEW
+
+        when:
+        participation.update(participationDtoUpdated)
+
+        then: "checks results"
+        participation.volunteerRating == 3
+        participation.volunteerReview == VOLUNTEER_REVIEW
+        participation.memberRating == 4
+        participation.memberReview == MEMBER_REVIEW
+        participation.acceptanceDate.isBefore(LocalDateTime.now())
+        participation.activity == activity
+        participation.volunteer == volunteer
+    }
 
     @Unroll
     def "update participation and violate rating in range 1..5: rating=#rating"(){
         given:
-        participationDtoUpdated.rating = rating
+        participationDto = new ParticipationDto()
+        participationDto.volunteerRating = 3
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
+        participation = new Participation(activity, volunteer, participationDto)
+
+        participationDtoUpdated.memberRating = rating
+        participationDtoUpdated.memberReview = MEMBER_REVIEW
+
 
         when:
         participation.update(participationDtoUpdated)
@@ -66,6 +105,29 @@ class UpdateParticipationMethodTest extends SpockTest {
 
         where:
         rating << [-5,0,6,20]
+    }
+
+    @Unroll
+    def "update participation and violate review length: review=#review"(){
+        given:
+        participationDto = new ParticipationDto()
+        participationDto.volunteerRating = 3
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
+        participation = new Participation(activity, volunteer, participationDto)
+
+        participationDtoUpdated.memberRating = 5
+        participationDtoUpdated.memberReview = review
+
+
+        when:
+        participation.update(participationDtoUpdated)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+
+        where:
+        review << ["", "123456789","a".repeat(MAX_REVIEW_LENGTH + 1)]
     }
 
     @TestConfiguration
