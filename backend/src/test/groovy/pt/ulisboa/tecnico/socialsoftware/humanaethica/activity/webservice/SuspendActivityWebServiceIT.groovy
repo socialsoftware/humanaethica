@@ -10,8 +10,11 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SuspendActivityWebServiceIT extends SpockTest {
@@ -99,5 +102,29 @@ class SuspendActivityWebServiceIT extends SpockTest {
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.APPROVED
+    }
+
+    def "member not belonging to the activity tries to suspend it"() {
+        given:
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
+        institutionRepository.save(otherInstitution)
+        def otherMember = createMember(USER_1_NAME,USER_1_USERNAME,USER_1_PASSWORD,USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
+
+        when:
+        webClient.put()
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
+
+        then: "check response status"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
+        activityRepository.count() == 1
+
+        cleanup:
+        deleteAll()
     }
 }
