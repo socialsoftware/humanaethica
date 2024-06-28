@@ -272,9 +272,19 @@ class SpockTest extends Specification {
     @Autowired
     ParticipationRepository participationRepository
 
-    def createParticipation(activity, volunteer, rating) {
+    def createParticipationVolunteer(activity, volunteer, rating, review) {
         def participationDto = new ParticipationDto()
-        participationDto.setRating(rating)
+        participationDto.setVolunteerRating(rating)
+        participationDto.setVolunteerReview(review)
+        def participation = new Participation(activity, volunteer, participationDto)
+        participationRepository.save(participation)
+        return participation
+    }
+
+    def createParticipationMember(activity, volunteer, rating, review) {
+        def participationDto = new ParticipationDto()
+        participationDto.setMemberRating(rating)
+        participationDto.setMemberReview(review)
         def participation = new Participation(activity, volunteer, participationDto)
         participationRepository.save(participation)
         return participation

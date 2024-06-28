@@ -17,11 +17,16 @@ class CreateParticipationServiceTest extends SpockTest {
     public static final String EXIST = 'exist'
     public static final String NO_EXIST = 'noExist'
     def volunteer
+    def member
     def activity
+
+    public static final int MAX_REVIEW_LENGTH = 100
+
 
     def setup() {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
+        member = authUserService.loginDemoMemberAuth().getUser()
 
         def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,3,ACTIVITY_DESCRIPTION_1,
                 TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
@@ -30,35 +35,64 @@ class CreateParticipationServiceTest extends SpockTest {
         activityRepository.save(activity)
     }
 
-    def 'create participant' () {
+    def 'create participation as member' () {
         given:
         def participationDto = new ParticipationDto()
-        participationDto.rating = 5
+        participationDto.memberRating = 5
         participationDto.volunteerId = volunteer.id
 
         when:
-        def result = participationService.createParticipation(activity.id, participationDto)
+        def result = participationService.createParticipation(activity.id, participationDto,member.id)
 
         then:
-        result.rating == 5
+        result.memberRating == 5
+        result.memberReview == null
         and:
         participationRepository.findAll().size() == 1
         def storedParticipation = participationRepository.findAll().get(0)
-        storedParticipation.rating == 5
+        storedParticipation.memberRating == 5
+        storedParticipation.memberReview == null
         storedParticipation.acceptanceDate.isBefore(LocalDateTime.now())
         storedParticipation.activity.id == activity.id
         storedParticipation.volunteer.id == volunteer.id
     }
 
+    def 'create participation as volunteer' () {
+        given:
+        def participationDto = new ParticipationDto()
+        participationDto.volunteerRating = 5
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
+        participationDto.volunteerId = volunteer.id
+
+        when:
+        def result = participationService.createParticipation(activity.id, participationDto,volunteer.id)
+
+        then:
+        result.volunteerRating  == 5
+        result.volunteerReview == VOLUNTEER_REVIEW
+        and:
+        participationRepository.findAll().size() == 1
+        def storedParticipation = participationRepository.findAll().get(0)
+        storedParticipation.volunteerRating == 5
+        storedParticipation.volunteerReview == VOLUNTEER_REVIEW
+        storedParticipation.acceptanceDate.isBefore(LocalDateTime.now())
+        storedParticipation.activity.id == activity.id
+        storedParticipation.volunteer.id == volunteer.id
+    }
+
+
+
+
     @Unroll
     def 'invalid arguments: volunteerId=#volunteerId | activityId=#activityId'() {
         given:
         def participationDto = new ParticipationDto()
-        participationDto.rating = 5
+        participationDto.memberRating = 5
+        participationDto.memberReview = MEMBER_REVIEW
         participationDto.volunteerId = getVolunteerId(volunteerId)
 
         when:
-        participationService.createParticipation(getActivityId(activityId), getParticipationDto(participationValue,participationDto))
+        participationService.createParticipation(getActivityId(activityId), getParticipationDto(participationValue,participationDto),volunteer.id)
 
         then:
         def error = thrown(HEException)
@@ -73,6 +107,35 @@ class CreateParticipationServiceTest extends SpockTest {
         EXIST       | null       | EXIST              || ErrorMessage.ACTIVITY_NOT_FOUND
         EXIST       | NO_EXIST   | EXIST              || ErrorMessage.ACTIVITY_NOT_FOUND
         EXIST       | EXIST      | null               || ErrorMessage.PARTICIPATION_REQUIRES_INFORMATION
+    }
+
+    @Unroll
+    def 'invalid arguments: rating=#rating | review=#review'() {
+        given:
+        def participationDto = new ParticipationDto()
+        participationDto.volunteerReview = review
+        participationDto.volunteerRating = rating
+        participationDto.volunteerId = volunteer.id
+
+        when:
+        participationService.createParticipation(activity.id, participationDto, volunteer.id)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+        and:
+        participationRepository.findAll().size() == 0
+
+        where:
+        review                              | rating || errorMessage
+        "A".repeat(MAX_REVIEW_LENGTH + 1)   | 5      || ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+        ""                                  | 5      || ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+        VOLUNTEER_REVIEW                    | -1     || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
+        VOLUNTEER_REVIEW                    | 10     || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
+        VOLUNTEER_REVIEW                    | null   || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
+
+
+
     }
 
     def getVolunteerId(volunteerId) {

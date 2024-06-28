@@ -22,7 +22,7 @@ class CreateParticipationMethodTest extends SpockTest {
     Participation otherParticipation = Mock()
     def participationDto
 
-    public static final int MAX_REVIEW_LENGTH = 256
+    public static final int MAX_REVIEW_LENGTH = 100
 
 
     def setup() {

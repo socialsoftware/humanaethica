@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.web.servlet.view.RedirectView
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
@@ -24,6 +25,7 @@ class UpdateParticipationServiceTest extends SpockTest {
     def activity
     def participation
     def volunteer
+    def member
 
     def setup() {
         def institution = institutionService.getDemoInstitution()
@@ -35,26 +37,31 @@ class UpdateParticipationServiceTest extends SpockTest {
         activityRepository.save(activity)
 
         volunteer = createVolunteer(USER_1_NAME,USER_1_PASSWORD,USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        member = authUserService.loginDemoMemberAuth().getUser()
 
-        participation = createParticipation(activity,volunteer,5)
+        participation = createParticipationVolunteer(activity,volunteer,5,VOLUNTEER_REVIEW)
 
     }
 
-    def 'update participation' () {
+    def 'update participation with member review' () {
         given:
         def updatedParticipationDto = new ParticipationDto()
-        updatedParticipationDto.rating = 1
+        updatedParticipationDto.memberReview = MEMBER_REVIEW
 
         when:
-        def result = participationService.updateParticipation(participation.id, updatedParticipationDto)
+        def result = participationService.updateParticipation(participation.id, updatedParticipationDto, member.id)
 
         then: "the returned data is correct"
-        result.rating == 1
+        result.memberReview == MEMBER_REVIEW
+        result.volunteerRating == 5
+        result.volunteerReview == VOLUNTEER_REVIEW
         and: "the participation is stored"
         participationRepository.findAll().size() == 1
         and: "contains the correct data"
         def storedParticipation = participationRepository.findAll().get(0)
-        storedParticipation.rating == 1
+        storedParticipation.memberReview == MEMBER_REVIEW
+        storedParticipation.volunteerRating == 5
+        storedParticipation.volunteerReview == VOLUNTEER_REVIEW
         storedParticipation.acceptanceDate.isBefore(LocalDateTime.now())
         storedParticipation.activity.id == activity.id
         storedParticipation.volunteer.id == volunteer.id
@@ -62,14 +69,15 @@ class UpdateParticipationServiceTest extends SpockTest {
     }
 
     @Unroll
-    def 'invalid arguments: rating=#rating | participationId=#participationId'() {
+    def 'invalid arguments: rating=#rating | review=#review |participationId=#participationId'() {
         given:
         def updatedParticipationDto = new ParticipationDto()
-        updatedParticipationDto.rating = rating
+        updatedParticipationDto.memberRating = rating
+        updatedParticipationDto.memberReview = review
 
 
         when:
-        participationService.updateParticipation(getParticipationId(participationId), updatedParticipationDto)
+        participationService.updateParticipation(getParticipationId(participationId), updatedParticipationDto, member.id)
 
         then:
         def error = thrown(HEException)
@@ -78,11 +86,13 @@ class UpdateParticipationServiceTest extends SpockTest {
         participationRepository.findAll().size() == 1
 
         where:
-        rating          | participationId   || errorMessage
-        null            | EXIST             || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
-        -2              | EXIST             || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
-        3               | null              || ErrorMessage.PARTICIPATION_NOT_FOUND
-        3               | NO_EXIST          || ErrorMessage.PARTICIPATION_NOT_FOUND
+        rating          | participationId   | review          || errorMessage
+        -2              | EXIST             | MEMBER_REVIEW   || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
+        3               | null              | MEMBER_REVIEW   || ErrorMessage.PARTICIPATION_NOT_FOUND
+        3               | NO_EXIST          | MEMBER_REVIEW   || ErrorMessage.PARTICIPATION_NOT_FOUND
+        3               | EXIST             | ""              || ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+        3               | EXIST             | "a".repeat(110) || ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
+
     }
 
     def getParticipationId(participationId){
