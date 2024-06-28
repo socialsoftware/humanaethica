@@ -34,6 +34,7 @@ public class Activity {
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
     private String suspensionJustification;
+    private LocalDateTime suspensionDate;
     @Enumerated(EnumType.STRING)
     private Activity.State state = Activity.State.APPROVED;
     @ManyToMany (fetch = FetchType.EAGER)
@@ -174,12 +175,18 @@ public class Activity {
 
         this.setState(State.SUSPENDED);
         this.suspensionJustification = justification;
+        this.suspensionDate = DateHandler.now();
 
         suspensionJustificationTextSize();
+        suspensionAfterEnd();
     }
 
     public String getSuspensionJustification() {
         return this.suspensionJustification;
+    }
+
+    public LocalDateTime getSuspensionDate() {
+        return this.suspensionDate;
     }
 
     public List<Participation> getParticipations() {
@@ -297,6 +304,7 @@ public class Activity {
         themesAreApproved();
         nameIsUnique();
         suspensionJustificationTextSize();
+        suspensionAfterEnd();
     }
 
     private void nameIsRequired() {
@@ -381,6 +389,12 @@ public class Activity {
         var textSize = this.suspensionJustification.length();
         if (textSize < MIN_JUSTIFICATION_SIZE || textSize > MAX_JUSTIFICATION_SIZE) {
             throw new HEException(ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID);
+        }
+    }
+
+    private void suspensionAfterEnd() {
+        if (this.suspensionDate != null && this.suspensionDate.isAfter(this.endingDate)) {
+            throw new HEException(ACTIVITY_SUSPENSION_AFTER_END);
         }
     }
 }

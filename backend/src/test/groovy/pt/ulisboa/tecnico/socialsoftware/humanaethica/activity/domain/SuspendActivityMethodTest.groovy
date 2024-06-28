@@ -87,6 +87,21 @@ class SuspendActivityMethodTest extends SpockTest {
         generateLongString()    || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
     }
 
+    def "suspend activity after the ending date"() {
+        given: "activity"
+        institution.getActivities() >> []
+        def themes = []
+        activity = new Activity(activityDto, institution, themes)
+        activity.setEndingDate(ONE_DAY_AGO)
+
+        when:
+        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.ACTIVITY_SUSPENSION_AFTER_END
+    }
+
     def generateLongString(){
         return 'a'* 257
     }
