@@ -127,4 +127,24 @@ class SuspendActivityWebServiceIT extends SpockTest {
         cleanup:
         deleteAll()
     }
+
+    def "member suspends activity with wrong id"() {
+        given:
+        demoMemberLogin()
+
+        when:
+        webClient.put()
+                .uri('/activities/' + "222" + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
+
+        then: "error"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
+        activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.APPROVED
+    }
 }
