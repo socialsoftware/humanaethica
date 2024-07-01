@@ -17,4 +17,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
 
     @Query("SELECT e FROM Enrollment e WHERE e.volunteer.id = :userId")
     List<Enrollment> getEnrollmentsForVolunteerId(Integer userId);
+
+    @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM Enrollment e WHERE e.activity.id = :activityId AND e.volunteer.id = :volunteerId) THEN TRUE ELSE FALSE END")
+    boolean existsByActivityIdAndVolunteerId(Integer activityId, Integer volunteerId);
+
 }

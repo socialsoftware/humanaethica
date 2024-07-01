@@ -30,15 +30,17 @@ public class ParticipationController {
     }
 
     @PostMapping("/activities/{activityId}/participations")
-    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#activityId, 'ACTIVITY.MEMBER')")
-    public ParticipationDto createParticipation(@PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto) {
-        return participationService.createParticipation(activityId, participationDto);
+    @PreAuthorize("(hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER')) or (hasRole('ROLE_VOLUNTEER') and hasPermission(#activityId, 'PARTICIPATION.CREATOR'))")
+    public ParticipationDto createParticipation(@PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto, Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return participationService.createParticipation(activityId, participationDto, userId);
     }
 
     @PutMapping("/participations/{participationId}")
-    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#participationId, 'PARTICIPATION.MANAGER')")
-    public ParticipationDto updateParticipation(@PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto) {
-        return participationService.updateParticipation(participationId, participationDto);
+    @PreAuthorize("(hasRole('ROLE_MEMBER') and hasPermission(#participationId, 'PARTICIPATION.MANAGER')) or (hasRole('ROLE_VOLUNTEER') and hasPermission(#participationId, 'PARTICIPATION.VOLUNTEER'))")
+    public ParticipationDto updateParticipation(@PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto, Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return participationService.updateParticipation(participationId, participationDto, userId);
     }
 
     @DeleteMapping("/participations/{participationId}")

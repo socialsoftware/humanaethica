@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
@@ -52,6 +53,7 @@ public class ParticipationService {
     public ParticipationDto updateParticipation(Integer participationId, ParticipationDto participationDto, Integer userid) {
         if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
+
 
         if (userid == participationDto.getVolunteerId()){
             if (participationDto.getMemberReview() != null) throw new HEException(PARTICIPATION_MEMBER_REVIEW_NOT_ALLOWED);
