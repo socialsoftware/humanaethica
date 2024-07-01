@@ -20,7 +20,6 @@ class CreateParticipationServiceTest extends SpockTest {
     def member
     def activity
 
-    public static final int MAX_REVIEW_LENGTH = 100
 
 
     def setup() {
@@ -79,9 +78,6 @@ class CreateParticipationServiceTest extends SpockTest {
         storedParticipation.activity.id == activity.id
         storedParticipation.volunteer.id == volunteer.id
     }
-
-
-
 
     @Unroll
     def 'invalid arguments: volunteerId=#volunteerId | activityId=#activityId'() {

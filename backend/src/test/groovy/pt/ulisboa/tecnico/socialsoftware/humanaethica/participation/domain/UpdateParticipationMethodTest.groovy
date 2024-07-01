@@ -23,8 +23,6 @@ class UpdateParticipationMethodTest extends SpockTest {
     def participationDto
     def participationDtoUpdated
 
-    public static final int MAX_REVIEW_LENGTH = 100
-
 
     def setup() {
         given:
