@@ -39,9 +39,17 @@ class GetParticipationsByActivityWebServiceIT extends SpockTest {
 
         def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+
+        def participationDto1 = new ParticipationDto()
+        participationDto1.volunteerRating = 1
+        participationDto1.volunteerReview = VOLUNTEER_REVIEW
+        def participationDto2 = new ParticipationDto()
+        participationDto2.volunteerRating = 2
+        participationDto2.volunteerReview = VOLUNTEER_REVIEW
+
         and:
-        createParticipation(activity, volunteerOne, 1)
-        createParticipation(activity, volunteerTwo, 2)
+        createParticipation(activity, volunteerOne, participationDto1)
+        createParticipation(activity, volunteerTwo, participationDto2)
     }
 
     def 'member gets two participations'() {
@@ -59,8 +67,8 @@ class GetParticipationsByActivityWebServiceIT extends SpockTest {
 
         then:
         response.size() == 2
-        response.get(0).rating == 1
-        response.get(1).rating == 2
+        response.get(0).volunteerRating == 1
+        response.get(1).volunteerRating == 2
     }
 
     def 'member of another institution cannot get participations'() {

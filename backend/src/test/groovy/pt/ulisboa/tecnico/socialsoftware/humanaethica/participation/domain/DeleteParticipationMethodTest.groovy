@@ -25,6 +25,7 @@ class DeleteParticipationMethodTest extends SpockTest {
     def volunteer
     def participation
     def otherParticipation
+    def participationDto
 
     def setup() {
         otherActivity.getName() >> ACTIVITY_NAME_2
@@ -45,9 +46,12 @@ class DeleteParticipationMethodTest extends SpockTest {
         and: "a volunteer"
         volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         and: "a participation"
-        def participationDto
         participationDto = new ParticipationDto()
-        participationDto.rating = 4
+        participationDto.memberRating = 4
+        participationDto.memberReview= MEMBER_REVIEW
+        participationDto.volunteerRating= 5
+        participationDto.volunteerReview= VOLUNTEER_REVIEW
+
         participation = new Participation(activity, volunteer, participationDto)
     }
 
@@ -64,9 +68,6 @@ class DeleteParticipationMethodTest extends SpockTest {
     def "delete one of multiple participations in activity"() {
         given: "another participation for the same activity"
         def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def participationDto
-        participationDto = new ParticipationDto()
-        participationDto.rating = 4
         otherParticipation = new Participation(activity, otherVolunteer, participationDto)
 
         when: "one participation is deleted"
@@ -90,9 +91,11 @@ class DeleteParticipationMethodTest extends SpockTest {
         activityDto.endingDate = DateHandler.toISOString(ONE_DAY_AGO)
         activityDto.applicationDeadline = DateHandler.toISOString(LocalDateTime.now().minusDays(3))
         def otherActivity = new Activity(activityDto, institution, themes)
-        def participationDto
         participationDto = new ParticipationDto()
-        participationDto.rating = 4
+        participationDto.memberRating = 4
+        participationDto.memberReview= MEMBER_REVIEW
+        participationDto.volunteerRating= 5
+        participationDto.volunteerReview= VOLUNTEER_REVIEW
         otherParticipation = new Participation(otherActivity, volunteer, participationDto)
 
 
