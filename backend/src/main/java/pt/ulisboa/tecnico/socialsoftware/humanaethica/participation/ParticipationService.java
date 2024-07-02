@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
@@ -48,9 +50,18 @@ public class ParticipationService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ParticipationDto updateParticipation(Integer participationId, ParticipationDto participationDto) {
+    public ParticipationDto updateParticipation(Integer participationId, ParticipationDto participationDto, Integer userid) {
         if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
+
+
+        if (userid == participationDto.getVolunteerId()){
+            if (participationDto.getMemberReview() != null) throw new HEException(PARTICIPATION_MEMBER_REVIEW_NOT_ALLOWED);
+            if (participationDto.getMemberRating() != null) throw new HEException(PARTICIPATION_MEMBER_REVIEW_NOT_ALLOWED);
+        } else {
+            if (participationDto.getVolunteerRating() != null) throw new HEException(PARTICIPATION_VOLUNTEER_REVIEW_NOT_ALLOWED);
+            if (participationDto.getVolunteerReview() != null) throw new HEException(PARTICIPATION_VOLUNTEER_REVIEW_NOT_ALLOWED);
+        }
 
         participation.update(participationDto);
 
@@ -59,8 +70,9 @@ public class ParticipationService {
 
 
 
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ParticipationDto createParticipation(Integer activityId, ParticipationDto participationDto) {
+    public ParticipationDto createParticipation(Integer activityId, ParticipationDto participationDto,Integer userid) {
         if (participationDto == null) throw  new HEException(PARTICIPATION_REQUIRES_INFORMATION);
 
         if (participationDto.getVolunteerId() == null) throw new HEException(USER_NOT_FOUND);
@@ -68,6 +80,14 @@ public class ParticipationService {
 
         if (activityId == null) throw  new HEException(ACTIVITY_NOT_FOUND);
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
+
+        if (userid == participationDto.getVolunteerId()){
+            if (participationDto.getMemberReview() != null) throw new HEException(PARTICIPATION_MEMBER_REVIEW_NOT_ALLOWED);
+            if (participationDto.getMemberRating() != null) throw new HEException(PARTICIPATION_MEMBER_REVIEW_NOT_ALLOWED);
+        } else {
+            if (participationDto.getVolunteerRating() != null) throw new HEException(PARTICIPATION_VOLUNTEER_REVIEW_NOT_ALLOWED);
+            if (participationDto.getVolunteerReview() != null) throw new HEException(PARTICIPATION_VOLUNTEER_REVIEW_NOT_ALLOWED);
+        }
 
         Participation participation = new Participation(activity, volunteer, participationDto);
         participationRepository.save(participation);

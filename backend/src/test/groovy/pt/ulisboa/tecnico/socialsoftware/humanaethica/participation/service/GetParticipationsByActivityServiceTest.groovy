@@ -8,12 +8,16 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
 @DataJpaTest
 class GetParticipationsByActivityServiceTest extends SpockTest {
     def activity
     def otherActivity
+    def participationDto1
+    def participationDto2
+
 
     def setup() {
         def institution = institutionService.getDemoInstitution()
@@ -27,6 +31,15 @@ class GetParticipationsByActivityServiceTest extends SpockTest {
         activityDto.name = ACTIVITY_NAME_2
         otherActivity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(otherActivity)
+
+        participationDto1 = new ParticipationDto()
+        participationDto1.volunteerRating = 1
+        participationDto1.volunteerReview = VOLUNTEER_REVIEW
+        participationDto2 = new ParticipationDto()
+        participationDto2.volunteerRating = 2
+        participationDto2.volunteerReview = VOLUNTEER_REVIEW
+
+
     }
 
     def "get two participations of the same activity"() {
@@ -34,31 +47,31 @@ class GetParticipationsByActivityServiceTest extends SpockTest {
         def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         and:
-        createParticipation(activity, volunteerOne, 1)
-        createParticipation(activity, volunteerTwo, 2)
+        createParticipation(activity, volunteerOne, participationDto1)
+        createParticipation(activity, volunteerTwo, participationDto2)
 
         when:
         def participations = participationService.getParticipationsByActivity(activity.id)
 
         then:
         participations.size() == 2
-        participations.get(0).rating == 1
-        participations.get(1).rating == 2
+        participations.get(0).volunteerRating == 1
+        participations.get(1).volunteerRating == 2
     }
 
     def "get one participation of an activity"() {
         given:
         def volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
         and:
-        createParticipation(activity, volunteer, 1)
-        createParticipation(otherActivity, volunteer, 2)
+        createParticipation(activity, volunteer, participationDto1)
+        createParticipation(otherActivity, volunteer, participationDto1)
 
         when:
         def participations = participationService.getParticipationsByActivity(activity.id)
 
         then:
         participations.size() == 1
-        participations.get(0).rating == 1
+        participations.get(0).volunteerRating == 1
     }
 
     def "activity does not exist or is null: activityId=#activityId"() {

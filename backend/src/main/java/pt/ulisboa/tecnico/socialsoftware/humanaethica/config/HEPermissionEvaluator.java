@@ -56,6 +56,15 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
                     Assessment assessment = assessmentRepository.findById(id).orElse(null);
                     if (assessment == null) return false;
                     return assessment.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
+                case "PARTICIPATION.VOLUNTEER":
+                    Participation participation1 = participationRepository.findById(id).orElse(null);
+                    if (participation1 == null) return false;
+                    return participation1.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
+                case "PARTICIPATION.CREATOR":
+                    Activity activityForParticipationWriter = activityRepository.findById(id).orElse(null);
+                    if (activityForParticipationWriter == null) return false;
+                    Volunteer volunteer = (Volunteer) authUser.getUser();
+                    return enrollmentRepository.existsByActivityIdAndVolunteerId(activityForParticipationWriter.getId(), volunteer.getId());
                 default:
                     return false;
             }

@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
 
@@ -19,7 +20,9 @@ class CreateParticipationWebServiceIT extends SpockTest {
     private int port
 
     def activity
-    def participationDto
+    def participationDtoMember
+    def participationDtoVolunteer
+
 
     def setup() {
         deleteAll()
@@ -30,17 +33,35 @@ class CreateParticipationWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,3,ACTIVITY_DESCRIPTION_1,
-                TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 3, ACTIVITY_DESCRIPTION_1,
+                NOW.plusDays(1), NOW.plusDays(2), NOW.plusDays(3), null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        participationDto = new ParticipationDto()
-        participationDto.rating = 5
-        participationDto.volunteerId = volunteer.id
+        def enrollmentDto = new EnrollmentDto()
+        enrollmentDto.volunteerId = volunteer.getId()
+        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
+        enrollmentDto.activityId = activity.id
+
+        enrollmentService.createEnrollment(volunteer.id, activity.id, enrollmentDto)
+
+        activity.setStartingDate(NOW.minusDays(4))
+        activity.setEndingDate(NOW.minusDays(3))
+        activity.setApplicationDeadline(NOW.minusDays(5))
+        activityRepository.save(activity)
+
+        participationDtoMember = new ParticipationDto()
+        participationDtoMember.memberRating = 5
+        participationDtoMember.memberReview = MEMBER_REVIEW
+        participationDtoMember.volunteerId = volunteer.id
+
+        participationDtoVolunteer = new ParticipationDto()
+        participationDtoVolunteer.volunteerRating = 5
+        participationDtoVolunteer.volunteerReview = VOLUNTEER_REVIEW
+        participationDtoVolunteer.volunteerId = volunteer.id
     }
 
     def 'member create participation'() {
@@ -51,17 +72,71 @@ class CreateParticipationWebServiceIT extends SpockTest {
         def response = webClient.post()
                 .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDto)
+                .bodyValue(participationDtoMember)
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
                 .block()
 
         then:
-        response.rating == 5
+        response.memberRating == 5
+        response.memberReview == MEMBER_REVIEW
         and:
         participationRepository.getParticipationsByActivityId(activity.id).size() == 1
         def storedParticipant = participationRepository.getParticipationsByActivityId(activity.id).get(0)
-        storedParticipant.rating == 5
+        storedParticipant.memberRating == 5
+        storedParticipant.memberReview == MEMBER_REVIEW
+
+
+        cleanup:
+        deleteAll()
+    }
+
+    def 'volunteer create participation'() {
+        given:
+        demoVolunteerLogin()
+
+        when:
+        def response = webClient.post()
+                .uri('/activities/' + activity.id + '/participations')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(participationDtoVolunteer)
+                .retrieve()
+                .bodyToMono(ParticipationDto.class)
+                .block()
+
+        then:
+        response.volunteerRating == 5
+        response.volunteerReview == VOLUNTEER_REVIEW
+        and:
+        participationRepository.getParticipationsByActivityId(activity.id).size() == 1
+        def storedParticipant = participationRepository.getParticipationsByActivityId(activity.id).get(0)
+        storedParticipant.volunteerRating == 5
+        storedParticipant.volunteerReview == VOLUNTEER_REVIEW
+
+
+        cleanup:
+        deleteAll()
+    }
+
+    def 'volunteer create participation with error'() {
+        given:
+        demoVolunteerLogin()
+        and:
+        participationDtoVolunteer.volunteerRating = 10
+
+        when:
+        def response = webClient.post()
+                .uri('/activities/' + activity.id + '/participations')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(participationDtoVolunteer)
+                .retrieve()
+                .bodyToMono(ParticipationDto.class)
+                .block()
+
+        then:
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.BAD_REQUEST
+        participationRepository.count() == 0
 
         cleanup:
         deleteAll()
@@ -71,13 +146,13 @@ class CreateParticipationWebServiceIT extends SpockTest {
         given:
         demoMemberLogin()
         and:
-        participationDto.rating = 10
+        participationDtoMember.memberRating = 10
 
         when:
         def response = webClient.post()
                 .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDto)
+                .bodyValue(participationDtoMember)
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
                 .block()
@@ -85,29 +160,57 @@ class CreateParticipationWebServiceIT extends SpockTest {
         then:
         def error = thrown(WebClientResponseException)
         error.statusCode == HttpStatus.BAD_REQUEST
-        enrollmentRepository.count() == 0
+        participationRepository.count() == 0
 
         cleanup:
         deleteAll()
     }
 
-    def 'volunteer cannot create participation'() {
+    def 'volunteer try to create participation with a member review'() {
         given:
         demoVolunteerLogin()
+        and:
+        participationDtoVolunteer.volunteerRating = 5
+        participationDtoVolunteer.memberReview = MEMBER_REVIEW
 
         when:
         def response = webClient.post()
                 .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDto)
+                .bodyValue(participationDtoVolunteer)
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
                 .block()
 
         then:
         def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.FORBIDDEN
-        enrollmentRepository.count() == 0
+        error.statusCode == HttpStatus.BAD_REQUEST
+        participationRepository.count() == 0
+
+        cleanup:
+        deleteAll()
+    }
+
+    def 'member try to create participation with a volunteer review'() {
+        given:
+        demoMemberLogin()
+        and:
+        participationDtoMember.memberRating = 5
+        participationDtoMember.volunteerReview = VOLUNTEER_REVIEW
+
+        when:
+        def response = webClient.post()
+                .uri('/activities/' + activity.id + '/participations')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(participationDtoMember)
+                .retrieve()
+                .bodyToMono(ParticipationDto.class)
+                .block()
+
+        then:
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.BAD_REQUEST
+        participationRepository.count() == 0
 
         cleanup:
         deleteAll()
@@ -121,7 +224,7 @@ class CreateParticipationWebServiceIT extends SpockTest {
         def response = webClient.post()
                 .uri('/activities/' + activity.id + '/participations')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDto)
+                .bodyValue(participationDtoMember)
                 .retrieve()
                 .bodyToMono(ParticipationDto.class)
                 .block()
@@ -129,7 +232,7 @@ class CreateParticipationWebServiceIT extends SpockTest {
         then:
         def error = thrown(WebClientResponseException)
         error.statusCode == HttpStatus.FORBIDDEN
-        enrollmentRepository.count() == 0
+        participationRepository.count() == 0
 
         cleanup:
         deleteAll()

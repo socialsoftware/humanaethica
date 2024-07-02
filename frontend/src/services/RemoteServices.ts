@@ -545,6 +545,7 @@ export default class RemoteServices {
       });
   }
 
+
   static async getActivityParticipations(
     activityId: number | null,
   ): Promise<Participation[]> {
