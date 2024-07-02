@@ -81,11 +81,11 @@ public class ActivityService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ActivityDto suspendActivity(Integer activityId) {
+    public ActivityDto suspendActivity(Integer activityId, String justification) {
         if (activityId == null) throw new HEException(ACTIVITY_NOT_FOUND);
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND));
 
-        activity.suspend();
+        activity.suspend(justification);
 
         return new ActivityDto(activity, true);
     }
