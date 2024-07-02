@@ -207,7 +207,7 @@ class SpockTest extends Specification {
     @Autowired
     ThemeService themeService
 
-    protected Theme createTheme(name, type, parent) {
+    def createTheme(name, type, parent) {
         def theme = new Theme(name, type, parent)
         themeRepository.save(theme)
         theme
@@ -229,7 +229,7 @@ class SpockTest extends Specification {
     @Autowired
     ActivityService activityService
 
-    protected ActivityDto createActivityDto(name, region, number, description, deadline, start, end, themesDto) {
+    def createActivityDto(name, region, number, description, deadline, start, end, themesDto) {
         def activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
@@ -290,7 +290,7 @@ class SpockTest extends Specification {
         def assessmentDto = new AssessmentDto()
         assessmentDto.setReview(review)
         def assessment = new Assessment(institution, volunteer, assessmentDto)
-        activityRepository.save(assessment)
+        assessmentRepository.save(assessment)
         return assessment
     }
 
