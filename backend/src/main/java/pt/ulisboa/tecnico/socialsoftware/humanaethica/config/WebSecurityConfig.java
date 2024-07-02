@@ -10,15 +10,15 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.JwtConfigurer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.JwtTokenFilter;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.JwtTokenProvider;
 
 @Configuration
@@ -42,8 +42,8 @@ public class WebSecurityConfig {
                     .authorizeHttpRequests((authorizeHttpRequests) ->
                             authorizeHttpRequests
                                     .requestMatchers(new AntPathRequestMatcher("/resources/**")).permitAll()
-                                    .anyRequest().permitAll())
-                    .apply(new JwtConfigurer(jwtTokenProvider));
+                                    .anyRequest().permitAll());
+            http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
             return http.build();
         } else {
             http
@@ -57,8 +57,8 @@ public class WebSecurityConfig {
                                     .requestMatchers(new AntPathRequestMatcher("/users/register/confirm")).permitAll()
                                     .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
                                     .requestMatchers(new AntPathRequestMatcher("/resources/**")).permitAll()
-                                    .anyRequest().authenticated())
-                    .apply(new JwtConfigurer(jwtTokenProvider));
+                                    .anyRequest().authenticated());
+            http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
             return http.build();
         }
     }
