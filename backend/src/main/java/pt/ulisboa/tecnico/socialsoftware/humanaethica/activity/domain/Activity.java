@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
@@ -44,6 +45,9 @@ public class Activity {
 
     @OneToMany(mappedBy = "activity")
     private List<Participation> participations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "activity")
+    private List<Report> reports = new ArrayList<>();
 
     public Activity() {
     }
@@ -205,6 +209,18 @@ public class Activity {
         if (this.state == State.REPORTED) {
             throw new HEException(ACTIVITY_ALREADY_REPORTED, this.name);
         }
+    }
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
+    }
+
+    public void addReport(Report report) {
+        this.reports.add(report);
     }
 
     public void validate() {
