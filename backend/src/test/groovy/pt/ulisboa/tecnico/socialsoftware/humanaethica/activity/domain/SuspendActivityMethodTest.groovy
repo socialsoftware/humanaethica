@@ -38,7 +38,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setState(state)
 
         when:
-        activity.suspend()
+        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         activity.getState() == resultState
@@ -58,12 +58,52 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setState(Activity.State.SUSPENDED)
 
         when:
-        activity.suspend()
+        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         def error = thrown(HEException)
         error.getErrorMessage() == ErrorMessage.ACTIVITY_ALREADY_SUSPENDED
         activity.getState() == Activity.State.SUSPENDED
+    }
+
+    @Unroll
+    def "suspend activity with an invalid justification:#justification"() {
+        given: "activity"
+        institution.getActivities() >> []
+        def themes = []
+        activity = new Activity(activityDto, institution, themes)
+
+        when:
+        activity.suspend(justification)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        justification           || errorMessage
+        null                    || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
+        "too short"             || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
+        generateLongString()    || ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID
+    }
+
+    def "suspend activity after the ending date"() {
+        given: "activity"
+        institution.getActivities() >> []
+        def themes = []
+        activity = new Activity(activityDto, institution, themes)
+        activity.setEndingDate(ONE_DAY_AGO)
+
+        when:
+        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == ErrorMessage.ACTIVITY_SUSPENSION_AFTER_END
+    }
+
+    def generateLongString(){
+        return 'a'* 257
     }
 
     @TestConfiguration
