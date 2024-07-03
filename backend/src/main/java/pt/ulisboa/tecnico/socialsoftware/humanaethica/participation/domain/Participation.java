@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain;
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
@@ -45,20 +46,27 @@ public class Participation {
         verifyInvariants();
     }
 
-    public void update(ParticipationDto participationDto) {
-        if (participationDto.getVolunteerReview() != null) {
-            setVolunteerReview(participationDto.getVolunteerReview());
+    public void updateMember(ParticipationDto participationDto){
+        if (participationDto.getMemberRating() == null){
+            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, -1);
         }
-        if (participationDto.getVolunteerRating() != null) {
-            setVolunteerRating(participationDto.getVolunteerRating());
+        if (participationDto.getMemberReview() == null){
+            throw new HEException(PARTICIPATION_REVIEW_LENGTH_INVALID);
         }
-        if (participationDto.getMemberRating() != null) {
-            setMemberRating(participationDto.getMemberRating());
-        }
-        if (participationDto.getMemberReview() != null) {
-            setMemberReview(participationDto.getMemberReview());
-        }
+        setMemberRating(participationDto.getMemberRating());
+        setMemberReview(participationDto.getMemberReview());
+        verifyInvariants();
+    }
 
+    public void updateVolunteer(ParticipationDto participationDto){
+        if (participationDto.getVolunteerRating() == null){
+            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, -1);
+        }
+        if (participationDto.getVolunteerReview() == null){
+            throw new HEException(PARTICIPATION_REVIEW_LENGTH_INVALID);
+        }
+        setVolunteerRating(participationDto.getVolunteerRating());
+        setVolunteerReview(participationDto.getVolunteerReview());
         verifyInvariants();
     }
 
@@ -169,10 +177,6 @@ public class Participation {
     }
 
     private void ratingBetweenOneAndFive() {
-        if (volunteerRating == null && memberRating == null) {
-            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, -1);
-        }
-
         if (volunteerRating != null && (volunteerRating < 1 || volunteerRating > 5)) {
             throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, volunteerRating);
         }
@@ -181,7 +185,6 @@ public class Participation {
             throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, memberRating);
         }
     }
-
 
     private void reviewSizeIsCorrect() {
         if (volunteerReview != null && (volunteerReview.length() < 10 || volunteerReview.length() > 100)) {

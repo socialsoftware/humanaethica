@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 
 
 @DataJpaTest
-class UpdateParticipationMethodTest extends SpockTest {
+class UpdateVolunteerRatingParticipationMethodTest extends SpockTest {
     Activity activity = Mock()
     Volunteer volunteer = Mock()
     Participation otherParticipation = Mock()
@@ -32,51 +32,27 @@ class UpdateParticipationMethodTest extends SpockTest {
         activity.getApplicationDeadline() >> TWO_DAYS_AGO
         activity.getEndingDate() >> ONE_DAY_AGO
         activity.getParticipantsNumberLimit() >> 3
+
+        participationDto = new ParticipationDto()
+        participationDto.volunteerRating = 4
+        participationDto.volunteerReview = MEMBER_REVIEW
+        participation = new Participation(activity, volunteer, participationDto)
+
         participationDtoUpdated = new ParticipationDto()
     }
 
     def "volunteer updates a participation"() {
         given:
-        participationDto = new ParticipationDto()
-        participationDto.memberRating = 4
-        participation = new Participation(activity, volunteer, participationDto)
-
         participationDtoUpdated.volunteerRating = 3
         participationDtoUpdated.volunteerReview = VOLUNTEER_REVIEW
 
 
         when:
-        participation.update(participationDtoUpdated)
+        participation.updateVolunteer(participationDtoUpdated)
 
         then: "checks results"
         participation.volunteerRating == 3
         participation.volunteerReview == VOLUNTEER_REVIEW
-        participation.memberRating == 4
-        participation.memberReview == null
-        participation.acceptanceDate.isBefore(LocalDateTime.now())
-        participation.activity == activity
-        participation.volunteer == volunteer
-    }
-
-
-    def "member updates a participation"() {
-        given:
-        participationDto = new ParticipationDto()
-        participationDto.memberRating = 4
-        participationDto.volunteerRating = 3
-        participationDto.volunteerReview = VOLUNTEER_REVIEW
-        participation = new Participation(activity, volunteer, participationDto)
-
-        participationDtoUpdated.memberReview = MEMBER_REVIEW
-
-        when:
-        participation.update(participationDtoUpdated)
-
-        then: "checks results"
-        participation.volunteerRating == 3
-        participation.volunteerReview == VOLUNTEER_REVIEW
-        participation.memberRating == 4
-        participation.memberReview == MEMBER_REVIEW
         participation.acceptanceDate.isBefore(LocalDateTime.now())
         participation.activity == activity
         participation.volunteer == volunteer
@@ -85,17 +61,11 @@ class UpdateParticipationMethodTest extends SpockTest {
     @Unroll
     def "update participation and violate rating in range 1..5: rating=#rating"(){
         given:
-        participationDto = new ParticipationDto()
-        participationDto.volunteerRating = 3
-        participationDto.volunteerReview = VOLUNTEER_REVIEW
-        participation = new Participation(activity, volunteer, participationDto)
-
-        participationDtoUpdated.memberRating = rating
-        participationDtoUpdated.memberReview = MEMBER_REVIEW
-
+        participationDtoUpdated.volunteerRating = rating
+        participationDtoUpdated.volunteerReview = VOLUNTEER_REVIEW
 
         when:
-        participation.update(participationDtoUpdated)
+        participation.updateVolunteer(participationDtoUpdated)
 
         then:
         def error = thrown(HEException)
@@ -108,17 +78,11 @@ class UpdateParticipationMethodTest extends SpockTest {
     @Unroll
     def "update participation and violate review length: review=#review"(){
         given:
-        participationDto = new ParticipationDto()
-        participationDto.volunteerRating = 3
-        participationDto.volunteerReview = VOLUNTEER_REVIEW
-        participation = new Participation(activity, volunteer, participationDto)
-
-        participationDtoUpdated.memberRating = 5
-        participationDtoUpdated.memberReview = review
-
+        participationDtoUpdated.volunteerRating = 5
+        participationDtoUpdated.volunteerReview = review
 
         when:
-        participation.update(participationDtoUpdated)
+        participation.updateVolunteer(participationDtoUpdated)
 
         then:
         def error = thrown(HEException)

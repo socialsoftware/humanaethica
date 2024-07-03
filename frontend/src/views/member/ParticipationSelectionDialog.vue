@@ -17,7 +17,7 @@
               <v-text-field
                 label="Rating"
                 :rules="[(v) => isNumberValid(v) || 'Rating between 1 and 5']"
-                v-model="editParticipation.rating"
+                v-model="editParticipation.memberRating"
                 data-cy="participantsNumberInput"
               ></v-text-field>
             </v-col>
@@ -87,7 +87,7 @@ export default class ParticipationSelectionDialog extends Vue {
       try {
         const result =
           this.editParticipation.id !== null
-            ? await RemoteServices.updateParticipation(
+            ? await RemoteServices.updateParticipationMember(
                 this.editParticipation.id,
                 this.editParticipation,
               )

@@ -586,12 +586,12 @@ export default class RemoteServices {
       });
   }
 
-  static async updateParticipation(
+  static async updateParticipationMember(
     participationId: number,
     participation: Participation,
   ) {
     return httpClient
-      .put(`/participations/${participationId}`, participation)
+      .put(`/participations/${participationId}/member`, participation)
       .then((response) => {
         return new Participation(response.data);
       })

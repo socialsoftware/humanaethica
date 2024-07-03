@@ -46,7 +46,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
         participationDto.volunteerId = volunteer.id
 
 
-        participationService.createParticipation(activity.id, participationDto,volunteer.id)
+        participationService.createParticipation(activity.id, participationDto)
 
         def storedParticipation = participationRepository.findAll().get(0)
         participationId = storedParticipation.id

@@ -4,7 +4,8 @@ export default class Participation {
   id: number | null = null;
   activityId: number | null = null;
   volunteerId: number | null = null;
-  rating!: number;
+  memberRating!: number;
+  memberReview!: string;
   acceptanceDate!: string;
 
   constructor(jsonObj?: Participation) {
@@ -12,7 +13,8 @@ export default class Participation {
       this.id = jsonObj.id;
       this.activityId = jsonObj.activityId;
       this.volunteerId = jsonObj.volunteerId;
-      this.rating = jsonObj.rating;
+      this.memberRating = jsonObj.memberRating;
+      this.memberReview = 'placeholder';
       this.acceptanceDate = ISOtoString(jsonObj.acceptanceDate);
     }
   }

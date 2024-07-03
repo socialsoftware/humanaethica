@@ -9,22 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler
-
-import java.time.LocalDateTime
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UpdateParticipationWebServiceIT extends SpockTest {
+class UpdateMemberParticipationWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
@@ -68,21 +60,20 @@ class UpdateParticipationWebServiceIT extends SpockTest {
         activity.setApplicationDeadline(NOW.minusDays(5))
         activityRepository.save(activity)
 
-        participationDtoMember = new ParticipationDto()
-        participationDtoMember.memberRating = 5
-        participationDtoMember.memberReview = MEMBER_REVIEW
-        participationDtoMember.volunteerId = volunteer.id
+        def participationDto = new ParticipationDto()
+        participationDto.memberRating = 5
+        participationDto.memberReview = MEMBER_REVIEW
+        participationDto.volunteerRating = 5
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
+        participationDto.volunteerId = volunteer.id
 
-        participationDtoVolunteer = new ParticipationDto()
-        participationDtoVolunteer.volunteerRating = 5
-        participationDtoVolunteer.volunteerReview = VOLUNTEER_REVIEW
-        participationDtoVolunteer.volunteerId = volunteer.id
+        participationService.createParticipation(activity.id,participationDto)
+        participationId = participationRepository.findAll().get(0).getId()
+
     }
 
-    def 'login as a member and update a participation created by a volunteer'() {
+    def 'login as a member and update a participation'() {
         given: 'a member'
-        participationService.createParticipation(activity.id,participationDtoVolunteer, volunteer.getId())
-        participationId = participationRepository.findAll().get(0).getId()
         demoMemberLogin()
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.memberRating = 1
@@ -92,7 +83,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the member edits the participation'
         def response = webClient.put()
-                .uri("/participations/" + participationId)
+                .uri("/participations/" + participationId + "/member")
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -109,47 +100,8 @@ class UpdateParticipationWebServiceIT extends SpockTest {
         def participation = participationRepository.findAll().get(0)
         participation.getMemberRating() == 1
         participation.getMemberReview() == "NEW REVIEW"
-        participation.getVolunteerRating() == 5
-        participation.getVolunteerReview() == VOLUNTEER_REVIEW
 
 
-
-        cleanup:
-        deleteAll()
-    }
-
-    def 'login as volunteer and update a participation created by a member'() {
-        participationService.createParticipation(activity.id,participationDtoMember, member.getId())
-        participationId = participationRepository.findAll().get(0).getId()
-        given: 'a volunteer'
-        demoVolunteerLogin()
-        def participationDtoUpdate = new ParticipationDto()
-        participationDtoUpdate.volunteerRating = 1
-        participationDtoUpdate.volunteerReview = "NEW REVIEW"
-        participationDtoUpdate.volunteerId = volunteer.id
-
-
-        when: 'the volunteer writes a review'
-        def response = webClient.put()
-                .uri("/participations/" + participationId)
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDtoUpdate)
-                .retrieve()
-                .bodyToMono(ParticipationDto.class)
-                .block()
-
-        then: "check response"
-        response.memberRating == 5
-        response.memberReview == MEMBER_REVIEW
-        response.volunteerRating == 1
-        response.volunteerReview == "NEW REVIEW"
-        and: 'check database'
-        participationRepository.count() == 1
-        def participation = participationRepository.findAll().get(0)
-        participation.getMemberRating() == 5
-        participation.getMemberReview() == MEMBER_REVIEW
-        participation.getVolunteerRating() == 1
-        participation.getVolunteerReview() == "NEW REVIEW"
 
 
         cleanup:
@@ -157,16 +109,15 @@ class UpdateParticipationWebServiceIT extends SpockTest {
     }
 
     def 'update with a rating of 10 abort and no changes'() {
-        participationService.createParticipation(activity.id,participationDtoMember, member.getId())
-        participationId = participationRepository.findAll().get(0).getId()
         given: 'a member'
         demoMemberLogin()
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.memberRating = 10
+        participationDtoUpdate.memberReview = MEMBER_REVIEW
 
         when: 'the member edits the participation'
         def response = webClient.put()
-                .uri("/participations/" + participationId)
+                .uri("/participations/" + participationId + "/member")
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -188,21 +139,19 @@ class UpdateParticipationWebServiceIT extends SpockTest {
     }
 
     def 'login as a member of another institution and try to edit a participation'() {
-        given: 'a member'
-        participationService.createParticipation(activity.id,participationDtoMember, member.getId())
-        participationId = participationRepository.findAll().get(0).getId()
+        given: 'a member from another institution'
         def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
         def otherMember = createMember(USER_1_NAME,USER_1_USERNAME,USER_1_PASSWORD,USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
         normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
         def participationDtoUpdate = new ParticipationDto()
-        participationDtoUpdate.memberRating = 1
+        participationDtoUpdate.memberRating = 3
         participationDtoUpdate.memberReview = "ANOTHER_REVIEW"
         participationDtoUpdate.volunteerId = volunteer.id
 
         when: 'the member tries to edit the participation'
         def response = webClient.put()
-                .uri("/participations/" + participationId)
+                .uri("/participations/" + participationId + "/member")
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -222,45 +171,9 @@ class UpdateParticipationWebServiceIT extends SpockTest {
         deleteAll()
     }
 
-    def 'log in as another volunteer and try to write a review for a participation by a different volunteer'() {
-        given: 'a volunteer'
-        participationService.createParticipation(activity.id,participationDtoMember, member.getId())
-        participationId = participationRepository.findAll().get(0).getId()
-        def volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        volunteer.authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
-        userRepository.save(volunteer)
-        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
-        def participationDtoUpdate = new ParticipationDto()
-        participationDtoUpdate.volunteerRating = 1
-        participationDtoUpdate.volunteerReview = "ANOTHER_REVIEW"
-        participationDtoUpdate.volunteerId = volunteer.id
-
-        when: 'the member tries to edit the participation'
-        def response = webClient.put()
-                .uri("/participations/" + participationId)
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDtoUpdate)
-                .retrieve()
-                .bodyToMono(ParticipationDto.class)
-                .block()
-
-        then: "check response status"
-        def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.FORBIDDEN
-        def participation = participationRepository.findAll().get(0)
-        participation.getVolunteerRating() == null
-        participation.getVolunteerReview() == null
-
-
-
-        cleanup:
-        deleteAll()
-    }
 
     def 'login as a admin and try to edit a participation'() {
         given: 'a demo'
-        participationService.createParticipation(activity.id,participationDtoMember, member.getId())
-        participationId = participationRepository.findAll().get(0).getId()
         demoAdminLogin()
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.memberRating = 1
@@ -269,7 +182,7 @@ class UpdateParticipationWebServiceIT extends SpockTest {
 
         when: 'the admin edits the participation'
         def response = webClient.put()
-                .uri("/participations/" + participationId)
+                .uri("/participations/" + participationId + "/member")
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .bodyValue(participationDtoUpdate)
                 .retrieve()
@@ -287,5 +200,36 @@ class UpdateParticipationWebServiceIT extends SpockTest {
         cleanup:
         deleteAll()
     }
+
+
+    def 'login as a volunteer and try to update a member rating'() {
+        given: 'a demo'
+        demoVolunteerLogin()
+        def participationDtoUpdate = new ParticipationDto()
+        participationDtoUpdate.memberRating = 1
+        participationDtoUpdate.memberReview = "ANOTHER_REVIEW"
+        participationDtoUpdate.volunteerId = volunteer.id
+
+        when: 'the admin edits the participation'
+        def response = webClient.put()
+                .uri("/participations/" + participationId + "/member")
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(participationDtoUpdate)
+                .retrieve()
+                .bodyToMono(ParticipationDto.class)
+                .block()
+
+        then: "check response status"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
+        def participation = participationRepository.findAll().get(0)
+        participation.getMemberRating() ==  5
+        participation.getMemberReview() == MEMBER_REVIEW
+
+
+        cleanup:
+        deleteAll()
+    }
+
 
 }

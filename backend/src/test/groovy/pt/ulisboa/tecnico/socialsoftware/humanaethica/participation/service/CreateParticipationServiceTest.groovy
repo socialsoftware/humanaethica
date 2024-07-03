@@ -38,19 +38,20 @@ class CreateParticipationServiceTest extends SpockTest {
         given:
         def participationDto = new ParticipationDto()
         participationDto.memberRating = 5
+        participationDto.memberReview = MEMBER_REVIEW
         participationDto.volunteerId = volunteer.id
 
         when:
-        def result = participationService.createParticipation(activity.id, participationDto,member.id)
+        def result = participationService.createParticipation(activity.id, participationDto)
 
         then:
         result.memberRating == 5
-        result.memberReview == null
+        result.memberReview == MEMBER_REVIEW
         and:
         participationRepository.findAll().size() == 1
         def storedParticipation = participationRepository.findAll().get(0)
         storedParticipation.memberRating == 5
-        storedParticipation.memberReview == null
+        storedParticipation.memberReview == MEMBER_REVIEW
         storedParticipation.acceptanceDate.isBefore(LocalDateTime.now())
         storedParticipation.activity.id == activity.id
         storedParticipation.volunteer.id == volunteer.id
@@ -64,7 +65,7 @@ class CreateParticipationServiceTest extends SpockTest {
         participationDto.volunteerId = volunteer.id
 
         when:
-        def result = participationService.createParticipation(activity.id, participationDto,volunteer.id)
+        def result = participationService.createParticipation(activity.id, participationDto)
 
         then:
         result.volunteerRating  == 5
@@ -88,7 +89,7 @@ class CreateParticipationServiceTest extends SpockTest {
         participationDto.volunteerId = getVolunteerId(volunteerId)
 
         when:
-        participationService.createParticipation(getActivityId(activityId), getParticipationDto(participationValue,participationDto),volunteer.id)
+        participationService.createParticipation(getActivityId(activityId), getParticipationDto(participationValue,participationDto))
 
         then:
         def error = thrown(HEException)
@@ -114,7 +115,7 @@ class CreateParticipationServiceTest extends SpockTest {
         participationDto.volunteerId = volunteer.id
 
         when:
-        participationService.createParticipation(activity.id, participationDto, volunteer.id)
+        participationService.createParticipation(activity.id, participationDto)
 
         then:
         def error = thrown(HEException)
@@ -128,10 +129,6 @@ class CreateParticipationServiceTest extends SpockTest {
         ""                                  | 5      || ErrorMessage.PARTICIPATION_REVIEW_LENGTH_INVALID
         VOLUNTEER_REVIEW                    | -1     || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
         VOLUNTEER_REVIEW                    | 10     || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
-        VOLUNTEER_REVIEW                    | null   || ErrorMessage.PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE
-
-
-
     }
 
     def getVolunteerId(volunteerId) {

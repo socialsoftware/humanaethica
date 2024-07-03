@@ -31,16 +31,20 @@ public class ParticipationController {
 
     @PostMapping("/activities/{activityId}/participations")
     @PreAuthorize("(hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER')) or (hasRole('ROLE_VOLUNTEER') and hasPermission(#activityId, 'PARTICIPATION.CREATOR'))")
-    public ParticipationDto createParticipation(@PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto, Principal principal) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return participationService.createParticipation(activityId, participationDto, userId);
+    public ParticipationDto createParticipation(@PathVariable Integer activityId, @Valid @RequestBody ParticipationDto participationDto) {
+        return participationService.createParticipation(activityId, participationDto);
     }
 
-    @PutMapping("/participations/{participationId}")
-    @PreAuthorize("(hasRole('ROLE_MEMBER') and hasPermission(#participationId, 'PARTICIPATION.MANAGER')) or (hasRole('ROLE_VOLUNTEER') and hasPermission(#participationId, 'PARTICIPATION.VOLUNTEER'))")
-    public ParticipationDto updateParticipation(@PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto, Principal principal) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return participationService.updateParticipation(participationId, participationDto, userId);
+    @PutMapping("/participations/{participationId}/volunteer")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER') and hasPermission(#participationId, 'PARTICIPATION.VOLUNTEER'))")
+    public ParticipationDto updateVolunteerRating(@PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto) {
+        return participationService.updateVolunteerRating(participationId, participationDto);
+    }
+
+    @PutMapping("/participations/{participationId}/member")
+    @PreAuthorize("(hasRole('ROLE_MEMBER')) and hasPermission(#participationId, 'PARTICIPATION.MANAGER')")
+    public ParticipationDto updateMemberRating(@PathVariable Integer participationId,@Valid @RequestBody ParticipationDto participationDto) {
+        return participationService.updateMemberRating(participationId, participationDto);
     }
 
     @DeleteMapping("/participations/{participationId}")

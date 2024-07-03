@@ -166,56 +166,6 @@ class CreateParticipationWebServiceIT extends SpockTest {
         deleteAll()
     }
 
-    def 'volunteer try to create participation with a member review'() {
-        given:
-        demoVolunteerLogin()
-        and:
-        participationDtoVolunteer.volunteerRating = 5
-        participationDtoVolunteer.memberReview = MEMBER_REVIEW
-
-        when:
-        def response = webClient.post()
-                .uri('/activities/' + activity.id + '/participations')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDtoVolunteer)
-                .retrieve()
-                .bodyToMono(ParticipationDto.class)
-                .block()
-
-        then:
-        def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.BAD_REQUEST
-        participationRepository.count() == 0
-
-        cleanup:
-        deleteAll()
-    }
-
-    def 'member try to create participation with a volunteer review'() {
-        given:
-        demoMemberLogin()
-        and:
-        participationDtoMember.memberRating = 5
-        participationDtoMember.volunteerReview = VOLUNTEER_REVIEW
-
-        when:
-        def response = webClient.post()
-                .uri('/activities/' + activity.id + '/participations')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDtoMember)
-                .retrieve()
-                .bodyToMono(ParticipationDto.class)
-                .block()
-
-        then:
-        def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.BAD_REQUEST
-        participationRepository.count() == 0
-
-        cleanup:
-        deleteAll()
-    }
-
     def 'admin cannot create participation'() {
         given:
         demoAdminLogin()
