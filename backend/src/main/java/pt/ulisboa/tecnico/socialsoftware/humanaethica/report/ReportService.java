@@ -27,7 +27,7 @@ public class ReportService {
     private ReportRepository reportRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<ReportDto> getAdministratorReports(Integer userId) {
+    public List<ReportDto> getVolunteerReports(Integer userId) {
         if (userId == null) throw new HEException(USER_NOT_FOUND);
 
         return reportRepository.getReportsForVolunteerId(userId).stream()

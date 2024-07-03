@@ -20,11 +20,11 @@ public class ReportController {
     @Autowired
     ReportService reportService;
 
-    @GetMapping("/reports/administrator")
+    @GetMapping("/volunteers/{volunteerId}/reports")
     @PreAuthorize("(hasRole('ROLE_ADMIN'))")
-    public List<ReportDto> getAdministratorReports(Principal principal) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return reportService.getAdministratorReports(userId);
+    public List<ReportDto> getVolunteerReports(Principal principal, @PathVariable Integer volunteerId) {
+    //    int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return reportService.getVolunteerReports(volunteerId);
     }
 
     @PostMapping("/activities/{activityId}/reports")
@@ -33,10 +33,6 @@ public class ReportController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return reportService.createReport(userId, activityId, reportDto);
     }
-
-
-
-
     
 }
  
