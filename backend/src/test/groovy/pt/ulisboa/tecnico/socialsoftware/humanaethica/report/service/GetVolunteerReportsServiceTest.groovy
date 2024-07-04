@@ -43,8 +43,55 @@ class GetVolunteerReportsServiceTest extends SpockTest {
 
         then:
         reports.size() == 2
-     //   reports.get(0).justification == REPORT_JUSTIFICATION_1
-       // reports.get(1).justification == REPORT_JUSTIFICATION_2
+        reports.get(0).justification == REPORT_JUSTIFICATION_1
+        reports.get(1).justification == REPORT_JUSTIFICATION_2
+    }
+
+    def "get one report of a volunteer"() {
+        given: 
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        and:
+        createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
+
+        when:
+        def reports = reportService.getVolunteerReports(volunteerOne.id)
+
+        then:
+        reports.size() == 1
+        reports.get(0).justification == REPORT_JUSTIFICATION_1
+    }
+
+    def "get two reports of the same same activity but diferent volunteer"() {
+        given: 
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        and:
+        createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
+        createReport(activityOne, volunteerTwo, REPORT_JUSTIFICATION_2)
+
+        when:
+        def reportsVolunteerOne = reportService.getVolunteerReports(volunteerOne.id)
+        def reportsVolunteerTwo = reportService.getVolunteerReports(volunteerTwo.id)
+
+        then:
+        reportsVolunteerOne.size() == 1
+        reportsVolunteerTwo.size() == 1
+        reportsVolunteerOne.get(0).justification == REPORT_JUSTIFICATION_1
+        reportsVolunteerTwo.get(0).justification == REPORT_JUSTIFICATION_2
+    }
+
+    def "volunteer does not exist or is null: volunteerId=#volunteerId"() {
+        when:
+        reportService.getVolunteerReports(volunteerId)
+
+        then:
+        def error = thrown(HEException)
+        error.getErrorMessage() == errorMessage
+
+        where:
+        volunteerId || errorMessage
+        null        || ErrorMessage.USER_NOT_FOUND
+        222         || ErrorMessage.USER_NOT_FOUND
     }
 
     @TestConfiguration

@@ -12,6 +12,8 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 
 @Entity
 public class Report {
+    private static final int JUSTIFICAITON_MAX_SIZE = 256;
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
@@ -83,7 +85,7 @@ public class Report {
     }
 
     private void justificationIsRequired() {
-        if (this.justification == null || this.justification.trim().length() > 256) {
+        if (this.justification == null || this.justification.trim().length() > JUSTIFICAITON_MAX_SIZE) {
             throw new HEException(REPORT_REQUIRES_JUSTIFICATION);
         }
     }
