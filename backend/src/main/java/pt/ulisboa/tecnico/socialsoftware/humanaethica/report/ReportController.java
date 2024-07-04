@@ -23,7 +23,6 @@ public class ReportController {
     @GetMapping("/volunteers/{volunteerId}/reports")
     @PreAuthorize("(hasRole('ROLE_ADMIN'))")
     public List<ReportDto> getVolunteerReports(Principal principal, @PathVariable Integer volunteerId) {
-    //    int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return reportService.getVolunteerReports(volunteerId);
     }
 

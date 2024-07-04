@@ -29,6 +29,7 @@ public class ReportService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ReportDto> getVolunteerReports(Integer userId) {
         if (userId == null) throw new HEException(USER_NOT_FOUND);
+        userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
 
         return reportRepository.getReportsForVolunteerId(userId).stream()
                 .sorted(Comparator.comparing(Report::getReportDateTime))

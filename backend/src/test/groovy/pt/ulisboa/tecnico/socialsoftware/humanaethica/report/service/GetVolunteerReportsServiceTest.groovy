@@ -80,7 +80,7 @@ class GetVolunteerReportsServiceTest extends SpockTest {
         reportsVolunteerTwo.get(0).justification == REPORT_JUSTIFICATION_2
     }
 
-  /*  def "volunteer does not exist or is null: volunteerId=#volunteerId"() {
+    def "volunteer does not exist or is null: volunteerId=#volunteerId"() {
         when:
         reportService.getVolunteerReports(volunteerId)
 
@@ -93,7 +93,7 @@ class GetVolunteerReportsServiceTest extends SpockTest {
         null        || ErrorMessage.USER_NOT_FOUND
         222         || ErrorMessage.USER_NOT_FOUND
     }
-*/
+
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }
