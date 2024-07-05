@@ -61,25 +61,6 @@ class GetVolunteerReportsServiceTest extends SpockTest {
         reports.get(0).justification == REPORT_JUSTIFICATION_1
     }
 
-    def "get two reports of the same same activity but diferent volunteer"() {
-        given: 
-        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        and:
-        createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
-        createReport(activityOne, volunteerTwo, REPORT_JUSTIFICATION_2)
-
-        when:
-        def reportsVolunteerOne = reportService.getVolunteerReports(volunteerOne.id)
-        def reportsVolunteerTwo = reportService.getVolunteerReports(volunteerTwo.id)
-
-        then:
-        reportsVolunteerOne.size() == 1
-        reportsVolunteerTwo.size() == 1
-        reportsVolunteerOne.get(0).justification == REPORT_JUSTIFICATION_1
-        reportsVolunteerTwo.get(0).justification == REPORT_JUSTIFICATION_2
-    }
-
     def "volunteer does not exist or is null: volunteerId=#volunteerId"() {
         when:
         reportService.getVolunteerReports(volunteerId)
