@@ -27,7 +27,7 @@ public class ReportController {
     }
 
     @GetMapping("/activities/{activityId}/reports")
-    @PreAuthorize("(hasRole('ROLE_ADMIN')) and hasPermission(#activityId, 'ACTIVITY.ADMIN')")
+    @PreAuthorize("(hasRole('ROLE_ADMIN'))")
     public List<ReportDto> getActivityReports(@PathVariable Integer activityId) {
         return reportService.getReportsByActivity(activityId);
     }
