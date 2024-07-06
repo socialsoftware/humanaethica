@@ -26,6 +26,12 @@ public class ReportController {
         return reportService.getVolunteerReports(volunteerId);
     }
 
+    @GetMapping("/activities/{activityId}/reports")
+    @PreAuthorize("(hasRole('ROLE_ADMIN')) and hasPermission(#activityId, 'ACTIVITY.ADMIN')")
+    public List<ReportDto> getActivityReports(@PathVariable Integer activityId) {
+        return reportService.getReportsByActivity(activityId);
+    }
+
     @PostMapping("/activities/{activityId}/reports")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public ReportDto createReport(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody ReportDto reportDto) {

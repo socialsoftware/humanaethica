@@ -27,6 +27,17 @@ public class ReportService {
     private ReportRepository reportRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ReportDto> getReportsByActivity(Integer activityId) {
+        if (activityId == null) throw  new HEException(ACTIVITY_NOT_FOUND);
+        activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
+
+        return reportRepository.getReportsByActivityId(activityId).stream()
+                .sorted(Comparator.comparing(Report::getReportDateTime))
+                .map(ReportDto::new)
+                .toList();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ReportDto> getVolunteerReports(Integer userId) {
         if (userId == null) throw new HEException(USER_NOT_FOUND);
         userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
