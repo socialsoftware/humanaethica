@@ -42,8 +42,8 @@ class GetReportsByActivityServiceTest extends SpockTest {
 
         then:
         reports.size() == 2
-        reports.get(0).motivation == REPORT_JUSTIFICATION_1
-        reports.get(1).motivation == REPORT_JUSTIFICATION_2
+        reports.get(0).justification == REPORT_JUSTIFICATION_1
+        reports.get(1).justification == REPORT_JUSTIFICATION_2
     }
 
     def "get one report of an activity"() {
@@ -58,7 +58,7 @@ class GetReportsByActivityServiceTest extends SpockTest {
 
         then:
         reports.size() == 1
-        reports.get(0).motivation == REPORT_JUSTIFICATION_1
+        reports.get(0).justification == REPORT_JUSTIFICATION_1
     }
 
     def "activity does not exist or is null: activityId=#activityId"() {
