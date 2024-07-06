@@ -104,6 +104,26 @@ class SuspendActivityWebServiceIT extends SpockTest {
         activity.state == Activity.State.APPROVED
     }
 
+    def "member suspends activity"() {
+        given:
+        demoMemberLogin()
+
+        when:
+        def response = webClient.put()
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
+
+        then: 'check response'
+        response.state == Activity.State.SUSPENDED.name()
+        and: "check database data"
+        activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.SUSPENDED
+    }
+
     def "member not belonging to the activity tries to suspend it"() {
         given:
         def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
