@@ -47,8 +47,9 @@ public class ActivityController {
 
     @PutMapping("/{activityId}/suspend/{justification}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER'))")
-    public ActivityDto suspendActivity(@PathVariable Integer activityId, @PathVariable String justification) {
-        return activityService.suspendActivity(activityId, justification);
+    public ActivityDto suspendActivity(Principal principal, @PathVariable Integer activityId, @PathVariable String justification) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activityService.suspendActivity(activityId, userId, justification);
     }
 
     @PutMapping("/{activityId}/validate")

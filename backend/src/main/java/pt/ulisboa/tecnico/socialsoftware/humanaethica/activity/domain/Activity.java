@@ -34,6 +34,7 @@ public class Activity {
     private LocalDateTime endingDate;
     private LocalDateTime applicationDeadline;
     private String suspensionJustification;
+    private Integer suspendedByUserId;
     private LocalDateTime suspensionDate;
     @Enumerated(EnumType.STRING)
     private Activity.State state = Activity.State.APPROVED;
@@ -170,12 +171,13 @@ public class Activity {
         this.enrollments.add(enrollment);
     }
 
-    public void suspend(String justification) {
+    public void suspend(Integer userId, String justification) {
         activityCannotBeSuspended();
 
         this.setState(State.SUSPENDED);
         this.suspensionJustification = justification;
         this.suspensionDate = DateHandler.now();
+        this.suspendedByUserId = userId;
 
         suspensionJustificationTextSize();
         suspensionAfterEnd();
@@ -188,6 +190,8 @@ public class Activity {
     public LocalDateTime getSuspensionDate() {
         return this.suspensionDate;
     }
+
+    public Integer getSuspendedByUserId() {return this.suspendedByUserId;}
 
     public List<Participation> getParticipations() {
         return participations;

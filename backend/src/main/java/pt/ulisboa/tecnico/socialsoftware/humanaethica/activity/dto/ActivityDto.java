@@ -23,6 +23,7 @@ public class ActivityDto {
     private String creationDate;
     private String suspensionJustification;
     private String suspensionDate;
+    private Integer suspendedByUserId;
     private List<ThemeDto> themes;
     private InstitutionDto institution;
 
@@ -49,6 +50,7 @@ public class ActivityDto {
         setApplicationDeadline(DateHandler.toISOString(activity.getApplicationDeadline()));
         setSuspensionJustification(activity.getSuspensionJustification());
         setSuspensionDate(DateHandler.toISOString(activity.getSuspensionDate()));
+        setSuspendedByUserId(activity.getSuspendedByUserId());
 
         if (deepCopyInstitution && (activity.getInstitution() != null)) {
                 setInstitution(new InstitutionDto(activity.getInstitution(), false, false));
@@ -143,6 +145,14 @@ public class ActivityDto {
 
     public void setSuspensionDate(String suspensionDate) {
         this.suspensionDate = suspensionDate;
+    }
+
+    public Integer getSuspendedByUserId() {
+        return this.suspendedByUserId;
+    }
+
+    public void setSuspendedByUserId(Integer userId) {
+        this.suspendedByUserId = userId;
     }
 
     public String getSuspensionDate() {

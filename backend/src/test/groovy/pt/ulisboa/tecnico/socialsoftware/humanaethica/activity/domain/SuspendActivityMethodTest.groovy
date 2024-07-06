@@ -16,6 +16,7 @@ class SuspendActivityMethodTest extends SpockTest {
     Institution institution = Mock()
     Activity activity
     def activityDto
+    def member
 
     def setup() {
         given: "activityDto"
@@ -27,6 +28,8 @@ class SuspendActivityMethodTest extends SpockTest {
         activityDto.startingDate = DateHandler.toISOString(IN_TWO_DAYS)
         activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
         activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
+
+        member = authUserService.loginDemoMemberAuth().getUser()
     }
 
     @Unroll
@@ -38,7 +41,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setState(state)
 
         when:
-        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+        activity.suspend(member.id, ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         activity.getState() == resultState
@@ -58,7 +61,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setState(Activity.State.SUSPENDED)
 
         when:
-        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+        activity.suspend(member.id, ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         def error = thrown(HEException)
@@ -74,7 +77,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity = new Activity(activityDto, institution, themes)
 
         when:
-        activity.suspend(justification)
+        activity.suspend(member.id, justification)
 
         then:
         def error = thrown(HEException)
@@ -95,7 +98,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activity.setEndingDate(ONE_DAY_AGO)
 
         when:
-        activity.suspend(ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+        activity.suspend(member.id, ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
 
         then:
         def error = thrown(HEException)
