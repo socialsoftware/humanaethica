@@ -91,57 +91,6 @@ class CreateParticipationWebServiceIT extends SpockTest {
         deleteAll()
     }
 
-    def 'volunteer create participation'() {
-        given:
-        demoVolunteerLogin()
-
-        when:
-        def response = webClient.post()
-                .uri('/activities/' + activity.id + '/participations')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDtoVolunteer)
-                .retrieve()
-                .bodyToMono(ParticipationDto.class)
-                .block()
-
-        then:
-        response.volunteerRating == 5
-        response.volunteerReview == VOLUNTEER_REVIEW
-        and:
-        participationRepository.getParticipationsByActivityId(activity.id).size() == 1
-        def storedParticipant = participationRepository.getParticipationsByActivityId(activity.id).get(0)
-        storedParticipant.volunteerRating == 5
-        storedParticipant.volunteerReview == VOLUNTEER_REVIEW
-
-
-        cleanup:
-        deleteAll()
-    }
-
-    def 'volunteer create participation with error'() {
-        given:
-        demoVolunteerLogin()
-        and:
-        participationDtoVolunteer.volunteerRating = 10
-
-        when:
-        def response = webClient.post()
-                .uri('/activities/' + activity.id + '/participations')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(participationDtoVolunteer)
-                .retrieve()
-                .bodyToMono(ParticipationDto.class)
-                .block()
-
-        then:
-        def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.BAD_REQUEST
-        participationRepository.count() == 0
-
-        cleanup:
-        deleteAll()
-    }
-
     def 'member create participation with error'() {
         given:
         demoMemberLogin()
@@ -169,6 +118,28 @@ class CreateParticipationWebServiceIT extends SpockTest {
     def 'admin cannot create participation'() {
         given:
         demoAdminLogin()
+
+        when:
+        def response = webClient.post()
+                .uri('/activities/' + activity.id + '/participations')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(participationDtoMember)
+                .retrieve()
+                .bodyToMono(ParticipationDto.class)
+                .block()
+
+        then:
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.FORBIDDEN
+        participationRepository.count() == 0
+
+        cleanup:
+        deleteAll()
+    }
+
+    def 'volunteer cannot create participation'() {
+        given:
+        demoVolunteerLogin()
 
         when:
         def response = webClient.post()

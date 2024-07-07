@@ -171,6 +171,53 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         deleteAll()
     }
 
+    def 'login as a member and try to rate a participation before activity end'() {
+        given: 'a member and an activity that has not ended yet'
+        deleteAll()
+        demoMemberLogin()
+        def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
+        def institution = institutionService.getDemoInstitution()
+        def activityDto = createActivityDto(ACTIVITY_NAME_2, ACTIVITY_REGION_2, 3, ACTIVITY_DESCRIPTION_2,
+                NOW.minusDays(2), NOW.minusDays(1), NOW.plusDays(2), null)
+        def activity2 = new Activity(activityDto, institution, new ArrayList<>())
+        activityRepository.save(activity2)
+
+        def participationDto = new ParticipationDto()
+        participationDto.memberRating = null
+        participationDto.memberReview = null
+        participationDto.volunteerId = volunteer.id
+
+        participationService.createParticipation(activity2.id, participationDto)
+        participationId = participationRepository.findAll().get(0).getId()
+
+
+        def participationDtoUpdate = new ParticipationDto()
+        participationDtoUpdate.memberRating = 1
+        participationDtoUpdate.memberReview = "NEW REVIEW"
+        participationDtoUpdate.volunteerId = volunteer.id
+
+        when: 'the member tries to rate the participation before the activity has ended'
+        def response = webClient.put()
+                .uri("/participations/" + participationId + "/member")
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .bodyValue(participationDtoUpdate)
+                .retrieve()
+                .bodyToMono(ParticipationDto.class)
+                .block()
+
+        then: "check response status"
+        def error = thrown(WebClientResponseException)
+        error.statusCode == HttpStatus.BAD_REQUEST
+        and: 'check database'
+        participationRepository.count() == 1
+        def participation = participationRepository.findAll().get(0)
+        participation.getMemberRating() == null
+        participation.getMemberReview() == null
+
+        cleanup:
+        deleteAll()
+    }
+
 
     def 'login as a admin and try to edit a participation'() {
         given: 'a demo'

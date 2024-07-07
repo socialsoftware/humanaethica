@@ -50,21 +50,21 @@ public class ParticipationService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ParticipationDto updateMemberRating(Integer participationId, ParticipationDto participationDto) {
+    public ParticipationDto memberRating(Integer participationId, ParticipationDto participationDto) {
         if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
-        participation.updateMember(participationDto);
+        participation.memberRating(participationDto);
         return new ParticipationDto(participation);
     }
 
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ParticipationDto updateVolunteerRating(Integer participationId, ParticipationDto participationDto) {
+    public ParticipationDto volunteerRating(Integer participationId, ParticipationDto participationDto) {
         if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
-        participation.updateVolunteer(participationDto);
+        participation.volunteerRating(participationDto);
         return new ParticipationDto(participation);
     }
 

@@ -47,7 +47,7 @@ class UpdateMemberRatingParticipationMethodTest extends SpockTest {
         participationDtoUpdated.memberReview = MEMBER_REVIEW
 
         when:
-        participation.updateMember(participationDtoUpdated)
+        participation.memberRating(participationDtoUpdated)
 
         then: "checks results"
         participation.memberRating == 5
@@ -63,7 +63,7 @@ class UpdateMemberRatingParticipationMethodTest extends SpockTest {
         participationDtoUpdated.memberRating = rating
         participationDtoUpdated.memberReview = MEMBER_REVIEW
         when:
-        participation.updateMember(participationDtoUpdated)
+        participation.memberRating(participationDtoUpdated)
 
         then:
         def error = thrown(HEException)
@@ -81,7 +81,7 @@ class UpdateMemberRatingParticipationMethodTest extends SpockTest {
 
 
         when:
-        participation.updateMember(participationDtoUpdated)
+        participation.memberRating(participationDtoUpdated)
 
         then:
         def error = thrown(HEException)

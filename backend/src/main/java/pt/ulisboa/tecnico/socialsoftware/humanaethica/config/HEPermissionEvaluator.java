@@ -8,7 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.dto.AssessmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
@@ -60,11 +59,6 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
                     Participation participation1 = participationRepository.findById(id).orElse(null);
                     if (participation1 == null) return false;
                     return participation1.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
-                case "PARTICIPATION.CREATOR":
-                    Activity activityForParticipationWriter = activityRepository.findById(id).orElse(null);
-                    if (activityForParticipationWriter == null) return false;
-                    Volunteer volunteer = (Volunteer) authUser.getUser();
-                    return enrollmentRepository.existsByActivityIdAndVolunteerId(activityForParticipationWriter.getId(), volunteer.getId());
                 default:
                     return false;
             }

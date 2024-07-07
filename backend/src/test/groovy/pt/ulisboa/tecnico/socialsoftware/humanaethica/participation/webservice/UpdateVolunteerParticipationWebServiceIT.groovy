@@ -47,13 +47,6 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
 
         def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def enrollmentDto = new EnrollmentDto()
-        enrollmentDto.volunteerId = volunteer.getId()
-        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
-        enrollmentDto.activityId = activity.id
-
-        enrollmentService.createEnrollment(volunteer.id, activity.id, enrollmentDto)
-
         activity.setStartingDate(NOW.minusDays(4))
         activity.setEndingDate(NOW.minusDays(3))
         activity.setApplicationDeadline(NOW.minusDays(5))
@@ -68,7 +61,6 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
 
         participationService.createParticipation(activity.id,participationDto)
         participationId = participationRepository.findAll().get(0).getId()
-
     }
 
     def 'login as a volunteer and update a participation'() {
@@ -99,7 +91,6 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         participation.getVolunteerReview() == "NEW REVIEW"
 
 
-
         cleanup:
         deleteAll()
     }
@@ -128,12 +119,9 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         def participation = participationRepository.findAll().get(0)
         participation.getVolunteerRating() == 5
 
-
-
         cleanup:
         deleteAll()
     }
-
 
     def 'log in as another volunteer and try to write a review for a participation by a different volunteer'() {
         given: 'another volunteer'
@@ -163,11 +151,9 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         participation.getVolunteerReview() == VOLUNTEER_REVIEW
 
 
-
         cleanup:
         deleteAll()
     }
-
 
     def 'login as a admin and try to edit a participation'() {
         given: 'a demo'
@@ -206,7 +192,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         participationDtoUpdate.volunteerReview = "ANOTHER_REVIEW"
         participationDtoUpdate.volunteerId = volunteer.id
 
-        when: 'the admin edits the participation'
+        when: 'the member edits the participation'
         def response = webClient.put()
                 .uri("/participations/" + participationId + "/volunteer")
                 .headers(httpHeaders -> httpHeaders.putAll(headers))

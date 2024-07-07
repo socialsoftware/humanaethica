@@ -23,8 +23,7 @@ class UpdateVolunteerRatingParticipationServiceTest extends SpockTest {
     def participation
     def volunteer
     def member
-    def participationDtoMember
-    def participationDtoVolunteer
+
 
     def setup() {
         def institution = institutionService.getDemoInstitution()
@@ -36,7 +35,6 @@ class UpdateVolunteerRatingParticipationServiceTest extends SpockTest {
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
-
 
         def participationDto = new ParticipationDto()
         participationDto.memberRating = 5
@@ -52,10 +50,8 @@ class UpdateVolunteerRatingParticipationServiceTest extends SpockTest {
         updatedParticipationDto.volunteerRating = 3
         updatedParticipationDto.volunteerId = volunteer.getId()
 
-
-
         when:
-        def result = participationService.updateVolunteerRating(participation.id, updatedParticipationDto)
+        def result = participationService.volunteerRating(participation.id, updatedParticipationDto)
 
         then: "the returned data is correct"
         result.volunteerRating == 3
@@ -79,9 +75,8 @@ class UpdateVolunteerRatingParticipationServiceTest extends SpockTest {
         updatedParticipationDto.volunteerRating = rating
         updatedParticipationDto.volunteerReview = review
 
-
         when:
-        participationService.updateVolunteerRating(getParticipationId(participationId), updatedParticipationDto)
+        participationService.volunteerRating(getParticipationId(participationId), updatedParticipationDto)
 
         then:
         def error = thrown(HEException)

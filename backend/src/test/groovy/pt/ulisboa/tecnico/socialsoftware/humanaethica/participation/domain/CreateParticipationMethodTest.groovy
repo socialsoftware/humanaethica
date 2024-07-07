@@ -22,45 +22,15 @@ class CreateParticipationMethodTest extends SpockTest {
     Participation otherParticipation = Mock()
     def participationDto
 
-
     def setup() {
         given:
         participationDto = new ParticipationDto()
-        participationDto.volunteerRating = 5
-        participationDto.volunteerReview = VOLUNTEER_REVIEW
-    }
-
-    def "volunteer creates a participation"() {
-        given:
-        activity.getParticipations() >> [otherParticipation]
-        activity.getNumberOfParticipatingVolunteers() >> 2
-        activity.getApplicationDeadline() >> TWO_DAYS_AGO
-        activity.getEndingDate() >> ONE_DAY_AGO
-        activity.getParticipantsNumberLimit() >> 3
-        otherParticipation.getVolunteer() >> otherVolunteer
-
-        when:
-        def result = new Participation(activity, volunteer, participationDto)
-
-        then: "checks results"
-        result.memberRating == null
-        result.memberReview ==  null
-        result.volunteerRating == 5
-        result.volunteerReview == VOLUNTEER_REVIEW
-        result.acceptanceDate.isBefore(LocalDateTime.now())
-        result.activity == activity
-        result.volunteer == volunteer
-        and: "check that it is added"
-        1 * activity.addParticipation(_)
-        1 * volunteer.addParticipation(_)
     }
 
     def "member creates a participation"() {
         given:
-        participationDto.volunteerRating = null
-        participationDto.volunteerReview = null
         participationDto.memberRating = 5
-        participationDto.memberReview = null
+        participationDto.memberReview = MEMBER_REVIEW
         activity.getParticipations() >> [otherParticipation]
         activity.getNumberOfParticipatingVolunteers() >> 2
         activity.getApplicationDeadline() >> TWO_DAYS_AGO
@@ -73,9 +43,7 @@ class CreateParticipationMethodTest extends SpockTest {
 
         then: "checks results"
         result.memberRating == 5
-        result.memberReview ==  null
-        result.volunteerRating == null
-        result.volunteerReview == null
+        result.memberReview ==  MEMBER_REVIEW
         result.acceptanceDate.isBefore(LocalDateTime.now())
         result.activity == activity
         result.volunteer == volunteer
@@ -120,8 +88,10 @@ class CreateParticipationMethodTest extends SpockTest {
         error.getErrorMessage() == ErrorMessage.PARTICIPATION_ACCEPTANCE_BEFORE_DEADLINE
     }
 
-    def "create participation and violate rating after end invariant"() {
+    def "create participation and violate rating before end invariant"() {
         given:
+        participationDto.memberReview = MEMBER_REVIEW
+        participationDto.memberRating = 5
         activity.getParticipations() >> [otherParticipation]
         activity.getNumberOfParticipatingVolunteers() >> 2
         activity.getApplicationDeadline() >> ONE_DAY_AGO

@@ -57,28 +57,6 @@ class CreateParticipationServiceTest extends SpockTest {
         storedParticipation.volunteer.id == volunteer.id
     }
 
-    def 'create participation as volunteer' () {
-        given:
-        def participationDto = new ParticipationDto()
-        participationDto.volunteerRating = 5
-        participationDto.volunteerReview = VOLUNTEER_REVIEW
-        participationDto.volunteerId = volunteer.id
-
-        when:
-        def result = participationService.createParticipation(activity.id, participationDto)
-
-        then:
-        result.volunteerRating  == 5
-        result.volunteerReview == VOLUNTEER_REVIEW
-        and:
-        participationRepository.findAll().size() == 1
-        def storedParticipation = participationRepository.findAll().get(0)
-        storedParticipation.volunteerRating == 5
-        storedParticipation.volunteerReview == VOLUNTEER_REVIEW
-        storedParticipation.acceptanceDate.isBefore(LocalDateTime.now())
-        storedParticipation.activity.id == activity.id
-        storedParticipation.volunteer.id == volunteer.id
-    }
 
     @Unroll
     def 'invalid arguments: volunteerId=#volunteerId | activityId=#activityId'() {

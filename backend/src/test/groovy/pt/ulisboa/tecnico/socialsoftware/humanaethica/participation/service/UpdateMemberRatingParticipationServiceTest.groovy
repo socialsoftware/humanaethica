@@ -50,7 +50,7 @@ class UpdateMemberRatingParticipationServiceTest extends SpockTest {
         updatedParticipationDto.volunteerId = volunteer.getId()
 
         when:
-        def result = participationService.updateMemberRating(participation.id, updatedParticipationDto)
+        def result = participationService.memberRating(participation.id, updatedParticipationDto)
 
         then: "the returned data is correct"
         result.memberReview == MEMBER_REVIEW
@@ -76,7 +76,7 @@ class UpdateMemberRatingParticipationServiceTest extends SpockTest {
 
 
         when:
-        participationService.updateMemberRating(getParticipationId(participationId), updatedParticipationDto)
+        participationService.memberRating(getParticipationId(participationId), updatedParticipationDto)
 
         then:
         def error = thrown(HEException)

@@ -46,25 +46,13 @@ public class Participation {
         verifyInvariants();
     }
 
-    public void updateMember(ParticipationDto participationDto){
-        if (participationDto.getMemberRating() == null){
-            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, -1);
-        }
-        if (participationDto.getMemberReview() == null){
-            throw new HEException(PARTICIPATION_REVIEW_LENGTH_INVALID);
-        }
+    public void memberRating(ParticipationDto participationDto){
         setMemberRating(participationDto.getMemberRating());
         setMemberReview(participationDto.getMemberReview());
         verifyInvariants();
     }
 
-    public void updateVolunteer(ParticipationDto participationDto){
-        if (participationDto.getVolunteerRating() == null){
-            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, -1);
-        }
-        if (participationDto.getVolunteerReview() == null){
-            throw new HEException(PARTICIPATION_REVIEW_LENGTH_INVALID);
-        }
+    public void volunteerRating(ParticipationDto participationDto){
         setVolunteerRating(participationDto.getVolunteerRating());
         setVolunteerReview(participationDto.getVolunteerReview());
         verifyInvariants();
@@ -175,6 +163,7 @@ public class Participation {
             throw new HEException(PARTICIPATION_RATING_BEFORE_END);
         }
     }
+
 
     private void ratingBetweenOneAndFive() {
         if (volunteerRating != null && (volunteerRating < 1 || volunteerRating > 5)) {
