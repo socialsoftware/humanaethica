@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.ActivityService
@@ -91,6 +92,12 @@ class BeanConfiguration {
         return new AssessmentService()
 
     }
+
+    @Bean
+    ReportService reportService() {
+        return new ReportService()
+    }
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder()
