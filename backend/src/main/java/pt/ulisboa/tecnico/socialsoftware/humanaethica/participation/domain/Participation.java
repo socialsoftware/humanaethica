@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain;
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
@@ -17,7 +18,13 @@ public class Participation {
     @Column(name = "id", nullable = false)
     private Integer id;
     private LocalDateTime acceptanceDate;
-    private Integer rating;
+    private Integer volunteerRating;
+    private Integer memberRating;
+    private String volunteerReview;
+    private String memberReview;
+
+
+
     @ManyToOne
     private Activity activity;
     @ManyToOne
@@ -29,14 +36,25 @@ public class Participation {
         setActivity(activity);
         setVolunteer(volunteer);
         setAcceptanceDate(LocalDateTime.now());
-        setRating(participationDto.getRating());
+        setMemberRating(participationDto.getMemberRating());
+        setMemberReview(participationDto.getMemberReview());
+        setVolunteerRating(participationDto.getVolunteerRating());
+        setVolunteerReview(participationDto.getVolunteerReview());
+
+
 
         verifyInvariants();
     }
 
-    public void update(ParticipationDto participationDto) {
-        setRating(participationDto.getRating());
+    public void memberRating(ParticipationDto participationDto){
+        setMemberRating(participationDto.getMemberRating());
+        setMemberReview(participationDto.getMemberReview());
+        verifyInvariants();
+    }
 
+    public void volunteerRating(ParticipationDto participationDto){
+        setVolunteerRating(participationDto.getVolunteerRating());
+        setVolunteerReview(participationDto.getVolunteerReview());
         verifyInvariants();
     }
 
@@ -62,12 +80,36 @@ public class Participation {
         this.acceptanceDate = acceptanceDate;
     }
 
-    public Integer getRating() {
-        return rating;
+    public Integer getVolunteerRating() {
+        return volunteerRating;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public void setVolunteerRating(Integer rating) {
+        this.volunteerRating = rating;
+    }
+
+    public Integer getMemberRating() {
+        return memberRating;
+    }
+
+    public void setMemberRating(Integer rating) {
+        this.memberRating = rating;
+    }
+
+    public String getVolunteerReview() {
+        return volunteerReview;
+    }
+
+    public void setVolunteerReview(String volunteerReview) {
+        this.volunteerReview = volunteerReview;
+    }
+
+    public String getMemberReview() {
+        return memberReview;
+    }
+
+    public void setMemberReview(String memberReview) {
+        this.memberReview = memberReview;
     }
 
     public Activity getActivity() {
@@ -94,6 +136,7 @@ public class Participation {
         acceptanceAfterDeadline();
         ratingAfterEnd();
         ratingBetweenOneAndFive();
+        reviewSizeIsCorrect();
     }
 
     private void participateOnce() {
@@ -116,18 +159,31 @@ public class Participation {
     }
 
     private void ratingAfterEnd() {
-        if (this.rating != null && LocalDateTime.now().isBefore(activity.getEndingDate())) {
+        if ((volunteerRating != null || memberRating != null) && LocalDateTime.now().isBefore(activity.getEndingDate())) {
             throw new HEException(PARTICIPATION_RATING_BEFORE_END);
         }
     }
 
 
-
     private void ratingBetweenOneAndFive() {
-        if (this.rating == null || this.rating < 1 || this.rating > 5) {
-            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, this.rating != null ? this.rating : -1);
+        if (volunteerRating != null && (volunteerRating < 1 || volunteerRating > 5)) {
+            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, volunteerRating);
+        }
+
+        if (memberRating != null && (memberRating < 1 || memberRating > 5)) {
+            throw new HEException(PARTICIPATION_RATING_BETWEEN_ONE_AND_FIVE, memberRating);
         }
     }
 
+    private void reviewSizeIsCorrect() {
+        if (volunteerReview != null && (volunteerReview.length() < 10 || volunteerReview.length() > 100)) {
+            throw new HEException(PARTICIPATION_REVIEW_LENGTH_INVALID, volunteerReview.length());
+        }
 
+        if (memberReview != null && (memberReview.length() < 10 || memberReview.length() > 100)) {
+            throw new HEException(PARTICIPATION_REVIEW_LENGTH_INVALID, memberReview.length());
+        }
+    }
 }
+
+

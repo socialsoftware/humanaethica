@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
@@ -48,12 +50,21 @@ public class ParticipationService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ParticipationDto updateParticipation(Integer participationId, ParticipationDto participationDto) {
+    public ParticipationDto memberRating(Integer participationId, ParticipationDto participationDto) {
         if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
-        participation.update(participationDto);
+        participation.memberRating(participationDto);
+        return new ParticipationDto(participation);
+    }
 
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ParticipationDto volunteerRating(Integer participationId, ParticipationDto participationDto) {
+        if (participationId == null) throw new HEException(PARTICIPATION_NOT_FOUND);
+        Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
+
+        participation.volunteerRating(participationDto);
         return new ParticipationDto(participation);
     }
 
@@ -68,6 +79,7 @@ public class ParticipationService {
 
         if (activityId == null) throw  new HEException(ACTIVITY_NOT_FOUND);
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new HEException(ACTIVITY_NOT_FOUND, activityId));
+
 
         Participation participation = new Participation(activity, volunteer, participationDto);
         participationRepository.save(participation);
