@@ -184,7 +184,7 @@ public class Activity {
         this.suspendedByUserId = userId;
 
         suspensionJustificationTextSize();
-        suspensionAfterEnd();
+        suspensionBeforeEnd();
     }
 
     public String getSuspensionJustification() {
@@ -324,7 +324,7 @@ public class Activity {
         themesAreApproved();
         nameIsUnique();
         suspensionJustificationTextSize();
-        suspensionAfterEnd();
+        suspensionBeforeEnd();
     }
 
     private void nameIsRequired() {
@@ -412,7 +412,7 @@ public class Activity {
         }
     }
 
-    private void suspensionAfterEnd() {
+    private void suspensionBeforeEnd() {
         if (this.suspensionDate != null && this.suspensionDate.isAfter(this.endingDate)) {
             throw new HEException(ACTIVITY_SUSPENSION_AFTER_END);
         }
