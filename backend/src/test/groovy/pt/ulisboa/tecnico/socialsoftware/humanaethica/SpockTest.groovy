@@ -25,6 +25,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.Participatio
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.dto.ReportDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserService
@@ -207,7 +211,7 @@ class SpockTest extends Specification {
     @Autowired
     ThemeService themeService
 
-    protected Theme createTheme(name, type, parent) {
+    def createTheme(name, type, parent) {
         def theme = new Theme(name, type, parent)
         themeRepository.save(theme)
         theme
@@ -230,7 +234,7 @@ class SpockTest extends Specification {
     @Autowired
     ActivityService activityService
 
-    protected ActivityDto createActivityDto(name, region, number, description, deadline, start, end, themesDto) {
+    def createActivityDto(name, region, number, description, deadline, start, end, themesDto) {
         def activityDto = new ActivityDto()
         activityDto.setName(name)
         activityDto.setRegion(region)
@@ -291,8 +295,26 @@ class SpockTest extends Specification {
         def assessmentDto = new AssessmentDto()
         assessmentDto.setReview(review)
         def assessment = new Assessment(institution, volunteer, assessmentDto)
-        activityRepository.save(assessment)
+        assessmentRepository.save(assessment)
         return assessment
+    }
+
+    // report
+
+    public static final String REPORT_JUSTIFICATION_1 = "report justification 1"
+    public static final String REPORT_JUSTIFICATION_2 = "report justification 2"
+
+    @Autowired
+    ReportService reportService
+    @Autowired
+    ReportRepository reportRepository
+
+    def createReport(activity, volunteer, justification) {
+        def reportDto = new ReportDto()
+        reportDto.setJustification(justification)
+        def report = new Report(activity, volunteer, reportDto)
+        reportRepository.save(report)
+        return report
     }
 
     // clean database
@@ -301,6 +323,7 @@ class SpockTest extends Specification {
         assessmentRepository.deleteAll()
         participationRepository.deleteAll()
         enrollmentRepository.deleteAll()
+        reportRepository.deleteAll()
         activityRepository.deleteAllActivityTheme()
         activityRepository.deleteAll()
         authUserRepository.deleteAll()
