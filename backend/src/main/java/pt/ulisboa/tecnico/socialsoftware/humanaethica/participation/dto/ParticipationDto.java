@@ -7,7 +7,10 @@ public class ParticipationDto {
     private Integer id;
     private Integer activityId;
     private Integer volunteerId;
-    private Integer rating;
+    private Integer memberRating;
+    private Integer volunteerRating;
+    private String memberReview;
+    private String volunteerReview;
     private String acceptanceDate;
 
 
@@ -18,7 +21,10 @@ public class ParticipationDto {
         this.activityId = participation.getActivity().getId();
         this.volunteerId = participation.getVolunteer().getId();
         this.acceptanceDate = DateHandler.toISOString(participation.getAcceptanceDate());
-        this.rating = participation.getRating();
+        this.memberRating = participation.getMemberRating();
+        this.memberReview = participation.getMemberReview();
+        this.volunteerRating = participation.getVolunteerRating();
+        this.volunteerReview = participation.getVolunteerReview();
     }
 
     public Integer getId() {
@@ -45,12 +51,36 @@ public class ParticipationDto {
         this.volunteerId = volunteerId;
     }
 
-    public Integer getRating() {
-        return rating;
+    public Integer getMemberRating() {
+        return memberRating;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public void setMemberRating(Integer memberRating) {
+        this.memberRating = memberRating;
+    }
+
+    public Integer getVolunteerRating() {
+        return volunteerRating;
+    }
+
+    public void setVolunteerRating(Integer volunteerRating) {
+        this.volunteerRating = volunteerRating;
+    }
+
+    public String getMemberReview() {
+        return memberReview;
+    }
+
+    public void setMemberReview(String memberReview) {
+        this.memberReview = memberReview;
+    }
+
+    public String getVolunteerReview() {
+        return volunteerReview;
+    }
+
+    public void setVolunteerReview(String volunteerReview) {
+        this.volunteerReview = volunteerReview;
     }
 
     public String getAcceptanceDate() {

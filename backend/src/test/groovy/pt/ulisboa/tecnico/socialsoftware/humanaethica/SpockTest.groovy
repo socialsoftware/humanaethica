@@ -268,18 +268,21 @@ class SpockTest extends Specification {
 
     // participation
 
+    public static final int MAX_REVIEW_LENGTH = 100
+    public static final String MEMBER_REVIEW = "The volunteer did an excellent job."
+    public static final String VOLUNTEER_REVIEW = "The activity was fun."
+
+    def createParticipation(activity, volunteer, participationDto ) {
+        participationDto.volunteerId = volunteer.getId()
+        def participation = new Participation(activity, volunteer, participationDto)
+        participationRepository.save(participation)
+        return participation
+    }
     @Autowired
     ParticipationService participationService
     @Autowired
     ParticipationRepository participationRepository
 
-    def createParticipation(activity, volunteer, rating) {
-        def participationDto = new ParticipationDto()
-        participationDto.setRating(rating)
-        def participation = new Participation(activity, volunteer, participationDto)
-        participationRepository.save(participation)
-        return participation
-    }
 
     // assessment
 

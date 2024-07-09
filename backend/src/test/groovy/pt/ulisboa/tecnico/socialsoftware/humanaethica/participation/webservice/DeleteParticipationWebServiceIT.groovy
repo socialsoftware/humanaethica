@@ -40,9 +40,11 @@ class DeleteParticipationWebServiceIT extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
-        def participationDto = new ParticipationDto()
-        participationDto.rating = 5
+        def participationDto= new ParticipationDto()
+        participationDto.volunteerRating = 5
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
         participationDto.volunteerId = volunteer.id
+
 
         participationService.createParticipation(activity.id, participationDto)
 
@@ -64,7 +66,7 @@ class DeleteParticipationWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response"
-        response.rating == 5
+        response.volunteerRating == 5
         and: 'check database'
         participationRepository.count() == 0
 
