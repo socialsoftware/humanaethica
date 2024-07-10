@@ -655,9 +655,7 @@ export default class RemoteServices {
   static async deleteAssessment(assessmentId: number): Promise<Assessment> {
     return httpClient
       .delete(`/assessments/${assessmentId}`)
-      .then((response) => {
-        return new Assessment(response.data);
-      })
+      .then((response) => new Assessment(response.data))
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
