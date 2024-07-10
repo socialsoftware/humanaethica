@@ -79,9 +79,9 @@ COPY public.enrollment (id, enrollment_date_time, motivation, activity_id, volun
 -- Data for Name: participation; Type: TABLE DATA; Schema: public; Owner: ars
 --
 
-COPY public.participation (id, acceptance_date, rating, activity_id, volunteer_id) FROM stdin;
-5	2024-02-06 18:51:37.595713	5	1	4
-6	2024-02-06 18:51:37.595713	5	2	3
+COPY public.participation (id, acceptance_date, member_rating, member_review, activity_id, volunteer_id) FROM stdin;
+5	2024-02-06 18:51:37.595713	5	A-member-review	1	4
+6	2024-02-06 18:51:37.595713	5	Another-member-review	2	3
 \.
 
 --
