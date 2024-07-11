@@ -13,6 +13,8 @@ const ACTIVITY_COLUMNS = "activity (id, application_deadline, creation_date, des
 const ENROLLMENT_COLUMNS = "enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id)"
 const PARTICIPATION_COLUMNS = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id)"
 const ASSESSMENT_COLUMNS = "assessment (id, review, review_date, institution_id, volunteer_id)";
+const REPORT_COLUMNS = "report (id, justification, activity_id, volunteer_id)";
+
 
 const now = new Date();
 const tomorrow = new Date(now);
@@ -35,6 +37,10 @@ Cypress.Commands.add('deleteAllButArs', () => {
   })
   cy.task('queryDatabase', {
     query: "DELETE FROM ENROLLMENT",
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM REPORT",
     credentials: credentials,
   })
   cy.task('queryDatabase', {
@@ -79,6 +85,28 @@ Cypress.Commands.add('createDemoEntities', () => {
 });
 
 Cypress.Commands.add('createDatabaseInfoForEnrollments', () => {
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(1, "A1", "Enrollment is open",  tomorrow.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(2, "A2", "Enrollment is open and it is already enrolled",  tomorrow.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(3, "A3", "Enrollment is closed",  yesterday.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(5, 2, 3),
+    credentials: credentials,
+  })
+});
+
+Cypress.Commands.add('createDatabaseInfoForReports', () => {
   cy.task('queryDatabase',  {
     query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(1, "A1", "Enrollment is open",  tomorrow.toISOString(), tomorrow.toISOString(),
       tomorrow.toISOString(),1, 1),
