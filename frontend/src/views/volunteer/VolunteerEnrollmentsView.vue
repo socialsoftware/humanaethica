@@ -27,7 +27,7 @@
           </v-chip>
         </template>
         <template v-slot:[`item.action`]="{ item }">
-          <v-tooltip v-if="item.state === 'APPROVED'" bottom>
+          <v-tooltip v-if="item.state === 'APPROVED' && canReport(item)" bottom>
             <template v-slot:activator="{ on }">
               <v-icon
                 class="mr-2 action-button"
@@ -125,6 +125,13 @@
         v-on:save-participation="onSaveParticipation"
         v-on:close-participation-dialog="onCloseParticipationDialog"
       />
+      <report-dialog
+        v-if="currentReport && createReportDialog"
+        v-model="createReportDialog"
+        :report="currentReport"
+        v-on:save-report="onSaveReport"
+        v-on:close-report-dialog="onCloseReportDialog"
+      />
     </v-card>
   </div>
 </template>
@@ -140,12 +147,16 @@ import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
 import Assessment from '@/models/assessment/Assessment';
 import Participation from '@/models/participation/Participation';
 import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue';
+import ReportDialog from '@/views/volunteer/ReportDialog.vue';
+import Report from '@/models/report/Report';
+
 
 @Component({
   components: {
     'assessment-dialog': AssessmentDialog,
     'enrollment-dialog': EnrollmentDialog,
     'participation-dialog': ParticipationDialog,
+    'report-dialog': ReportDialog,
   },
   methods: { show },
 })
@@ -154,6 +165,7 @@ export default class VolunteerEnrollmentsView extends Vue {
   enrollments: Enrollment[] = [];
   participations: Participation[] = [];
   assessments: Assessment[] = [];
+  reports: Report[] = [];
   search: string = '';
 
   currentEnrollment: Enrollment | null = null;
@@ -164,6 +176,11 @@ export default class VolunteerEnrollmentsView extends Vue {
 
   currentParticipation: Participation | null = null;
   editParticipationDialog: boolean = false;
+
+  currentActivtiy: Activity | null = null;
+  currentReport: Report | null = null;
+  createReportDialog: boolean = false;
+
 
   headers: object = [
     {
@@ -250,18 +267,10 @@ export default class VolunteerEnrollmentsView extends Vue {
   }
 
   async reportActivity(activity: Activity) {
-    if (activity.id !== null) {
-      try {
-        const result = await RemoteServices.reportActivity(
-          this.$store.getters.getUser.id,
-          activity.id,
-        );
-        this.activities = this.activities.filter((a) => a.id !== activity.id);
-        this.activities.unshift(result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
+    this.currentReport = new Report();
+    this.currentReport.activityId = activity.id;
+    this.createReportDialog = true;
+    this.currentActivtiy = activity;
   }
 
   async deleteEnrollmentForActivity(activity: Activity) {
@@ -407,6 +416,44 @@ export default class VolunteerEnrollmentsView extends Vue {
     this.assessments.push(assessment);
     this.editAssessmentDialog = false;
     this.currentAssessment = null;
+  }
+
+  canReport(activity: Activity) {
+    let deadline = new Date(activity.endingDate);
+    let now = new Date();
+
+    return (
+      deadline > now &&
+      !this.reports.some((r: Report) => r.activityId === activity.id)
+    );
+  }
+
+  onCloseReportDialog() {
+    this.createReportDialog = false;
+    this.currentReport = null;
+  }
+
+  async onSaveReport(report: Report) {
+    this.reports.push(report);
+    this.createReportDialog = false;
+    this.currentReport = null;
+
+    if (this.currentActivtiy != null && this.currentActivtiy.id !== null) {
+      try {
+        const result = await RemoteServices.reportActivity(
+          this.$store.getters.getUser.id,
+          this.currentActivtiy.id,
+        );
+        this.activities = this.activities.filter(
+          (a) => a.id !== this.currentActivtiy!.id,
+        );
+        this.activities.unshift(result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+
+    this.currentActivtiy = null;
   }
 }
 </script>

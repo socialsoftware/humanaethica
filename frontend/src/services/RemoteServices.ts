@@ -14,6 +14,7 @@ import Theme from '@/models/theme/Theme';
 import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
+import Report from '@/models/report/Report';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -545,7 +546,6 @@ export default class RemoteServices {
       });
   }
 
-
   static async getActivityParticipations(
     activityId: number | null,
   ): Promise<Participation[]> {
@@ -671,6 +671,45 @@ export default class RemoteServices {
       .delete(`/assessments/${assessmentId}`)
       .then((response) => {
         return new Assessment(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  // Report Controller
+
+  static async getActivityReports(activityId: number) {
+    return httpClient
+      .get(`/activities/${activityId}/reports`)
+      .then((response) => {
+        return response.data.map((report: any) => {
+          return new Report(report);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getVolunteerReports(volunteerId: number) {
+    return httpClient
+      .get(`/volunteers/${volunteerId}/reports`)
+      .then((response) => {
+        return response.data.map((report: any) => {
+          return new Report(report);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createReport(activityId: number, report: Report) {
+    return httpClient
+      .post(`/activities/${activityId}/reports`, report)
+      .then((response) => {
+        return new Report(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));

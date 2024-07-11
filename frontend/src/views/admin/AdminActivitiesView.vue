@@ -30,6 +30,19 @@
           {{ item.institution.name }}
         </v-chip>
       </template>
+      <template v-slot:[`item.state`]="{ item }">
+        <v-chip
+          v-if="item.state === 'REPORTED'"
+          class="clickable"
+          data-cy="reportedButton"
+          @click="openReportsDialog(item)"
+        >
+          {{ item.state }}
+        </v-chip>
+        <v-chip v-else>
+          {{ item.state }}
+        </v-chip>
+      </template>
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip
           bottom
@@ -65,6 +78,12 @@
         </v-tooltip>
       </template>
     </v-data-table>
+    <reports-dialog
+      v-if="listReportsDialog"
+      v-model="listReportsDialog"
+      :activity="currentActivtiy"
+      v-on:close-enrollment-dialog="onCloseReportsDialog"
+    />
   </v-card>
 </template>
 
@@ -72,15 +91,26 @@
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
+import ListReportsDialog from '@/views/admin/ListReportsDialog.vue';
+import { show } from 'cli-cursor';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
 
-@Component({})
+@Component({
+  components: {
+    'reports-dialog': ListReportsDialog,
+  },
+  methods: { show },
+})
 export default class AdminActivitiesView extends Vue {
   activities: Activity[] = [];
   themes: Theme[] = [];
   institutions: Institution[] = [];
   search: string = '';
+
+  currentActivtiy: Activity | null = null;
+  listReportsDialog: boolean = false;
+
   headers: object = [
     {
       text: 'ID',
@@ -201,6 +231,16 @@ export default class AdminActivitiesView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  openReportsDialog(activity: Activity) {
+    this.currentActivtiy = activity;
+    this.listReportsDialog = true;
+  }
+
+  onCloseReportsDialog() {
+    this.listReportsDialog = false;
+    this.currentActivtiy = null;
   }
 }
 </script>
