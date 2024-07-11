@@ -448,9 +448,9 @@ export default class RemoteServices {
       });
   }
 
-  static async suspendActivity(activityId: number) {
+  static async suspendActivity(activityId: number, justification: string) {
     return httpClient
-      .put(`/activities/${activityId}/suspend`)
+      .put(`/activities/${activityId}/suspend/${justification}`)
       .then((response) => {
         return new Activity(response.data);
       })

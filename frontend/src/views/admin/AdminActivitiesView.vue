@@ -81,7 +81,7 @@
     <reports-dialog
       v-if="listReportsDialog"
       v-model="listReportsDialog"
-      :activity="currentActivtiy"
+      :activity="currentActivity"
       v-on:close-enrollment-dialog="onCloseReportsDialog"
     />
     <suspend-activity-dialog
@@ -118,7 +118,7 @@ export default class AdminActivitiesView extends Vue {
   institutions: Institution[] = [];
   search: string = '';
 
-  currentActivtiy: Activity | null = null;
+  currentActivity: Activity | null = null;
   listReportsDialog: boolean = false;
   suspendActivityDialog: boolean = false;
 
@@ -257,13 +257,13 @@ export default class AdminActivitiesView extends Vue {
   }
 
   openReportsDialog(activity: Activity) {
-    this.currentActivtiy = activity;
+    this.currentActivity = activity;
     this.listReportsDialog = true;
   }
 
   onCloseReportsDialog() {
     this.listReportsDialog = false;
-    this.currentActivtiy = null;
+    this.currentActivity = null;
   }
 }
 </script>
