@@ -600,6 +600,20 @@ export default class RemoteServices {
       });
   }
 
+  static async updateParticipationVolunteer(
+    participationId: number,
+    participation: Participation,
+  ) {
+    return httpClient
+      .put(`/participations/${participationId}/volunteer`, participation)
+      .then((response) => {
+        return new Participation(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   // Assessment Controller
 
   static async getVolunteerAssessments(): Promise<Assessment[]> {
