@@ -29,7 +29,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip v-if="canParticipate(item)" bottom>
+        <v-tooltip v-if="canParticipate(item) &&  checkIfEnrollmentPeriodIsOver(item)" bottom>
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -41,7 +41,10 @@
           </template>
           <span>Select Participant</span>
         </v-tooltip>
-        <v-tooltip v-if="isParticipating(item)" bottom>
+        <v-tooltip
+          v-if="isParticipating(item) && checkIfActivityHasEnded()"
+          bottom
+        >
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -49,10 +52,33 @@
               @click="selectParticipant(item)"
               v-on="on"
               data-cy="editParticipantButton"
-              >edit
+            >
+              {{ volunteerReviewWritten(item) ? 'fa-star' : 'fa-solid fa-pen' }}
             </v-icon>
           </template>
-          <span>Edit Participant</span>
+          <span>
+            {{
+              volunteerReviewWritten(item) ? 'Check My Rating' : 'Give Rating'
+            }}
+          </span>
+        </v-tooltip>
+        <v-tooltip
+          v-if="isParticipating(item) && volunteerReviewWritten(item)"
+          bottom
+          :key="`show-review-${item.volunteerId}-${item.participating}`"
+        >
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="action-button"
+              color="blue"
+              @click="showVolunteerReview(item)"
+              v-on="on"
+              data-cy="showVolunteerReviewButton"
+            >
+              fa-eye
+            </v-icon>
+          </template>
+          <span>Show Volunteer Rating</span>
         </v-tooltip>
         <v-tooltip
           v-if="isParticipating(item)"
@@ -81,6 +107,19 @@
       v-on:save-participation="onSaveParticipation"
       v-on:close-participation-dialog="onCloseParticipationDialog"
     />
+    <participation-deletion-dialog
+      v-if="currentParticipation && editParticipationDeletionDialog"
+      v-model="editParticipationDeletionDialog"
+      :participation="currentParticipation"
+      v-on:delete-participation="onDeleteParticipation"
+      v-on:close-participation-dialog="onCloseParticipationDialog"
+    />
+    <volunteer-rating-dialog
+      v-if="currentParticipation && showVolunteerRatingDialog"
+      v-model="showVolunteerRatingDialog"
+      :participation="currentParticipation"
+      v-on:close-participation-dialog="onCloseParticipationDialog"
+    />
   </v-card>
 </template>
 
@@ -91,19 +130,26 @@ import Activity from '@/models/activity/Activity';
 import Enrollment from '@/models/enrollment/Enrollment';
 import ParticipationSelectionDialog from '@/views/member/ParticipationSelectionDialog.vue';
 import Participation from '@/models/participation/Participation';
+import ParticipationVolunteerRatingDialog from '@/views/member/ParticipationVolunteerRatingDialog.vue';
+import ParticipationDeletionDialog from '@/views/member/ParticipationDeletionDialog.vue';
 
 @Component({
   components: {
     'participation-selection-dialog': ParticipationSelectionDialog,
+    'participation-deletion-dialog': ParticipationDeletionDialog,
+    'volunteer-rating-dialog': ParticipationVolunteerRatingDialog,
   },
 })
 export default class InstitutionActivityEnrollmentsView extends Vue {
   activity!: Activity;
   enrollments: Enrollment[] = [];
+  participations: Participation[] = [];
   search: string = '';
 
   currentParticipation: Participation | null = null;
   editParticipationSelectionDialog: boolean = false;
+  editParticipationDeletionDialog: boolean = false;
+  showVolunteerRatingDialog: boolean = false;
 
   headers: object = [
     {
@@ -147,6 +193,9 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
         this.enrollments = await RemoteServices.getActivityEnrollments(
           this.activity.id,
         );
+        this.participations = await RemoteServices.getActivityParticipations(
+          this.activity.id,
+        );
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -168,23 +217,57 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
       this.currentParticipation = existingParticipation;
       this.currentParticipation.activityId = activityId;
       this.currentParticipation.volunteerId = volunteerId;
-    } else {
+      this.editParticipationSelectionDialog = true;
+    } else if (this.checkIfActivityHasEnded()) {
       this.currentParticipation = new Participation();
       this.currentParticipation.activityId = activityId;
       this.currentParticipation.volunteerId = volunteerId;
+      this.editParticipationSelectionDialog = true;
+    } else {
+      this.createParticipation(activityId!, volunteerId!);
     }
+  }
 
-    this.editParticipationSelectionDialog = true;
+  async createParticipation(activityId: number, volunteerId: number) {
+    this.currentParticipation = new Participation();
+    this.currentParticipation.activityId = activityId;
+    this.currentParticipation.volunteerId = volunteerId;
+    await RemoteServices.createParticipation(
+      this.currentParticipation!.activityId!,
+      this.currentParticipation!,
+    );
+    this.currentParticipation = null;
+    this.enrollments = await RemoteServices.getActivityEnrollments(activityId!);
+    this.participations = await RemoteServices.getActivityParticipations(
+      activityId!,
+    );
+  }
+
+  checkIfActivityHasEnded() {
+    let endingDate = new Date(this.activity.endingDate);
+    let now = new Date();
+    return endingDate < now;
+  }
+
+  checkIfEnrollmentPeriodIsOver() {
+    let endingDate = new Date(this.activity.applicationDeadline);
+    let now = new Date();
+    return endingDate < now;
   }
 
   onCloseParticipationDialog() {
     this.currentParticipation = null;
     this.editParticipationSelectionDialog = false;
+    this.editParticipationDeletionDialog = false;
+    this.showVolunteerRatingDialog = false;
   }
 
   async onSaveParticipation(participation: Participation) {
     let enrollment = this.enrollments.find(
       (e) => e.volunteerId === participation.volunteerId,
+    );
+    this.participations = await RemoteServices.getActivityParticipations(
+      participation.activityId,
     );
     if (enrollment) enrollment.participating = true;
 
@@ -192,34 +275,49 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
     this.editParticipationSelectionDialog = false;
   }
 
-  async onDeleteParticipation(enrollment: Enrollment) {
+  async onDeleteParticipation(participation: Participation) {
     this.enrollments = await RemoteServices.getActivityEnrollments(
-      enrollment.activityId!,
+      participation.activityId!,
     );
+    this.participations = await RemoteServices.getActivityParticipations(
+      participation.activityId,
+    );
+    this.editParticipationDeletionDialog = false;
+  }
+
+  async showVolunteerReview(enrollment: Enrollment) {
+    let activityId = enrollment.activityId;
+    let volunteerId = enrollment.volunteerId;
+
+    let existingParticipation = this.participations.find(
+      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    );
+
+    if (existingParticipation != null) {
+      this.currentParticipation = existingParticipation;
+      this.currentParticipation.activityId = activityId;
+      this.currentParticipation.volunteerId = volunteerId;
+      this.showVolunteerRatingDialog = true;
+    }
   }
 
   async deleteParticipation(enrollment: Enrollment) {
     let activityId = enrollment.activityId;
     let volunteerId = enrollment.volunteerId;
-    let participations =
-      await RemoteServices.getActivityParticipations(activityId);
 
-    let existingParticipation = participations.find(
+    let existingParticipation = this.participations.find(
       (p) => p.activityId === activityId && p.volunteerId === volunteerId,
     );
-    if (existingParticipation && existingParticipation.id !== null) {
-      try {
-        await RemoteServices.deleteParticipation(existingParticipation.id);
-        this.onDeleteParticipation(enrollment);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-        console.error('Error deleting participation:', error);
-      }
+
+    if (existingParticipation != null) {
+      this.currentParticipation = existingParticipation;
+      this.currentParticipation.activityId = activityId;
+      this.currentParticipation.volunteerId = volunteerId;
+      this.editParticipationDeletionDialog = true;
     }
   }
 
   canParticipate(enrollment: Enrollment) {
-    console.log(this.enrollments.filter((e) => e.participating).length);
     return (
       !enrollment.participating &&
       this.activity.participantsNumberLimit >
@@ -230,6 +328,28 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   isParticipating(enrollment: Enrollment) {
     if (enrollment.participating) {
       return true;
+    }
+  }
+
+  volunteerReviewWritten(enrollment: Enrollment) {
+    try {
+      const existingParticipation = this.participations.find(
+        (p) =>
+          p.activityId === enrollment.activityId &&
+          p.volunteerId === enrollment.volunteerId,
+      );
+
+      if (existingParticipation) {
+        return !!(
+          existingParticipation.memberRating &&
+          existingParticipation.volunteerReview
+        );
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error('Error fetching participations:', error);
+      return false;
     }
   }
 

@@ -3,26 +3,24 @@
     <v-card>
       <v-card-title>
         <span class="headline">
-          {{
-            editParticipation && editParticipation.id === null
-              ? 'Create Participation'
-              : 'Your Rating'
+         {{
+            reviewExists() ? 'Member Rating' : 'Your Rating'
           }}
         </span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form" lazy-validation>
           <v-row>
-            <v-col cols="12" v-if="!memberReviewAlreadyExists" class="d-flex align-center">
+            <v-col cols="12" class="d-flex align-center">
               <v-text-field
+                v-if="!reviewExists()"
                 label="Rating"
                 :rules="[(v) => isNumberValid(v) || 'Rating between 1 and 5']"
-                v-model="editParticipation.memberRating"
-                data-cy="participantsNumberInput"
+                v-model="editParticipation.volunteerRating"
+                data-cy="ratingInput"
               ></v-text-field>
-            </v-col>
-            <v-col cols="12" class="d-flex align-center" v-else>
               <v-rating
+                v-else
                 v-model="editParticipation.memberRating"
                 length="5"
                 color="yellow"
@@ -30,17 +28,29 @@
                 half-increments
                 readonly
               ></v-rating>
-              <span class="ml-2">{{ editParticipation.memberRating }}/5</span>
+              <span v-if="reviewExists()" class="ml-2"
+                >{{ editParticipation.memberRating }}/5
+              </span>
             </v-col>
             <v-col cols="12">
               <v-textarea
+                v-if="!reviewExists()"
                 label="Review"
-                v-model="editParticipation.memberReview"
                 :rules="[(v) => !!v || 'Review is required']"
-                data-cy="participantsReviewInput"
+                required
+                v-model="editParticipation.volunteerReview"
+                data-cy="reviewInput"
                 auto-grow
                 rows="1"
-                :readonly="memberReviewAlreadyExists"
+              ></v-textarea>
+              <v-textarea
+                v-else
+                label="Review"
+                v-model="editParticipation.memberReview"
+                :readonly="true"
+                data-cy="reviewInput"
+                auto-grow
+                rows="1"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -49,20 +59,18 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          color="primary"
-          dark
+          color="blue-darken-1"
           variant="text"
           @click="$emit('close-participation-dialog')"
         >
           Close
         </v-btn>
         <v-btn
-          v-if="isReviewValid && !memberReviewAlreadyExists"
-          color="primary"
-          dark
+          v-if="!reviewExists() && isReviewValid()"
+          color="blue-darken-1"
           variant="text"
-          @click="createUpdateParticipation"
-          data-cy="createParticipation"
+          @click="updateParticipation"
+          data-cy="saveParticipation"
         >
           Save
         </v-btn>
@@ -79,24 +87,30 @@ import Participation from '@/models/participation/Participation';
 @Component({
   methods: { ISOtoString },
 })
-export default class ParticipationSelectionDialog extends Vue {
+export default class ParticipationDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Participation, required: true })
-  readonly participation!: Participation;
+  @Prop({ type: Participation, required: true }) readonly participation!: Participation;
+  @Prop({ type: Boolean, required: true }) readonly is_update!: Boolean;
 
-  participations: Participation[] = [];
   editParticipation: Participation = new Participation();
+
+  reviewExists() {
+    return (
+      !!this.participation.memberRating && !!this.participation.volunteerRating
+    );
+  }
 
   async created() {
     this.editParticipation = new Participation(this.participation);
-    this.participations = await RemoteServices.getActivityParticipations(this.editParticipation.activityId);
+    this.editParticipation.activityId = this.participation.activityId;
+    this.editParticipation.volunteerId = this.participation.volunteerId;
   }
 
-  get isReviewValid(): boolean {
+  isReviewValid(): boolean {
     return (
-      !!this.editParticipation.memberReview &&
-      this.editParticipation.memberReview.length >= 10 &&
-      this.editParticipation.memberReview.length < 100
+      !!this.editParticipation.volunteerReview &&
+      this.editParticipation.volunteerReview.length >= 10 &&
+      this.editParticipation.volunteerReview.length < 100
     );
   }
 
@@ -106,32 +120,20 @@ export default class ParticipationSelectionDialog extends Vue {
     const parsedValue = parseInt(value);
     return parsedValue >= 1 && parsedValue <= 5;
   }
-  get memberReviewAlreadyExists() {
-    let existingParticipation = this.participations.find(
-      (p) =>
-        p.activityId === this.editParticipation.activityId &&
-        p.volunteerId === this.editParticipation.volunteerId
-    );
-    if (existingParticipation) {
-      return !!(existingParticipation.memberReview && existingParticipation.memberRating);
-    }
-  }
 
-  async createUpdateParticipation() {
+  async updateParticipation() {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try {
-        const result =
-          this.editParticipation.id !== null
-            ? await RemoteServices.updateParticipationMember(
-                this.editParticipation.id,
-                this.editParticipation,
-              )
-            : await RemoteServices.createParticipation(
-                this.editParticipation.activityId!,
-                this.editParticipation,
-              );
-        this.$emit('save-participation', result);
-        this.$emit('close-participation-dialog');
+        if (this.editParticipation.id !== null) {
+          const result = await RemoteServices.updateParticipationVolunteer(
+            this.editParticipation.id,
+            this.editParticipation,
+          );
+          this.$emit('save-participation', result);
+          this.$emit('close-participation-dialog');
+        } else {
+          throw new Error('Participation ID is required for updating');
+        }
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
