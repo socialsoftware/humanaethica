@@ -81,8 +81,16 @@
     <reports-dialog
       v-if="listReportsDialog"
       v-model="listReportsDialog"
-      :activity="currentActivtiy"
+      :activity="currentActivity"
       v-on:close-enrollment-dialog="onCloseReportsDialog"
+    />
+    <suspend-activity-dialog
+      v-if="currentActivity && suspendActivityDialog"
+      v-model="suspendActivityDialog"
+      :activity="currentActivity"
+      :themes="themes"
+      v-on:suspend-activity="onSuspendActivity"
+      v-on:close-activity-dialog="onCloseSuspendActivityDialog"
     />
   </v-card>
 </template>
@@ -95,10 +103,12 @@ import ListReportsDialog from '@/views/admin/ListReportsDialog.vue';
 import { show } from 'cli-cursor';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
+import SuspendActivityDialog from '@/views/member/SuspendActivityDialog.vue';
 
 @Component({
   components: {
     'reports-dialog': ListReportsDialog,
+    'suspend-activity-dialog': SuspendActivityDialog,
   },
   methods: { show },
 })
@@ -108,8 +118,9 @@ export default class AdminActivitiesView extends Vue {
   institutions: Institution[] = [];
   search: string = '';
 
-  currentActivtiy: Activity | null = null;
+  currentActivity: Activity | null = null;
   listReportsDialog: boolean = false;
+  suspendActivityDialog: boolean = false;
 
   headers: object = [
     {
@@ -221,12 +232,24 @@ export default class AdminActivitiesView extends Vue {
       }
     }
   }
-  async suspendActivity(activity: Activity) {
+
+  suspendActivity(activity: Activity) {
+    this.currentActivity = activity;
+    this.suspendActivityDialog = true;
+  }
+
+  onCloseSuspendActivityDialog() {
+    this.currentActivity = null;
+    this.suspendActivityDialog = false;
+  }
+
+  async onSuspendActivity(activity: Activity) {
     if (activity.id !== null) {
       try {
-        const result = await RemoteServices.suspendActivity(activity.id);
         this.activities = this.activities.filter((a) => a.id !== activity.id);
-        this.activities.unshift(result);
+        this.activities.unshift(activity);
+        this.currentActivity = null;
+        this.suspendActivityDialog = false;
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -234,13 +257,13 @@ export default class AdminActivitiesView extends Vue {
   }
 
   openReportsDialog(activity: Activity) {
-    this.currentActivtiy = activity;
+    this.currentActivity = activity;
     this.listReportsDialog = true;
   }
 
   onCloseReportsDialog() {
     this.listReportsDialog = false;
-    this.currentActivtiy = null;
+    this.currentActivity = null;
   }
 }
 </script>
