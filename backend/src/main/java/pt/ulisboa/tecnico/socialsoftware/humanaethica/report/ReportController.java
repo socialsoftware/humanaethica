@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.dto.ReportDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.dto.ReportDto;
@@ -38,6 +39,14 @@ public class ReportController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return reportService.createReport(userId, activityId, reportDto);
     }
+
+    @DeleteMapping("/reports/{reportId}")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER')) and hasPermission(#reportId, 'REPORT.MANAGER')")
+    public ReportDto removeReport(@PathVariable Integer reportId){
+        return reportService.removeReport(reportId);
+    }
+
+
     
 }
  
