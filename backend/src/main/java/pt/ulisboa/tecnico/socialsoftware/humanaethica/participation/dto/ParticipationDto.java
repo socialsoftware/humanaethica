@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class ParticipationDto {
@@ -16,15 +17,29 @@ public class ParticipationDto {
 
     public ParticipationDto() {}
 
-    public ParticipationDto(Participation participation) {
+
+    public ParticipationDto(Participation participation,  User.Role userRole) {
         this.id = participation.getId();
         this.activityId = participation.getActivity().getId();
         this.volunteerId = participation.getVolunteer().getId();
         this.acceptanceDate = DateHandler.toISOString(participation.getAcceptanceDate());
-        this.memberRating = participation.getMemberRating();
-        this.memberReview = participation.getMemberReview();
-        this.volunteerRating = participation.getVolunteerRating();
-        this.volunteerReview = participation.getVolunteerReview();
+
+        if (userRole == User.Role.MEMBER) {
+            this.memberRating = participation.getMemberRating();
+            this.memberReview = participation.getMemberReview();
+            if (participation.getMemberReview() != null) {
+                this.volunteerRating = participation.getVolunteerRating();
+                this.volunteerReview = participation.getVolunteerReview();
+            }
+        } else if (userRole == User.Role.VOLUNTEER) {
+            this.volunteerRating = participation.getVolunteerRating();
+            this.volunteerReview = participation.getVolunteerReview();
+            if (participation.getVolunteerReview() != null) {
+                this.memberRating = participation.getMemberRating();
+                this.memberReview = participation.getMemberReview();
+            }
+        }
+
     }
 
     public Integer getId() {

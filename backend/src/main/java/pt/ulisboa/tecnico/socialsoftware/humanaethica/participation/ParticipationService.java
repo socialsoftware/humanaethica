@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
@@ -35,7 +36,7 @@ public class ParticipationService {
 
         return participationRepository.getParticipationsByActivityId(activityId).stream()
                 .sorted(Comparator.comparing(Participation::getAcceptanceDate))
-                .map(ParticipationDto::new)
+                .map(participation -> new ParticipationDto(participation, User.Role.VOLUNTEER))
                 .toList();
     }
 
@@ -45,7 +46,7 @@ public class ParticipationService {
 
         return participationRepository.getParticipationsForVolunteerId(userId).stream()
                 .sorted(Comparator.comparing(Participation::getAcceptanceDate))
-                .map(ParticipationDto::new)
+                .map(participation -> new ParticipationDto(participation, User.Role.VOLUNTEER))
                 .toList();
     }
 
@@ -55,7 +56,7 @@ public class ParticipationService {
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
         participation.memberRating(participationDto);
-        return new ParticipationDto(participation);
+        return new ParticipationDto(participation, User.Role.MEMBER);
     }
 
 
@@ -65,7 +66,7 @@ public class ParticipationService {
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
         participation.volunteerRating(participationDto);
-        return new ParticipationDto(participation);
+        return new ParticipationDto(participation,  User.Role.VOLUNTEER);
     }
 
 
@@ -84,7 +85,7 @@ public class ParticipationService {
         Participation participation = new Participation(activity, volunteer, participationDto);
         participationRepository.save(participation);
 
-        return new ParticipationDto(participation);
+        return new ParticipationDto(participation, User.Role.MEMBER);
     }
 
 
@@ -96,6 +97,6 @@ public class ParticipationService {
 
         participation.delete();
         participationRepository.delete(participation);
-        return new ParticipationDto(participation);
+        return new ParticipationDto(participation,  User.Role.VOLUNTEER);
     }
 }

@@ -24,8 +24,6 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
     def volunteer
     def participationId
     def member
-    def participationDtoMember
-    def participationDtoVolunteer
 
     def setup() {
         deleteAll()
@@ -93,14 +91,11 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         then: "check response"
         response.memberRating == 1
         response.memberReview == "NEW REVIEW"
-        response.volunteerRating == 5
-        response.volunteerReview == VOLUNTEER_REVIEW
         and: 'check database'
         participationRepository.count() == 1
         def participation = participationRepository.findAll().get(0)
         participation.getMemberRating() == 1
         participation.getMemberReview() == "NEW REVIEW"
-
 
 
 

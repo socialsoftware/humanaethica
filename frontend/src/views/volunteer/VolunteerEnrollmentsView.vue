@@ -85,6 +85,23 @@
             </template>
             <span>Write Assessment</span>
           </v-tooltip>
+          <v-tooltip v-if="canRate(item)" bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="blue"
+                darken-5
+                v-on="on"
+                data-cy="writeParticipationButton"
+                @click="giveRating(item)"
+              >
+                {{ getIcon(item) ? 'fa-eye' : 'fa-solid fa-pen' }}
+              </v-icon>
+            </template>
+            <span>{{
+              getIcon(item) ? 'Check Member Rating' : 'Give Rating'
+            }}</span>
+          </v-tooltip>
         </template>
       </v-data-table>
       <enrollment-dialog
@@ -100,6 +117,13 @@
         :assessment="currentAssessment"
         v-on:save-assessment="onSaveAssessment"
         v-on:close-assessment-dialog="onCloseAssessmentDialog"
+      />
+      <participation-dialog
+        v-if="currentParticipation && editParticipationDialog"
+        v-model="editParticipationDialog"
+        :participation="currentParticipation"
+        v-on:save-participation="onSaveParticipation"
+        v-on:close-participation-dialog="onCloseParticipationDialog"
       />
       <report-dialog
         v-if="currentReport && createReportDialog"
@@ -122,13 +146,16 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
 import Assessment from '@/models/assessment/Assessment';
 import Participation from '@/models/participation/Participation';
+import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue';
 import ReportDialog from '@/views/volunteer/ReportDialog.vue';
 import Report from '@/models/report/Report';
+
 
 @Component({
   components: {
     'assessment-dialog': AssessmentDialog,
     'enrollment-dialog': EnrollmentDialog,
+    'participation-dialog': ParticipationDialog,
     'report-dialog': ReportDialog,
   },
   methods: { show },
@@ -147,9 +174,13 @@ export default class VolunteerEnrollmentsView extends Vue {
   currentAssessment: Assessment | null = null;
   editAssessmentDialog: boolean = false;
 
+  currentParticipation: Participation | null = null;
+  editParticipationDialog: boolean = false;
+
   currentActivtiy: Activity | null = null;
   currentReport: Report | null = null;
   createReportDialog: boolean = false;
+
 
   headers: object = [
     {
@@ -269,6 +300,15 @@ export default class VolunteerEnrollmentsView extends Vue {
     );
   }
 
+  canRate(activity: Activity) {
+    const enrollment = this.enrollments.find(
+      (e: Enrollment) => e.activityId === activity.id,
+    );
+    let endDate = new Date(activity.endingDate);
+    let now = new Date();
+    return now > endDate && enrollment && enrollment.participating;
+  }
+
   editEnrollmentForActivity(activity: Activity) {
     const index = this.enrollments.findIndex(
       (e: Enrollment) => e.activityId == activity.id,
@@ -310,15 +350,66 @@ export default class VolunteerEnrollmentsView extends Vue {
     );
   }
 
-  writeAssessment(activity: Activity) {
-    this.currentAssessment = new Assessment();
-    this.currentAssessment.institutionId = activity.institution.id;
-    this.editAssessmentDialog = true;
+  giveRating(activity: Activity) {
+    let activityId = activity.id;
+    const enrollment = this.enrollments.find(
+      (e: Enrollment) => e.activityId === activity.id,
+    );
+    let volunteerId = enrollment?.volunteerId;
+
+    let existingParticipation = this.participations.find(
+      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    );
+
+    if (existingParticipation) {
+      this.currentParticipation = existingParticipation;
+      this.currentParticipation.activityId = activityId;
+      this.currentParticipation.volunteerId = volunteerId;
+      this.editParticipationDialog = true;
+    }
+  }
+
+  getIcon(activity: Activity) {
+    const enrollment = this.enrollments.find(
+      (e: Enrollment) => e.activityId === activity.id,
+    );
+
+    if (enrollment) {
+      const existingParticipation = this.participations.find(
+        (p) =>
+          p.activityId === activity.id &&
+          p.volunteerId === enrollment.volunteerId &&
+          p.memberRating &&
+          p.volunteerRating,
+      );
+      if (existingParticipation) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  onCloseParticipationDialog() {
+    this.editParticipationDialog = false;
+    this.currentParticipation = null;
+  }
+
+  async onSaveParticipation() {
+    this.editParticipationDialog = false;
+    this.currentParticipation = null;
+    this.participations = await RemoteServices.getVolunteerParticipations();
   }
 
   onCloseAssessmentDialog() {
     this.editAssessmentDialog = false;
     this.currentAssessment = null;
+  }
+
+  writeAssessment(activity: Activity) {
+    this.currentAssessment = new Assessment();
+    this.currentAssessment.institutionId = activity.institution.id;
+    this.editAssessmentDialog = true;
   }
 
   async onSaveAssessment(assessment: Assessment) {
