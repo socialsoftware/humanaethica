@@ -87,4 +87,8 @@ public class Volunteer extends User {
     public void removeReport(Report report) {
         this.reports.remove(report);
     }
+
+    public List<Report> getReports() {
+        return reports;
+    }
 }
