@@ -40,6 +40,19 @@
             </template>
             <span>Report Activity</span>
           </v-tooltip>
+          <v-tooltip v-if="item.state === 'REPORTED' && canUnReport(item)" bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="blue"
+                v-on="on"
+                data-cy="UnReportButton"
+                @click="unReportActivity(item)"
+                >warning</v-icon
+              >
+            </template>
+            <span>Unreport Activity</span>
+          </v-tooltip>
           <v-tooltip v-if="item.state === 'APPROVED' && canEnroll(item)" bottom>
             <template v-slot:activator="{ on }">
               <v-icon
@@ -210,6 +223,7 @@ export default class VolunteerActivitiesView extends Vue {
       this.enrollments = await RemoteServices.getVolunteerEnrollments();
       this.participations = await RemoteServices.getVolunteerParticipations();
       this.assessments = await RemoteServices.getVolunteerAssessments();
+      this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -327,6 +341,47 @@ export default class VolunteerActivitiesView extends Vue {
     }
 
     this.currentActivtiy = null;
+  }
+
+  canUnReport(activity: Activity) {
+    let deadline = new Date(activity.endingDate);
+    let now = new Date();
+
+    return (
+      deadline > now &&
+      this.reports.some((r: Report) => r.activityId === activity.id)
+    );
+  }
+
+
+  async unReportActivity(activity: Activity) {
+    const index = this.reports.findIndex(
+      (r: Report) => r.activityId == activity.id,
+    );
+    this.currentReport = this.reports[index];
+
+    if (activity.id !== null) {
+      try {
+        const result = await RemoteServices.validateActivity(
+          activity.id,
+        );
+        this.activities = this.activities.filter((a) => a.id !== activity.id);
+        this.activities.unshift(result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+
+    if (this.currentReport.id !== null) {
+      try {
+        await RemoteServices.deleteReport(this.currentReport.id);
+        this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+    this.currentReport = null;
+   
   }
 }
 </script>

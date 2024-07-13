@@ -714,6 +714,30 @@ export default class RemoteServices {
       });
   }
 
+  static async deleteReport(reportId: number) {
+    return httpClient
+      .delete(`/reports/${reportId}`)
+      .then((response) => {
+        return new Report(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getVolunteerReportsAsVolunteer(): Promise<Report[]> {
+    return httpClient
+      .get('/reports/volunteer')
+      .then((response) => {
+        return response.data.map((report: any) => {
+          return new Report(report);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   // Theme Controller
 
   static async getThemes(): Promise<Theme[]> {
