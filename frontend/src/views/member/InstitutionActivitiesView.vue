@@ -52,7 +52,7 @@
           </template>
           <span>Show Applications</span>
         </v-tooltip>
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.state != 'SUSPENDED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
