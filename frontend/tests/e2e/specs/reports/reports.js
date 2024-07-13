@@ -60,4 +60,42 @@ describe('Report', () => {
 
   });
 
+  it('delete a report', () => {
+  const JUSTIFICATION = 'Justification Exampe';
+
+  // first volunteer create an report
+  cy.demoVolunteerLogin()
+  cy.get('[data-cy="volunteerActivities"]').click();
+  cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+  .eq(0)
+  .find('[data-cy="reportButton"]').click();
+  cy.get('[data-cy="justificationInput"]').type(JUSTIFICATION);
+  cy.get('[data-cy="saveReport"]').click()
+
+  // volunteer delete the report and checks that is APPROVED again
+    
+  cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+  .eq(0)
+  .find('[data-cy="UnReportButton"]').click();
+  
+  cy.get('[data-cy="volunteerActivitiesTable"] tbody tr')
+  .eq(0)
+  .children()
+  .eq(6)
+  .should('contain', "APPROVED")
+
+  cy.logout();
+  
+  // admin login and check that the activity is APPROVED
+  cy.demoAdminLogin()
+    
+  cy.get('[data-cy="admin"]').click();
+  cy.get('[data-cy="adminActivities"]').click();
+  cy.get('[data-cy="adminActivitiesTable"] tbody tr')
+  .eq(0)
+  .children()
+  .eq(11)
+  .should('contain', "APPROVED")
+    
+  });
 });
