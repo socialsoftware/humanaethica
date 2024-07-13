@@ -14,13 +14,15 @@
         <v-form ref="form" lazy-validation>
           <v-row>
             <v-col cols="12">
-              <v-text-field
+              <v-textarea
                 label="*Motivation"
                 :rules="[(v) => !!v || 'Motivation is required']"
                 required
                 v-model="editEnrollment.motivation"
                 data-cy="motivationInput"
-              ></v-text-field>
+                auto-grow
+                rows="1"
+              ></v-textarea>
             </v-col>
           </v-row>
         </v-form>
