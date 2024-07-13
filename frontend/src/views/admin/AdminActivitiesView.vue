@@ -34,6 +34,7 @@
         <v-chip
           v-if="item.state === 'REPORTED'"
           class="clickable"
+          color="blue"
           data-cy="reportedButton"
           @click="openReportsDialog(item)"
         >

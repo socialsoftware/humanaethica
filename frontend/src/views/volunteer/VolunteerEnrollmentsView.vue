@@ -26,6 +26,25 @@
             {{ theme.completeName }}
           </v-chip>
         </template>
+        <template v-slot:[`item.state`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-chip
+                v-if="item.state === 'REPORTED'"
+                class="mouseover"
+                @mouseover="showJustification(item)"
+                @mouseleave="hideJustification(item)"
+                v-on="on"
+              >
+                {{ item.state }}
+              </v-chip>
+              <v-chip v-else>
+                {{ item.state }}
+              </v-chip>
+            </template>
+            <span v-html="formattedJustification(item.justification)"></span>
+          </v-tooltip>
+        </template>
         <template v-slot:[`item.action`]="{ item }">
           <v-tooltip v-if="item.state === 'APPROVED' && canReport(item)" bottom>
             <template v-slot:activator="{ on }">
@@ -40,7 +59,10 @@
             </template>
             <span>Report Activity</span>
           </v-tooltip>
-          <v-tooltip v-if="item.state === 'REPORTED' && canUnReport(item)" bottom>
+          <v-tooltip
+            v-if="item.state === 'REPORTED' && canUnReport(item)"
+            bottom
+          >
             <template v-slot:activator="{ on }">
               <v-icon
                 class="mr-2 action-button"
@@ -163,7 +185,6 @@ import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue';
 import ReportDialog from '@/views/volunteer/ReportDialog.vue';
 import Report from '@/models/report/Report';
 
-
 @Component({
   components: {
     'assessment-dialog': AssessmentDialog,
@@ -193,7 +214,6 @@ export default class VolunteerEnrollmentsView extends Vue {
   currentActivtiy: Activity | null = null;
   currentReport: Report | null = null;
   createReportDialog: boolean = false;
-
 
   headers: object = [
     {
@@ -480,7 +500,6 @@ export default class VolunteerEnrollmentsView extends Vue {
     );
   }
 
-
   async unReportActivity(activity: Activity) {
     const index = this.reports.findIndex(
       (r: Report) => r.activityId == activity.id,
@@ -489,9 +508,7 @@ export default class VolunteerEnrollmentsView extends Vue {
 
     if (activity.id !== null) {
       try {
-        const result = await RemoteServices.validateActivity(
-          activity.id,
-        );
+        const result = await RemoteServices.validateActivity(activity.id);
         this.activities = this.activities.filter((a) => a.id !== activity.id);
         this.activities.unshift(result);
       } catch (error) {
@@ -508,9 +525,33 @@ export default class VolunteerEnrollmentsView extends Vue {
       }
     }
     this.currentReport = null;
-   
+  }
+
+  async showJustification(activity: Activity) {
+    const index = this.reports.findIndex(
+      (r: Report) => r.activityId == activity.id,
+    );
+    this.currentReport = this.reports[index];
+
+    if (this.currentReport) {
+      this.$set(activity, 'justification', this.currentReport.justification);
+      this.$set(activity, 'showJustification', true);
+    }
+  }
+
+  async hideJustification(activity: Activity) {
+    this.$set(activity, 'showJustification', false);
+  }
+
+  formattedJustification(justification: String) {
+    if (!justification) return '';
+    return justification.replace(/(.{20})/g, '$1<br>');
   }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.mouseover {
+  cursor: pointer;
+}
+</style>
