@@ -61,7 +61,7 @@ describe('Enrollment', () => {
       .should('have.length', 1)
       .eq(0)
       .children()
-      .should('have.length', 5)
+      .should('have.length', 7)
       .eq(1)
       .should('contain', MOTIVATION)
 
