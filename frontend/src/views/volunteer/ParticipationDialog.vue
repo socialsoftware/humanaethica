@@ -2,52 +2,25 @@
   <v-dialog v-model="dialog" persistent width="800">
     <v-card>
       <v-card-title>
-        <span class="headline">
-         {{
-            reviewExists() ? 'Member Rating' : 'Your Rating'
-          }}
-        </span>
+        <span class="headline"> Write Rating </span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form" lazy-validation>
           <v-row>
             <v-col cols="12" class="d-flex align-center">
               <v-text-field
-                v-if="!reviewExists()"
                 label="Rating"
                 :rules="[(v) => isNumberValid(v) || 'Rating between 1 and 5']"
                 v-model="editParticipation.volunteerRating"
                 data-cy="ratingInput"
               ></v-text-field>
-              <v-rating
-                v-else
-                v-model="editParticipation.memberRating"
-                length="5"
-                color="yellow"
-                data-cy="ratingInput"
-                half-increments
-                readonly
-              ></v-rating>
-              <span v-if="reviewExists()" class="ml-2"
-                >{{ editParticipation.memberRating }}/5
-              </span>
             </v-col>
             <v-col cols="12">
               <v-textarea
-                v-if="!reviewExists()"
                 label="Review"
                 :rules="[(v) => !!v || 'Review is required']"
                 required
                 v-model="editParticipation.volunteerReview"
-                data-cy="reviewInput"
-                auto-grow
-                rows="1"
-              ></v-textarea>
-              <v-textarea
-                v-else
-                label="Review"
-                v-model="editParticipation.memberReview"
-                :readonly="true"
                 data-cy="reviewInput"
                 auto-grow
                 rows="1"
@@ -66,7 +39,7 @@
           Close
         </v-btn>
         <v-btn
-          v-if="!reviewExists() && isReviewValid()"
+          v-if="isReviewValid && isRatingValid"
           color="blue-darken-1"
           variant="text"
           @click="updateParticipation"
@@ -89,29 +62,26 @@ import Participation from '@/models/participation/Participation';
 })
 export default class ParticipationDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Participation, required: true }) readonly participation!: Participation;
+  @Prop({ type: Participation, required: true })
+  readonly participation!: Participation;
   @Prop({ type: Boolean, required: true }) readonly is_update!: Boolean;
 
   editParticipation: Participation = new Participation();
 
-  reviewExists() {
-    return (
-      !!this.participation.memberRating && !!this.participation.volunteerRating
-    );
-  }
-
   async created() {
     this.editParticipation = new Participation(this.participation);
-    this.editParticipation.activityId = this.participation.activityId;
-    this.editParticipation.volunteerId = this.participation.volunteerId;
   }
 
-  isReviewValid(): boolean {
+  get isReviewValid(): boolean {
     return (
       !!this.editParticipation.volunteerReview &&
       this.editParticipation.volunteerReview.length >= 10 &&
       this.editParticipation.volunteerReview.length < 100
     );
+  }
+
+  get isRatingValid(): boolean {
+    return !!this.editParticipation.volunteerRating;
   }
 
   isNumberValid(value: any) {
