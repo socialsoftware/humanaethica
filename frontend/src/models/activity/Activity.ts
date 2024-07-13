@@ -48,6 +48,7 @@ export default class Activity {
         this.formattedApplicationDeadline = ISOtoString(
           jsonObj.applicationDeadline,
         );
+      this.suspensionJustification = jsonObj.suspensionJustification;
     }
   }
 }
