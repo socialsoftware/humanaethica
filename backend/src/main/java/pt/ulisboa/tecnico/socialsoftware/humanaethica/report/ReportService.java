@@ -80,6 +80,16 @@ public class ReportService {
         return new ReportDto(report);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ReportDto> getVolunteerReportsAsVolunteer(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+
+        return reportRepository.getReportsForVolunteerId(userId).stream()
+                .sorted(Comparator.comparing(Report::getReportDateTime))
+                .map(ReportDto::new)
+                .toList();
+    }
+
 
 
 }

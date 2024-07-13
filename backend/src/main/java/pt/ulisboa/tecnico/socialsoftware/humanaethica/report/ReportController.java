@@ -46,6 +46,13 @@ public class ReportController {
         return reportService.removeReport(reportId);
     }
 
+    @GetMapping("/reports/volunteer")
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
+    public List<ReportDto> getVolunteerReportsAsVolunteer(Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return reportService.getVolunteerReportsAsVolunteer(userId);
+    }
+
 
     
 }
