@@ -52,6 +52,19 @@
           </template>
           <span>Show Applications</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="red"
+              v-on="on"
+              data-cy="suspendButton"
+              @click="suspendActivity(item)"
+              >mdi-pause-octagon</v-icon
+            >
+          </template>
+          <span>Suspend Activity</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <activity-dialog
@@ -61,6 +74,14 @@
       :themes="themes"
       v-on:save-activity="onSaveActivity"
       v-on:close-activity-dialog="onCloseActivityDialog"
+    />
+    <suspend-activity-dialog
+      v-if="currentActivity && suspendActivityDialog"
+      v-model="suspendActivityDialog"
+      :activity="currentActivity"
+      :themes="themes"
+      v-on:suspend-activity="onSuspendActivity"
+      v-on:close-activity-dialog="onCloseSuspendActivityDialog"
     />
   </v-card>
 </template>
@@ -72,10 +93,12 @@ import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
 import Activity from '@/models/activity/Activity';
 import ActivityDialog from '@/views/member/ActivityDialog.vue';
+import SuspendActivityDialog from '@/views/member/SuspendActivityDialog.vue';
 
 @Component({
   components: {
     'activity-dialog': ActivityDialog,
+    'suspend-activity-dialog': SuspendActivityDialog,
   },
 })
 export default class InstitutionActivitiesView extends Vue {
@@ -85,6 +108,7 @@ export default class InstitutionActivitiesView extends Vue {
 
   currentActivity: Activity | null = null;
   editActivityDialog: boolean = false;
+  suspendActivityDialog: boolean = false;
 
   headers: object = [
     {
@@ -202,6 +226,27 @@ export default class InstitutionActivitiesView extends Vue {
     this.institution.activities.unshift(activity);
     this.editActivityDialog = false;
     this.currentActivity = null;
+  }
+
+  suspendActivity(activity: Activity) {
+    this.currentActivity = activity;
+    this.suspendActivityDialog = true;
+  }
+
+  onCloseSuspendActivityDialog() {
+    this.currentActivity = null;
+    this.suspendActivityDialog = false;
+  }
+
+  async onSuspendActivity(activity: Activity) {
+    if (activity.id !== null) {
+      this.editActivityDialog = false;
+      this.currentActivity = null;
+
+      let userId = this.$store.getters.getUser.id;
+      this.institution = await RemoteServices.getInstitution(userId);
+      this.themes = await RemoteServices.getThemesAvailable();
+    }
   }
 
   async showEnrollments(activity: Activity) {

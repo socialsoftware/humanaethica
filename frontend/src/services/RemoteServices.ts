@@ -448,9 +448,9 @@ export default class RemoteServices {
       });
   }
 
-  static async suspendActivity(activityId: number) {
+  static async suspendActivity(activityId: number, justification: string) {
     return httpClient
-      .put(`/activities/${activityId}/suspend`)
+      .put(`/activities/${activityId}/suspend/${justification}`)
       .then((response) => {
         return new Activity(response.data);
       })
@@ -669,9 +669,7 @@ export default class RemoteServices {
   static async deleteAssessment(assessmentId: number): Promise<Assessment> {
     return httpClient
       .delete(`/assessments/${assessmentId}`)
-      .then((response) => {
-        return new Assessment(response.data);
-      })
+      .then((response) => new Assessment(response.data))
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
