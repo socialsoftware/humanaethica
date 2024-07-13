@@ -100,18 +100,6 @@ export default class ParticipationSelectionDialog extends Vue {
     const parsedValue = parseInt(value);
     return parsedValue >= 1 && parsedValue <= 5;
   }
-  get memberReviewAlreadyExists() {
-    let existingParticipation = this.participations.find(
-      (p) =>
-        p.activityId === this.editParticipation.activityId &&
-        p.volunteerId === this.editParticipation.volunteerId,
-    );
-    if (existingParticipation) {
-      return !!(
-        existingParticipation.memberReview && existingParticipation.memberRating
-      );
-    }
-  }
 
   async createUpdateParticipation() {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
