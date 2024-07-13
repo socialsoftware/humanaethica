@@ -136,7 +136,10 @@ describe('Participation', () => {
       .children()
       .eq(2)
       .invoke('text')
-      .should('equal','The volunteer did an okay job\nRating: 3/5');
+      .should('include', 'The volunteer did an okay job')
+      .and('include', 'Rating: ')
+      .and('match', /★{3}☆{2} 3\/5/);
+
 
 
     // open edit participation dialog
@@ -160,9 +163,12 @@ describe('Participation', () => {
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2)
+      .eq(2)  // Assuming this is the correct index for the rating column
       .invoke('text')
-      .should('equal','The volunteer did a good job\nRating: 5/5');
+      .should('include', 'The volunteer did a good job')
+      .and('include', 'Rating: ')
+      .and('match', /★{5} 5\/5/);
+
 
     // verify participation status
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
@@ -197,9 +203,12 @@ describe('Participation', () => {
     cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(6)
+      .eq(6)  // Assuming this is the correct index for the rating column
       .invoke('text')
-      .should('equal','The volunteer did a good job\nRating: 5/5');
+      .should('include', 'The volunteer did a good job')
+      .and('include', 'Rating: ')
+      .and('match', /★{5} 5\/5/);
+
 
     // Verify the member review
     cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
@@ -207,7 +216,10 @@ describe('Participation', () => {
       .children()
       .eq(7)
       .invoke('text')
-      .should('equal','The activity was well organized\nRating: 3/5');
+      .should('include', 'The activity was well organized')
+      .and('include', 'Rating: ')
+      .and('match', /★{3}☆{2} 3\/5/);
+
 
     cy.logout();
 
@@ -234,12 +246,16 @@ describe('Participation', () => {
     cy.wait('@enrollments');
 
     // Check if rating was updated
+    // Update the assertion to match the new format with stars
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2)
+      .eq(2)  // Assuming this is the correct index for the rating column
       .invoke('text')
-      .should('equal','The volunteer did a good job\nRating: 5/5');
+      .should('include', 'The volunteer did a good job')
+      .and('include', 'Rating: ')
+      .and('match', /★{5} 5\/5/);
+
 
     // Verify the member review
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
@@ -247,7 +263,10 @@ describe('Participation', () => {
       .children()
       .eq(3)
       .invoke('text')
-      .should('equal','The activity was well organized\nRating: 3/5');
+      .should('include', 'The activity was well organized')
+      .and('include', 'Rating: ')
+      .and('match', /★{3}☆{2} 3\/5/);
+
 
     cy.logout();
 

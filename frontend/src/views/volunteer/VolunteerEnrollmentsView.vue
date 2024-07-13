@@ -300,7 +300,8 @@ export default class VolunteerEnrollmentsView extends Vue {
     ) {
       return '';
     }
-    return `${participation.memberReview}\nRating: ${participation.memberRating}/5`;
+    const stars = this.convertToStars(participation.memberRating);
+    return `${participation.memberReview}\nRating: ${stars}`;
   }
   getVolunteerReview(activity: Activity): string {
     const participation = this.participations.find(
@@ -313,8 +314,18 @@ export default class VolunteerEnrollmentsView extends Vue {
     ) {
       return '';
     }
-    return `${participation.volunteerReview}\nRating: ${participation.volunteerRating}/5`;
+    const stars = this.convertToStars(participation.volunteerRating);
+    return `${participation.volunteerReview}\nRating: ${stars}`;
   }
+
+
+ convertToStars(rating: number): string {
+   const fullStars = '★'.repeat(Math.floor(rating));
+   const emptyStars = '☆'.repeat(Math.floor(5 - rating));
+   return `${fullStars}${emptyStars} ${rating}/5`;
+  }
+
+
 
   async deleteEnrollmentForActivity(activity: Activity) {
     const index = this.enrollments.findIndex(
