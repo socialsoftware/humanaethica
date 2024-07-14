@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.dto.EnrollmentDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.dto.ReportDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
@@ -64,5 +66,30 @@ public class ReportService {
 
         return new ReportDto(report);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ReportDto removeReport(Integer reportId) {
+        if (reportId == null) throw new HEException(REPORT_NOT_FOUND);
+
+        Report report = reportRepository.findById(reportId).orElseThrow(() -> new HEException(REPORT_NOT_FOUND, reportId));
+        
+        report.delete();
+
+        reportRepository.delete(report);
+
+        return new ReportDto(report);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ReportDto> getVolunteerReportsAsVolunteer(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+
+        return reportRepository.getReportsForVolunteerId(userId).stream()
+                .sorted(Comparator.comparing(Report::getReportDateTime))
+                .map(ReportDto::new)
+                .toList();
+    }
+
+
 
 }

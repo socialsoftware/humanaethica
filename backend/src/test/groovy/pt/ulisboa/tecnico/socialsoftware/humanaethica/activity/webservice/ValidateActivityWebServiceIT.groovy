@@ -102,21 +102,41 @@ class ValidateActivityWebServiceIT extends SpockTest {
         activity.state == Activity.State.REPORTED
     }
 
-    def "volunteer tries to validate activity"() {
+    def "volunteer validate activity"() {
         given:
         demoVolunteerLogin()
 
-        when:
-        webClient.put()
+        when: 'validate'
+        def response = webClient.put()
                 .uri('/activities/' + activityId + '/validate')
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
                 .block()
 
-        then: "error is thrown"
+        then: "check response"
+        response.state == Activity.State.APPROVED.name()
+        and: 'database'
+        activityRepository.findAll().size() == 1
+        def activity = activityRepository.findAll().get(0)
+        activity.state == Activity.State.APPROVED
+    }
+
+    def "volunteer validates activity with wrong id"() {
+        given:
+        demoVolunteerLogin()
+
+        when:
+        webClient.put()
+                .uri('/activities/' + '222' + '/validate')
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
+                .retrieve()
+                .bodyToMono(ActivityDto.class)
+                .block()
+
+        then: "error"
         def error = thrown(WebClientResponseException)
-        error.statusCode == HttpStatus.FORBIDDEN
+        error.statusCode == HttpStatus.BAD_REQUEST
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.REPORTED

@@ -26,6 +26,25 @@
             {{ theme.completeName }}
           </v-chip>
         </template>
+        <template v-slot:[`item.state`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-chip
+                v-if="item.state === 'REPORTED'"
+                class="mouseover"
+                @mouseover="showJustification(item)"
+                @mouseleave="hideJustification(item)"
+                v-on="on"
+              >
+                {{ item.state }}
+              </v-chip>
+              <v-chip v-else>
+                {{ item.state }}
+              </v-chip>
+            </template>
+            <span v-html="formattedJustification(item.justification)"></span>
+          </v-tooltip>
+        </template>
         <template v-slot:[`item.action`]="{ item }">
           <v-tooltip v-if="item.state === 'APPROVED' && canReport(item)" bottom>
             <template v-slot:activator="{ on }">
@@ -39,6 +58,22 @@
               >
             </template>
             <span>Report Activity</span>
+          </v-tooltip>
+          <v-tooltip
+            v-if="item.state === 'REPORTED' && canUnReport(item)"
+            bottom
+          >
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                color="blue"
+                v-on="on"
+                data-cy="UnReportButton"
+                @click="unReportActivity(item)"
+                >warning</v-icon
+              >
+            </template>
+            <span>Unreport Activity</span>
           </v-tooltip>
           <v-tooltip
             v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)"
@@ -150,7 +185,6 @@ import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue';
 import ReportDialog from '@/views/volunteer/ReportDialog.vue';
 import Report from '@/models/report/Report';
 
-
 @Component({
   components: {
     'assessment-dialog': AssessmentDialog,
@@ -180,7 +214,6 @@ export default class VolunteerEnrollmentsView extends Vue {
   currentActivtiy: Activity | null = null;
   currentReport: Report | null = null;
   createReportDialog: boolean = false;
-
 
   headers: object = [
     {
@@ -259,6 +292,7 @@ export default class VolunteerEnrollmentsView extends Vue {
       this.enrollments = await RemoteServices.getVolunteerEnrollments();
       this.participations = await RemoteServices.getVolunteerParticipations();
       this.assessments = await RemoteServices.getVolunteerAssessments();
+      this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -455,7 +489,69 @@ export default class VolunteerEnrollmentsView extends Vue {
 
     this.currentActivtiy = null;
   }
+
+  canUnReport(activity: Activity) {
+    let deadline = new Date(activity.endingDate);
+    let now = new Date();
+
+    return (
+      deadline > now &&
+      this.reports.some((r: Report) => r.activityId === activity.id)
+    );
+  }
+
+  async unReportActivity(activity: Activity) {
+    const index = this.reports.findIndex(
+      (r: Report) => r.activityId == activity.id,
+    );
+    this.currentReport = this.reports[index];
+
+    if (activity.id !== null) {
+      try {
+        const result = await RemoteServices.validateActivity(activity.id);
+        this.activities = this.activities.filter((a) => a.id !== activity.id);
+        this.activities.unshift(result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+
+    if (this.currentReport.id !== null) {
+      try {
+        await RemoteServices.deleteReport(this.currentReport.id);
+        this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+    this.currentReport = null;
+  }
+
+  async showJustification(activity: Activity) {
+    const index = this.reports.findIndex(
+      (r: Report) => r.activityId == activity.id,
+    );
+    this.currentReport = this.reports[index];
+
+    if (this.currentReport) {
+      this.$set(activity, 'justification', this.currentReport.justification);
+      this.$set(activity, 'showJustification', true);
+    }
+  }
+
+  async hideJustification(activity: Activity) {
+    this.$set(activity, 'showJustification', false);
+  }
+
+  formattedJustification(justification: String) {
+    if (!justification) return '';
+    return justification.replace(/(.{20})/g, '$1<br>');
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.mouseover {
+  cursor: pointer;
+}
+</style>

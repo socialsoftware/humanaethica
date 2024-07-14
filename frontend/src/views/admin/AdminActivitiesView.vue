@@ -33,7 +33,8 @@
       <template v-slot:[`item.state`]="{ item }">
         <v-chip
           v-if="item.state === 'REPORTED'"
-          class="clickable"
+          class="button"
+          color="blue"
           data-cy="reportedButton"
           @click="openReportsDialog(item)"
         >

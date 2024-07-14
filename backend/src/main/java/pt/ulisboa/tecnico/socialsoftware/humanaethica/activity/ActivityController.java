@@ -53,7 +53,7 @@ public class ActivityController {
     }
 
     @PutMapping("/{activityId}/validate")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VOLUNTEER')")
     public ActivityDto validateActivity(@PathVariable int activityId) {
         return activityService.validateActivity(activityId);
     }

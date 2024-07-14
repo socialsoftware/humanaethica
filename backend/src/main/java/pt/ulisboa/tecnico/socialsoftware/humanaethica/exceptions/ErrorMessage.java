@@ -65,6 +65,7 @@ public enum ErrorMessage {
     REPORT_REQUIRES_JUSTIFICATION("To do a report have to write a justification shorter than 256 characters"),
     REPORT_ACTIVTIY_IS_ALREADY_REPORTED("The activity is already reported"),
     REPORT_AFTER_ACTIVTY_CLOSED("The activity period is already closed"),
+    REPORT_NOT_FOUND("Report not found with id %d"),
     ;
 
     public final String label;

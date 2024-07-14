@@ -38,6 +38,14 @@ public class Report {
         verifyInvariants();
     }
 
+    public void delete(){
+        volunteer.removeReport(this);
+        activity.removeReport(this);
+
+        deleteReportBeforeActivityEnd();
+        verifyInvariants();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -102,6 +110,12 @@ public class Report {
 
     private void reportBeforeActivityEnd() {
         if (this.reportDateTime.isAfter(this.activity.getEndingDate())) {
+            throw new HEException(REPORT_AFTER_ACTIVTY_CLOSED);
+        }
+    }
+
+    private void deleteReportBeforeActivityEnd() {
+        if (LocalDateTime.now().isAfter(this.activity.getEndingDate())) {
             throw new HEException(REPORT_AFTER_ACTIVTY_CLOSED);
         }
     }

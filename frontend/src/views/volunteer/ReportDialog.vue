@@ -10,13 +10,15 @@
         <v-form ref="form" lazy-validation>
           <v-row>
             <v-col cols="12">
-              <v-text-field
+              <v-textarea
                 label="*Justification"
                 :rules="[(v) => !!v || 'Justification is required']"
                 required
                 v-model="newReport.justification"
                 data-cy="justificationInput"
-              ></v-text-field>
+                auto-grow
+                rows="1"
+              ></v-textarea>
             </v-col>
           </v-row>
         </v-form>
