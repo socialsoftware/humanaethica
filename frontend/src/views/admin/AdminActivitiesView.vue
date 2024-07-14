@@ -41,7 +41,15 @@
           {{ item.state }}
         </v-chip>
         <v-chip v-else>
-          {{ item.state }}
+          <v-tooltip bottom>
+           <template v-slot:activator="{ on }">
+              <v-chip
+                 v-on="on"
+              >{{ item.state }}
+              </v-chip>
+           </template>
+           <span>Justification: {{ item.suspensionJustification }}</span>
+         </v-tooltip>
         </v-chip>
       </template>
       <template v-slot:[`item.action`]="{ item }">

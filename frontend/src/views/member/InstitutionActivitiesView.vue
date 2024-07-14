@@ -36,8 +36,8 @@
             >{{ item.state }}
             </v-chip>
          </template>
-            <span>Justification: {{ item.suspensionJustification }}</span>
-         </v-tooltip>
+         <span>Justification: {{ item.suspensionJustification }}</span>
+       </v-tooltip>
       </template>
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip bottom>
