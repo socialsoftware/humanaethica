@@ -36,7 +36,7 @@ public class ParticipationService {
 
         return participationRepository.getParticipationsByActivityId(activityId).stream()
                 .sorted(Comparator.comparing(Participation::getAcceptanceDate))
-                .map(participation -> new ParticipationDto(participation, User.Role.VOLUNTEER))
+                .map(participation -> new ParticipationDto(participation, User.Role.MEMBER))
                 .toList();
     }
 

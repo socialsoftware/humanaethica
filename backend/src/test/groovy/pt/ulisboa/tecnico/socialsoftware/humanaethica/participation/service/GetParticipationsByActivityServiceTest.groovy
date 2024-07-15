@@ -33,11 +33,11 @@ class GetParticipationsByActivityServiceTest extends SpockTest {
         activityRepository.save(otherActivity)
 
         participationDto1 = new ParticipationDto()
-        participationDto1.volunteerRating = 1
-        participationDto1.volunteerReview = VOLUNTEER_REVIEW
+        participationDto1.memberRating = 1
+        participationDto1.memberReview = MEMBER_REVIEW
         participationDto2 = new ParticipationDto()
-        participationDto2.volunteerRating = 2
-        participationDto2.volunteerReview = VOLUNTEER_REVIEW
+        participationDto2.memberRating = 2
+        participationDto2.memberReview  = MEMBER_REVIEW
 
 
     }
@@ -55,8 +55,8 @@ class GetParticipationsByActivityServiceTest extends SpockTest {
 
         then:
         participations.size() == 2
-        participations.get(0).volunteerRating == 1
-        participations.get(1).volunteerRating == 2
+        participations.get(0).memberRating == 1
+        participations.get(1).memberRating == 2
     }
 
     def "get one participation of an activity"() {
@@ -71,7 +71,7 @@ class GetParticipationsByActivityServiceTest extends SpockTest {
 
         then:
         participations.size() == 1
-        participations.get(0).volunteerRating == 1
+        participations.get(0).memberRating == 1
     }
 
     def "activity does not exist or is null: activityId=#activityId"() {

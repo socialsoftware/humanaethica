@@ -41,8 +41,8 @@ describe('Participation', () => {
       .should('have.length', 2)
       .eq(0)
       .children()
-      .should('have.length', 5)
-      .eq(2)
+      .should('have.length', 7)
+      .eq(4)
       .should('contain', 'false')
 
     // open create participation dialog
@@ -60,7 +60,7 @@ describe('Participation', () => {
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2).should('contain', 'true')
+      .eq(4).should('contain', 'true')
 
     // return to activities view
     cy.get('[data-cy="getActivities"]').click();
@@ -109,8 +109,8 @@ describe('Participation', () => {
       .should('have.length', 2)
       .eq(0)
       .children()
-      .should('have.length', 5)
-      .eq(2)
+      .should('have.length', 7)
+      .eq(4)
       .should('contain', 'false')
 
     // open create participation dialog
@@ -124,47 +124,57 @@ describe('Participation', () => {
     cy.get('[data-cy="participantsReviewInput"]').type(MEMBER_REVIEW_1);
     // create participation
     cy.get('[data-cy="createParticipation"]').click();
-    cy.wait('@participation');
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2).should('contain', 'true')
+      .eq(4).should('contain', 'true')
 
 
-    // open update participation dialog
+    // Check if the review exists
+    cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
+      .eq(0)
+      .children()
+      .eq(2)
+      .invoke('text')
+      .should('include', 'The volunteer did an okay job')
+      .and('include', 'Rating: ')
+      .and('match', /★{3}☆{2} 3\/5/);
+
+
+
+    // open edit participation dialog
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .find('[data-cy="editParticipantButton"]')
       .click();
-
-    // Get the current value of the rating
-    cy.get('[data-cy="participantsNumberInput"]')
-      .invoke('text')
-      .then((currentValue) => {
-        cy.log('Current Rating Value:', currentValue.trim());
-      });
-
-
     // edit ranking
     cy.get('[data-cy="participantsNumberInput"]').clear();
     cy.get('[data-cy="participantsNumberInput"]').type(5);
     cy.get('[data-cy="participantsReviewInput"]').clear();
     cy.get('[data-cy="participantsReviewInput"]').type(MEMBER_REVIEW_2);
-
-
-    // check if rating was updated
-    cy.get('[data-cy="participantsNumberInput"]')
-      .invoke('text')
-      .then((currentValue) => {
-        cy.log('Current Rating Value:', currentValue.trim());
-      });
-
-    // verify participation status
-    cy.get('[data-cy="createParticipation"]').click();
+    // edit participation
+    cy.get('[data-cy="createParticipation"]').click();;
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2).should('contain', 'true')
+      .eq(4).should('contain', 'true')
+
+    // Check if the review exists
+    cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
+      .eq(0)
+      .children()
+      .eq(2)  // Assuming this is the correct index for the rating column
+      .invoke('text')
+      .should('include', 'The volunteer did a good job')
+      .and('include', 'Rating: ')
+      .and('match', /★{5} 5\/5/);
+
+
+    // verify participation status
+    cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
+      .eq(0)
+      .children()
+      .eq(4).should('contain', 'true')
 
     // return to activities view
     cy.get('[data-cy="getActivities"]').click();
@@ -188,19 +198,29 @@ describe('Participation', () => {
     cy.get('[data-cy="reviewInput"]').type(VOLUNTEER_REVIEW);
     cy.get('[data-cy="saveParticipation"]').click();
     cy.wait(1)
-    cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
-      .eq(0)
-      .find('[data-cy="writeParticipationButton"]').click();
 
     // Check if rating was updated
-    cy.get('[data-cy="ratingInput"]')
-      .invoke('val')
-      .then((currentValue) => {
-        cy.log('Current Rating Value:', currentValue.trim());
-      });
+    cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
+      .eq(0)
+      .children()
+      .eq(6)  // Assuming this is the correct index for the rating column
+      .invoke('text')
+      .should('include', 'The volunteer did a good job')
+      .and('include', 'Rating: ')
+      .and('match', /★{5} 5\/5/);
+
 
     // Verify the member review
-    cy.get('[data-cy="reviewInput"]').should('have.value', MEMBER_REVIEW_2);
+    cy.get('[data-cy="volunteerEnrollmentsTable"] tbody tr')
+      .eq(0)
+      .children()
+      .eq(7)
+      .invoke('text')
+      .should('include', 'The activity was well organized')
+      .and('include', 'Rating: ')
+      .and('match', /★{3}☆{2} 3\/5/);
+
+
     cy.logout();
 
     // member login and check that there are 2 activities with 2 enrollments
@@ -225,21 +245,29 @@ describe('Participation', () => {
       .find('[data-cy="showEnrollments"]').click()
     cy.wait('@enrollments');
 
-    // open create participation dialog
+    // Check if rating was updated
+    // Update the assertion to match the new format with stars
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
-      .find('[data-cy="showVolunteerReviewButton"]')
-      .click();
+      .children()
+      .eq(2)  // Assuming this is the correct index for the rating column
+      .invoke('text')
+      .should('include', 'The volunteer did a good job')
+      .and('include', 'Rating: ')
+      .and('match', /★{5} 5\/5/);
 
-    // Check if rating was updated
-    cy.get('[data-cy="ratingInput"]')
-      .invoke('val')
-      .then((currentValue) => {
-        cy.log('Current Rating Value:', currentValue.trim());
-      });
 
     // Verify the member review
-    cy.get('[data-cy="reviewInput"]').should('have.value', VOLUNTEER_REVIEW);
+    cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
+      .eq(0)
+      .children()
+      .eq(3)
+      .invoke('text')
+      .should('include', 'The activity was well organized')
+      .and('include', 'Rating: ')
+      .and('match', /★{3}☆{2} 3\/5/);
+
+
     cy.logout();
 
   });
@@ -276,8 +304,8 @@ describe('Participation', () => {
       .should('have.length', 2)
       .eq(0)
       .children()
-      .should('have.length', 5)
-      .eq(2)
+      .should('have.length', 7)
+      .eq(4)
       .should('contain', 'false')
 
     // create a participation
@@ -292,11 +320,10 @@ describe('Participation', () => {
     cy.get('[data-cy="participantsReviewInput"]').type(MEMBER_REVIEW_1);
 
     cy.get('[data-cy="createParticipation"]').click();
-    cy.wait('@participation');
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2).should('contain', 'true')
+      .eq(4).should('contain', 'true')
 
     // delete a participation
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
@@ -309,7 +336,7 @@ describe('Participation', () => {
     cy.get('[data-cy="activityEnrollmentsTable"] tbody tr')
       .eq(0)
       .children()
-      .eq(2)
+      .eq(4)
       .should('contain', 'false');
 
     // return to activities view

@@ -29,7 +29,10 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip v-if="canParticipate(item) &&  checkIfEnrollmentPeriodIsOver(item)" bottom>
+        <v-tooltip
+          v-if="canParticipate(item) && checkIfEnrollmentPeriodIsOver()"
+          bottom
+        >
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -42,7 +45,11 @@
           <span>Select Participant</span>
         </v-tooltip>
         <v-tooltip
-          v-if="isParticipating(item) && checkIfActivityHasEnded()"
+          v-if="
+            isParticipating(item) &&
+            checkIfActivityHasEnded() &&
+            !volunteerReviewWritten(item)
+          "
           bottom
         >
           <template v-slot:activator="{ on }">
@@ -52,33 +59,10 @@
               @click="selectParticipant(item)"
               v-on="on"
               data-cy="editParticipantButton"
-            >
-              {{ volunteerReviewWritten(item) ? 'fa-star' : 'fa-solid fa-pen' }}
+              >fa-solid fa-pen
             </v-icon>
           </template>
-          <span>
-            {{
-              volunteerReviewWritten(item) ? 'Check My Rating' : 'Give Rating'
-            }}
-          </span>
-        </v-tooltip>
-        <v-tooltip
-          v-if="isParticipating(item) && volunteerReviewWritten(item)"
-          bottom
-          :key="`show-review-${item.volunteerId}-${item.participating}`"
-        >
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="action-button"
-              color="blue"
-              @click="showVolunteerReview(item)"
-              v-on="on"
-              data-cy="showVolunteerReviewButton"
-            >
-              fa-eye
-            </v-icon>
-          </template>
-          <span>Show Volunteer Rating</span>
+          <span> Give Rating </span>
         </v-tooltip>
         <v-tooltip
           v-if="isParticipating(item)"
@@ -99,6 +83,26 @@
           <span>Delete Participant</span>
         </v-tooltip>
       </template>
+      <template v-slot:[`item.memberReview`]="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <span class="review-text" v-on="on">{{
+              getMemberReview(item)
+            }}</span>
+          </template>
+          <span>{{ getMemberReview(item) }}</span>
+        </v-tooltip>
+      </template>
+      <template v-slot:[`item.volunteerReview`]="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <span class="review-text" v-on="on">{{
+              getVolunteerReview(item)
+            }}</span>
+          </template>
+          <span>{{ getVolunteerReview(item) }}</span>
+        </v-tooltip>
+      </template>
     </v-data-table>
     <participation-selection-dialog
       v-if="currentParticipation && editParticipationSelectionDialog"
@@ -114,12 +118,6 @@
       v-on:delete-participation="onDeleteParticipation"
       v-on:close-participation-dialog="onCloseParticipationDialog"
     />
-    <volunteer-rating-dialog
-      v-if="currentParticipation && showVolunteerRatingDialog"
-      v-model="showVolunteerRatingDialog"
-      :participation="currentParticipation"
-      v-on:close-participation-dialog="onCloseParticipationDialog"
-    />
   </v-card>
 </template>
 
@@ -130,14 +128,12 @@ import Activity from '@/models/activity/Activity';
 import Enrollment from '@/models/enrollment/Enrollment';
 import ParticipationSelectionDialog from '@/views/member/ParticipationSelectionDialog.vue';
 import Participation from '@/models/participation/Participation';
-import ParticipationVolunteerRatingDialog from '@/views/member/ParticipationVolunteerRatingDialog.vue';
 import ParticipationDeletionDialog from '@/views/member/ParticipationDeletionDialog.vue';
 
 @Component({
   components: {
     'participation-selection-dialog': ParticipationSelectionDialog,
     'participation-deletion-dialog': ParticipationDeletionDialog,
-    'volunteer-rating-dialog': ParticipationVolunteerRatingDialog,
   },
 })
 export default class InstitutionActivityEnrollmentsView extends Vue {
@@ -162,13 +158,25 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
       text: 'Motivation',
       value: 'motivation',
       align: 'left',
-      width: '50%',
+      width: '30%',
+    },
+    {
+      text: 'Member Rating',
+      value: 'memberReview',
+      align: 'left',
+      width: '20%',
+    },
+    {
+      text: 'Volunteer Rating',
+      value: 'volunteerReview',
+      align: 'left',
+      width: '20%',
     },
     {
       text: 'Participating',
       value: 'participating',
       align: 'left',
-      width: '50%',
+      width: '10%',
     },
     {
       text: 'Application Date',
@@ -206,10 +214,8 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   async selectParticipant(enrollment: Enrollment) {
     let activityId = enrollment.activityId;
     let volunteerId = enrollment.volunteerId;
-    let participations =
-      await RemoteServices.getActivityParticipations(activityId);
 
-    let existingParticipation = participations.find(
+    let existingParticipation = this.participations.find(
       (p) => p.activityId === activityId && p.volunteerId === volunteerId,
     );
 
@@ -276,29 +282,15 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   }
 
   async onDeleteParticipation(participation: Participation) {
-    this.enrollments = await RemoteServices.getActivityEnrollments(
-      participation.activityId!,
-    );
     this.participations = await RemoteServices.getActivityParticipations(
       participation.activityId,
     );
-    this.editParticipationDeletionDialog = false;
-  }
-
-  async showVolunteerReview(enrollment: Enrollment) {
-    let activityId = enrollment.activityId;
-    let volunteerId = enrollment.volunteerId;
-
-    let existingParticipation = this.participations.find(
-      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    let enrollment = this.enrollments.find(
+      (e) => e.volunteerId === participation.volunteerId,
     );
-
-    if (existingParticipation != null) {
-      this.currentParticipation = existingParticipation;
-      this.currentParticipation.activityId = activityId;
-      this.currentParticipation.volunteerId = volunteerId;
-      this.showVolunteerRatingDialog = true;
-    }
+    if (enrollment) enrollment.participating = false;
+    this.currentParticipation = null;
+    this.editParticipationDeletionDialog = false;
   }
 
   async deleteParticipation(enrollment: Enrollment) {
@@ -341,7 +333,7 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
 
       if (existingParticipation) {
         return !!(
-          existingParticipation.memberRating &&
+          existingParticipation.volunteerRating &&
           existingParticipation.volunteerReview
         );
       } else {
@@ -351,6 +343,49 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
       console.error('Error fetching participations:', error);
       return false;
     }
+  }
+
+  getMemberReview(enrollment: Enrollment): string {
+    let activityId = enrollment.activityId;
+    let volunteerId = enrollment.volunteerId;
+
+    let participation = this.participations.find(
+      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    );
+
+    if (
+      !participation ||
+      participation.memberReview == null ||
+      participation.memberRating == null
+    ) {
+      return '';
+    }
+    const stars = this.convertToStars(participation.memberRating);
+    return `${participation.memberReview}\nRating: ${stars}`;
+  }
+  getVolunteerReview(enrollment: Enrollment): string {
+    let activityId = enrollment.activityId;
+    let volunteerId = enrollment.volunteerId;
+
+    let participation = this.participations.find(
+      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
+    );
+
+    if (
+      !participation ||
+      participation.volunteerReview == null ||
+      participation.volunteerRating == null
+    ) {
+      return '';
+    }
+    const stars = this.convertToStars(participation.volunteerRating);
+    return `${participation.volunteerReview}\nRating: ${stars}`;
+  }
+
+  convertToStars(rating: number): string {
+    const fullStars = '★'.repeat(Math.floor(rating));
+    const emptyStars = '☆'.repeat(Math.floor(5 - rating));
+    return `${fullStars}${emptyStars} ${rating}/5`;
   }
 
   async getActivities() {
@@ -371,5 +406,11 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
   display: flex;
   gap: 16px;
   margin-top: 8px;
+}
+</style>
+
+<style>
+.review-text {
+  white-space: pre-line;
 }
 </style>

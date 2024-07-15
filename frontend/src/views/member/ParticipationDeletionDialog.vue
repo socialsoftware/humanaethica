@@ -50,8 +50,6 @@ export default class ParticipationDeletionDialog extends Vue {
 
   async created() {
     this.editParticipation = new Participation(this.participation);
-    this.editParticipation.activityId = this.participation.activityId;
-    this.editParticipation.volunteerId = this.participation.volunteerId;
   }
 
   async deleteParticipation() {

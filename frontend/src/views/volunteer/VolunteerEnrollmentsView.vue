@@ -26,6 +26,12 @@
             {{ theme.completeName }}
           </v-chip>
         </template>
+        <template v-slot:[`item.memberReview`]="{ item }">
+          <span class="review-text">{{ getMemberReview(item) }}</span>
+        </template>
+        <template v-slot:[`item.volunteerReview`]="{ item }">
+          <span class="review-text">{{ getVolunteerReview(item) }}</span>
+        </template>
         <template v-slot:[`item.state`]="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -120,7 +126,10 @@
             </template>
             <span>Write Assessment</span>
           </v-tooltip>
-          <v-tooltip v-if="canRate(item)" bottom>
+          <v-tooltip
+            v-if="canRate(item) && !memberAndVolunteerRatingExist(item)"
+            bottom
+          >
             <template v-slot:activator="{ on }">
               <v-icon
                 class="mr-2 action-button"
@@ -129,13 +138,10 @@
                 v-on="on"
                 data-cy="writeParticipationButton"
                 @click="giveRating(item)"
+                >fa-solid fa-pen</v-icon
               >
-                {{ getIcon(item) ? 'fa-eye' : 'fa-solid fa-pen' }}
-              </v-icon>
             </template>
-            <span>{{
-              getIcon(item) ? 'Check Member Rating' : 'Give Rating'
-            }}</span>
+            <span>Give Rating</span>
           </v-tooltip>
         </template>
       </v-data-table>
@@ -253,6 +259,18 @@ export default class VolunteerEnrollmentsView extends Vue {
       width: '30%',
     },
     {
+      text: 'Member Rating',
+      value: 'memberReview',
+      align: 'left',
+      width: '20%',
+    },
+    {
+      text: 'Volunteer Rating',
+      value: 'volunteerReview',
+      align: 'left',
+      width: '20%',
+    },
+    {
       text: 'State',
       value: 'state',
       align: 'left',
@@ -305,6 +323,41 @@ export default class VolunteerEnrollmentsView extends Vue {
     this.currentReport.activityId = activity.id;
     this.createReportDialog = true;
     this.currentActivtiy = activity;
+  }
+
+  getMemberReview(activity: Activity): string {
+    const participation = this.participations.find(
+      (p) => p.activityId === activity.id,
+    );
+    if (
+      !participation ||
+      participation.memberReview == null ||
+      participation.memberRating == null
+    ) {
+      return '';
+    }
+    const stars = this.convertToStars(participation.memberRating);
+    return `${participation.memberReview}\nRating: ${stars}`;
+  }
+  getVolunteerReview(activity: Activity): string {
+    const participation = this.participations.find(
+      (p) => p.activityId === activity.id,
+    );
+    if (
+      !participation ||
+      participation.volunteerReview == null ||
+      participation.volunteerRating == null
+    ) {
+      return '';
+    }
+    const stars = this.convertToStars(participation.volunteerRating);
+    return `${participation.volunteerReview}\nRating: ${stars}`;
+  }
+
+  convertToStars(rating: number): string {
+    const fullStars = '★'.repeat(Math.floor(rating));
+    const emptyStars = '☆'.repeat(Math.floor(5 - rating));
+    return `${fullStars}${emptyStars} ${rating}/5`;
   }
 
   async deleteEnrollmentForActivity(activity: Activity) {
@@ -403,7 +456,7 @@ export default class VolunteerEnrollmentsView extends Vue {
     }
   }
 
-  getIcon(activity: Activity) {
+  memberAndVolunteerRatingExist(activity: Activity) {
     const enrollment = this.enrollments.find(
       (e: Enrollment) => e.activityId === activity.id,
     );
@@ -551,6 +604,10 @@ export default class VolunteerEnrollmentsView extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.review-text {
+  white-space: pre-line;
+}
+
 .mouseover {
   cursor: pointer;
 }

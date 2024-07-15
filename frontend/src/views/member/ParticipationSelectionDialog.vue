@@ -13,24 +13,13 @@
       <v-card-text>
         <v-form ref="form" lazy-validation>
           <v-row>
-            <v-col cols="12" v-if="!memberReviewAlreadyExists" class="d-flex align-center">
+            <v-col cols="12" class="d-flex align-center">
               <v-text-field
                 label="Rating"
                 :rules="[(v) => isNumberValid(v) || 'Rating between 1 and 5']"
                 v-model="editParticipation.memberRating"
                 data-cy="participantsNumberInput"
               ></v-text-field>
-            </v-col>
-            <v-col cols="12" class="d-flex align-center" v-else>
-              <v-rating
-                v-model="editParticipation.memberRating"
-                length="5"
-                color="yellow"
-                data-cy="ratingInput"
-                half-increments
-                readonly
-              ></v-rating>
-              <span class="ml-2">{{ editParticipation.memberRating }}/5</span>
             </v-col>
             <v-col cols="12">
               <v-textarea
@@ -40,7 +29,6 @@
                 data-cy="participantsReviewInput"
                 auto-grow
                 rows="1"
-                :readonly="memberReviewAlreadyExists"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -57,7 +45,7 @@
           Close
         </v-btn>
         <v-btn
-          v-if="isReviewValid && !memberReviewAlreadyExists"
+          v-if="isReviewValid && isRatingValid"
           color="primary"
           dark
           variant="text"
@@ -89,7 +77,9 @@ export default class ParticipationSelectionDialog extends Vue {
 
   async created() {
     this.editParticipation = new Participation(this.participation);
-    this.participations = await RemoteServices.getActivityParticipations(this.editParticipation.activityId);
+    this.participations = await RemoteServices.getActivityParticipations(
+      this.editParticipation.activityId,
+    );
   }
 
   get isReviewValid(): boolean {
@@ -100,21 +90,15 @@ export default class ParticipationSelectionDialog extends Vue {
     );
   }
 
+  get isRatingValid(): boolean {
+    return !!this.editParticipation.memberRating;
+  }
+
   isNumberValid(value: any) {
     if (value === null || value === undefined || value === '') return true;
     if (!/^\d+$/.test(value)) return false;
     const parsedValue = parseInt(value);
     return parsedValue >= 1 && parsedValue <= 5;
-  }
-  get memberReviewAlreadyExists() {
-    let existingParticipation = this.participations.find(
-      (p) =>
-        p.activityId === this.editParticipation.activityId &&
-        p.volunteerId === this.editParticipation.volunteerId
-    );
-    if (existingParticipation) {
-      return !!(existingParticipation.memberReview && existingParticipation.memberRating);
-    }
   }
 
   async createUpdateParticipation() {
