@@ -10,18 +10,18 @@
             <v-col cols="12">
               <v-textarea
                 label="*Suspension reason"
-                :rules="[(v) =>
-                  {
+                :rules="[
+                  (v) => {
                     if (!v) {
-                        return 'Suspension reason is required';
+                      return 'Suspension reason is required';
                     } else if (v.length <= 10) {
-                        return 'Suspension reason must be 10 or more characters';
+                      return 'Suspension reason must be 10 or more characters';
                     } else if (v.length >= 250) {
-                        return 'Suspension reason must be less or equal to 250 characters';
+                      return 'Suspension reason must be less or equal to 250 characters';
                     }
 
                     return true;
-                  }
+                  },
                 ]"
                 required
                 auto-grow
@@ -70,9 +70,9 @@ export default class SuspendActivityDialog extends Vue {
 
   get canSuspend(): boolean {
     return (
-      !!this.activity.suspensionJustification
-      && this.activity.suspensionJustification.length >= 10
-      && this.activity.suspensionJustification.length <= 250
+      !!this.activity.suspensionJustification &&
+      this.activity.suspensionJustification.length >= 10 &&
+      this.activity.suspensionJustification.length <= 250
     );
   }
 
@@ -82,7 +82,10 @@ export default class SuspendActivityDialog extends Vue {
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
-        let result = await RemoteServices.suspendActivity(this.activity.id, this.activity.suspensionJustification);
+        let result = await RemoteServices.suspendActivity(
+          this.activity.id,
+          this.activity.suspensionJustification,
+        );
         this.$emit('suspend-activity', result);
       } catch (error) {
         await this.$store.dispatch('error', error);

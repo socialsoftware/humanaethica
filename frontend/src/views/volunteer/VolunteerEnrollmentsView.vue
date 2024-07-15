@@ -354,14 +354,11 @@ export default class VolunteerEnrollmentsView extends Vue {
     return `${participation.volunteerReview}\nRating: ${stars}`;
   }
 
-
- convertToStars(rating: number): string {
-   const fullStars = '★'.repeat(Math.floor(rating));
-   const emptyStars = '☆'.repeat(Math.floor(5 - rating));
-   return `${fullStars}${emptyStars} ${rating}/5`;
+  convertToStars(rating: number): string {
+    const fullStars = '★'.repeat(Math.floor(rating));
+    const emptyStars = '☆'.repeat(Math.floor(5 - rating));
+    return `${fullStars}${emptyStars} ${rating}/5`;
   }
-
-
 
   async deleteEnrollmentForActivity(activity: Activity) {
     const index = this.enrollments.findIndex(
@@ -606,17 +603,12 @@ export default class VolunteerEnrollmentsView extends Vue {
 }
 </script>
 
-<<<<<<< HEAD
-<style>
+<style lang="scss" scoped>
 .review-text {
   white-space: pre-line;
 }
-</style>
-<style lang="scss" scoped></style>
-=======
-<style lang="scss" scoped>
+
 .mouseover {
   cursor: pointer;
 }
 </style>
->>>>>>> origin/master

@@ -91,7 +91,7 @@ export default class ParticipationSelectionDialog extends Vue {
   }
 
   get isRatingValid(): boolean {
-    return (!!this.editParticipation.memberRating)
+    return !!this.editParticipation.memberRating;
   }
 
   isNumberValid(value: any) {
