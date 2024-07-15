@@ -13,6 +13,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.Participatio
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
@@ -29,6 +31,8 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
     private EnrollmentRepository enrollmentRepository;
     @Autowired
     private AssessmentRepository assessmentRepository;
+    @Autowired
+    private ReportRepository reportRepository;
 
 
     @Override
@@ -51,6 +55,10 @@ public class HEPermissionEvaluator implements PermissionEvaluator {
                     Enrollment enrollment = enrollmentRepository.findById(id).orElse(null);
                     if (enrollment == null) return false;
                     return enrollment.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
+                case "REPORT.MANAGER":
+                    Report report = reportRepository.findById(id).orElse(null);
+                    if (report == null) return false;
+                    return report.getVolunteer().getId().equals(((Volunteer)authUser.getUser()).getId());
                 case "ASSESSMENT.WRITER":
                     Assessment assessment = assessmentRepository.findById(id).orElse(null);
                     if (assessment == null) return false;

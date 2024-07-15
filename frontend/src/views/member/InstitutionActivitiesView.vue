@@ -28,6 +28,17 @@
           {{ theme.completeName }}
         </v-chip>
       </template>
+      <template v-slot:[`item.state`]="{ item }">
+       <v-tooltip bottom>
+         <template v-slot:activator="{ on }">
+            <v-chip
+               v-on="on"
+            >{{ item.state }}
+            </v-chip>
+         </template>
+         <span>Justification: {{ item.suspensionJustification }}</span>
+       </v-tooltip>
+      </template>
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -52,7 +63,7 @@
           </template>
           <span>Show Applications</span>
         </v-tooltip>
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.state != 'SUSPENDED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"

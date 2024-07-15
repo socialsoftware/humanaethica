@@ -246,6 +246,10 @@ public class Activity {
         this.reports.add(report);
     }
 
+    public void removeReport(Report report) {
+        this.reports.remove(report);
+    }
+
     public void validate() {
         activityAndThemesMustBeApproved();
 

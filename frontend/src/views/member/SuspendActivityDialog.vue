@@ -8,7 +8,7 @@
         <v-form ref="form" lazy-validation>
           <v-row>
             <v-col cols="12">
-              <v-text-field
+              <v-textarea
                 label="*Suspension reason"
                 :rules="[(v) =>
                   {
@@ -24,9 +24,11 @@
                   }
                 ]"
                 required
+                auto-grow
+                rows="1"
                 v-model="activity.suspensionJustification"
                 data-cy="suspensionReasonInput"
-              ></v-text-field>
+              ></v-textarea>
             </v-col>
           </v-row>
         </v-form>
