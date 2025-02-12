@@ -1,4 +1,4 @@
-<h1 align="center">Humana Ética</h1>
+<h1 align="center">HumanaEthica</h1>
 
 <p align="center">
   <a href="#about">About</a> •
@@ -82,17 +82,45 @@ cp data/error.log.example data/error.log
 
 * Build HumanaEthica in project top directory, where docker-compose.yml is
 ```
-docker-compose build
+docker compose build
 ```
 
 * Run HumanaEthica
 ```
-docker-compose up frontend
+docker compose up frontend
 ```
 
 * Shutdown HumanaEthica
 ```
-docker-compose down
+docker compose down
+```
+
+* Run unit tests
+* * All unit tests
+```
+docker compose up be-unit-test 
+```
+* * A class of unit tests
+```
+UNIT=CreateEnrollmentMethodTest docker compose up be-unit-test 
+```
+* * A unit test method
+```
+UNIT=CreateEnrollmentMethodTest#"create enrollment" docker compose up be-unit-tests 
+```
+
+* Run integration tests
+* * All integration tests
+```
+docker compose up integration-tests
+```
+* * A class of integration tests
+```
+INTEGRATION=RegisterActivityWebServiceIT docker compose up integration-tests
+```
+* * An integration test method
+```
+INTEGRATION=RegisterActivityWebServiceIT#"login as member, and create an activity" docker compose up integration-tests
 ```
 
 # Development Container
