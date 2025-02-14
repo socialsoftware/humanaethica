@@ -61,7 +61,7 @@ build-and-test:
 
     # Frontend tests
     - cd ../frontend
-    - npm install
+    - . /usr/local/nvm/nvm.sh && npm install
     #- npm run test:unit
 
     # Cypress tests
