@@ -98,11 +98,11 @@ docker compose down
 * Run unit tests
 * * All unit tests
 ```
-docker compose up be-unit-test 
+docker compose up be-unit-tests 
 ```
 * * A class of unit tests
 ```
-UNIT=CreateEnrollmentMethodTest docker compose up be-unit-test 
+UNIT=CreateEnrollmentMethodTest docker compose up be-unit-tests 
 ```
 * * A unit test method
 ```
