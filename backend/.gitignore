@@ -26,7 +26,7 @@ HELP.md
 /build/
 
 
-application-dev.properties
+#application-dev.properties
 application-prod.properties
 
 ### images location ###
