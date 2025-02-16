@@ -61,7 +61,7 @@ services:
     tty: true
     working_dir: $PWD/backend/
     volumes:
-      - $PWD:$PWD
+      - ./:$PWD
       - ~/.m2:/root/.m2
     command: mvn clean -Ptest test -Dtest="${UNIT}"
 
@@ -78,7 +78,7 @@ services:
       - PSQL_INT_TEST_DB_PASSWORD=password
     working_dir: $PWD/backend/
     volumes:
-      - $PWD:$PWD
+      - ./:$PWD
       - ~/.m2:/root/.m2
     command: mvn clean -Ptest-int integration-test -Dit.test="${INTEGRATION}"
 
