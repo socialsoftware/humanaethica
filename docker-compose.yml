@@ -80,5 +80,5 @@ services:
     volumes:
       - $PWD:$PWD
       - ~/.m2:/root/.m2
-    command: mvn clean -Ptest-int integration-test -Dtest="${INTEGRATION}"
+    command: mvn clean -Ptest-int integration-test -Dit.test="${INTEGRATION}"
 

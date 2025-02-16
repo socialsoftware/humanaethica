@@ -87,7 +87,17 @@ docker compose build
 
 * Run HumanaEthica
 ```
-docker compose up frontend
+docker compose up -d frontend
+```
+
+* See container logs, for instance for backend
+```
+docker logs backend
+```
+
+* After changing backend code, for a quick recompile and restart
+```
+docker compose up --no-deps -d --build backend
 ```
 
 * Shutdown HumanaEthica
