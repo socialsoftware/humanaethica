@@ -126,11 +126,11 @@ docker compose up integration-tests
 ```
 * * A class of integration tests
 ```
-INTEGRATION=RegisterActivityWebServiceIT docker compose up integration-tests
+INTEGRATION=ValidateActivityWebServiceIT docker compose up integration-tests
 ```
 * * An integration test method
 ```
-INTEGRATION=RegisterActivityWebServiceIT#"login as member, and create an activity" docker compose up integration-tests
+INTEGRATION=ValidateActivityWebServiceIT#"volunteer validate activity" docker compose up integration-tests
 ```
 
 # Development Container

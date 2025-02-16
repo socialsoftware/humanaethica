@@ -59,11 +59,10 @@ services:
     stop_signal: SIGKILL
     stdin_open: true
     tty: true
-    working_dir: $PWD/backend/
     volumes:
-      - ./:$PWD
+      - ./backend:/backend
       - ~/.m2:/root/.m2
-    command: mvn clean -Ptest test -Dtest="${UNIT}"
+    command: mvn -f /backend/pom.xml clean -Ptest test -Dtest="${UNIT}"
 
   integration-tests:
     image: maven:3.9.6-eclipse-temurin-21
@@ -76,9 +75,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hedb
       - PSQL_INT_TEST_DB_USERNAME=engineer
       - PSQL_INT_TEST_DB_PASSWORD=password
-    working_dir: $PWD/backend/
     volumes:
-      - ./:$PWD
+      - ./backend:/backend
       - ~/.m2:/root/.m2
-    command: mvn clean -Ptest-int integration-test -Dit.test="${INTEGRATION}"
+    command: mvn -f /backend/pom.xml clean -Ptest-int integration-test -Dit.test="${INTEGRATION}"
 
