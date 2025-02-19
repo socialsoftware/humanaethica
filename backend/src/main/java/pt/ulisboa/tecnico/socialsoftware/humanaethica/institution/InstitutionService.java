@@ -111,7 +111,7 @@ public class InstitutionService {
         }
 
         if (institutionDto.getNif() == null || institutionDto.getNif().length() != 9) {
-            throw new HEException(INVALID_NIF, institutionDto.getEmail());
+            throw new HEException(INVALID_NIF, institutionDto.getNif());
         }
 
         try {
