@@ -1,0 +1,22 @@
+## Datasource
+spring.datasource.url=jdbc:postgresql://<DATABASE HOST>:<DATABASE PORT>/<DATABASE NAME>
+spring.datasource.username= <DATABASE USERNAME>
+spring.datasource.password= <DATABASE PASSWORD>
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+## Jpa
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+## Resources
+figures.dir=${maven.basedir}/../data/images/
+export.dir=${maven.basedir}/../data/export/
+load.dir=${maven.basedir}/../data/load/
+
+# Send eamails
+spring.mail.host=smtp.tecnico.ulisboa.pt
+spring.mail.port=25
+spring.mail.username=no-reply@humanaethica.pt
+spring.mail.password=
+spring.mail.properties.mail.transport.protocol="smtp"
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=true
