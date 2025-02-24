@@ -8,13 +8,17 @@
         <version>3.3.1</version>
         <relativePath/>
     </parent>
-    <groupId>pt.ulisboa.tecnico.socialsoftware</groupId>
+    <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica</groupId>
     <artifactId>humanaethica-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>HumanaEthica Backend</name>
     <description>HumanaEthica</description>
 
-    <packaging>jar</packaging>
+    <modules>
+        <module>api</module>
+        <module>monolitico</module>
+    </modules>
 
     <repositories>
         <repository>
