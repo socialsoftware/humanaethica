@@ -117,7 +117,7 @@ public class InstitutionService {
         try {
             Integer.parseInt(institutionDto.getNif());
         } catch (NumberFormatException nfe) {
-            throw new HEException(INVALID_NIF, institutionDto.getEmail());
+            throw new HEException(INVALID_NIF, institutionDto.getNif());
         }
 
         if (institutionRepository.findInstitutionByNif(institutionDto.getNif()).isPresent()) {
