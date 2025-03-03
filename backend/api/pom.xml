@@ -16,7 +16,7 @@
         <!-- Dependência do módulo monolitico -->
         <dependency>
             <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica</groupId>
-            <artifactId>monolitico</artifactId>
+            <artifactId>monolithic</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
