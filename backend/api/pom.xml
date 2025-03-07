@@ -7,15 +7,15 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
+    <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.api</groupId>
     <artifactId>api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>api</name>
 
     <dependencies>
-
-        <!-- Dependência do módulo monolitico -->
         <dependency>
-            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica</groupId>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic</groupId>
             <artifactId>monolithic</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
