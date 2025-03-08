@@ -26,6 +26,16 @@
             text
             color="orange"
             v-on="on"
+            data-cy="volunteerActivitySuggestions"
+            @click="volunteerActivitySuggestions"
+          >
+            Activity Suggestions
+            <v-icon>fas fa-user</v-icon>
+          </v-btn>
+          <v-btn
+            text
+            color="orange"
+            v-on="on"
             data-cy="volunteerActivities"
             @click="volunteerActivities"
           >
@@ -77,6 +87,11 @@
               <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/member/activitysuggestions" data-cy="activitysuggestions">
+            <v-list-item-content>
+              <v-list-item-title>Activity Suggestions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item to="/member/assessments" data-cy="assessments">
             <v-list-item-content>
               <v-list-item-title>Assessments</v-list-item-title>
@@ -122,6 +137,40 @@
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Activities</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-menu offset-y open-on-hover>
+        <template v-slot:activator="{ on }">
+          <v-btn color="orange" text v-on="on" data-cy="profiles">
+            Profiles
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item v-if="isMember" :to="`/profiles/institution/${this.institutionId}`" data-cy="member-profile">
+            <v-list-item-action>
+              <v-icon>fas fa-address-card</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Institution Profile</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="isVolunteer" :to="`/profiles/volunteer/${this.$store.getters.getUser.id}`" data-cy="volunteer-profile">
+            <v-list-item-action>
+              <v-icon>fas fa-address-card</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>My Profile</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/profiles/view" data-cy="view-profiles">
+            <v-list-item-action>
+              <v-icon>fas fa-address-book</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>View Profiles</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -292,11 +341,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import RemoteServices from "@/services/RemoteServices";
 
 @Component
 export default class TopBar extends Vue {
   appName: string = process.env.VUE_APP_NAME || 'ENV FILE MISSING';
   drawer: boolean = false;
+
+  institutionId: number | null = null;
 
   get isLoggedIn() {
     return this.$store.getters.isLoggedIn;
@@ -330,6 +382,10 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'volunteer-activities' }).catch(() => {});
   }
 
+  async volunteerActivitySuggestions() {
+    await this.$router.push({ name: 'volunteer-activity-suggestions' }).catch(() => {});
+  }
+
   async volunteerEnrollments() {
     await this.$router.push({ name: 'volunteer-enrollments' }).catch(() => {});
   }
@@ -341,6 +397,20 @@ export default class TopBar extends Vue {
   async logout() {
     await this.$store.dispatch('logout');
     await this.$router.push({ name: 'home' }).catch(() => {});
+  }
+
+  async created() {
+    if (this.isMember) {
+      let institution = await RemoteServices.getInstitution(this.$store.getters.getUser.id);
+      this.institutionId = institution.id;
+    }
+  }
+
+  async updated() {
+    if (this.isMember) {
+      let institution = await RemoteServices.getInstitution(this.$store.getters.getUser.id);
+      this.institutionId = institution.id;
+    }
   }
 }
 </script>

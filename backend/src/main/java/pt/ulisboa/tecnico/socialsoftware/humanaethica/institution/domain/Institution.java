@@ -3,7 +3,9 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 import jakarta.persistence.*;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.domain.InstitutionProfile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -46,8 +48,14 @@ public class Institution {
     @OneToMany(mappedBy = "institution", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Activity> activities = new ArrayList<>();
 
+    @OneToMany(mappedBy = "institution", orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ActivitySuggestion> activitySuggestions = new ArrayList<>();
+
     @OneToMany(mappedBy = "institution" )
     private List<Assessment> assessments = new ArrayList<>();
+
+    @OneToOne(mappedBy = "institution")
+    private InstitutionProfile institutionProfile;
 
     public Institution() {
     }
@@ -172,6 +180,10 @@ public class Institution {
         this.activities.add(activity);
     }
 
+    public void addActivitySuggestion(ActivitySuggestion activitySuggestion) {
+        this.activitySuggestions.add(activitySuggestion);
+    }
+
     public List<Assessment> getAssessments() {
         return assessments;
     }
@@ -189,5 +201,13 @@ public class Institution {
 
     public void deleteAssessment(Assessment assessment) {
         this.assessments.remove(assessment);
+    }
+
+    public InstitutionProfile getInstitutionProfile() {
+        return institutionProfile;
+    }
+
+    public void setInstitutionProfile(InstitutionProfile institutionProfile) {
+        this.institutionProfile = institutionProfile;
     }
 }

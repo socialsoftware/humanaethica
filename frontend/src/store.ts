@@ -25,7 +25,7 @@ const state: State = {
   notification: false,
   notificationMessageList: [],
   loading: false,
-  activity: null,
+  activity: null
 };
 
 Vue.use(Vuex);
@@ -87,7 +87,7 @@ export default new Vuex.Store({
     setActivity(state: State, activity: Activity) {
       localStorage.setItem('activity', JSON.stringify(activity));
       state.activity = activity;
-    },
+    }
   },
   actions: {
     error({ commit }, errorMessage) {
@@ -135,7 +135,7 @@ export default new Vuex.Store({
     },
     async setActivity({ commit }, activity: Activity) {
       commit('setActivity', activity);
-    },
+    }
   },
   getters: {
     isLoggedIn(state): boolean {
@@ -177,6 +177,6 @@ export default new Vuex.Store({
     },
     getActivity(state: State): Activity | null {
       return state.activity;
-    },
+    }
   },
 });

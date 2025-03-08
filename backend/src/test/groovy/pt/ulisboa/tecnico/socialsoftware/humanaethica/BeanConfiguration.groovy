@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.ActivitySuggestionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.config.HEPermissionEvaluator
@@ -15,6 +16,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.InstitutionProfileService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.VolunteerProfileService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.InstitutionService
@@ -41,7 +44,7 @@ class BeanConfiguration {
     private String password
 
     @Value('${spring.mail.properties.mail.smtp.auth}')
-    private String auth;
+    private String auth
 
     @Value('${spring.mail.properties.mail.smtp.starttls.enable}')
     private String starttls
@@ -78,6 +81,11 @@ class BeanConfiguration {
     }
 
     @Bean
+    ActivitySuggestionService activitySuggestionService() {
+        return new ActivitySuggestionService()
+    }
+
+    @Bean
     EnrollmentService enrollmentService() {
         return new EnrollmentService()
     }
@@ -90,7 +98,16 @@ class BeanConfiguration {
     @Bean
     AssessmentService assessmentService() {
         return new AssessmentService()
+    }
 
+    @Bean
+    VolunteerProfileService volunteerProfileService() {
+        return new VolunteerProfileService()
+    }
+
+    @Bean
+    InstitutionProfileService institutionProfileService() {
+        return new InstitutionProfileService()
     }
 
     @Bean
@@ -105,7 +122,7 @@ class BeanConfiguration {
 
     @Bean
     HEPermissionEvaluator hePermissionEvaluator() {
-        return new HEPermissionEvaluator();
+        return new HEPermissionEvaluator()
     }
 
     @Bean
@@ -115,12 +132,12 @@ class BeanConfiguration {
 
     @Bean
     DemoUtils demoUtils() {
-        return new DemoUtils();
+        return new DemoUtils()
     }
 
     @Bean
     DemoService demoService() {
-        return new DemoService();
+        return new DemoService()
     }
 
     @Bean
@@ -130,19 +147,19 @@ class BeanConfiguration {
 
     @Bean
     JavaMailSender getJavaMailSender() {
-        JavaMailSender mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(host);
-        mailSender.setPort(port);
+        JavaMailSender mailSender = new JavaMailSenderImpl()
+        mailSender.setHost(host)
+        mailSender.setPort(port)
 
-        mailSender.setUsername(username);
-        mailSender.setPassword(password);
+        mailSender.setUsername(username)
+        mailSender.setPassword(password)
 
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", Boolean.parseBoolean(protocol));
-        props.put("mail.smtp.auth", Boolean.parseBoolean(auth));
-        props.put("mail.smtp.starttls.enable", starttls);
-        props.put("mail.debug", debug);
+        Properties props = mailSender.getJavaMailProperties()
+        props.put("mail.transport.protocol", Boolean.parseBoolean(protocol))
+        props.put("mail.smtp.auth", Boolean.parseBoolean(auth))
+        props.put("mail.smtp.starttls.enable", starttls)
+        props.put("mail.debug", debug)
 
-        return mailSender;
+        return mailSender
     }
 }
