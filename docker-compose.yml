@@ -20,8 +20,6 @@ services:
     container_name: backend
     depends_on:
       - postgres
-    links:
-      - postgres
     ports:
       - 8080:8080
     restart: unless-stopped
@@ -43,8 +41,6 @@ services:
     image: humanaethica-frontend                                                     
     container_name: frontend
     depends_on:
-      - backend
-    links:
       - backend
     ports:
       - 8081:80
@@ -80,3 +76,20 @@ services:
       - ~/.m2:/root/.m2
     command: mvn -f /backend/pom.xml clean -Ptest-int integration-test -Dit.test="${INTEGRATION}"
 
+  e2e:
+    image: cypress-14.0.0-node-22.13.1-chrome-132.0.6834.83-1-ff-134.0.2-edge-132.0.2957.115-1
+    build:
+      context:  ./frontend/
+      dockerfile: Dockerfile_cy
+    container_name: cypress
+    depends_on:
+      - frontend
+    environment:
+      - CYPRESS_baseUrl=http://frontend:80
+    command: npx cypress run
+    volumes:
+      - ./frontend/cypress:/cypress
+      - ./frontend/tsconfig.json:/tsconfig.json
+      - ./frontend/cypress.config.ts:/cypress.config.ts
+      - ./frontend/cypress.env.json:/cypress.env.json
+      - ./frontend/tests:/tests
