@@ -61,7 +61,7 @@ cd frontend
 npx cypress run
 ```
 
-* **Iterative Run of Cypress Tests**
+* **Interactive Run of Cypress Tests**
 ```
 cd frontend
 npx cypress open
