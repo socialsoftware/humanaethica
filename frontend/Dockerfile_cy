@@ -1,4 +1,5 @@
 FROM cypress/base:20.18.0
+WORKDIR /app
 
 # dependencies will be installed only if the package files change
 COPY package.json .
