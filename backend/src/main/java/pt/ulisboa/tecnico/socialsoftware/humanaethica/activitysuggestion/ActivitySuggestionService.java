@@ -38,6 +38,16 @@ public class ActivitySuggestionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ActivitySuggestionDto> getActivitySuggestionsByVolunteer(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+        userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
+
+        return this.activitySuggestionRepository.getActivitySuggestionsByVolunteerId(userId).stream()
+                .map(ActivitySuggestionDto::new)
+                .toList();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ActivitySuggestionDto createActivitySuggestion(Integer userId, Integer institutionId, ActivitySuggestionDto activitySuggestionDto) {
         if (userId == null) throw new HEException(USER_NOT_FOUND);
         Volunteer volunteer = (Volunteer) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
