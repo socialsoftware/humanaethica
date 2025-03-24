@@ -15,6 +15,7 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
+import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -803,6 +804,28 @@ export default class RemoteServices {
         return response.data.map((theme: any) => {
           return new Theme(theme);
         });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async registerVolunteerProfile(volunteerProfile: VolunteerProfile) {
+    return httpClient
+      .post('/profile/volunteer', volunteerProfile)
+      .then((response) => {
+        return new VolunteerProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getVolunteerProfile(volunteerId: number): Promise<VolunteerProfile> {
+    return httpClient
+      .get(`/profile/volunteer/${volunteerId}`)
+      .then((response) => {
+        return new VolunteerProfile(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
