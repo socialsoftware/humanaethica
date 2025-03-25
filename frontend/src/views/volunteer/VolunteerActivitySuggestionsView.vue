@@ -1,33 +1,38 @@
 <template>
-  <v-card class="table">
-    <v-data-table
-      :headers="headers"
-      :items="activitySuggestions"
-      :search="search"
-      disable-pagination
-      :hide-default-footer="true"
-      :mobile-breakpoint="0"
-    >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Search"
-            class="mx-2"
-          />
-          <v-spacer />
-        </v-card-title>
-      </template>
-    </v-data-table>
-  </v-card>
+  <div>
+    <v-card class="table">
+      <v-data-table
+        :headers="headers"
+        :items="activitySuggestions"
+        :search="search"
+        disable-pagination
+        :hide-default-footer="true"
+        :mobile-breakpoint="0"
+      >
+        <template v-slot:top>
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Search"
+              class="mx-2"
+            />
+            <v-spacer />
+          </v-card-title>
+        </template>
+      </v-data-table>
+    </v-card>
+  </div>
+  
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+//import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
 
 @Component({
   components: {
+    // TODO: 'activitysuggestion-dialog': ActivitySuggestionDialog,
   },
 })
 export default class VolunteerActivitySuggestionsView extends Vue {
@@ -38,7 +43,13 @@ export default class VolunteerActivitySuggestionsView extends Vue {
       text: 'Name',
       value: 'name',
       align: 'left',
-      width: '10%',
+      width: '5%',
+    },
+    {
+      text: 'Institution',
+      value: 'institution.name',
+      align: 'left',
+      width: '5%',
     },
     {
       text: 'Description',
