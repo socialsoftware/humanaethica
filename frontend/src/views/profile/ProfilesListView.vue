@@ -79,13 +79,16 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ISOtoString } from "../../services/ConvertDateService";
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
+import RemoteServices from '@/services/RemoteServices';
+
 
 @Component({
   methods: { ISOtoString }
 })
 export default class ProfilesListView extends Vue {
   //volunteerProfiles: VolunteerProfile[] = []; // TODO: this is the object that will be used to fill in the table
-  //institutionProfiles: InstitutionProfile[] = []; // TODO: this is the object that will be used to fill in the table
+  institutionProfiles: InstitutionProfile[] = []; 
 
   search: string = '';
 
@@ -146,15 +149,21 @@ export default class ProfilesListView extends Vue {
       width: '5%',
     },
   ];
-
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // TODO
+      this.institutionProfiles = await RemoteServices.getInstitutionsProfiles();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async viewProfile(institutionProfile: InstitutionProfile){
+    await this.$store.dispatch('setInstitution', institutionProfile.institution);
+    await this.$router.push({ name: 'institution-profile' , 
+    params: { id: institutionProfile!.institution!.id!.toString()}});
+   
   }
 }
 </script>
