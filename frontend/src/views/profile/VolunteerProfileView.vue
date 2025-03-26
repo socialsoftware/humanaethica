@@ -1,22 +1,31 @@
 <template>
   <div class="container">
     <!-- TODO: Add creation button here (only if there is no profile) -->
-    <div v-if="!createdProfile" class="profile-container">
-      <h2 class="profile-title">Volunteer Profile</h2>
-      <p class="profile-text">
-        No volunteer profile found. Click the button below to create a new one!
-      </p>
-      <v-btn 
-        color="primary"
-        class="profile-button"
-        @click="registerVolunteerProfile"
-      >
-        CREATE MY PROFILE
-      </v-btn>
+    <div v-if="!createdProfile">
+      <div v-if="!editVolunteerProfileDialog">
+        <h2 class="profile-title">Volunteer Profile</h2>
+        <p class="profile-text">
+          No volunteer profile found. Click the button below to create a new one!
+        </p>
+        <v-btn 
+          color="primary"
+          class="profile-button"
+          @click="registerVolunteerProfile"
+        >
+          CREATE MY PROFILE
+        </v-btn>
+      </div>
+      <div v-else>
+        <volunteer-profile-dialog
+          v-if="editVolunteerProfileDialog"
+          v-model="editVolunteerProfileDialog"
+          :participations="this.participations"
+          :activities="this.activities"
+        />
+      </div>
     </div>
        
     <div v-else>
-      <!--<h1>Volunteer:{{ getVolunteerName() }}</h1>-->
       <h1>Volunteer: the name goes here</h1>
       <div class="text-description">
         <p><strong>Short Bio: </strong> SHOW SHORT BIO HERE</p>
@@ -106,18 +115,22 @@ import RemoteServices from "@/services/RemoteServices";
 import Participation from "@/models/participation/Participation";
 import Activity from "@/models/activity/Activity";
 import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
+import VolunteerProfileDialog from '@/views/profile/VolunteerProfileDialog.vue'; 
+import User from '@/models/user/User';
 
 @Component({
   components: {
+    'volunteer-profile-dialog' : VolunteerProfileDialog,
   }
 })
 export default class VolunteerProfileView extends Vue {
   userId: number = 0;
   volunteerProfile: VolunteerProfile = new VolunteerProfile();
-  activities: Activity[] = []; //n percebo 
+  activities: Activity[] = [];
 
   createdProfile: boolean = false;
   editVolunteerProfileDialog: boolean = false;
+  participations: Participation[] = [];
 
   search: string = '';
   headers: object = [
@@ -152,22 +165,20 @@ export default class VolunteerProfileView extends Vue {
 
     try {
       this.userId = Number(this.$route.params.id);
-      this.activities = await RemoteServices.getActivities();
-
-      this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
-      console.log(this.volunteerProfile);
-      if (this.volunteerProfile) {
+      if(this.$store.getters.getUser !== null && this.$store.getters.getUser.role === 'VOLUNTEER'){
+        this.activities = await RemoteServices.getActivities();
+        this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
+        this.participations = await RemoteServices.getVolunteerParticipations();
+      }
+      if (this.volunteerProfile && this.volunteerProfile.id !== null &&  this.volunteerProfile.id !== undefined) {
         this.createdProfile = true;  // Profile exists
-        console.log("profile exists...");
       }
       else{
         this.createdProfile = false; 
       }
-      this.createdProfile = false; // NOT SUPPOSED TO BE HEREEEE
       
     } catch (error) {
       await this.$store.dispatch('error', error);
-      console.log("erroooooooooooo");
       this.createdProfile = false; 
     }
     await this.$store.dispatch('clearLoading');
@@ -187,14 +198,6 @@ export default class VolunteerProfileView extends Vue {
     return 3;
   }
 
-  getVolunteerName(): string{
-    return this.volunteerProfile.volunteer.name;
-  }
-
-  getShortBio(){
-    return this.volunteerProfile.shortBio;
-  }
-
   getMemberRating(participation: Participation): string {
     if (
       !participation ||
@@ -211,20 +214,12 @@ export default class VolunteerProfileView extends Vue {
     return `${fullStars}${emptyStars} ${rating}/5`;
   }
 
-  async registerVolunteerProfile() {
-    this.createdProfile = true;
-    await this.$router.push({ name: 'volunteer-profile' }).catch(() => {}); 
+  registerVolunteerProfile() {
+    this.editVolunteerProfileDialog = true;
   }
 
-  
 
 }
-
-
-
-
-
-
 
 </script>
 
@@ -295,28 +290,5 @@ export default class VolunteerProfileView extends Vue {
   padding: 1em;
 }
 
-.profile-container {
-  text-align: center;
-  margin-top: 50px;
-}
-
-.profile-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.profile-text {
-  font-size: 16px;
-  color: #666;
-  margin: 10px 0;
-}
-
-.profile-button {
-  font-size: 14px;
-  font-weight: bold;
-  padding: 10px 20px;
-  text-transform: uppercase;
-}
 
 </style>
