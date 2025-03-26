@@ -73,7 +73,7 @@
       
 
         <v-btn
-          v-if=" shortDes.trim().length > 10"
+          v-if=" shortDes.trim().length >= 10"
           color="blue-darken-1"
           variant="text"
           @click="createInstitutionProfile"
