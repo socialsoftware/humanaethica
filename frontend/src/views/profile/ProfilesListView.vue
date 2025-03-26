@@ -42,9 +42,24 @@
         disable-pagination
         :hide-default-footer="true"
         :mobile-breakpoint="0"
+        data-cy="institutionProfilesTable"
       >
         <template v-slot:item.institution.creationDate="{ item }">
           {{ ISOtoString(item.institution.creationDate) }}
+        </template>
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                @click="viewProfile(item)"
+                v-on="on"
+                data-cy="showInstitutionProfile"
+                >fa-solid fa-eye
+              </v-icon>
+            </template>
+          <span>View institution profile</span>
+        </v-tooltip>
         </template>
         <template v-slot:top>
           <v-card-title>
