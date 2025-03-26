@@ -13,7 +13,10 @@
             <v-col cols="12">
               <v-text-field
                 label="*Short description"
-                
+                :rules="[
+                  (v) => !!v?.trim() || 'Short description is required',
+                  (v) => (v && v.length >= 10) || 'Description must be at least 10 characters'
+                ]"
                 required
                 v-model="shortDes"
                 data-cy="shortDescriptionInput"
@@ -73,7 +76,7 @@
           v-if=" shortDes.trim().length > 10"
           color="blue-darken-1"
           variant="text"
-         
+          
           data-cy="saveInstitutionProfile"
         >
           Save
