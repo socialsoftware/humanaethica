@@ -33,7 +33,7 @@ import Institution from '@/models/institution/Institution';
   components: {
   },
 })
-export default class VolunteerActivitySuggestionsView extends Vue {
+export default class InstitutionActivitySuggestionsView extends Vue {
   //activitySuggestions: ActivitySuggestion[] = []; // TODO: this is the object that will be used to fill in the table
   institution: Institution = new Institution();
   search: string = '';

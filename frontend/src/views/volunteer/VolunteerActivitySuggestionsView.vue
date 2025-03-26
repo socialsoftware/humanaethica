@@ -18,12 +18,19 @@
               class="mx-2"
               style="max-width: 800px;"
             />
-            <v-btn class="mx-4" color="primary">
-              New Activity Suggestion
-            </v-btn>
+            <v-btn class="mx-4" color="primary" dark @click="newActivitySuggestion" data-cy="newActivitySuggestion"
+              >New Activity Suggestion</v-btn
+            >
           </v-card-title>
         </template>     
       </v-data-table>
+      <activitysuggestion-dialog
+        v-if="currentActivitySuggestion && editActivitySuggestionDialog"
+        v-model="editActivitySuggestionDialog"
+        :activitySuggestion="currentActivitySuggestion"
+        v-on:save-activity-suggestion="onSaveActivitySuggestion"
+        v-on:close-activity-suggestion-dialog="onCloseActivitySuggestionDialog"
+      />
     </v-card>
   </div>
   
@@ -32,19 +39,29 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+//import Institution from '@/models/institution/Institution';
+//import Volunteer from '@/models/volunteer/Volunteer';
 import RemoteServices from '@/services/RemoteServices';
+import ActivitySuggestionDialog from '@/views/volunteer/ActivitySuggestionDialog.vue';
 import { show } from 'cli-cursor';
 
 @Component({
   components: {
-    // TODO: 'activitysuggestion-dialog': ActivitySuggestionDialog,
+    'activitysuggestion-dialog': ActivitySuggestionDialog,
   },
   methods: { show },
 })
 
 export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
+  //institution: Institution = new Institution(); //TOASK
+  //volunteer: Volunteer = new Volunteer(); InstitutionActivitiesView tem Institution
+  // TODO -> adicionar institutions no dialog
   search: string = '';
+
+  currentActivitySuggestion: ActivitySuggestion | null = null;
+  editActivitySuggestionDialog: boolean = false;
+
   headers: object = [
     {
       text: 'Name',
@@ -111,11 +128,42 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
+      let userId = this.$store.getters.getUser.id;  //?
+      //this.institution = await RemoteServices.getInstitution(userId);
+      // volunteer?
       // TODO
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  newActivitySuggestion() {
+    this.currentActivitySuggestion = new ActivitySuggestion();
+    this.editActivitySuggestionDialog = true;
+  }
+
+  editActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    this.currentActivitySuggestion = activitySuggestion;
+    this.editActivitySuggestionDialog = true;
+  }
+
+  onCloseActivitySuggestionDialog() {
+    this.currentActivitySuggestion = null;
+    this.editActivitySuggestionDialog = false;
+  }
+
+  onSaveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    // this.institution.activities = this.institution.activitySuggestions.filter(
+    //   (a) => a.id !== activitySuggestions.id,
+    // );
+    // this.volunteer.activitySuggestions = this.institution.activitySuggestions.filter(
+    //   (a) => a.id !== activitySuggestions.id,
+    // );
+    // this.volunteer.activitySuggestions.unshift(activitySuggestion);
+    // this.institution.activitySuggestions.unshift(activitySuggestion);
+    this.editActivitySuggestionDialog = false;
+    this.currentActivitySuggestion = null;
   }
 }
 </script>
