@@ -5,6 +5,7 @@ import TokenAuthUser from '@/models/user/TokenAuthUser';
 import AuthUser from '@/models/user/AuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
 import Activity from '@/models/activity/Activity';
+import Institution from '@/models/institution/Institution';
 
 interface State {
   token: string;
@@ -15,6 +16,7 @@ interface State {
   notificationMessageList: string[];
   loading: boolean;
   activity: Activity | null;
+  institution: Institution | null;
 }
 
 const state: State = {
@@ -25,7 +27,8 @@ const state: State = {
   notification: false,
   notificationMessageList: [],
   loading: false,
-  activity: null
+  activity: null,
+  institution: null
 };
 
 Vue.use(Vuex);
@@ -61,6 +64,8 @@ export default new Vuex.Store({
       state.user = null;
       localStorage.setItem('activity', '');
       state.activity = null;
+      localStorage.setItem('institution', '');
+      state.institution = null;
     },
     error(state, errorMessage: string) {
       state.error = true;
@@ -87,6 +92,10 @@ export default new Vuex.Store({
     setActivity(state: State, activity: Activity) {
       localStorage.setItem('activity', JSON.stringify(activity));
       state.activity = activity;
+    },
+    setInstitution(state: State, institution: Institution) {
+      localStorage.setItem('institution', JSON.stringify(institution));
+      state.institution = institution;
     }
   },
   actions: {
@@ -135,7 +144,11 @@ export default new Vuex.Store({
     },
     async setActivity({ commit }, activity: Activity) {
       commit('setActivity', activity);
+    },
+    async setInstitution({ commit }, institution: Institution) {
+      commit('setInstitution', institution);
     }
+
   },
   getters: {
     isLoggedIn(state): boolean {
@@ -177,6 +190,9 @@ export default new Vuex.Store({
     },
     getActivity(state: State): Activity | null {
       return state.activity;
-    }
+    },
+    getInstitution(state: State): Institution | null {
+      return state.institution;
+    },
   },
 });
