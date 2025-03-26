@@ -101,3 +101,33 @@
   </v-dialog>
 </template>
 <script lang="ts">
+import { Vue, Component, Prop, Model } from 'vue-property-decorator';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import RemoteServices from '@/services/RemoteServices';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import { ISOtoString } from '@/services/ConvertDateService';
+
+Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
+@Component({
+  methods: { ISOtoString },
+})
+export default class ActivitySuggestionDialog extends Vue {
+  @Model('dialog', Boolean) dialog!: boolean;
+  @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
+
+  // TODO -> adicionar institutions aqui no dialog
+  // TODO -> colocar as datas na linha a seguir ao Number em vez de estar à direita
+
+  editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
+
+  cypressCondition: boolean = false;
+
+  async created() {
+    this.editActivitySuggestion = new ActivitySuggestion(this.activitySuggestion);
+  }
+
+
+</script>
+
+<style scoped lang="scss"></style>
