@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="900" elevation="11">
+  <v-dialog v-model="dialog" persistent width="1400" elevation="11">
     <v-card>
       <v-card-title>
         <span class="headline">
@@ -9,7 +9,6 @@
       <v-card-text>
         <v-form ref="form" lazy-validation>
           <v-row>
-           
             <v-col cols="12">
               <v-text-field
                 label="*Short description"
@@ -25,8 +24,6 @@
             <v-col cols="12" class="text-center">
               <h1>Selected Assessments</h1>
             </v-col>
-          
-
           <v-card class="table">
             <v-data-table
               v-model="selAssessment"
@@ -38,10 +35,8 @@
               :mobile-breakpoint="0"
               show-select
               item-key="id"
-              
               data-cy="institutionAssessmentsTable"
             >
-             
               <template v-slot:top>
                 <v-card-title>
                   <v-text-field
@@ -54,9 +49,7 @@
                 </v-card-title>
               </template>
             </v-data-table>
-          </v-card>
-       
-        
+          </v-card> 
           </v-row>
         </v-form>
       </v-card-text>
@@ -70,8 +63,6 @@
         >
           Close
         </v-btn>
-      
-
         <v-btn
           v-if=" shortDes.trim().length >= 10"
           color="blue-darken-1"
@@ -110,9 +101,9 @@ export default class InstitutionProfileDialog extends Vue {
   cypressCondition: boolean = false;
   
   headers = [
-    { text: 'Volunteer Name', value: 'volunteerName' },
-    { text: 'Review', value: 'review' },
-    { text: 'Review Date', value: 'reviewDate' }
+    { text: 'Volunteer Name', value: 'volunteerName', align: 'left', width: '30%'},
+    { text: 'Review', value: 'review', align: 'left', width: '30%'},
+    { text: 'Review Date', value: 'reviewDate', align: 'left', width: '40%' }
   ];
 
   get filteredAssessments() {
