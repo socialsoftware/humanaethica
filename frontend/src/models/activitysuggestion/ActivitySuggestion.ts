@@ -6,7 +6,7 @@ export default class ActivitySuggestion {
     description!: string;
     region!: string;
     creationDate!: string;
-    // formattedCreationDate!: string; TOASK
+    formattedCreationDate!: string;
     applicationDeadline!: string;
     formattedApplicationDeadline!: string;
     startingDate!: string;
@@ -17,7 +17,6 @@ export default class ActivitySuggestion {
     state!: string;
     institutionId: number | null = null;
     volunteerId: number | null = null;
-    //TODO - depois acrescentar os atributos referentes à mudança de estados
 
     constructor(jsonObj?: ActivitySuggestion) {
         if (jsonObj) {
@@ -26,8 +25,8 @@ export default class ActivitySuggestion {
             this.description = jsonObj.description;
             this.region = jsonObj.region;
             this.creationDate = ISOtoString(jsonObj.creationDate);
-            // if (jsonObj.creationDate)
-            //     this.formattedCreationDate = ISOtoString(jsonObj.creationDate);
+            if (jsonObj.creationDate)
+                this.formattedCreationDate = ISOtoString(jsonObj.creationDate);
             this.applicationDeadline = jsonObj.applicationDeadline;
             if (jsonObj.applicationDeadline)
                 this.formattedApplicationDeadline = ISOtoString(jsonObj.applicationDeadline);
