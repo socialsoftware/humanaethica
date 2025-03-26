@@ -65,7 +65,7 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
-          
+          @click="$emit('close-institutionProfile')"
           data-cy="closeInstitutionProfile"
         >
           Close
@@ -76,7 +76,7 @@
           v-if=" shortDes.trim().length > 10"
           color="blue-darken-1"
           variant="text"
-          
+          @click="createInstitutionProfile"
           data-cy="saveInstitutionProfile"
         >
           Save
@@ -133,6 +133,18 @@ export default class InstitutionProfileDialog extends Vue {
   async created() {
   }
 
+  async createInstitutionProfile() {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+      try {
+        this.institutionProfile.selectedAssessments = this.selAssessment;
+        this.institutionProfile.shortDescription = this.shortDes;
+        const result = await RemoteServices.createInstitutionProfile(this.institutionProfile);
+        this.$emit('save-institutionProfile', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
 }
 </script>
 
