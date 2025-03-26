@@ -3,6 +3,10 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.dto.ActivitySuggestionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_ALREADY_APPROVED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_ALREADY_REJECTED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_APROVAL_AFTER_DEADLINE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_REJECTION_AFTER_DEADLINE;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
@@ -32,6 +36,8 @@ public class ActivitySuggestion {
     private Integer participantsNumberLimit;
     @Enumerated(EnumType.STRING)
     private ActivitySuggestion.State state = State.IN_REVIEW;
+    private LocalDateTime approvalDate;
+    private LocalDateTime rejectionDate;
 
     @ManyToOne
     private Institution institution;
@@ -151,6 +157,56 @@ public class ActivitySuggestion {
     public void setVolunteer(Volunteer volunteer) {
         this.volunteer = volunteer;
         this.volunteer.addActivitySuggestion(this);
+    }
+
+    public LocalDateTime getApprovalDate() {
+        return this.approvalDate;
+    }
+
+    public LocalDateTime getRejectionDate() {
+        return this.rejectionDate;
+    }
+
+    public void approve() {
+        suggestionCannotBeApproved();
+
+        this.setState(State.APPROVED);
+        this.approvalDate = DateHandler.now();
+
+        aprovalBeforeDeadline();
+    }
+
+    private void suggestionCannotBeApproved() {
+        if (this.state == State.APPROVED) {
+            throw new HEException(ACTIVITY_SUGGESTION_ALREADY_APPROVED, this.getName());
+        }
+    }
+
+    private void aprovalBeforeDeadline() {
+        if (this.approvalDate != null && this.approvalDate.isAfter(this.applicationDeadline)) {
+            throw new HEException(ACTIVITY_SUGGESTION_APROVAL_AFTER_DEADLINE);
+        }
+    }
+
+    public void reject() {
+        suggestionCannotBeRejected();
+
+        this.setState(State.REJECTED);
+        this.rejectionDate = DateHandler.now();
+
+        rejectionBeforeDeadline();
+    }
+
+    private void suggestionCannotBeRejected() {
+        if (this.state == State.REJECTED) {
+            throw new HEException(ACTIVITY_SUGGESTION_ALREADY_REJECTED, this.name);
+        }
+    }
+
+    private void rejectionBeforeDeadline() {
+        if (this.rejectionDate != null && this.rejectionDate.isAfter(this.applicationDeadline)) {
+            throw new HEException(ACTIVITY_SUGGESTION_REJECTION_AFTER_DEADLINE);
+        }
     }
 
     private void verifyInvariants() {

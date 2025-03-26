@@ -62,4 +62,25 @@ public class ActivitySuggestionService {
 
         return new ActivitySuggestionDto(activitySuggestion);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ActivitySuggestionDto approveActivitySuggestion(Integer activitySuggestionId) {
+        if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
+                                                                  .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
+
+        activitySuggestion.approve();
+
+        return new ActivitySuggestionDto(activitySuggestion);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ActivitySuggestionDto rejectActivitySuggestion(Integer activitySuggestionId) {
+        if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
+                                                                  .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
+        activitySuggestion.reject();
+
+        return new ActivitySuggestionDto(activitySuggestion);
+    }
 }
