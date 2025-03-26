@@ -10,16 +10,19 @@
         :mobile-breakpoint="0"
       >
         <template v-slot:top>
-          <v-card-title>
+          <v-card-title class="d-flex justify-space-between align-center">
             <v-text-field
               v-model="search"
               append-icon="search"
               label="Search"
               class="mx-2"
+              style="max-width: 800px;"
             />
-            <v-spacer />
+            <v-btn class="mx-4" color="primary">
+              New Activity Suggestion
+            </v-btn>
           </v-card-title>
-        </template>
+        </template>     
       </v-data-table>
     </v-card>
   </div>
@@ -28,15 +31,19 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-//import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import RemoteServices from '@/services/RemoteServices';
+import { show } from 'cli-cursor';
 
 @Component({
   components: {
     // TODO: 'activitysuggestion-dialog': ActivitySuggestionDialog,
   },
+  methods: { show },
 })
+
 export default class VolunteerActivitySuggestionsView extends Vue {
-  //activitySuggestions: ActivitySuggestion[] = []; // TODO: this is the object that will be used to fill in the table
+  activitySuggestions: ActivitySuggestion[] = [];
   search: string = '';
   headers: object = [
     {
