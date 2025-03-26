@@ -127,7 +127,25 @@ export default class ActivitySuggestionDialog extends Vue {
     this.editActivitySuggestion = new ActivitySuggestion(this.activitySuggestion);
   }
 
+  isNumberValid(value: any) {
+    if (!/^\d+$/.test(value)) return false;
+    const parsedValue = parseInt(value);
+    return parsedValue >= 1 && parsedValue <= 5;
+  }
 
+  get canSave(): boolean {
+    return (
+      this.cypressCondition ||
+      (!!this.editActivitySuggestion.name &&
+        !!this.editActivitySuggestion.region &&
+        !!this.editActivitySuggestion.participantsNumberLimit &&
+        !!this.editActivitySuggestion.description &&
+        !!this.editActivitySuggestion.startingDate &&
+        !!this.editActivitySuggestion.endingDate &&
+        !!this.editActivitySuggestion.applicationDeadline)
+    );
+  }
+}
 </script>
 
 <style scoped lang="scss"></style>
