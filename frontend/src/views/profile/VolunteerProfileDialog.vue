@@ -1,63 +1,73 @@
 <template>
-
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog v-model="dialog" persistent width="1000">
     <v-card class="container">
+
+      <!-- Title -->
       <v-card-title class="d-flex flex-column align-start">
         <h3>New Volunteer Profile</h3>
       </v-card-title>
 
-      <!-- Short Bio Field -->
+      <!-- Short Bio -->
       <v-card-text>
-        <v-text-field label="Short Bio"></v-text-field>
+        <v-text-field 
+          label="*Short Bio"
+          required
+          v-model="shortBio"
+        ></v-text-field>
       </v-card-text>
 
-      <v-card-title class="align-center">
-        <p>Seleceted Participations</p>
-      </v-card-title>
+      <v-card-text class="d-flex justify-center pt-2 text-h6">
+        <p>Selected Participations</p>
+      </v-card-text>
 
-      <v-card-text style="max-height: 300px;">
-      <v-card class="table">
+      <!-- Table -->
+      <v-card-text style="max-height: 300px; overflow-y: auto;">
+        <v-card class="table">
           <v-data-table
-          :headers="headers"
-          :search="search"
-         
-          disable-pagination
-          :hide-default-footer="true"
-          :mobile-breakpoint="0"
-          show-select
-
+            :headers="headers"
+            :search="search"
+            disable-pagination
+            :hide-default-footer="true"
+            :mobile-breakpoint="0"
+            show-select
           >
-
-          <template v-slot:item.activityName="{ item }">
+            <template v-slot:item.activityName="{ item }">
               {{ activityName(item) }}
-          </template>
-          <template v-slot:item.institutionName="{ item }">
+            </template>
+            <template v-slot:item.institutionName="{ item }">
               {{ institutionName(item) }}
-          </template>
-          <template v-slot:item.memberRating="{ item }">
+            </template>
+            <template v-slot:item.memberRating="{ item }">
               {{ getMemberRating(item) }}
-          </template>
-          <template v-slot:top>
+            </template>
+            <template v-slot:top>
               <v-card-title>
-              <v-text-field
+                <v-text-field
                   v-model="search"
                   append-icon="search"
                   label="Search"
                   class="mx-2"
-              />
-              <v-spacer />
+                />
+                <v-spacer />
               </v-card-title>
-          </template>
+            </template>
           </v-data-table>
         </v-card>
-        </v-card-text>
+      </v-card-text>
 
-        <v-btn elevation="2"> Save </v-btn>
-        <v-btn elevation="2"> Close </v-btn>
-      </v-card>
+      <!-- Buttons  -->
+      <v-card-actions class="pa-4">
+        <v-spacer></v-spacer>
+        <v-btn 
+          v-if="shortBio.trim().length >10"
+          elevation="2"
+        >Save</v-btn>
+        <v-btn elevation="2">Close</v-btn>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
-
 </template>
+
 
 <script lang="ts">
 
@@ -76,13 +86,8 @@ Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 })
 export default class VolunteerProfileDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Array, required: true }) readonly activities!: Activity[];
-  @Prop({ type: Array, required: true }) readonly participations!: Participation[];
 
-  editActivity: Activity = new Activity();
-
-  cypressCondition: boolean = false;
-
+  shortBio: string = '';
   search: string = '';
   
   headers: object = [
@@ -113,13 +118,7 @@ export default class VolunteerProfileDialog extends Vue {
   ];
 
   async created() {
-   console.log("entrou dialog1");
-  }
-
-  isNumberValid(value: any) {
-    if (!/^\d+$/.test(value)) return false;
-    const parsedValue = parseInt(value);
-    return parsedValue >= 1 && parsedValue <= 5;
+   
   }
 
   activityName(participation: Participation) {
