@@ -24,8 +24,10 @@
       <v-card-text style="max-height: 300px; overflow-y: auto;">
         <v-card class="table">
           <v-data-table
+            v-model="selectedParticipations"
             :headers="headers"
             :search="search"
+            :items="this.participations"
             disable-pagination
             :hide-default-footer="true"
             :mobile-breakpoint="0"
@@ -61,8 +63,11 @@
         <v-btn 
           v-if="shortBio.trim().length >10"
           elevation="2"
+          @click="registerVolunteerProfile"
         >Save</v-btn>
-        <v-btn elevation="2">Close</v-btn>
+        <v-btn elevation="2"
+          @click="$emit('close-volunteer-profile-dialog')"
+        >Close</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -73,7 +78,6 @@
 
 import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import Activity from '@/models/activity/Activity';
-import Theme from '@/models/theme/Theme';
 import RemoteServices from '@/services/RemoteServices';
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
@@ -123,7 +127,6 @@ export default class VolunteerProfileDialog extends Vue {
   ];
 
   async created() {
-   
   }
 
   activityName(participation: Participation) {
@@ -151,6 +154,13 @@ export default class VolunteerProfileDialog extends Vue {
     return this.convertToStars(participation.memberRating);
   }
 
+  async registerVolunteerProfile(){
+    this.editVolunteerProfile.selectedParticipations = this.selectedParticipations;
+    this.editVolunteerProfile.shortBio = this.shortBio;
+    
+    const result = await RemoteServices.registerVolunteerProfile(this.editVolunteerProfile);
+    this.$emit('save-volunteer-profile', result);
+  }
 }
 
 </script>
