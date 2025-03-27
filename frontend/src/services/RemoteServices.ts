@@ -15,6 +15,7 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -464,6 +465,18 @@ export default class RemoteServices {
       .put(`/activities/${activityId}/report`)
       .then((response) => {
         return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async registerActivitySuggestion(activitySuggestion: ActivitySuggestion,
+                                          institutionId: number | null) { //TOASK
+    return httpClient
+      .post(`/activitySuggestions/institution/${institutionId}`, activitySuggestion)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
