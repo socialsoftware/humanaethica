@@ -10,7 +10,7 @@
         <v-btn 
           color="primary"
           class="profile-button"
-          @click="registerVolunteerProfile"
+          @click="openVolunteerProfileDialog"
         >
           CREATE MY PROFILE
         </v-btn>
@@ -21,35 +21,35 @@
           v-model="editVolunteerProfileDialog"
           :participations="this.participations"
           :activities="this.activities"
+          v-on:close-volunteer-profile-dialog="onCloseVolunteerProfileDialog"
+          v-on:save-volunteer-profile="onSaveVolunteerProfile"
         />
       </div>
     </div>
        
     <div v-else>
-      <h1>Volunteer: the name goes here</h1>
+      <h1>Volunteer: {{ getVolunteerName() }}</h1>
       <div class="text-description">
-        <p><strong>Short Bio: </strong> SHOW SHORT BIO HERE</p>
+        <p><strong>Short Bio: </strong> {{ getShortBio() }}</p>
       </div>
       <div class="stats-container">
         <div class="items">
           <div ref="volunteerId" class="icon-wrapper">
-            <span>42</span>
+            <span>{{ getNumTotalEnrollments() }}</span>
           </div>
           <div class="project-name">
             <p>Total Enrollments</p>
           </div>
         </div>
-        <!-- TODO: Change 42 above and add other fields here -->
     
         <div class="items">
           <div ref="volunteerId" class="icon-wrapper">
-            <span>42</span>
+            <span>{{ getNumTotalAssessments() }}</span>
           </div>
           <div class="project-name">
             <p>Total Assessments</p>
           </div>
         </div>
-        <!-- TODO: Change 42 above and add other fields here -->
         <div class="items">
           <div ref="volunteerId" class="icon-wrapper">
             <span>{{ getNumTotalParticipations() }}</span>
@@ -58,11 +58,10 @@
             <p>Total Participations</p>
           </div>
         </div>
-        <!-- TODO: Change 42 above and add other fields here -->
       
         <div class="items">
           <div ref="volunteerId" class="icon-wrapper">
-            <span>42</span>
+            <span>{{ getAverageRating() }}</span>
           </div>
           <div class="project-name">
             <p>Average rating</p>
@@ -77,6 +76,7 @@
             <v-data-table
               :headers="headers"
               :search="search"
+              :items="this.volunteerProfile?.selectedParticipations"
               disable-pagination
               :hide-default-footer="true"
               :mobile-breakpoint="0"
@@ -193,9 +193,28 @@ export default class VolunteerProfileView extends Vue {
     return activity?.institution.name;
   }
 
+  getVolunteerName(): string {
+    return this.volunteerProfile?.volunteer.name || "the name goes here"; 
+  }
+
+  getShortBio(): string {
+    return this.volunteerProfile?.shortBio || "SHOW SHORT BIO HERE"; 
+  }
+
   getNumTotalParticipations(): number{
-    //return this.volunteerProfile?.numTotalParticipations || 0;
-    return 3;
+    return this.volunteerProfile?.numTotalParticipations || 0;
+  }
+
+  getNumTotalAssessments(): number{
+    return this.volunteerProfile?.numTotalAssessments || 0;
+  }
+
+  getNumTotalEnrollments(): number{
+    return this.volunteerProfile?.numTotalEnrollments || 0;
+  }
+
+  getAverageRating(): number {
+    return this.volunteerProfile?.averageRating || 0;
   }
 
   getMemberRating(participation: Participation): string {
@@ -214,11 +233,23 @@ export default class VolunteerProfileView extends Vue {
     return `${fullStars}${emptyStars} ${rating}/5`;
   }
 
+  openVolunteerProfileDialog() {
+    this.editVolunteerProfileDialog = true;
+  }
+
   registerVolunteerProfile() {
     this.editVolunteerProfileDialog = true;
   }
 
+  onSaveVolunteerProfile(volunteerProfile : VolunteerProfile){
+    this.createdProfile = true;
+    this.volunteerProfile = volunteerProfile;
+    this.editVolunteerProfileDialog = false;
+  }
 
+  onCloseVolunteerProfileDialog(){
+    this.editVolunteerProfileDialog = false;
+  }
 }
 
 </script>

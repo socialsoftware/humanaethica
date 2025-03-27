@@ -160,7 +160,7 @@ export default class VolunteerProfileDialog extends Vue {
   }
 
   async registerVolunteerProfile(){
-    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+    // if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try{
         this.editVolunteerProfile.selectedParticipations = this.selectedParticipations;
         this.editVolunteerProfile.shortBio = this.shortBio;
@@ -171,7 +171,7 @@ export default class VolunteerProfileDialog extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
-  }
+  // }
 }
 
 </script>
