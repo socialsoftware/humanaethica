@@ -79,6 +79,7 @@ import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Participation from '@/models/participation/Participation';
+import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
 
 Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 @Component({
@@ -86,6 +87,10 @@ Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 })
 export default class VolunteerProfileDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
+  @Prop({ type: Array, required: true }) readonly activities!: Activity[];
+  @Prop({ type: Array, required: true }) readonly participations!: Participation[];
+  selectedParticipations: Participation[] = [];
+  editVolunteerProfile: VolunteerProfile = new VolunteerProfile();
 
   shortBio: string = '';
   search: string = '';
