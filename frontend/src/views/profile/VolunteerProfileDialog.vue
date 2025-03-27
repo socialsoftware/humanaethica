@@ -13,6 +13,7 @@
           label="*Short Bio"
           required
           v-model="shortBio"
+          :rules="[rules.required]"
         ></v-text-field>
       </v-card-text>
 
@@ -98,6 +99,10 @@ export default class VolunteerProfileDialog extends Vue {
 
   shortBio: string = '';
   search: string = '';
+
+  rules = {
+    required: (value: string) => !!value || 'Short bio is required',
+  };
   
   headers: object = [
     {
@@ -155,11 +160,17 @@ export default class VolunteerProfileDialog extends Vue {
   }
 
   async registerVolunteerProfile(){
-    this.editVolunteerProfile.selectedParticipations = this.selectedParticipations;
-    this.editVolunteerProfile.shortBio = this.shortBio;
-    
-    const result = await RemoteServices.registerVolunteerProfile(this.editVolunteerProfile);
-    this.$emit('save-volunteer-profile', result);
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+      try{
+        this.editVolunteerProfile.selectedParticipations = this.selectedParticipations;
+        this.editVolunteerProfile.shortBio = this.shortBio;
+        
+        const result = await RemoteServices.registerVolunteerProfile(this.editVolunteerProfile);
+        this.$emit('save-volunteer-profile', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 
