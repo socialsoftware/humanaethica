@@ -45,4 +45,11 @@ public class VolunteerProfileService {
 
         return new VolunteerProfileDto(volunteerProfile);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<VolunteerProfileDto> getListVolunteerProfile(){
+        return volunteerProfileRepository.findAll().stream()
+                .map(volunteerProfile-> new VolunteerProfileDto(volunteerProfile))
+                .toList();
+    }
 }

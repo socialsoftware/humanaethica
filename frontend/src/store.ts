@@ -5,6 +5,7 @@ import TokenAuthUser from '@/models/user/TokenAuthUser';
 import AuthUser from '@/models/user/AuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
 import Activity from '@/models/activity/Activity';
+import VolunteerProfile from './models/volunteerProfile/VolunteerProfile';
 
 interface State {
   token: string;
@@ -15,6 +16,8 @@ interface State {
   notificationMessageList: string[];
   loading: boolean;
   activity: Activity | null;
+  volunteerProfile: VolunteerProfile | null;
+
 }
 
 const state: State = {
@@ -25,7 +28,8 @@ const state: State = {
   notification: false,
   notificationMessageList: [],
   loading: false,
-  activity: null
+  activity: null,
+  volunteerProfile: null
 };
 
 Vue.use(Vuex);
@@ -87,6 +91,10 @@ export default new Vuex.Store({
     setActivity(state: State, activity: Activity) {
       localStorage.setItem('activity', JSON.stringify(activity));
       state.activity = activity;
+    },
+    setVolunteerProfile(state: State, volunteerProfile: VolunteerProfile) {
+      localStorage.setItem('volunteerProfile', JSON.stringify(volunteerProfile));
+      state.volunteerProfile = volunteerProfile;
     }
   },
   actions: {
@@ -135,6 +143,9 @@ export default new Vuex.Store({
     },
     async setActivity({ commit }, activity: Activity) {
       commit('setActivity', activity);
+    },
+    async setVolunteerProfile({ commit }, volunteerProfile: VolunteerProfile){
+      commit('setVolunteerProfile', volunteerProfile);
     }
   },
   getters: {
@@ -177,6 +188,9 @@ export default new Vuex.Store({
     },
     getActivity(state: State): Activity | null {
       return state.activity;
+    },
+    getVolunteerProfile(state: State): VolunteerProfile | null {
+      return state.volunteerProfile;
     }
   },
 });

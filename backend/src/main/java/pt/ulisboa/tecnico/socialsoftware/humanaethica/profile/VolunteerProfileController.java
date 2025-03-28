@@ -27,4 +27,9 @@ public class VolunteerProfileController {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
         return volunteerProfileService.createVolunteerProfile(userId, volunteerProfileDto);
     }
+
+    @GetMapping()
+    public List<VolunteerProfileDto> getListVolunteerProfile() {
+        return volunteerProfileService.getListVolunteerProfile();
+    }
 }
