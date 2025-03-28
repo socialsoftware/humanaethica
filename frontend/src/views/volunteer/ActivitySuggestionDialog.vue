@@ -2,13 +2,7 @@
   <v-dialog v-model="dialog" persistent width="1300">
     <v-card>
       <v-card-title>
-        <span class="headline">
-          {{
-            editActivitySuggestion && editActivitySuggestion.id === null
-              ? 'New Activity Suggestion'
-              : 'Edit Activity Suggestion'
-          }}
-        </span>
+        <span class="headline">New Activity Suggestion</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form" lazy-validation>
@@ -92,6 +86,7 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
+          @click="createActivitySuggestion"
           data-cy="saveActivitySuggestion"
         >
           Save
@@ -136,14 +131,29 @@ export default class ActivitySuggestionDialog extends Vue {
   get canSave(): boolean {
     return (
       this.cypressCondition ||
-      (!!this.editActivitySuggestion.name &&
-        !!this.editActivitySuggestion.region &&
-        !!this.editActivitySuggestion.participantsNumberLimit &&
-        !!this.editActivitySuggestion.description &&
-        !!this.editActivitySuggestion.startingDate &&
-        !!this.editActivitySuggestion.endingDate &&
-        !!this.editActivitySuggestion.applicationDeadline)
+      (!!this.activitySuggestion.name &&
+        !!this.activitySuggestion.region &&
+        !!this.activitySuggestion.participantsNumberLimit &&
+        !!this.activitySuggestion.description &&
+        !!this.activitySuggestion.startingDate &&
+        !!this.activitySuggestion.endingDate &&
+        !!this.activitySuggestion.applicationDeadline)
     );
+  }
+
+  // created e createActivitySuggestion? TOASK
+
+  async createActivitySuggestion() {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+      try {
+        const result = await RemoteServices.registerActivitySuggestion(
+          this.editActivitySuggestion,
+          this.editActivitySuggestion.institutionId);
+        this.$emit('save-activity-suggestion', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>
