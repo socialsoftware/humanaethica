@@ -28,6 +28,7 @@
         v-if="currentActivitySuggestion && editActivitySuggestionDialog"
         v-model="editActivitySuggestionDialog"
         :activitySuggestion="currentActivitySuggestion"
+        :institution="institution"
         v-on:save-activity-suggestion="onSaveActivitySuggestion"
         v-on:close-activity-suggestion-dialog="onCloseActivitySuggestionDialog"
       />
@@ -39,7 +40,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
-//import Institution from '@/models/institution/Institution';
+import Institution from '@/models/institution/Institution';
 //import Volunteer from '@/models/volunteer/Volunteer';
 import RemoteServices from '@/services/RemoteServices';
 import ActivitySuggestionDialog from '@/views/volunteer/ActivitySuggestionDialog.vue';
@@ -54,9 +55,8 @@ import { show } from 'cli-cursor';
 
 export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
-  //institution: Institution = new Institution(); //TOASK
+  institution: Institution = new Institution(); //TOASK
   //volunteer: Volunteer = new Volunteer(); InstitutionActivitiesView tem Institution
-  // TODO -> adicionar institutions no dialog
   search: string = '';
 
   currentActivitySuggestion: ActivitySuggestion | null = null;
@@ -155,10 +155,10 @@ export default class VolunteerActivitySuggestionsView extends Vue {
 
   onSaveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
     // this.institution.activities = this.institution.activitySuggestions.filter(
-    //   (a) => a.id !== activitySuggestions.id,
+    //   (a) => a.id !== activitySuggestion.id,
     // );
     // this.volunteer.activitySuggestions = this.institution.activitySuggestions.filter(
-    //   (a) => a.id !== activitySuggestions.id,
+    //   (a) => a.id !== activitySuggestion.id,
     // );
     // this.volunteer.activitySuggestions.unshift(activitySuggestion);
     // this.institution.activitySuggestions.unshift(activitySuggestion);

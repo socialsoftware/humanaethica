@@ -16,10 +16,30 @@
                 data-cy="nameInput"
               ></v-text-field>
             </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-select
+                label="Institution"
+                v-model="this.editActivitySuggestion.institutionId"
+                :items="[]"
+                return-object
+                item-text="completeName"
+                item-value="id"
+                required
+              />
+            </v-col>
             <v-col cols="12">
               <v-text-field
                 label="*Description"
-                :rules="[(v) => !!v || 'Description is required']"
+                :rules="[
+                  (v) => {
+                    if (!v) {
+                      return 'Description is required';
+                    } else if (v.length <= 10) {
+                      return 'Description must be 10 or more characters';
+                    } 
+                    return true;
+                  },
+                ]"
                 required
                 v-model="editActivitySuggestion.description"
                 data-cy="descriptionInput"
@@ -34,7 +54,7 @@
                 data-cy="regionInput"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="6" md="4">
+            <v-col cols="12">
               <v-text-field
                 label="*Number of Participants"
                 :rules="[
@@ -102,6 +122,7 @@ import RemoteServices from '@/services/RemoteServices';
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 import { ISOtoString } from '@/services/ConvertDateService';
+import Institution from '@/models/institution/Institution';
 
 Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 @Component({
@@ -110,9 +131,11 @@ Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 export default class ActivitySuggestionDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
+  @Prop({ type: Institution, required: true }) readonly institution!: Institution;
 
-  // TODO -> adicionar institutions aqui no dialog
-  // TODO -> colocar as datas na linha a seguir ao Number em vez de estar à direita
+  // <!-- TODO lista de instituins como? -->
+  // será necessário esta institution?
+  // TODO falta fazer aquilo do botão save só aparecer quando deve
 
   editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
 
@@ -135,6 +158,7 @@ export default class ActivitySuggestionDialog extends Vue {
         !!this.activitySuggestion.region &&
         !!this.activitySuggestion.participantsNumberLimit &&
         !!this.activitySuggestion.description &&
+        this.activitySuggestion.description.length >= 10 &&
         !!this.activitySuggestion.startingDate &&
         !!this.activitySuggestion.endingDate &&
         !!this.activitySuggestion.applicationDeadline)
