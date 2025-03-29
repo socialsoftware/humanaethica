@@ -28,13 +28,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Institution from '@/models/institution/Institution';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import RemoteServices from '@/services/RemoteServices';
 
 @Component({
   components: {
   },
 })
 export default class InstitutionActivitySuggestionsView extends Vue {
-  //activitySuggestions: ActivitySuggestion[] = []; // TODO: this is the object that will be used to fill in the table
+  activitySuggestions: ActivitySuggestion[] = [];
   institution: Institution = new Institution();
   search: string = '';
   headers: object = [
@@ -103,7 +105,13 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // TODO
+      // ou será this.institutionId = Number(this.$route.params.id); ?
+      let userId = this.$store.getters.getUser.id;
+      this.institution = await RemoteServices.getInstitution(userId);
+      if (this.institution != null && this.institution.id != null)  // TOASK fazer esta verificação assim?
+        this.activitySuggestions = await RemoteServices.getActivitiySuggestions(
+            this.institution.id,
+          );
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
