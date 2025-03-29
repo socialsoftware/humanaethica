@@ -16,7 +16,7 @@
               append-icon="search"
               label="Search"
               class="mx-2"
-              style="max-width: 800px;"
+              style="max-width: 1000px;"
             />
             <v-btn class="mx-4" color="primary" dark @click="newActivitySuggestion" data-cy="newActivitySuggestion"
               >New Activity Suggestion</v-btn
@@ -55,7 +55,7 @@ import { show } from 'cli-cursor';
 
 export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
-  institution: Institution = new Institution(); //TOASK
+  institution: Institution = new Institution(); //TASK
   //volunteer: Volunteer = new Volunteer(); InstitutionActivitiesView tem Institution
   search: string = '';
 
@@ -128,10 +128,9 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      let userId = this.$store.getters.getUser.id;  //?
-      //this.institution = await RemoteServices.getInstitution(userId);
-      // volunteer?
-      // TODO
+      this.activitySuggestions = await RemoteServices.getVolunteerActivitySuggestions(
+        this.$store.getters.getUser.id
+      );
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

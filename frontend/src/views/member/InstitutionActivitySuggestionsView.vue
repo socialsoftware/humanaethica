@@ -109,7 +109,7 @@ export default class InstitutionActivitySuggestionsView extends Vue {
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
       if (this.institution != null && this.institution.id != null)  // TOASK fazer esta verificação assim?
-        this.activitySuggestions = await RemoteServices.getActivitiySuggestions(
+        this.activitySuggestions = await RemoteServices.getActivitySuggestions(
             this.institution.id,
           );
     } catch (error) {
