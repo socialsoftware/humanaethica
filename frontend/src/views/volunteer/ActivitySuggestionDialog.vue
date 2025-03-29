@@ -34,7 +34,7 @@
                   (v) => {
                     if (!v) {
                       return 'Description is required';
-                    } else if (v.length <= 10) {
+                    } else if (v.trim().length <= 10) {
                       return 'Description must be 10 or more characters';
                     } 
                     return true;
@@ -104,6 +104,7 @@
           Close
         </v-btn>
         <v-btn
+          v-if="canSave"
           color="blue-darken-1"
           variant="text"
           @click="createActivitySuggestion"
@@ -135,7 +136,7 @@ export default class ActivitySuggestionDialog extends Vue {
 
   // <!-- TODO lista de instituins como? -->
   // será necessário esta institution? se calhar vale mais só a pena receber uma lista de institutions do pai?
-  // TODO falta fazer aquilo do botão save só aparecer quando deve
+  // bug, o save nao aparece, o canSave sempre falso, activitySuggestion não tem os atributos populados?
 
   editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
 
@@ -152,6 +153,7 @@ export default class ActivitySuggestionDialog extends Vue {
   }
 
   get canSave(): boolean {
+    console.log(this.activitySuggestion); // Debugging line
     return (
       this.cypressCondition ||
       (!!this.activitySuggestion.name &&
