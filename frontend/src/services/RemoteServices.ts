@@ -832,6 +832,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getListVolunteerProfile(): Promise<VolunteerProfile[]> {
+    return httpClient
+    .get('/profile/volunteer/views')
+    .then((response) => {
+      return response.data.map((volunteerProfile: any) => {
+        return new VolunteerProfile(volunteerProfile);
+      });
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   // Error
 
   static async errorMessage(error: any): Promise<string> {

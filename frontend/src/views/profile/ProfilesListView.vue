@@ -18,6 +18,19 @@
         <template v-slot:item.volunteer.lastAccess="{ item }">
           {{ ISOtoString(item.volunteer.lastAccess) }}
         </template>
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                @click="viewVolunteerProfile(item)"
+                v-on="on"
+                >fa-solid fa-eye
+              </v-icon>
+            </template>
+            <span>View volunteer profile</span>
+          </v-tooltip>
+        </template>
         <template v-slot:top>
           <v-card-title>
             <v-text-field
@@ -30,14 +43,14 @@
         </template>
       </v-data-table>
     </v-card>
-    <!-- Institution Profiles -->
+    <!-- Institution Profiles            MUDAR :items   -->
     <v-card class="table">
       <v-card-title>
         <h2>Institution Profiles</h2>
       </v-card-title>
       <v-data-table
         :headers="headersInstitutionProfile"
-        :items="institutionProfiles"
+        :items="volunteerProfiles"      
         :search="search"
         disable-pagination
         :hide-default-footer="true"
@@ -64,12 +77,14 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ISOtoString } from "../../services/ConvertDateService";
+import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
+import RemoteServices from '@/services/RemoteServices';
 
 @Component({
   methods: { ISOtoString }
 })
 export default class ProfilesListView extends Vue {
-  //volunteerProfiles: VolunteerProfile[] = []; // TODO: this is the object that will be used to fill in the table
+  volunteerProfiles: VolunteerProfile[] = []; 
   //institutionProfiles: InstitutionProfile[] = []; // TODO: this is the object that will be used to fill in the table
 
   search: string = '';
@@ -135,11 +150,17 @@ export default class ProfilesListView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // TODO
+      this.volunteerProfiles = await RemoteServices.getListVolunteerProfile();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async viewVolunteerProfile(volunteerProfile: VolunteerProfile){
+    await this.$store.dispatch('setVolunteerProfile', volunteerProfile);
+    await this.$router.push({ name: 'volunteer-profile' , 
+    params: { id: volunteerProfile!.volunteer!.id!.toString()}});
   }
 }
 </script>

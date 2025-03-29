@@ -125,7 +125,7 @@ import User from '@/models/user/User';
 })
 export default class VolunteerProfileView extends Vue {
   userId: number = 0;
-  volunteerProfile: VolunteerProfile = new VolunteerProfile();
+  volunteerProfile: VolunteerProfile | null = null;
   activities: Activity[] = [];
 
   createdProfile: boolean = false;
@@ -165,9 +165,9 @@ export default class VolunteerProfileView extends Vue {
 
     try {
       this.userId = Number(this.$route.params.id);
+      this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
       if(this.$store.getters.getUser !== null && this.$store.getters.getUser.role === 'VOLUNTEER'){
         this.activities = await RemoteServices.getActivities();
-        this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
         this.participations = await RemoteServices.getVolunteerParticipations();
       }
       if (this.volunteerProfile && this.volunteerProfile.id !== null &&  this.volunteerProfile.id !== undefined) {
@@ -238,6 +238,7 @@ export default class VolunteerProfileView extends Vue {
   }
 
   registerVolunteerProfile() {
+    this.volunteerProfile = new VolunteerProfile();
     this.editVolunteerProfileDialog = true;
   }
 
