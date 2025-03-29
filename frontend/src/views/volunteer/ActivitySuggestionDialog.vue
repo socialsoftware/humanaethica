@@ -134,7 +134,7 @@ export default class ActivitySuggestionDialog extends Vue {
   @Prop({ type: Institution, required: true }) readonly institution!: Institution;
 
   // <!-- TODO lista de instituins como? -->
-  // será necessário esta institution?
+  // será necessário esta institution? se calhar vale mais só a pena receber uma lista de institutions do pai?
   // TODO falta fazer aquilo do botão save só aparecer quando deve
 
   editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
@@ -168,7 +168,10 @@ export default class ActivitySuggestionDialog extends Vue {
   // created e createActivitySuggestion? TOASK
 
   async createActivitySuggestion() {
-    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+    if (
+      this.editActivitySuggestion.institutionId !== null &&
+      (this.$refs.form as Vue & { validate: () => boolean }).validate()
+    ) {
       try {
         const result = await RemoteServices.registerActivitySuggestion(
           this.editActivitySuggestion,
