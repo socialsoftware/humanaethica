@@ -13,7 +13,7 @@
           label="*Short Bio"
           required
           v-model="shortBio"
-          :rules="[rules.required]"
+          :rules="[rules.required, rules.minSize]"
         ></v-text-field>
       </v-card-text>
 
@@ -102,6 +102,7 @@ export default class VolunteerProfileDialog extends Vue {
 
   rules = {
     required: (value: string) => !!value || 'Short bio is required',
+    minSize: (value: string) => value.trim().length > 10 || 'Bio is too short',
   };
   
   headers: object = [
