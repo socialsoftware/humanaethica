@@ -18,7 +18,8 @@
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-select
-                label="Institution"
+                label="*Institution"
+                :rules="[(v) => !!v || 'Institution name is required']"
                 v-model="editActivitySuggestion.institution"
                 :items="institutions"
                 return-object
