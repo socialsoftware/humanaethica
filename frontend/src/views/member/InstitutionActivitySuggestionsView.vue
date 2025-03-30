@@ -21,6 +21,34 @@
           />
         </v-card-title>
       </template>
+      <template v-slot:[`item.action`]="{ item }">
+        <v-tooltip bottom v-if="item.state == 'IN_REVIEW' || item.state == 'REJECTED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="green"
+              @click="approveActivitySuggestion(item)"
+              v-on="on"
+              data-cy="approveActivitySuggestion"
+              >mdi-thumb-up
+            </v-icon>
+          </template>
+          <span>Approve Activity Suggestion</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="item.state == 'IN_REVIEW' || item.state == 'APPROVED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="red"
+              @click="rejectActivitySuggestion(item)"
+              v-on="on"
+              data-cy="rejectActivitySuggestion"
+              >mdi-thumb-down
+            </v-icon>
+          </template>
+          <span>Reject Activity Suggestion</span>
+        </v-tooltip>
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -39,6 +67,8 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
   institution: Institution = new Institution();
   search: string = '';
+  currentActivitySuggestion: ActivitySuggestion | null = null;  // TOASK - sem dialogs associados, precisamos disto sequer?
+
   headers: object = [
     {
       text: 'Name',
@@ -99,13 +129,19 @@ export default class InstitutionActivitySuggestionsView extends Vue {
       value: 'state',
       align: 'left',
       width: '5%',
+    },
+    {
+      text: 'Actions',
+      value: 'action',
+      align: 'left',
+      sortable: false,
+      width: '5%',
     }
   ];
 
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // ou será this.institutionId = Number(this.$route.params.id); ?
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
       if (this.institution != null && this.institution.id != null)  // TOASK fazer esta verificação assim?
@@ -120,6 +156,48 @@ export default class InstitutionActivitySuggestionsView extends Vue {
 
   institutionName() {
     return this.institution.name;
+  }
+
+  async approveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null && this.institution.id != null) {  // convêm fazer esta verificação do institution certo?
+      // TOASK no AdminActivities não fazem isto, porquê? Por não ter dialog?
+      //this.currentActivitySuggestion = null;
+      try {
+        const result = await RemoteServices.approveActivitySuggestion(activitySuggestion.id, this.institution.id);
+        this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
+        this.activitySuggestions.unshift(result);
+        // TOASK deve-se repetir isto do create? eles repetem no institutionActivities mas no AdminActivities já não
+        // let userId = this.$store.getters.getUser.id;
+        // this.institution = await RemoteServices.getInstitution(userId);
+        // if (this.institution != null && this.institution.id != null)   
+        //   this.activitySuggestions = await RemoteServices.getActivitySuggestions(
+        //       this.institution.id,
+        //     );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null && this.institution.id != null) {  // convêm fazer esta verificação do institution certo?
+      // TOASK no AdminActivities não fazem isto, porquê? Por não ter dialog?
+      //this.currentActivitySuggestion = null;
+      try {
+        const result = await RemoteServices.rejectActivitySuggestion(activitySuggestion.id, this.institution.id);
+        this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
+        this.activitySuggestions.unshift(result);
+        // TOASK deve-se repetir isto do create? eles repetem no institutionActivities mas no AdminActivities já não
+        // let userId = this.$store.getters.getUser.id;
+        // this.institution = await RemoteServices.getInstitution(userId);
+        // if (this.institution != null && this.institution.id != null)   
+        //   this.activitySuggestions = await RemoteServices.getActivitySuggestions(
+        //       this.institution.id,
+        //     );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>
