@@ -486,7 +486,7 @@ export default class RemoteServices {
       });
   }
 
-  static async getActivitySuggestions(institutionId: number): Promise<ActivitySuggestion[]> { // queremos Promise?
+  static async getActivitySuggestions(institutionId: number): Promise<ActivitySuggestion[]> {
     return httpClient
       .get(`/activitySuggestions/institution/${institutionId}`)
       .then((response) => {
@@ -506,6 +506,28 @@ export default class RemoteServices {
         return response.data.map((activitySuggestion: any) => {
           return new ActivitySuggestion(activitySuggestion);
         });        
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async approveActivitySuggestion(activitySuggestionId: number, institutionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/institution/${institutionId}/approves/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async rejectActivitySuggestion(activitySuggestionId: number, institutionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/institution/${institutionId}/rejects/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
