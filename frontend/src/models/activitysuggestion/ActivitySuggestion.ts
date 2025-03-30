@@ -1,4 +1,5 @@
 import { ISOtoString } from '@/services/ConvertDateService';
+import Institution from '../institution/Institution';
 
 export default class ActivitySuggestion {
     id: number | null = null;
@@ -15,7 +16,7 @@ export default class ActivitySuggestion {
     formattedEndingDate!: string;
     participantsNumberLimit!: number;
     state!: string;
-    institutionId: number | null = null;
+    institution!: Institution;
     volunteerId: number | null = null;
 
     constructor(jsonObj?: ActivitySuggestion) {
@@ -36,7 +37,7 @@ export default class ActivitySuggestion {
                 this.formattedEndingDate = ISOtoString(jsonObj.endingDate);
             this.participantsNumberLimit = jsonObj.participantsNumberLimit;
             this.state = jsonObj.state;
-            this.institutionId = jsonObj.institutionId;
+            this.institution = jsonObj.institution;
             this.volunteerId = jsonObj.volunteerId;
         }
     }

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class ActivitySuggestionDto {
@@ -17,13 +18,13 @@ public class ActivitySuggestionDto {
     private String approvalDate;
     private String rejectionDate;
 
-    private Integer institutionId;
+    private InstitutionDto institution;
     private Integer volunteerId;
 
     public ActivitySuggestionDto() {
     }
 
-    public ActivitySuggestionDto(ActivitySuggestion activitySuggestion) {
+    public ActivitySuggestionDto(ActivitySuggestion activitySuggestion, boolean deepCopyInstitution) {
         setId(activitySuggestion.getId());
         setName(activitySuggestion.getName());
         setDescription(activitySuggestion.getDescription());
@@ -36,8 +37,11 @@ public class ActivitySuggestionDto {
         setState(activitySuggestion.getState().name());
         setApprovalDate(DateHandler.toISOString(activitySuggestion.getApprovalDate()));
         setRejectionDate(DateHandler.toISOString(activitySuggestion.getRejectionDate()));
-        setInstitutionId(activitySuggestion.getInstitution().getId());
         setVolunteerId(activitySuggestion.getVolunteer().getId());
+
+        if (deepCopyInstitution && (activitySuggestion.getInstitution() != null)) {
+                setInstitution(new InstitutionDto(activitySuggestion.getInstitution(), false, false));
+        }
     }
 
     public Integer getId() {
@@ -120,12 +124,12 @@ public class ActivitySuggestionDto {
         this.state = state;
     }
 
-    public Integer getInstitutionId() {
-        return institutionId;
+    public InstitutionDto getInstitution() {
+        return institution;
     }
 
-    public void setInstitutionId(Integer institutionId) {
-        this.institutionId = institutionId;
+    public void setInstitution(InstitutionDto institution) {
+        this.institution = institution;
     }
 
     public Integer getVolunteerId() {

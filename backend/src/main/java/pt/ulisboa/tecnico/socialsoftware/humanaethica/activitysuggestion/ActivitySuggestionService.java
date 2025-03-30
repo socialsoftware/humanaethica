@@ -1,22 +1,24 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.dto.ActivitySuggestionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.repository.ActivitySuggestionRepository;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_DESCRIPTION_INVALID;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_NOT_FOUND;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INSTITUTION_NOT_FOUND;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USER_NOT_FOUND;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
-
-import java.util.Comparator;
-import java.util.List;
-
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
 @Service
 public class ActivitySuggestionService {
@@ -33,7 +35,7 @@ public class ActivitySuggestionService {
         institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 
         return this.activitySuggestionRepository.getActivitySuggestionsByInstitutionId(institutionId).stream()
-                .map(ActivitySuggestionDto::new)
+                .map(activitySuggestion-> new ActivitySuggestionDto(activitySuggestion, true))
                 .toList();
     }
 
@@ -43,7 +45,7 @@ public class ActivitySuggestionService {
         userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND, userId));
 
         return this.activitySuggestionRepository.getActivitySuggestionsByVolunteerId(userId).stream()
-                .map(ActivitySuggestionDto::new)
+                .map(activitySuggestion-> new ActivitySuggestionDto(activitySuggestion, true))
                 .toList();
     }
 
@@ -60,7 +62,7 @@ public class ActivitySuggestionService {
         ActivitySuggestion activitySuggestion = new ActivitySuggestion(institution, volunteer, activitySuggestionDto);
         activitySuggestionRepository.save(activitySuggestion);
 
-        return new ActivitySuggestionDto(activitySuggestion);
+        return new ActivitySuggestionDto(activitySuggestion, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -71,7 +73,7 @@ public class ActivitySuggestionService {
 
         activitySuggestion.approve();
 
-        return new ActivitySuggestionDto(activitySuggestion);
+        return new ActivitySuggestionDto(activitySuggestion, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -81,6 +83,6 @@ public class ActivitySuggestionService {
                                                                   .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
         activitySuggestion.reject();
 
-        return new ActivitySuggestionDto(activitySuggestion);
+        return new ActivitySuggestionDto(activitySuggestion, true);
     }
 }
