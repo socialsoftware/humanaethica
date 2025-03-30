@@ -10,15 +10,15 @@
         :mobile-breakpoint="0"
       >
         <template v-slot:top>
-          <v-card-title class="d-flex justify-space-between align-center">
+          <v-card-title>
             <v-text-field
               v-model="search"
               append-icon="search"
               label="Search"
               class="mx-2"
-              style="max-width: 1000px;"
             />
-            <v-btn class="mx-4" color="primary" dark @click="newActivitySuggestion" data-cy="newActivitySuggestion"
+            <v-spacer />
+            <v-btn color="primary" dark @click="newActivitySuggestion" data-cy="newActivitySuggestion"
               >New Activity Suggestion</v-btn
             >
           </v-card-title>
@@ -28,7 +28,7 @@
         v-if="currentActivitySuggestion && editActivitySuggestionDialog"
         v-model="editActivitySuggestionDialog"
         :activitySuggestion="currentActivitySuggestion"
-        :institution="institution"
+        :institutions="institutions"
         v-on:save-activity-suggestion="onSaveActivitySuggestion"
         v-on:close-activity-suggestion-dialog="onCloseActivitySuggestionDialog"
       />
@@ -55,8 +55,8 @@ import { show } from 'cli-cursor';
 
 export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
-  institution: Institution = new Institution(); //TASK
-  //volunteer: Volunteer = new Volunteer(); InstitutionActivitiesView tem Institution
+  institutions: Institution[] = [];
+  // volunteer: Volunteer = new Volunteer(); InstitutionActivitiesView tem Institution
   search: string = '';
 
   currentActivitySuggestion: ActivitySuggestion | null = null;
@@ -131,6 +131,7 @@ export default class VolunteerActivitySuggestionsView extends Vue {
       this.activitySuggestions = await RemoteServices.getVolunteerActivitySuggestions(
         this.$store.getters.getUser.id
       );
+      this.institutions = await RemoteServices.getInstitutions();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
