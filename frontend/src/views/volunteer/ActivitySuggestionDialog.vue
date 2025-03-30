@@ -19,10 +19,10 @@
             <v-col cols="12" sm="6" md="4">
               <v-select
                 label="Institution"
-                v-model="this.editActivitySuggestion.institutionId"
-                :items="[]"
+                v-model="editActivitySuggestion.institution"
+                :items="institutions"
                 return-object
-                item-text="completeName"
+                item-text="name"
                 item-value="id"
                 required
               />
@@ -34,7 +34,7 @@
                   (v) => {
                     if (!v) {
                       return 'Description is required';
-                    } else if (v.trim().length <= 10) {
+                    } else if (v.trim().length < 10) {
                       return 'Description must be 10 or more characters';
                     } 
                     return true;
@@ -132,7 +132,7 @@ Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 export default class ActivitySuggestionDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
-  @Prop({ type: Institution, required: true }) readonly institution!: Institution;
+  @Prop({ type: Array, required: true }) readonly institutions!: Institution[];
 
   // <!-- TODO lista de instituins como? -->
   // será necessário esta institution? se calhar vale mais só a pena receber uma lista de institutions do pai?
@@ -158,6 +158,7 @@ export default class ActivitySuggestionDialog extends Vue {
       this.cypressCondition ||
       (!!this.activitySuggestion.name &&
         !!this.activitySuggestion.region &&
+        !!this.activitySuggestion.institution &&
         !!this.activitySuggestion.participantsNumberLimit &&
         !!this.activitySuggestion.description &&
         this.activitySuggestion.description.length >= 10 &&
@@ -171,13 +172,13 @@ export default class ActivitySuggestionDialog extends Vue {
 
   async createActivitySuggestion() {
     if (
-      this.editActivitySuggestion.institutionId !== null &&
+      this.editActivitySuggestion.institution !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
         const result = await RemoteServices.registerActivitySuggestion(
           this.editActivitySuggestion,
-          this.editActivitySuggestion.institutionId);
+          this.editActivitySuggestion.institution.id);
         this.$emit('save-activity-suggestion', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
