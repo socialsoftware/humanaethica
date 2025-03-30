@@ -40,14 +40,16 @@ public class ActivitySuggestionController {
 
     // e se for com o institutionId no path, os métodos também têm de receber o institutionId não?
     @PutMapping("/institution/{institutionId}/approves/{activitySuggestionId}")
-    @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')") //TOASK
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    // and hasPermission(#institutionId, 'INSTITUTION.MEMBER')") //TOASK
     public ActivitySuggestionDto approveActivitySuggestion(@PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.approveActivitySuggestion(activitySuggestionId);
     }
 
     // e se for com o institutionId no path, os métodos também têm de receber o institutionId não?
     @PutMapping("/institution/{institutionId}/rejects/{activitySuggestionId}")
-    @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')") //TOASK
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    // and hasPermission(#institutionId, 'INSTITUTION.MEMBER')") //TOASK
     public ActivitySuggestionDto rejectActivitySuggestion(@PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.rejectActivitySuggestion(activitySuggestionId);
     }
