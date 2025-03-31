@@ -11,6 +11,7 @@
           color="primary"
           class="profile-button"
           @click="openVolunteerProfileDialog"
+          data-cy="createVolunteerProfile"
         >
           CREATE MY PROFILE
         </v-btn>
@@ -201,20 +202,20 @@ export default class VolunteerProfileView extends Vue {
     return this.volunteerProfile?.shortBio || "SHOW SHORT BIO HERE"; 
   }
 
-  getNumTotalParticipations(): number{
-    return this.volunteerProfile?.numTotalParticipations || 0;
+  getNumTotalParticipations(): string{
+    return this.volunteerProfile?.numTotalParticipations.toString() || 'N/A';
   }
 
-  getNumTotalAssessments(): number{
-    return this.volunteerProfile?.numTotalAssessments || 0;
+  getNumTotalAssessments(): string{
+    return this.volunteerProfile?.numTotalAssessments.toString() || 'N/A';
   }
 
-  getNumTotalEnrollments(): number{
-    return this.volunteerProfile?.numTotalEnrollments || 0;
+  getNumTotalEnrollments(): string{
+    return this.volunteerProfile?.numTotalEnrollments.toString() || 'N/A';
   }
 
-  getAverageRating(): number {
-    return this.volunteerProfile?.averageRating || 0;
+  getAverageRating(): string {
+    return this.volunteerProfile?.averageRating.toString() || 'N/A';
   }
 
   getMemberRating(participation: Participation): string {
