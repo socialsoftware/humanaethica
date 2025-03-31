@@ -128,9 +128,8 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.activitySuggestions = await RemoteServices.getVolunteerActivitySuggestions(
-        this.$store.getters.getUser.id
-      );
+      let userId = this.$store.getters.getUser.id;
+      this.activitySuggestions = await RemoteServices.getVolunteerActivitySuggestions(userId);
       this.institutions = await RemoteServices.getInstitutions();
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -154,14 +153,10 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   }
 
   onSaveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
-    // this.institution.activities = this.institution.activitySuggestions.filter(
-    //   (a) => a.id !== activitySuggestion.id,
-    // );
-    // this.volunteer.activitySuggestions = this.institution.activitySuggestions.filter(
-    //   (a) => a.id !== activitySuggestion.id,
-    // );
-    // this.volunteer.activitySuggestions.unshift(activitySuggestion);
-    // this.institution.activitySuggestions.unshift(activitySuggestion);
+    this.activitySuggestions = this.activitySuggestions.filter(
+      (a) => a.id !== activitySuggestion.id
+    );
+    this.activitySuggestions.unshift(activitySuggestion);
     this.editActivitySuggestionDialog = false;
     this.currentActivitySuggestion = null;
   }

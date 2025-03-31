@@ -108,7 +108,7 @@
           v-if="canSave"
           color="blue-darken-1"
           variant="text"
-          @click="createActivitySuggestion"
+          @click="registerActivitySuggestion"
           data-cy="saveActivitySuggestion"
         >
           Save
@@ -135,8 +135,6 @@ export default class ActivitySuggestionDialog extends Vue {
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
   @Prop({ type: Array, required: true }) readonly institutions!: Institution[];
 
-  // <!-- TODO lista de instituins como? -->
-  // será necessário esta institution? se calhar vale mais só a pena receber uma lista de institutions do pai?
   // bug, o save nao aparece, o canSave sempre falso, activitySuggestion não tem os atributos populados?
 
   editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
@@ -169,9 +167,7 @@ export default class ActivitySuggestionDialog extends Vue {
     );
   }
 
-  // created e createActivitySuggestion? TOASK
-
-  async createActivitySuggestion() {
+  async registerActivitySuggestion() {
     if (
       this.editActivitySuggestion.institution !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()

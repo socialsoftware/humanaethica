@@ -144,7 +144,7 @@ export default class InstitutionActivitySuggestionsView extends Vue {
     try {
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
-      if (this.institution != null && this.institution.id != null)  // TOASK fazer esta verificação assim?
+      if (this.institution != null && this.institution.id != null)
         this.activitySuggestions = await RemoteServices.getActivitySuggestions(
             this.institution.id,
           );
@@ -159,20 +159,13 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   }
 
   async approveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null && this.institution.id != null) {  // convêm fazer esta verificação do institution certo?
+    if (activitySuggestion.id !== null && this.institution.id != null) {
       // TOASK no AdminActivities não fazem isto, porquê? Por não ter dialog?
       //this.currentActivitySuggestion = null;
       try {
         const result = await RemoteServices.approveActivitySuggestion(activitySuggestion.id, this.institution.id);
         this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
         this.activitySuggestions.unshift(result);
-        // TOASK deve-se repetir isto do create? eles repetem no institutionActivities mas no AdminActivities já não
-        // let userId = this.$store.getters.getUser.id;
-        // this.institution = await RemoteServices.getInstitution(userId);
-        // if (this.institution != null && this.institution.id != null)   
-        //   this.activitySuggestions = await RemoteServices.getActivitySuggestions(
-        //       this.institution.id,
-        //     );
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -180,20 +173,13 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   }
 
   async rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null && this.institution.id != null) {  // convêm fazer esta verificação do institution certo?
+    if (activitySuggestion.id !== null && this.institution.id != null) {
       // TOASK no AdminActivities não fazem isto, porquê? Por não ter dialog?
       //this.currentActivitySuggestion = null;
       try {
         const result = await RemoteServices.rejectActivitySuggestion(activitySuggestion.id, this.institution.id);
         this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
         this.activitySuggestions.unshift(result);
-        // TOASK deve-se repetir isto do create? eles repetem no institutionActivities mas no AdminActivities já não
-        // let userId = this.$store.getters.getUser.id;
-        // this.institution = await RemoteServices.getInstitution(userId);
-        // if (this.institution != null && this.institution.id != null)   
-        //   this.activitySuggestions = await RemoteServices.getActivitySuggestions(
-        //       this.institution.id,
-        //     );
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
