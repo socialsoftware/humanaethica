@@ -135,10 +135,7 @@ export default class ActivitySuggestionDialog extends Vue {
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
   @Prop({ type: Array, required: true }) readonly institutions!: Institution[];
 
-  // bug, o save nao aparece, o canSave sempre falso, activitySuggestion não tem os atributos populados?
-
   editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
-
   cypressCondition: boolean = false;
 
   async created() {
@@ -152,18 +149,17 @@ export default class ActivitySuggestionDialog extends Vue {
   }
 
   get canSave(): boolean {
-    console.log(this.activitySuggestion); // Debugging line
     return (
       this.cypressCondition ||
-      (!!this.activitySuggestion.name &&
-        !!this.activitySuggestion.region &&
-        !!this.activitySuggestion.institution &&
-        !!this.activitySuggestion.participantsNumberLimit &&
-        !!this.activitySuggestion.description &&
-        this.activitySuggestion.description.length >= 10 &&
-        !!this.activitySuggestion.startingDate &&
-        !!this.activitySuggestion.endingDate &&
-        !!this.activitySuggestion.applicationDeadline)
+      (!!this.editActivitySuggestion.name &&
+        !!this.editActivitySuggestion.region &&
+        !!this.editActivitySuggestion.institution &&
+        !!this.editActivitySuggestion.participantsNumberLimit &&
+        !!this.editActivitySuggestion.description &&
+        this.editActivitySuggestion.description.length >= 10 &&
+        !!this.editActivitySuggestion.startingDate &&
+        !!this.editActivitySuggestion.endingDate &&
+        !!this.editActivitySuggestion.applicationDeadline)
     );
   }
 
