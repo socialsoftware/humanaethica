@@ -18,6 +18,13 @@
     <modules>
         <module>api</module>
         <module>monolithic</module>
+        <module>user</module>
+        <module>authuser</module>
+        <module>theme</module>
+        <module>institution</module>
+        <module>activity</module>
+        <module>assessment</module>
+        <module>common</module>
     </modules>
 
     <repositories>

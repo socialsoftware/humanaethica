@@ -19,6 +19,41 @@
             <artifactId>monolithic</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.user</groupId>
+            <artifactId>user</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser</groupId>
+            <artifactId>authuser</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.theme</groupId>
+            <artifactId>theme</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.institution</groupId>
+            <artifactId>institution</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.activity</groupId>
+            <artifactId>activity</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment</groupId>
+            <artifactId>assessment</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.common</groupId>
+            <artifactId>common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
