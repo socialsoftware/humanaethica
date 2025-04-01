@@ -7,57 +7,59 @@
         <h3>New Volunteer Profile</h3>
       </v-card-title>
 
-      <!-- Short Bio -->
-      <v-card-text>
-        <v-text-field 
-          label="*Short Bio"
-          required
-          v-model="shortBio"
-          :rules="[rules.required, rules.minSize]"
-        ></v-text-field>
-      </v-card-text>
+      <v-form ref="form" lazy-validation>
+        <!-- Short Bio -->
+        <v-card-text>  
+          <v-text-field 
+            label="*Short Bio"
+            required
+            v-model="shortBio"
+            :rules="[rules.required, rules.minSize]"
+          ></v-text-field>
+        </v-card-text>
 
-      <v-card-text class="d-flex justify-center pt-2 text-h6">
-        <p>Selected Participations</p>
-      </v-card-text>
+        <v-card-text class="d-flex justify-center pt-2 text-h6">
+          <p>Selected Participations</p>
+        </v-card-text>
 
-      <!-- Table -->
-      <v-card-text style="max-height: 300px; overflow-y: auto;">
-        <v-card class="table">
-          <v-data-table
-            v-model="selectedParticipations"
-            :headers="headers"
-            :search="search"
-            :items="this.participations"
-            disable-pagination
-            :hide-default-footer="true"
-            :mobile-breakpoint="0"
-            show-select
-          >
-            <template v-slot:item.activityName="{ item }">
-              {{ activityName(item) }}
-            </template>
-            <template v-slot:item.institutionName="{ item }">
-              {{ institutionName(item) }}
-            </template>
-            <template v-slot:item.memberRating="{ item }">
-              {{ getMemberRating(item) }}
-            </template>
-            <template v-slot:top>
-              <v-card-title>
-                <v-text-field
-                  v-model="search"
-                  append-icon="search"
-                  label="Search"
-                  class="mx-2"
-                />
-                <v-spacer />
-              </v-card-title>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-card-text>
-
+        <!-- Table -->
+        <v-card-text style="max-height: 300px; overflow-y: auto;">
+          <v-card class="table">
+            <v-data-table
+              v-model="selectedParticipations"
+              :headers="headers"
+              :search="search"
+              :items="this.participations"
+              disable-pagination
+              :hide-default-footer="true"
+              :mobile-breakpoint="0"
+              show-select
+            >
+              <template v-slot:item.activityName="{ item }">
+                {{ activityName(item) }}
+              </template>
+              <template v-slot:item.institutionName="{ item }">
+                {{ institutionName(item) }}
+              </template>
+              <template v-slot:item.memberRating="{ item }">
+                {{ getMemberRating(item) }}
+              </template>
+              <template v-slot:top>
+                <v-card-title>
+                  <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Search"
+                    class="mx-2"
+                  />
+                  <v-spacer />
+                </v-card-title>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-card-text>
+      </v-form>
+      
       <!-- Buttons  -->
       <v-card-actions class="pa-4">
         <v-spacer></v-spacer>
@@ -161,7 +163,7 @@ export default class VolunteerProfileDialog extends Vue {
   }
 
   async registerVolunteerProfile(){
-    // if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try{
         this.editVolunteerProfile.selectedParticipations = this.selectedParticipations;
         this.editVolunteerProfile.shortBio = this.shortBio;
@@ -172,7 +174,7 @@ export default class VolunteerProfileDialog extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
-  // }
+  }
 }
 
 </script>
