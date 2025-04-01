@@ -5,7 +5,7 @@ import TokenAuthUser from '@/models/user/TokenAuthUser';
 import AuthUser from '@/models/user/AuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
 import Activity from '@/models/activity/Activity';
-import Institution from '@/models/institution/Institution';
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
 
 interface State {
   token: string;
@@ -16,7 +16,7 @@ interface State {
   notificationMessageList: string[];
   loading: boolean;
   activity: Activity | null;
-  institution: Institution | null;
+  institutionProfile: InstitutionProfile | null;
 }
 
 const state: State = {
@@ -28,7 +28,7 @@ const state: State = {
   notificationMessageList: [],
   loading: false,
   activity: null,
-  institution: null
+  institutionProfile: null
 };
 
 Vue.use(Vuex);
@@ -65,7 +65,7 @@ export default new Vuex.Store({
       localStorage.setItem('activity', '');
       state.activity = null;
       localStorage.setItem('institution', '');
-      state.institution = null;
+      state.institutionProfile = null;
     },
     error(state, errorMessage: string) {
       state.error = true;
@@ -93,9 +93,9 @@ export default new Vuex.Store({
       localStorage.setItem('activity', JSON.stringify(activity));
       state.activity = activity;
     },
-    setInstitution(state: State, institution: Institution) {
-      localStorage.setItem('institution', JSON.stringify(institution));
-      state.institution = institution;
+    setInstitutionProfile(state: State, institutionProfile: InstitutionProfile) {
+      localStorage.setItem('institutionProfile', JSON.stringify(institutionProfile));
+      state.institutionProfile = institutionProfile;
     }
   },
   actions: {
@@ -145,8 +145,8 @@ export default new Vuex.Store({
     async setActivity({ commit }, activity: Activity) {
       commit('setActivity', activity);
     },
-    async setInstitution({ commit }, institution: Institution) {
-      commit('setInstitution', institution);
+    async setInstitutionProfile({ commit }, institutionProfile: InstitutionProfile) {
+      commit('setInstitutionProfile', institutionProfile);
     }
 
   },
@@ -191,8 +191,8 @@ export default new Vuex.Store({
     getActivity(state: State): Activity | null {
       return state.activity;
     },
-    getInstitution(state: State): Institution | null {
-      return state.institution;
+    getInstitutionProfile(state: State): InstitutionProfile | null {
+      return state.institutionProfile;
     },
   },
 });
