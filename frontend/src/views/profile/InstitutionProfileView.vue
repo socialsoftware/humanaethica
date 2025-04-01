@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div v-if="!hasInstitutionProfile">
-      <div v-if="createDialog">
+      <div v-if="!createDialog">
         <p class="font-weight-bold text-h4">Institution Profile</p>
         <div v-if="isMember">
           <p class="pb-4">No institution profile found. Click the button below to create a new one!</p>
-          <v-btn v-if="isMember"
+          <v-btn
               color="primary"
               dark
               @click="createInstitutionProfile"
@@ -16,13 +16,14 @@
           <p>No institution profile found.</p>
         </div>
       </div>
-      <create-institutionProfile
-        v-if="showInstitutionProfile"
-        v-model="showInstitutionProfile"
-        :assessments="assessments"
-        v-on:save-institutionProfile="onSaveInstitutionProfile"
-        v-on:close-institutionProfile="onCloseInstitutionProfileDialog"
-      />
+      <div v-else> 
+        <create-institutionProfile
+          v-model="createDialog"
+          :assessments="assessments"
+          v-on:save-institutionProfile="onSaveInstitutionProfile"
+          v-on:close-institutionProfile="onCloseInstitutionProfileDialog"
+        />
+      </div>
     </div>
     <div v-else>
       <h1>Institution: {{ institutionProfile?.institution?.name ?? 'N/A' }}</h1>
@@ -127,8 +128,7 @@ export default class InstitutionProfileView extends Vue {
   institutionProfile: InstitutionProfile | null = null;
   assessments: Assessment[] = []
   hasInstitutionProfile: boolean = false;
-  showInstitutionProfile: boolean = false;
-  createDialog: boolean = true;
+  createDialog: boolean = false;
   isMember: boolean = false;
   search: string = '';
   headers = [
@@ -162,20 +162,17 @@ export default class InstitutionProfileView extends Vue {
 
   createInstitutionProfile(){
     this.institutionProfile = new InstitutionProfile();
-    this.showInstitutionProfile = true;
-    this.createDialog = false;
+    this.createDialog = true;
   }
 
   onSaveInstitutionProfile(institutionProfile: InstitutionProfile){
     this.institutionProfile = institutionProfile;
-    this.showInstitutionProfile = false;
     this.hasInstitutionProfile = true;
   }
 
   onCloseInstitutionProfileDialog(){
-    this.showInstitutionProfile = false;
     this.institutionProfile = null;
-    this.createDialog = true;
+    this.createDialog = false;
   }
 
 }
