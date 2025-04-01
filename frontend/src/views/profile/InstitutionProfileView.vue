@@ -20,6 +20,7 @@
         <create-institutionProfile
           v-model="createDialog"
           :assessments="assessments"
+          :institutionProfileParent="institutionProfile"
           v-on:save-institutionProfile="onSaveInstitutionProfile"
           v-on:close-institutionProfile="onCloseInstitutionProfileDialog"
         />
