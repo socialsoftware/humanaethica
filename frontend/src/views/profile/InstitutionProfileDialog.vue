@@ -17,7 +17,7 @@
                   (v) => (v && v.length >= 10) || 'Description must be at least 10 characters'
                 ]"
                 required
-                v-model="institutionProfile.shortDescription"
+                v-model="shortDes"
                 data-cy="shortDescriptionInput"
               ></v-text-field>
             </v-col>
@@ -64,7 +64,7 @@
           Close
         </v-btn>
         <v-btn
-          v-if="canSave"
+          v-if=" shortDes.trim().length >= 10"
           color="blue-darken-1"
           variant="text"
           @click="createInstitutionProfile"
@@ -98,16 +98,13 @@ export default class InstitutionProfileDialog extends Vue {
   institutionProfile: InstitutionProfile = new InstitutionProfile();
   search: string = '';
   selAssessment: Assessment[] = [];
+  shortDes: string = ''
   
   headers = [
     { text: 'Volunteer Name', value: 'volunteerName', align: 'left', width: '30%'},
     { text: 'Review', value: 'review', align: 'left', width: '30%'},
     { text: 'Review Date', value: 'reviewDate', align: 'left', width: '40%' }
   ];
-
-  get canSave(): boolean {
-    return (!! this.institutionProfile.shortDescription &&  this.institutionProfile.shortDescription.length >= 10 );
-  }
   
   get filteredAssessments() {
     if (!this.assessments || this.assessments.length === 0) {
@@ -132,6 +129,7 @@ export default class InstitutionProfileDialog extends Vue {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try {
         this.institutionProfile.selectedAssessments = this.selAssessment;
+        this.institutionProfile.shortDescription = this.shortDes;
         const result = await RemoteServices.createInstitutionProfile(this.institutionProfile);
         this.$emit('save-institutionProfile', result);
       } catch (error) {
