@@ -67,7 +67,6 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
   institution: Institution = new Institution();
   search: string = '';
-  currentActivitySuggestion: ActivitySuggestion | null = null;  // TOASK - sem dialogs associados, precisamos disto sequer?
 
   headers: object = [
     {
@@ -144,7 +143,7 @@ export default class InstitutionActivitySuggestionsView extends Vue {
     try {
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
-      if (this.institution != null && this.institution.id != null)
+      if (this.institution != null && this.institution.id != null)  // TOASK fazer esta verificação assim?
         this.activitySuggestions = await RemoteServices.getActivitySuggestions(
             this.institution.id,
           );
@@ -160,8 +159,6 @@ export default class InstitutionActivitySuggestionsView extends Vue {
 
   async approveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
     if (activitySuggestion.id !== null && this.institution.id != null) {
-      // TOASK no AdminActivities não fazem isto, porquê? Por não ter dialog?
-      //this.currentActivitySuggestion = null;
       try {
         const result = await RemoteServices.approveActivitySuggestion(activitySuggestion.id, this.institution.id);
         this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
@@ -173,9 +170,7 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   }
 
   async rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null && this.institution.id != null) {
-      // TOASK no AdminActivities não fazem isto, porquê? Por não ter dialog?
-      //this.currentActivitySuggestion = null;
+    if (activitySuggestion.id !== null && this.institution.id != null) {  // convêm fazer esta verificação do institution certo?
       try {
         const result = await RemoteServices.rejectActivitySuggestion(activitySuggestion.id, this.institution.id);
         this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);

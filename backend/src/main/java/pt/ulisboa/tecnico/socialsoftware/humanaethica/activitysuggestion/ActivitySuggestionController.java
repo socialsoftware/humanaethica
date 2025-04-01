@@ -24,9 +24,7 @@ public class ActivitySuggestionController {
     }
 
     @GetMapping("/volunteer/{volunteerId}")
-    // Qual role???
-    // Alguma permissão?
-    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))") //autentificado?
+    @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public List<ActivitySuggestionDto> getActivitySuggestionsByVolunteer(@PathVariable Integer volunteerId) {
         return this.activitySuggestionService.getActivitySuggestionsByVolunteer(volunteerId);
     }
@@ -38,18 +36,14 @@ public class ActivitySuggestionController {
         return activitySuggestionService.createActivitySuggestion(userId, institutionId, activitySuggestionDto);
     }
 
-    // e se for com o institutionId no path, os métodos também têm de receber o institutionId não?
     @PutMapping("/institution/{institutionId}/approves/{activitySuggestionId}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    // and hasPermission(#institutionId, 'INSTITUTION.MEMBER')") //TOASK
+    @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')")
     public ActivitySuggestionDto approveActivitySuggestion(@PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.approveActivitySuggestion(activitySuggestionId);
     }
 
-    // e se for com o institutionId no path, os métodos também têm de receber o institutionId não?
     @PutMapping("/institution/{institutionId}/rejects/{activitySuggestionId}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    // and hasPermission(#institutionId, 'INSTITUTION.MEMBER')") //TOASK
+    @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')")
     public ActivitySuggestionDto rejectActivitySuggestion(@PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.rejectActivitySuggestion(activitySuggestionId);
     }

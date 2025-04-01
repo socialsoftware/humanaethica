@@ -15,8 +15,6 @@ public class ActivitySuggestionDto {
     private String endingDate;
     private Integer participantsNumberLimit;
     private String state;
-    private String approvalDate;
-    private String rejectionDate;
 
     private InstitutionDto institution;
     private Integer volunteerId;
@@ -35,8 +33,6 @@ public class ActivitySuggestionDto {
         setEndingDate(DateHandler.toISOString(activitySuggestion.getEndingDate()));
         setParticipantsNumberLimit(activitySuggestion.getParticipantsNumberLimit());
         setState(activitySuggestion.getState().name());
-        setApprovalDate(DateHandler.toISOString(activitySuggestion.getApprovalDate()));
-        setRejectionDate(DateHandler.toISOString(activitySuggestion.getRejectionDate()));
         setVolunteerId(activitySuggestion.getVolunteer().getId());
 
         if (deepCopyInstitution && (activitySuggestion.getInstitution() != null)) {
@@ -138,22 +134,6 @@ public class ActivitySuggestionDto {
 
     public void setVolunteerId(Integer volunteerId) {
         this.volunteerId = volunteerId;
-    }
-
-    public String getApprovalDate() {
-        return this.approvalDate;
-    }
-
-    public void setApprovalDate(String approvalDate) {
-        this.approvalDate = approvalDate;
-    }
-
-    public String getRejectionDate() {
-        return this.rejectionDate;
-    }
-
-    public void setRejectionDate(String rejectionDate) {
-        this.rejectionDate = rejectionDate;
     }
 
     @Override
