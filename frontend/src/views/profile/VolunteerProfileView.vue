@@ -2,7 +2,7 @@
   <div class="container">
     <!-- TODO: Add creation button here (only if there is no profile) -->
     <div v-if="!createdProfile">
-      <div v-if="!editVolunteerProfileDialog">
+      <div v-if="!editVolunteerProfileDialog && isVolunteer">
         <h2 class="profile-title">Volunteer Profile</h2>
         <p class="profile-text">
           No volunteer profile found. Click the button below to create a new one!
@@ -128,7 +128,7 @@ export default class VolunteerProfileView extends Vue {
   userId: number = 0;
   volunteerProfile: VolunteerProfile | null = null;
   activities: Activity[] = [];
-
+  isVolunteer: boolean = false;
   createdProfile: boolean = false;
   editVolunteerProfileDialog: boolean = false;
   participations: Participation[] = [];
@@ -165,18 +165,21 @@ export default class VolunteerProfileView extends Vue {
     await this.$store.dispatch('loading');
 
     try {
-      this.userId = Number(this.$route.params.id);
-      this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
+      this.volunteerProfile = this.$store.getters.getVolunteerProfile;
+ 
       if(this.$store.getters.getUser !== null && this.$store.getters.getUser.role === 'VOLUNTEER'){
-        this.activities = await RemoteServices.getActivities();
-        this.participations = await RemoteServices.getVolunteerParticipations();
+        this.userId = Number(this.$route.params.id);
+        if (!(this.volunteerProfile && this.volunteerProfile.id !== null &&  this.volunteerProfile.id !== undefined && Number(this.volunteerProfile.volunteer.id) === this.userId)) {
+          this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
+          this.activities = await RemoteServices.getActivities();
+          this.participations = await RemoteServices.getVolunteerParticipations();
+        }
+        this.isVolunteer = true;
       }
-      if (this.volunteerProfile && this.volunteerProfile.id !== null &&  this.volunteerProfile.id !== undefined) {
-        this.createdProfile = true;  // Profile exists
+      if(this.volunteerProfile && this.volunteerProfile.id !== null &&  this.volunteerProfile.id !== undefined ){ 
+          this.createdProfile = true; 
       }
-      else{
-        this.createdProfile = false; 
-      }
+      await this.$store.dispatch('setVolunteerProfile', null);
       
     } catch (error) {
       await this.$store.dispatch('error', error);

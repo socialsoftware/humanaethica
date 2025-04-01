@@ -43,14 +43,13 @@
         </template>
       </v-data-table>
     </v-card>
-    <!-- Institution Profiles            MUDAR :items   -->
+    <!-- Institution Profiles -->
     <v-card class="table">
       <v-card-title>
         <h2>Institution Profiles</h2>
       </v-card-title>
       <v-data-table
         :headers="headersInstitutionProfile"
-        :items="volunteerProfiles"      
         :search="search"
         disable-pagination
         :hide-default-footer="true"
