@@ -93,19 +93,19 @@ Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 export default class InstitutionProfileDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Array, required: true }) readonly assessments!: Assessment[];
+  @Prop({ type: InstitutionProfile, required: true }) readonly institutionProfileParent!: InstitutionProfile;
 
   institutionProfile: InstitutionProfile = new InstitutionProfile();
   search: string = '';
   selAssessment: Assessment[] = [];
   shortDes: string = ''
-  cypressCondition: boolean = false;
   
   headers = [
     { text: 'Volunteer Name', value: 'volunteerName', align: 'left', width: '30%'},
     { text: 'Review', value: 'review', align: 'left', width: '30%'},
     { text: 'Review Date', value: 'reviewDate', align: 'left', width: '40%' }
   ];
-
+  
   get filteredAssessments() {
     if (!this.assessments || this.assessments.length === 0) {
       return [];
@@ -122,6 +122,7 @@ export default class InstitutionProfileDialog extends Vue {
 
 
   async created() {
+    this.institutionProfile = new InstitutionProfile(this.institutionProfileParent);
   }
 
   async createInstitutionProfile() {
