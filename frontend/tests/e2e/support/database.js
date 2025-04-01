@@ -176,7 +176,7 @@ Cypress.Commands.add('createDatabaseInfoForParticipations', () => {
     credentials: credentials,
   })
   cy.task('queryDatabase',  {
-    query: "INSERT INTO " + PARTICIPATION_COLUMNS + generateParticipationTuple(6, 2, 3 ),
+    query: "INSERT INTO " + PARTICIPATION_COLUMNS + generateParticipationTuple(6, 2, 3),
     credentials: credentials,
   })
 });
