@@ -160,7 +160,7 @@ export default class ProfilesListView extends Vue {
   }
 
   async viewProfile(institutionProfile: InstitutionProfile){
-    await this.$store.dispatch('setInstitution', institutionProfile.institution);
+    await this.$store.dispatch('setInstitutionProfile', institutionProfile);
     await this.$router.push({ name: 'institution-profile' , 
     params: { id: institutionProfile!.institution!.id!.toString()}});
    

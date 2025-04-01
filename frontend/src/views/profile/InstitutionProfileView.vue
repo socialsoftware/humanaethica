@@ -41,7 +41,7 @@
         </div>
         <div class="items">
           <div ref="institutionId" class="icon-wrapper" data-cy="numActivities">
-            <span> {{ institutionProfile?.numActivities ?? 'No description available' }}</span>
+            <span> {{ institutionProfile?.numActivities ?? 'N/A' }}</span>
           </div>
           <div class="project-name">
             <p>Total Activities</p>
@@ -49,7 +49,7 @@
         </div>
         <div class="items">
           <div ref="institutionId" class="icon-wrapper" data-cy="numVolunteers">
-            <span> {{ institutionProfile?.numVolunteers ?? 'No description available' }}</span>
+            <span> {{ institutionProfile?.numVolunteers ?? 'N/A' }}</span>
           </div>
           <div class="project-name">
             <p>Total Volunteers</p>
@@ -58,7 +58,7 @@
         
         <div class="items">
           <div ref="institutionId" class="icon-wrapper" data-cy="numAssessments">
-            <span> {{ institutionProfile?.numAssessments ?? 'No description available' }}</span>
+            <span> {{ institutionProfile?.numAssessments ?? 'N/A' }}</span>
           </div>
           <div class="project-name">
             <p>Total Assessments</p>
@@ -123,8 +123,6 @@ import Institution from '@/models/institution/Institution';
   }
 })
 export default class InstitutionProfileView extends Vue {
-  institutionId: number = 0;
-  institution: Institution = new Institution();
   institutionProfile: InstitutionProfile | null = null;
   assessments: Assessment[] = []
   hasInstitutionProfile: boolean = false;
@@ -141,18 +139,23 @@ export default class InstitutionProfileView extends Vue {
     await this.$store.dispatch('loading');
 
     try {
+      this.institutionProfile = this.$store.getters.getInstitutionProfile;
       
       if(this.$store.getters.getUser !== null && this.$store.getters.getUser.role === 'MEMBER'){
-        let userId = this.$store.getters.getUser.id;
-        this.institution = await RemoteServices.getInstitution(userId);
+        let institutionId = Number(this.$route.params.id);
+        if(!(this.institutionProfile && this.institutionProfile.id !== null && this.institutionProfile.id !== undefined && Number(this.institutionProfile.institution.id) === institutionId)){
+     
+          this.institutionProfile = await RemoteServices.getInstitutionProfile(institutionId);
+          this.assessments = await RemoteServices.getInstitutionAssessments(institutionId);
+        }
+        
         this.isMember = true;
       }
-      this.institutionId = Number(this.$route.params.id);
-      this.institutionProfile = await RemoteServices.getInstitutionProfile(this.institutionId);
       if(this.institutionProfile && this.institutionProfile.id !== null && this.institutionProfile.id !== undefined){
         this.hasInstitutionProfile = true;
       }
-      this.assessments = await RemoteServices.getInstitutionAssessments(this.institutionId);
+      await this.$store.dispatch('setInstitutionProfile', null);
+
 
     } catch (error) {
       await this.$store.dispatch('error', error);
