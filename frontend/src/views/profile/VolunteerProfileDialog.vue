@@ -15,6 +15,7 @@
             required
             v-model="shortBio"
             :rules="[rules.required, rules.minSize]"
+            data-cy="shortBioInput"
           ></v-text-field>
         </v-card-text>
 
@@ -26,6 +27,7 @@
         <v-card-text style="max-height: 300px; overflow-y: auto;">
           <v-card class="table">
             <v-data-table
+              data-cy = "participationsTable"
               v-model="selectedParticipations"
               :headers="headers"
               :search="search"
@@ -64,7 +66,7 @@
       <v-card-actions class="pa-4">
         <v-spacer></v-spacer>
         <v-btn 
-          v-if="shortBio.trim().length >10"
+          v-if="shortBio.replace(/\s+/g, ' ').trim().length >10"
           elevation="2"
           @click="registerVolunteerProfile"
         >Save</v-btn>
@@ -104,7 +106,7 @@ export default class VolunteerProfileDialog extends Vue {
 
   rules = {
     required: (value: string) => !!value || 'Short bio is required',
-    minSize: (value: string) => value.trim().length > 10 || 'Bio is too short',
+    minSize: (value: string) => value.replace(/\s+/g, ' ').trim().length > 10 || 'Bio is too short',
   };
   
   headers: object = [

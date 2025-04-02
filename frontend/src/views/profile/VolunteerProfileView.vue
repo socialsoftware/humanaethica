@@ -202,7 +202,7 @@ export default class VolunteerProfileView extends Vue {
   }
 
   getShortBio(): string {
-    return this.volunteerProfile?.shortBio || "SHOW SHORT BIO HERE"; 
+    return this.volunteerProfile?.shortBio || "N/A"; 
   }
 
   getNumTotalParticipations(): string{
