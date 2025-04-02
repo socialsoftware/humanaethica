@@ -42,9 +42,24 @@
         disable-pagination
         :hide-default-footer="true"
         :mobile-breakpoint="0"
+        data-cy="institutionProfilesTable"
       >
         <template v-slot:item.institution.creationDate="{ item }">
           {{ ISOtoString(item.institution.creationDate) }}
+        </template>
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                @click="viewProfile(item)"
+                v-on="on"
+                data-cy="showInstitutionProfile"
+                >fa-solid fa-eye
+              </v-icon>
+            </template>
+          <span>View institution profile</span>
+        </v-tooltip>
         </template>
         <template v-slot:top>
           <v-card-title>
@@ -64,13 +79,16 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ISOtoString } from "../../services/ConvertDateService";
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
+import RemoteServices from '@/services/RemoteServices';
+
 
 @Component({
   methods: { ISOtoString }
 })
 export default class ProfilesListView extends Vue {
   //volunteerProfiles: VolunteerProfile[] = []; // TODO: this is the object that will be used to fill in the table
-  //institutionProfiles: InstitutionProfile[] = []; // TODO: this is the object that will be used to fill in the table
+  institutionProfiles: InstitutionProfile[] = []; 
 
   search: string = '';
 
@@ -131,15 +149,21 @@ export default class ProfilesListView extends Vue {
       width: '5%',
     },
   ];
-
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // TODO
+      this.institutionProfiles = await RemoteServices.getInstitutionsProfiles();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async viewProfile(institutionProfile: InstitutionProfile){
+    await this.$store.dispatch('setInstitutionProfile', institutionProfile);
+    await this.$router.push({ name: 'institution-profile' , 
+    params: { id: institutionProfile!.institution!.id!.toString()}});
+   
   }
 }
 </script>
