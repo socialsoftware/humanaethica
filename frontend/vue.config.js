@@ -28,6 +28,7 @@ module.exports = {
     config.plugin('polyfills').use(NodePolyfillPlugin);
 
     config.resolve.alias
+      .set('vue', '@vue/compat')
       .set('vue$', 'vue/dist/vue.esm.js')
       .set('@assets', path.join(__dirname, 'src/assets'))
       .set('@models', path.join(__dirname, 'src/models'))
@@ -36,6 +37,20 @@ module.exports = {
       .set('@components', path.join(__dirname, 'src/components'))
       .set('@css', path.join(__dirname, 'src/css'))
       .set('@views', path.join(__dirname, 'src/views'));
+
+      config.module
+      .rule('vue')
+      .use('vue-loader')
+      .tap((options) => {
+        return {
+          ...options,
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2
+            }
+          }
+        }
+      })
 
     const splitOptions = config.optimization.get('splitChunks');
     config.optimization.splitChunks(
