@@ -46,6 +46,9 @@
               <template v-slot:item.memberRating="{ item }">
                 {{ getMemberRating(item) }}
               </template>
+              <template v-slot:item.acceptanceDate="{ item }">
+                {{ getAcceptanceDate(item) }}
+              </template>
               <template v-slot:top>
                 <v-card-title>
                   <v-text-field
@@ -132,7 +135,13 @@ export default class VolunteerProfileDialog extends Vue {
       text: 'Review',
       value: 'memberReview',
       align: 'left',
-      width: '40%',
+      width: '30%',
+    },
+    {
+      text: 'Acceptance Date',
+      value: 'acceptanceDate',
+      align: 'left',
+      width: '10%',
     }
   ];
 
@@ -162,6 +171,16 @@ export default class VolunteerProfileDialog extends Vue {
       return '';
     }
     return this.convertToStars(participation.memberRating);
+  }
+
+  getAcceptanceDate(participation: Participation): string {
+    if (
+      !participation ||
+      participation.acceptanceDate == null
+    ) {
+      return '';
+    }
+    return participation.acceptanceDate;
   }
 
   async registerVolunteerProfile(){

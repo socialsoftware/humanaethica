@@ -817,6 +817,9 @@ export default class RemoteServices {
       .post('/profile/volunteer', volunteerProfile)
       .then((response) => {
         return new VolunteerProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
       });
   }
 
@@ -850,7 +853,10 @@ export default class RemoteServices {
     .then((response) => {
       return response.data.map((volunteerProfile: any) => {
         return new VolunteerProfile(volunteerProfile);
-      })
+      });
+    })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
     });
   }
 
