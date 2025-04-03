@@ -29,7 +29,7 @@ describe('VolunteerProfile', () => {
 
       cy.wait('@getActivities');
       cy.wait('@getParticipations');
-     
+
       
       cy.get('[data-cy="createVolunteerProfile"]').click({ force: true });
 
@@ -65,10 +65,15 @@ describe('VolunteerProfile', () => {
       // check number of total participations
       cy.get('[data-cy="NumTotalParticipations"] span') // Select the span inside the div
       .should('have.text', '2'); // Check that the text is '4'
-
       
 
       cy.logout();
+
+
+      cy.intercept('GET', '/profile/volunteer/views').as('getProfilesList');
+
+      cy.get('[data-cy="profiles"]').click();
+      cy.get('[data-cy="view-profiles"]').click();
 
   })
     
