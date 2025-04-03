@@ -75,6 +75,8 @@ describe('VolunteerProfile', () => {
       cy.get('[data-cy="profiles"]').click();
       cy.get('[data-cy="view-profiles"]').click();
 
+      cy.wait('@getProfilesList');
+
   })
     
   it('close', () => {
