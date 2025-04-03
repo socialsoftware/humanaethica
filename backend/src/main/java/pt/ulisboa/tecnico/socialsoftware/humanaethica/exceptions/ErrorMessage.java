@@ -45,7 +45,7 @@ public enum ErrorMessage {
     ACTIVITY_SUGGESTION_NOT_FOUND("Activity suggestion not found"),
     ACTIVITY_SUGGESTION_DESCRIPTION_INVALID("Description of Activity suggestion is missing"),
     ACTIVITY_SUGGESTION_NAME_ALREADY_EXISTS("An Activity suggestion with this name already exists in database"),
-    ACTIVITY_SUGGESTION_APPLICATION_DEADLINE_TOO_SOON("The application deadline of the Activity suggestion should be at leat %d days after creation date"),
+    ACTIVITY_SUGGESTION_APPLICATION_DEADLINE_TOO_SOON("The application deadline of the Activity suggestion should be at least %d days after creation date"),
     ACTIVITY_SUGGESTION_ALREADY_APPROVED("Activity suggestion is already approved with name %s"),
     ACTIVITY_SUGGESTION_ALREADY_REJECTED("Activity suggestion is already rejected with name %s"),
     ACTIVITY_SUGGESTION_APROVAL_AFTER_DEADLINE("Activity suggestion can't be approved after the deadline has ended"),
