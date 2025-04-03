@@ -47,8 +47,22 @@ describe('Activity Suggestion', () => {
     cy.get('[data-cy="saveActivitySuggestion"]').click()
     // check request was done
     cy.wait('@register suggestion')
-    
-
-    
+    // check results
+    cy.get('[data-cy="volunteerActivitySuggestionTable"] tbody tr')
+      .should('have.length', 1)
+      .eq(0)
+      .children()
+      .should('have.length', 10)
+    cy.get('[data-cy="volunteerActivitySuggestionTable"] tbody tr')
+      .eq(0).children().eq(0).should('contain', NAME)
+    cy.get('[data-cy="volunteerActivitySuggestionTable"] tbody tr')
+      .eq(0).children().eq(1).should('contain', "DEMO INSTITUTION")
+    cy.get('[data-cy="volunteerActivitySuggestionTable"] tbody tr')
+      .eq(0).children().eq(2).should('contain', DESCRIPTION);
+    cy.get('[data-cy="volunteerActivitySuggestionTable"] tbody tr')
+      .eq(0).children().eq(3).should('contain', REGION)
+    cy.get('[data-cy="volunteerActivitySuggestionTable"] tbody tr')
+      .eq(0).children().eq(4).should('contain', NUMBER)
+    cy.logout();
   });
 });
