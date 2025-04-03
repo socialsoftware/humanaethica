@@ -62,7 +62,16 @@ describe('InstitutionProfile', () => {
     cy.get('[data-cy="view-profiles"]').click();
     cy.wait('@institutionProfileList');
 
+    // verify that assessment has "DEMO INSTITUTION-2" is in row 0
+    cy.get('[data-cy="institutionProfilesTable"] tbody tr')
+      .should('have.length', 1)
+      .eq(0)
+      .children()
+      .should('have.length', 5)
+      .eq(0)
+      .should('contain', "DEMO INSTITUTION")
+
     
   });
 
-  });
+});
