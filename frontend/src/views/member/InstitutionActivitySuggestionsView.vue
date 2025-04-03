@@ -22,7 +22,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom v-if="item.state == 'IN_REVIEW' || item.state == 'REJECTED'">
+        <v-tooltip bottom v-if="item.state != 'APPROVED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -35,7 +35,7 @@
           </template>
           <span>Approve Activity Suggestion</span>
         </v-tooltip>
-        <v-tooltip bottom v-if="item.state == 'IN_REVIEW' || item.state == 'APPROVED'">
+        <v-tooltip bottom v-if="item.state != 'REJECTED'">
           <template v-slot:activator="{ on }">
             <v-icon
               class="mr-2 action-button"
@@ -143,7 +143,7 @@ export default class InstitutionActivitySuggestionsView extends Vue {
     try {
       let userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
-      if (this.institution != null && this.institution.id != null)  // TOASK fazer esta verificação assim?
+      if (this.institution != null && this.institution.id != null)
         this.activitySuggestions = await RemoteServices.getActivitySuggestions(
             this.institution.id,
           );
@@ -161,8 +161,8 @@ export default class InstitutionActivitySuggestionsView extends Vue {
     if (activitySuggestion.id !== null && this.institution.id != null) {
       try {
         const result = await RemoteServices.approveActivitySuggestion(activitySuggestion.id, this.institution.id);
-        this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
-        this.activitySuggestions.unshift(result);
+        const index = this.activitySuggestions.findIndex((a) => a.id === activitySuggestion.id);
+        if (index !== -1) this.$set(this.activitySuggestions, index, result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -170,11 +170,11 @@ export default class InstitutionActivitySuggestionsView extends Vue {
   }
 
   async rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null && this.institution.id != null) {  // convêm fazer esta verificação do institution certo?
+    if (activitySuggestion.id !== null && this.institution.id != null) {
       try {
         const result = await RemoteServices.rejectActivitySuggestion(activitySuggestion.id, this.institution.id);
-        this.activitySuggestions = this.activitySuggestions.filter((a) => a.id !== activitySuggestion.id);
-        this.activitySuggestions.unshift(result);
+        const index = this.activitySuggestions.findIndex((a) => a.id === activitySuggestion.id);
+        if (index !== -1) this.$set(this.activitySuggestions, index, result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
