@@ -296,6 +296,21 @@ function generateActivityTuple(id, name, description, deadline, start, end, part
     institutionId + ")";
 }
 
+function generateActivitySuggestionTuple(id, name, description, deadline, start, end, participants, institutionId, volunteerId) {
+  return "VALUES ('"
+    + id + "', '"
+    + deadline +
+    "', '2023-08-06 17:58:21.402146', '" +
+    description + "', '"
+    + end + "', '"
+    + name + "', '" +
+    participants +
+    "', 'Lisbon',  '"
+    + start + "', 'IN_REVIEW', '" +
+    institutionId + "', '" +
+    volunteerId + "')";
+}
+
 function generateEnrollmentTuple(id, activityId, volunteerId) {
   return "VALUES ("
     + id + ", '2022-08-06 17:58:21.402146', 'sql-inserted-motivation', "
