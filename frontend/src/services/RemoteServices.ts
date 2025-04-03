@@ -15,6 +15,7 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
 
 const httpClient = axios.create();
@@ -871,6 +872,43 @@ export default class RemoteServices {
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  //InstitutionProfile Controller
+
+  static async createInstitutionProfile(institutionProfile: InstitutionProfile): Promise<InstitutionProfile> {
+    return httpClient
+      .post('/profile/institution', institutionProfile)
+      .then((response) => {
+          return new InstitutionProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getInstitutionProfile(institutionId: number): Promise<InstitutionProfile> {
+    return httpClient
+    .get(`/profile/institution/${institutionId}`)
+    .then((response) => {
+      return new InstitutionProfile(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async getInstitutionsProfiles(): Promise<InstitutionProfile[]> {
+    return httpClient
+    .get('/profile/institutions/views')
+    .then((response) => {
+      return response.data.map((institutionProfile: any) => {
+        return new InstitutionProfile(institutionProfile);
+      });
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   // Error
