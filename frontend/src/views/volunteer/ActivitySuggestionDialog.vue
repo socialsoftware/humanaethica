@@ -13,7 +13,7 @@
                 :rules="[(v) => !!v || 'Activity Suggestion name is required']"
                 required
                 v-model="editActivitySuggestion.name"
-                data-cy="nameInput"
+                data-cy="suggestionNameInput"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -35,7 +35,7 @@
                   (v) => {
                     if (!v) {
                       return 'Description is required';
-                    } else if (v.trim().length < 10) {
+                    } else if (v.replace(/\s+/g, ' ').trim().length < 10) {
                       return 'Description must be 10 or more characters';
                     } 
                     return true;
@@ -43,7 +43,7 @@
                 ]"
                 required
                 v-model="editActivitySuggestion.description"
-                data-cy="descriptionInput"
+                data-cy="suggestionDescriptionInput"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
@@ -52,7 +52,7 @@
                 :rules="[(v) => !!v || 'Region name is required']"
                 required
                 v-model="editActivitySuggestion.region"
-                data-cy="regionInput"
+                data-cy="suggestionRegionInput"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
@@ -65,12 +65,12 @@
                 ]"
                 required
                 v-model="editActivitySuggestion.participantsNumberLimit"
-                data-cy="participantsNumberInput"
+                data-cy="suggestionParticipantsNumberInput"
               ></v-text-field>
             </v-col>
             <v-col>
               <VueCtkDateTimePicker
-                id="applicationDeadlineInput"
+                id="suggestionApplicationDeadlineInput"
                 v-model="editActivitySuggestion.applicationDeadline"
                 format="YYYY-MM-DDTHH:mm:ssZ"
                 label="*Application Deadline"
@@ -78,7 +78,7 @@
             </v-col>
             <v-col>
               <VueCtkDateTimePicker
-                id="startingDateInput"
+                id="suggestionStartingDateInput"
                 v-model="editActivitySuggestion.startingDate"
                 format="YYYY-MM-DDTHH:mm:ssZ"
                 label="*Starting Date"
@@ -86,7 +86,7 @@
             </v-col>
             <v-col>
               <VueCtkDateTimePicker
-                id="endingDateInput"
+                id="suggestionEndingDateInput"
                 v-model="editActivitySuggestion.endingDate"
                 format="YYYY-MM-DDTHH:mm:ssZ"
                 label="*Ending Date"
