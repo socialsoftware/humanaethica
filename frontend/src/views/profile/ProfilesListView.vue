@@ -54,9 +54,24 @@
         disable-pagination
         :hide-default-footer="true"
         :mobile-breakpoint="0"
+        data-cy="institutionProfilesTable"
       >
         <template v-slot:item.institution.creationDate="{ item }">
           {{ ISOtoString(item.institution.creationDate) }}
+        </template>
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                @click="viewProfile(item)"
+                v-on="on"
+                data-cy="showInstitutionProfile"
+                >fa-solid fa-eye
+              </v-icon>
+            </template>
+          <span>View institution profile</span>
+        </v-tooltip>
         </template>
         <template v-slot:top>
           <v-card-title>
@@ -78,13 +93,14 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ISOtoString } from "../../services/ConvertDateService";
 import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
 import RemoteServices from '@/services/RemoteServices';
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
 
 @Component({
   methods: { ISOtoString }
 })
 export default class ProfilesListView extends Vue {
   volunteerProfiles: VolunteerProfile[] = []; 
-  //institutionProfiles: InstitutionProfile[] = []; // TODO: this is the object that will be used to fill in the table
+  institutionProfiles: InstitutionProfile[] = []; 
 
   search: string = '';
 
@@ -145,11 +161,11 @@ export default class ProfilesListView extends Vue {
       width: '5%',
     },
   ];
-
   async created() {
     await this.$store.dispatch('loading');
     try {
       this.volunteerProfiles = await RemoteServices.getListVolunteerProfile();
+      this.institutionProfiles = await RemoteServices.getInstitutionsProfiles();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -160,6 +176,12 @@ export default class ProfilesListView extends Vue {
     await this.$store.dispatch('setVolunteerProfile', volunteerProfile);
     await this.$router.push({ name: 'volunteer-profile' , 
     params: { id: volunteerProfile!.volunteer!.id!.toString()}});
+  }
+
+  async viewProfile(institutionProfile: InstitutionProfile){
+    await this.$store.dispatch('setInstitutionProfile', institutionProfile);
+    await this.$router.push({ name: 'institution-profile' , 
+    params: { id: institutionProfile!.institution!.id!.toString()}});
   }
 }
 </script>

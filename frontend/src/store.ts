@@ -6,6 +6,7 @@ import AuthUser from '@/models/user/AuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
 import Activity from '@/models/activity/Activity';
 import VolunteerProfile from './models/volunteerProfile/VolunteerProfile';
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
 
 interface State {
   token: string;
@@ -17,7 +18,7 @@ interface State {
   loading: boolean;
   activity: Activity | null;
   volunteerProfile: VolunteerProfile | null;
-
+  institutionProfile: InstitutionProfile | null;
 }
 
 const state: State = {
@@ -29,7 +30,8 @@ const state: State = {
   notificationMessageList: [],
   loading: false,
   activity: null,
-  volunteerProfile: null
+  volunteerProfile: null,
+  institutionProfile: null
 };
 
 Vue.use(Vuex);
@@ -65,6 +67,8 @@ export default new Vuex.Store({
       state.user = null;
       localStorage.setItem('activity', '');
       state.activity = null;
+      localStorage.setItem('institution', '');
+      state.institutionProfile = null;
     },
     error(state, errorMessage: string) {
       state.error = true;
@@ -97,6 +101,12 @@ export default new Vuex.Store({
       state.volunteerProfile = volunteerProfile;
     }
   },
+    setInstitutionProfile(state: State, institutionProfile: InstitutionProfile) {
+      localStorage.setItem('institutionProfile', JSON.stringify(institutionProfile));
+      state.institutionProfile = institutionProfile;
+    }
+  },
+
   actions: {
     error({ commit }, errorMessage) {
       commit('error', errorMessage);
@@ -146,7 +156,11 @@ export default new Vuex.Store({
     },
     async setVolunteerProfile({ commit }, volunteerProfile: VolunteerProfile){
       commit('setVolunteerProfile', volunteerProfile);
+    },
+    async setInstitutionProfile({ commit }, institutionProfile: InstitutionProfile) {
+      commit('setInstitutionProfile', institutionProfile);
     }
+
   },
   getters: {
     isLoggedIn(state): boolean {
@@ -191,6 +205,9 @@ export default new Vuex.Store({
     },
     getVolunteerProfile(state: State): VolunteerProfile | null {
       return state.volunteerProfile;
-    }
+    },
+    getInstitutionProfile(state: State): InstitutionProfile | null {
+      return state.institutionProfile;
+    },
   },
 });

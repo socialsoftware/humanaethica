@@ -16,6 +16,7 @@ import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
 import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -810,11 +811,22 @@ export default class RemoteServices {
       });
   }
 
+
   static async registerVolunteerProfile(volunteerProfile: VolunteerProfile) {
     return httpClient
       .post('/profile/volunteer', volunteerProfile)
       .then((response) => {
         return new VolunteerProfile(response.data);
+      });
+  }
+
+  //InstitutionProfile Controller
+
+  static async createInstitutionProfile(institutionProfile: InstitutionProfile): Promise<InstitutionProfile> {
+    return httpClient
+      .post('/profile/institution', institutionProfile)
+      .then((response) => {
+          return new InstitutionProfile(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
@@ -838,6 +850,27 @@ export default class RemoteServices {
     .then((response) => {
       return response.data.map((volunteerProfile: any) => {
         return new VolunteerProfile(volunteerProfile);
+      })
+    });
+  }
+
+  static async getInstitutionProfile(institutionId: number): Promise<InstitutionProfile> {
+    return httpClient
+    .get(`/profile/institution/${institutionId}`)
+    .then((response) => {
+      return new InstitutionProfile(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async getInstitutionsProfiles(): Promise<InstitutionProfile[]> {
+    return httpClient
+    .get('/profile/institutions/views')
+    .then((response) => {
+      return response.data.map((institutionProfile: any) => {
+        return new InstitutionProfile(institutionProfile);
       });
     })
     .catch(async (error) => {
