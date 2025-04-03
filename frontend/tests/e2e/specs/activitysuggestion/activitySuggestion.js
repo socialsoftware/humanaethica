@@ -2,7 +2,7 @@ describe('Activity Suggestion', () => {
   beforeEach(() => {
     cy.deleteAllButArs();
     cy.createDemoEntities();
-    //TODO
+    cy.createDatabaseInfoForActivitySuggestions();
   });
 
   afterEach(() => {
