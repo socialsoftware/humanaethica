@@ -268,6 +268,14 @@
               <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/member/activitysuggestions">
+            <v-list-item-action>
+              <v-icon>fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Activity Suggestions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item to="/member/assessments">
             <v-list-item-action>
               <v-icon>fas fa-users</v-icon>
