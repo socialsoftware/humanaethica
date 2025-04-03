@@ -38,8 +38,30 @@ describe('VolunteerProfile', () => {
 
       cy.get('[data-cy="participationsTable"] tbody tr').eq(1).find('td .v-simple-checkbox').click({ force: true });
 
+      // check form
+      cy.get('[data-cy="participationsTable"] tbody tr')
+      .should('have.length', 2)
+      .eq(0)
+      .children()
+      .should('have.length', 6)
+
+
       // save form
       cy.get('[data-cy="saveVolunteerProfile"]').click();
+
+      // check data in volunteer profile
+      cy.get('[data-cy="selectedParticipationsTable"] tbody tr')
+      .should('have.length', 1)
+      .eq(0)
+      .children()
+      .should('have.length', 4)
+
+      cy.get('[data-cy="selectedParticipationsTable"] tbody tr')
+        .eq(0).children().eq(0).should('contain', ACTIVITY_NAME)
+
+      // check number of total participations
+      cy.get('[data-cy="NumTotalParticipations"] span') // Select the span inside the div
+      .should('have.text', '2'); // Check that the text is '4'
 
       cy.wait('@register')
 

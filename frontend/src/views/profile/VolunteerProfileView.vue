@@ -52,7 +52,7 @@
           </div>
         </div>
         <div class="items">
-          <div ref="volunteerId" class="icon-wrapper">
+          <div ref="volunteerId" class="icon-wrapper" data-cy="NumTotalParticipations">
             <span>{{ getNumTotalParticipations() }}</span>
           </div>
           <div class="project-name">
