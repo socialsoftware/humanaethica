@@ -77,6 +77,22 @@ describe('VolunteerProfile', () => {
 
       cy.wait('@getProfilesList');
 
+      // Check that the table exists and has the profile created
+      cy.get('[data-cy="volunteerProfilesTable"]').should('be.visible');
+      cy.get('[data-cy="institutionProfilesTable"]').should('be.visible');
+
+      cy.get('[data-cy="volunteerProfilesTable"]')
+      .should('exist')
+      .and('not.be.empty');
+
+      cy.get('[data-cy="volunteerProfilesTable"]')
+      .find('tr').should('have.length.greaterThan', 0)
+
+      cy.get('[data-cy="volunteerProfilesTable"] tbody tr')
+      .eq(0).children().eq(0).should('contain.text', NAME);
+
+      cy.get('[data-cy="volunteerProfilesTable"] tbody tr')
+      .eq(0).children().eq(1).should('contain.text', SHORT_BIO);
   })
     
   it('close', () => {
