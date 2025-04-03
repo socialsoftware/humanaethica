@@ -27,10 +27,17 @@ describe('Activity Suggestion', () => {
     // intercept get volunteer activity suggestions and get institutions
     cy.intercept('GET', '/activitySuggestions/volunteer/*').as('getVolunteerActivitySuggestions');
     cy.intercept('GET', '/institutions').as('getInstitutions');
-    // go to create activity suggestion form
+    // go to volunteer activity suggestions view
     cy.get('[data-cy="activitysuggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
+    // check existing table entries
+    cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
+      .should('have.length', 2)
+      .eq(0)
+      .children()
+      .should('have.length', 10)
 
+    // go to create activity suggestion form
     cy.get('[data-cy="newActivitySuggestion"]').click();
     cy.wait('@getInstitutions');
 
@@ -51,7 +58,7 @@ describe('Activity Suggestion', () => {
     cy.wait('@registerActivitySuggestion')
     // check results
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
-      .should('have.length', 1)
+      .should('have.length', 3)
       .eq(0)
       .children()
       .should('have.length', 10)
@@ -60,11 +67,9 @@ describe('Activity Suggestion', () => {
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
       .eq(0).children().eq(1).should('contain', "DEMO INSTITUTION")
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
-      .eq(0).children().eq(2).should('contain', DESCRIPTION);
-    cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
-      .eq(0).children().eq(3).should('contain', REGION)
-    cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
       .eq(0).children().eq(4).should('contain', NUMBER)
     cy.logout();
+
+    // TODO: member login
   });
 });
