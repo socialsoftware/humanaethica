@@ -60,8 +60,9 @@ describe('InstitutionProfile', () => {
     //non authenticated user goes to institution profiles list
     cy.get('[data-cy="profiles"]').click();
     cy.get('[data-cy="view-profiles"]').click();
+    cy.wait('@institutionProfileList');
 
     
   });
 
-});
+  });
