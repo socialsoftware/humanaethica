@@ -23,11 +23,13 @@ describe('InstitutionProfile', () => {
       cy.demoMemberLogin();
       cy.get('[data-cy="profiles"]').click();
       cy.get('[data-cy="member-profile"]').click();
-    
+      cy.wait('@getInstitution');
+      cy.wait('@assessments');
   
       cy.get('[data-cy="createInstitutionPButton"]').click();
   
       cy.get('[data-cy="shortDescriptionInput"]').type(SHORT_DESCRIPTION);
+      // verify that assessment with review "muito bom" is in row 0
       // open write assessment dialog
       cy.get('[data-cy="institutionAssessmentsTable"] tbody tr')
       .eq(0) // Pega a primeira linha
@@ -36,10 +38,14 @@ describe('InstitutionProfile', () => {
       // write review
     
       cy.get('[data-cy="saveInstitutionProfile"]').click();
-    
+      cy.wait('@createInstitutionProfile');
+      cy.wait('@institutionProfile');
+      
+  
       cy.logout();
+  
   
       
     });
   
-});  
+});
