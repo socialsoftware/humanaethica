@@ -166,12 +166,11 @@ export default class VolunteerProfileView extends Vue {
 
     try {
       this.volunteerProfile = this.$store.getters.getVolunteerProfile;
- 
+      this.activities = await RemoteServices.getActivities();
       if(this.$store.getters.getUser !== null && this.$store.getters.getUser.role === 'VOLUNTEER'){
         this.userId = Number(this.$route.params.id);
         if (!(this.volunteerProfile && this.volunteerProfile.id !== null &&  this.volunteerProfile.id !== undefined && Number(this.volunteerProfile.volunteer.id) === this.userId)) {
           this.volunteerProfile = await RemoteServices.getVolunteerProfile(this.userId);
-          this.activities = await RemoteServices.getActivities();
           this.participations = await RemoteServices.getVolunteerParticipations();
         }
         this.isVolunteer = true;

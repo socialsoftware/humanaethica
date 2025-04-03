@@ -72,7 +72,7 @@
           @click="$emit('close-volunteer-profile-dialog')"
         >Close</v-btn>
         <v-btn 
-          v-if="shortBio.replace(/\s+/g, ' ').trim().length >10"
+          v-if="shortBio.replace(/\s+/g, ' ').trim().length >= 10"
           elevation="2"
           @click="registerVolunteerProfile"
         >Save</v-btn>
@@ -109,7 +109,7 @@ export default class VolunteerProfileDialog extends Vue {
 
   rules = {
     required: (value: string) => !!value || 'Short bio is required',
-    minSize: (value: string) => value.replace(/\s+/g, ' ').trim().length > 10 || 'Bio is too short',
+    minSize: (value: string) => value.replace(/\s+/g, ' ').trim().length >= 10 || 'Bio is too short',
   };
   
   headers: object = [
