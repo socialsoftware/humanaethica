@@ -18,6 +18,19 @@
         <template v-slot:item.volunteer.lastAccess="{ item }">
           {{ ISOtoString(item.volunteer.lastAccess) }}
         </template>
+        <template v-slot:[`item.action`]="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                class="mr-2 action-button"
+                @click="viewVolunteerProfile(item)"
+                v-on="on"
+                >fa-solid fa-eye
+              </v-icon>
+            </template>
+            <span>View volunteer profile</span>
+          </v-tooltip>
+        </template>
         <template v-slot:top>
           <v-card-title>
             <v-text-field
@@ -37,7 +50,6 @@
       </v-card-title>
       <v-data-table
         :headers="headersInstitutionProfile"
-        :items="institutionProfiles"
         :search="search"
         disable-pagination
         :hide-default-footer="true"
@@ -79,15 +91,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ISOtoString } from "../../services/ConvertDateService";
-import InstitutionProfile from '@/models/profile/InstitutionProfile';
+import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
 import RemoteServices from '@/services/RemoteServices';
-
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
 
 @Component({
   methods: { ISOtoString }
 })
 export default class ProfilesListView extends Vue {
-  //volunteerProfiles: VolunteerProfile[] = []; // TODO: this is the object that will be used to fill in the table
+  volunteerProfiles: VolunteerProfile[] = []; 
   institutionProfiles: InstitutionProfile[] = []; 
 
   search: string = '';
@@ -152,6 +164,7 @@ export default class ProfilesListView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
+      this.volunteerProfiles = await RemoteServices.getListVolunteerProfile();
       this.institutionProfiles = await RemoteServices.getInstitutionsProfiles();
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -159,11 +172,16 @@ export default class ProfilesListView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
+  async viewVolunteerProfile(volunteerProfile: VolunteerProfile){
+    await this.$store.dispatch('setVolunteerProfile', volunteerProfile);
+    await this.$router.push({ name: 'volunteer-profile' , 
+    params: { id: volunteerProfile!.volunteer!.id!.toString()}});
+  }
+
   async viewProfile(institutionProfile: InstitutionProfile){
     await this.$store.dispatch('setInstitutionProfile', institutionProfile);
     await this.$router.push({ name: 'institution-profile' , 
     params: { id: institutionProfile!.institution!.id!.toString()}});
-   
   }
 }
 </script>

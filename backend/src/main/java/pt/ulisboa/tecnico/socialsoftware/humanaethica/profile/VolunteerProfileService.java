@@ -12,6 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
@@ -44,5 +45,12 @@ public class VolunteerProfileService {
         volunteerProfileRepository.save(volunteerProfile);
 
         return new VolunteerProfileDto(volunteerProfile);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<VolunteerProfileDto> getListVolunteerProfile(){
+        return volunteerProfileRepository.findAll().stream()
+                .map(volunteerProfile-> new VolunteerProfileDto(volunteerProfile))
+                .toList();
     }
 }
