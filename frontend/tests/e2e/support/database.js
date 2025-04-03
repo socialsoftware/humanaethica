@@ -14,7 +14,6 @@ const ENROLLMENT_COLUMNS = "enrollment (id, enrollment_date_time, motivation, ac
 const PARTICIPATION_COLUMNS = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id)"
 const ASSESSMENT_COLUMNS = "assessment (id, review, review_date, institution_id, volunteer_id)";
 const REPORT_COLUMNS = "report (id, justification, activity_id, volunteer_id)";
-const INSTITUTION_PROFILE_COLUMNS = "institution_profile (id, short_description, num_members, num_activities, num_assessments, num_volunteers, institution_id, average_rating)";
 const PARTICIPATION_COLUMNS_INSTITUTION = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id, volunteer_rating)"
 
 const now = new Date();
