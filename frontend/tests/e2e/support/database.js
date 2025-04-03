@@ -10,6 +10,7 @@ const INSTITUTION_COLUMNS = "institutions (id, active, confirmation_token, creat
 const USER_COLUMNS = "users (user_type, id, creation_date, name, role, state, institution_id)";
 const AUTH_USERS_COLUMNS = "auth_users (auth_type, id, active, email, username, user_id)";
 const ACTIVITY_COLUMNS = "activity (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id)";
+const ACTIVITY_SUGGESTION_COLUMNS = "activity_suggestion (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id, volunteer_id)";
 const ENROLLMENT_COLUMNS = "enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id)"
 const PARTICIPATION_COLUMNS = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id)"
 const ASSESSMENT_COLUMNS = "assessment (id, review, review_date, institution_id, volunteer_id)";
@@ -45,6 +46,10 @@ Cypress.Commands.add('deleteAllButArs', () => {
   })
   cy.task('queryDatabase', {
     query: "DELETE FROM ACTIVITY",
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM ACTIVITY_SUGGESTION",
     credentials: credentials,
   })
   cy.task('queryDatabase', {
