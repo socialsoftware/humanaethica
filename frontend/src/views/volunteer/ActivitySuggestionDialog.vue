@@ -156,7 +156,7 @@ export default class ActivitySuggestionDialog extends Vue {
         !!this.newActivitySuggestion.institution &&
         !!this.newActivitySuggestion.participantsNumberLimit &&
         !!this.newActivitySuggestion.description &&
-        this.newActivitySuggestion.description.length >= 10 &&
+        this.newActivitySuggestion.description.replace(/\s+/g, ' ').trim().length >= 10 &&
         !!this.newActivitySuggestion.startingDate &&
         !!this.newActivitySuggestion.endingDate &&
         !!this.newActivitySuggestion.applicationDeadline)
