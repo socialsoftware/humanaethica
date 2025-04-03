@@ -99,8 +99,7 @@ export default new Vuex.Store({
     setVolunteerProfile(state: State, volunteerProfile: VolunteerProfile) {
       localStorage.setItem('volunteerProfile', JSON.stringify(volunteerProfile));
       state.volunteerProfile = volunteerProfile;
-    }
-  },
+    },
     setInstitutionProfile(state: State, institutionProfile: InstitutionProfile) {
       localStorage.setItem('institutionProfile', JSON.stringify(institutionProfile));
       state.institutionProfile = institutionProfile;

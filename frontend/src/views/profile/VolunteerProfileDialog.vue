@@ -65,14 +65,14 @@
       <!-- Buttons  -->
       <v-card-actions class="pa-4">
         <v-spacer></v-spacer>
+        <v-btn elevation="2"
+          @click="$emit('close-volunteer-profile-dialog')"
+        >Close</v-btn>
         <v-btn 
           v-if="shortBio.replace(/\s+/g, ' ').trim().length >10"
           elevation="2"
           @click="registerVolunteerProfile"
         >Save</v-btn>
-        <v-btn elevation="2"
-          @click="$emit('close-volunteer-profile-dialog')"
-        >Close</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
