@@ -45,6 +45,8 @@ describe('Activity Suggestion', () => {
     cy.selectDateTimePickerDate();
     // save form
     cy.get('[data-cy="saveActivitySuggestion"]').click()
+    // check request was done
+    cy.wait('@register suggestion')
     
 
     
