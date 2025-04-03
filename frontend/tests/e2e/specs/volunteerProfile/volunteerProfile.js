@@ -26,6 +26,11 @@ describe('VolunteerProfile', () => {
       // go to create volunteer profile form
       cy.get('[data-cy="profiles"]').click();
       cy.get('[data-cy="volunteer-profile"]').click();
+
+      cy.wait('@getActivities');
+      cy.wait('@getParticipations');
+      cy.wait('@getVolunteerProfile');
+      
       cy.get('[data-cy="createVolunteerProfile"]').click({ force: true });
 
       // fill form
@@ -35,6 +40,8 @@ describe('VolunteerProfile', () => {
 
       // save form
       cy.get('[data-cy="saveVolunteerProfile"]').click();
+
+      cy.wait('@register')
 
       cy.logout();
 
