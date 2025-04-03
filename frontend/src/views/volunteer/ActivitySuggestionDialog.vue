@@ -135,11 +135,11 @@ export default class ActivitySuggestionDialog extends Vue {
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
   @Prop({ type: Array, required: true }) readonly institutions!: Institution[];
 
-  editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
+  newActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
   cypressCondition: boolean = false;
 
   async created() {
-    this.editActivitySuggestion = new ActivitySuggestion(this.activitySuggestion);
+    this.newActivitySuggestion = new ActivitySuggestion(this.activitySuggestion);
   }
 
   isNumberValid(value: any) {
@@ -151,28 +151,28 @@ export default class ActivitySuggestionDialog extends Vue {
   get canSave(): boolean {
     return (
       this.cypressCondition ||
-      (!!this.editActivitySuggestion.name &&
-        !!this.editActivitySuggestion.region &&
-        !!this.editActivitySuggestion.institution &&
-        !!this.editActivitySuggestion.participantsNumberLimit &&
-        !!this.editActivitySuggestion.description &&
-        this.editActivitySuggestion.description.length >= 10 &&
-        !!this.editActivitySuggestion.startingDate &&
-        !!this.editActivitySuggestion.endingDate &&
-        !!this.editActivitySuggestion.applicationDeadline)
+      (!!this.newActivitySuggestion.name &&
+        !!this.newActivitySuggestion.region &&
+        !!this.newActivitySuggestion.institution &&
+        !!this.newActivitySuggestion.participantsNumberLimit &&
+        !!this.newActivitySuggestion.description &&
+        this.newActivitySuggestion.description.length >= 10 &&
+        !!this.newActivitySuggestion.startingDate &&
+        !!this.newActivitySuggestion.endingDate &&
+        !!this.newActivitySuggestion.applicationDeadline)
     );
   }
 
   async registerActivitySuggestion() {
     if (
-      this.editActivitySuggestion.institution !== null &&
-      this.editActivitySuggestion.institution.id !== null &&
+      this.newActivitySuggestion.institution !== null &&
+      this.newActivitySuggestion.institution.id !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
         const result = await RemoteServices.registerActivitySuggestion(
-          this.editActivitySuggestion,
-          this.editActivitySuggestion.institution.id);
+          this.newActivitySuggestion,
+          this.newActivitySuggestion.institution.id);
         this.$emit('save-activity-suggestion', result);
       } catch (error) {
         await this.$store.dispatch('error', error);

@@ -26,8 +26,8 @@
         </template>     
       </v-data-table>
       <activitysuggestion-dialog
-        v-if="currentActivitySuggestion && editActivitySuggestionDialog"
-        v-model="editActivitySuggestionDialog"
+        v-if="currentActivitySuggestion && createActivitySuggestionDialog"
+        v-model="createActivitySuggestionDialog"
         :activitySuggestion="currentActivitySuggestion"
         :institutions="institutions"
         v-on:save-activity-suggestion="onSaveActivitySuggestion"
@@ -42,7 +42,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
 import Institution from '@/models/institution/Institution';
-//import Volunteer from '@/models/volunteer/Volunteer';
 import RemoteServices from '@/services/RemoteServices';
 import ActivitySuggestionDialog from '@/views/volunteer/ActivitySuggestionDialog.vue';
 import { show } from 'cli-cursor';
@@ -57,11 +56,10 @@ import { show } from 'cli-cursor';
 export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
   institutions: Institution[] = [];
-  // volunteer: Volunteer = new Volunteer(); InstitutionActivitiesView tem Institution
   search: string = '';
 
   currentActivitySuggestion: ActivitySuggestion | null = null;
-  editActivitySuggestionDialog: boolean = false;
+  createActivitySuggestionDialog: boolean = false;
 
   headers: object = [
     {
@@ -140,17 +138,12 @@ export default class VolunteerActivitySuggestionsView extends Vue {
 
   newActivitySuggestion() {
     this.currentActivitySuggestion = new ActivitySuggestion();
-    this.editActivitySuggestionDialog = true;
-  }
-
-  editActivitySuggestion(activitySuggestion: ActivitySuggestion) {
-    this.currentActivitySuggestion = activitySuggestion;
-    this.editActivitySuggestionDialog = true;
+    this.createActivitySuggestionDialog = true;
   }
 
   onCloseActivitySuggestionDialog() {
     this.currentActivitySuggestion = null;
-    this.editActivitySuggestionDialog = false;
+    this.createActivitySuggestionDialog = false;
   }
 
   onSaveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
@@ -158,7 +151,7 @@ export default class VolunteerActivitySuggestionsView extends Vue {
       (a) => a.id !== activitySuggestion.id
     );
     this.activitySuggestions.unshift(activitySuggestion);
-    this.editActivitySuggestionDialog = false;
+    this.createActivitySuggestionDialog = false;
     this.currentActivitySuggestion = null;
   }
 }
