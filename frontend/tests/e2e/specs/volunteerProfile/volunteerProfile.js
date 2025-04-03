@@ -16,7 +16,7 @@ describe('VolunteerProfile', () => {
       //Login as a volunteer
       cy.demoVolunteerLogin()
 
-      cy.intercept('POST', '/profile/volunteer').as('register');
+      cy.intercept('POST', '/profile/volunteer').as('registerVolunteerProfile');
       
       // intercept get participations
       cy.intercept('GET', '/participations/volunteer').as('getParticipations');
@@ -29,7 +29,7 @@ describe('VolunteerProfile', () => {
 
       cy.wait('@getActivities');
       cy.wait('@getParticipations');
-      cy.wait('@getVolunteerProfile');
+     
       
       cy.get('[data-cy="createVolunteerProfile"]').click({ force: true });
 
@@ -49,6 +49,9 @@ describe('VolunteerProfile', () => {
       // save form
       cy.get('[data-cy="saveVolunteerProfile"]').click();
 
+      cy.wait('@registerVolunteerProfile')
+      cy.wait('@getVolunteerProfile');
+
       // check data in volunteer profile
       cy.get('[data-cy="selectedParticipationsTable"] tbody tr')
       .should('have.length', 1)
@@ -63,7 +66,7 @@ describe('VolunteerProfile', () => {
       cy.get('[data-cy="NumTotalParticipations"] span') // Select the span inside the div
       .should('have.text', '2'); // Check that the text is '4'
 
-      cy.wait('@register')
+      
 
       cy.logout();
 
