@@ -30,6 +30,12 @@ describe('InstitutionProfile', () => {
   
       cy.get('[data-cy="shortDescriptionInput"]').type(SHORT_DESCRIPTION);
       // verify that assessment with review "muito bom" is in row 0
+      cy.get('[data-cy="institutionAssessmentsTable"] tbody tr')
+        .should('have.length', 2)
+        .eq(0)
+        .children()
+        .eq(2)
+        .should('contain', "Participation numa cãorrida da Demo Institution. O evento foi muito bem organizado, parabéns!")
       // open write assessment dialog
       cy.get('[data-cy="institutionAssessmentsTable"] tbody tr')
       .eq(0) // Pega a primeira linha
@@ -40,10 +46,17 @@ describe('InstitutionProfile', () => {
       cy.get('[data-cy="saveInstitutionProfile"]').click();
       cy.wait('@createInstitutionProfile');
       cy.wait('@institutionProfile');
-      
+      cy.get('[data-cy="numAssessments"]') 
+      .should('contain', '2');
+      cy.get('[data-cy="institutionProfileAssessmentsTable"] tbody tr')
+      .should('have.length', 1)
+      .eq(0)
+      .children()
+      .eq(1)
+      .should('contain', "Participation numa cãorrida da Demo Institution. O evento foi muito bem organizado, parabéns!");
   
       cy.logout();
-  
+      
   
       
     });
