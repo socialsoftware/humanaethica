@@ -166,6 +166,7 @@ export default class ActivitySuggestionDialog extends Vue {
   async registerActivitySuggestion() {
     if (
       this.editActivitySuggestion.institution !== null &&
+      this.editActivitySuggestion.institution.id !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {

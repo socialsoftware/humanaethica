@@ -475,7 +475,7 @@ export default class RemoteServices {
 
   // Activity Suggestion Controller
   static async registerActivitySuggestion(activitySuggestion: ActivitySuggestion,
-                                          institutionId: number | null) { //TASK
+                                          institutionId: number) {
     return httpClient
       .post(`/activitySuggestions/institution/${institutionId}`, activitySuggestion)
       .then((response) => {
