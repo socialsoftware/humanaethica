@@ -75,6 +75,7 @@
         <div>
           <v-card class="table">
             <v-data-table
+              data-cy = "selectedParticipationsTable"
               :headers="headers"
               :search="search"
               :items="this.volunteerProfile?.selectedParticipations"
