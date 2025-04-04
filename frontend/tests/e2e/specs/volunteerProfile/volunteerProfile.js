@@ -1,5 +1,6 @@
 describe('VolunteerProfile', () => {
   beforeEach(() => {
+    cy.deleteAllButArs()
     cy.createDemoEntities();
     cy.createParticipationsForVolunteerProfile()
   });
