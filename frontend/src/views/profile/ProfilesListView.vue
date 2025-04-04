@@ -51,6 +51,7 @@
       </v-card-title>
       <v-data-table
         :headers="headersInstitutionProfile"
+        :items="institutionProfiles"
         :search="search"
         disable-pagination
         :hide-default-footer="true"

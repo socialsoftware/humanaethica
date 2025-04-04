@@ -56,7 +56,7 @@ class CreateActivitySuggestionWebServiceIT extends SpockTest {
         response.startingDate == DateHandler.toISOString(IN_TEN_DAYS)
         response.endingDate == DateHandler.toISOString(IN_TWELVE_DAYS)
         response.getState() == ActivitySuggestion.State.IN_REVIEW.name()
-        response.institutionId == institution.id
+        response.institution.id == institution.id
         response.volunteerId == volunteer.id
         and: "the activity suggestion is saved in the database"
         activitySuggestionRepository.findAll().size() == 1
