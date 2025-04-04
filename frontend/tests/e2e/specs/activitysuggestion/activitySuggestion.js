@@ -25,7 +25,7 @@ describe('Activity Suggestion', () => {
       };
     }).as('registerActivitySuggestion'); //TOASK - mudar isto?
     // intercept get volunteer activity suggestions and get institutions
-    cy.intercept('GET', '/activitySuggestions/volunteer/*').as('getVolunteerActivitySuggestions');
+    cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
     cy.get('[data-cy="activitysuggestions"]').click();
@@ -70,6 +70,15 @@ describe('Activity Suggestion', () => {
       .eq(0).children().eq(4).should('contain', NUMBER)
     cy.logout();
 
-    // TODO: member login
+    cy.demoMemberLogin()
+    // intercept requests
+    cy.intercept('GET', '/users/2/getInstitution').as('getInstitution');
+    cy.intercept('GET', '/activitySuggestions/institution/1').as('getActivitySuggestions');
+    // go to institution activity suggestions view
+    cy.get('[data-cy="institution"]').click();
+    cy.get('[data-cy="activitysuggestions"]').click();
+    // wait for request to be done
+    cy.wait('@getInstitution');
+    cy.wait('@getActivitySuggestions');
   });
 });
