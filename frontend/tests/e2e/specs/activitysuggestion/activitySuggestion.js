@@ -80,5 +80,11 @@ describe('Activity Suggestion', () => {
     // wait for request to be done
     cy.wait('@getInstitution');
     cy.wait('@getActivitySuggestions');
+
+    cy.get('[data-cy="memberActivitySuggestionsTable"] tbody tr')
+      .should('have.length', 3)
+      .eq(0).children().eq(9).should('contain', "IN_REVIEW")
+
+    // TODO: approve and reject
   });
 });
