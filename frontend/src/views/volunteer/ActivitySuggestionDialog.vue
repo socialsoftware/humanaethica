@@ -26,6 +26,7 @@
                 item-text="name"
                 item-value="id"
                 required
+                data-cy="institutionNameDropdown"
               />
             </v-col>
             <v-col cols="12">

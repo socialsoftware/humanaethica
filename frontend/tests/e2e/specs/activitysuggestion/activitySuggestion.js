@@ -17,7 +17,7 @@ describe('Activity Suggestion', () => {
 
     cy.demoVolunteerLogin()
     // intercept create activity suggestion request and inject date values in the request body
-    cy.intercept('POST', '/activitySuggestions', (req) => {
+    cy.intercept('POST', '/activitySuggestions/institution/1', (req) => {
       req.body = {
         applicationDeadline: '2025-04-11T17:00:00+00:00',
         startingDate: '2025-04-21T09:00:00+00:00',
@@ -28,7 +28,7 @@ describe('Activity Suggestion', () => {
     cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
-    cy.get('[data-cy="activitysuggestions"]').click();
+    cy.get('[data-cy="volunteerActivitySuggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
     // check existing table entries
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
@@ -43,15 +43,32 @@ describe('Activity Suggestion', () => {
 
     // fill form
     cy.get('[data-cy="suggestionNameInput"]').type(NAME);
+    // select the institution
+    cy.get('[data-cy="institutionNameDropdown"]').click();
+    cy.get('.v-menu__content')
+      .should('be.visible') // tirar?
+      .find('.v-list-item')
+      .contains('DEMO INSTITUTION')
+      .click();
     cy.get('[data-cy="suggestionRegionInput"]').type(REGION);
     cy.get('[data-cy="suggestionParticipantsNumberInput"]').type(NUMBER);
     cy.get('[data-cy="suggestionDescriptionInput"]').type(DESCRIPTION);
-    cy.get('#suggestionApplicationDeadlineInput-input').click();
-    cy.selectDateTimePickerDate();
+    // select dates   
+    cy.get('#suggestionApplicationDeadlineInput-wrapper.date-time-picker')
+      .find('.datepicker-day-text')
+      .eq(10)
+      .click({force: true});
     cy.get('#suggestionStartingDateInput-input').click();
-    cy.selectDateTimePickerDate();
+    cy.get('#suggestionStartingDateInput-wrapper.date-time-picker')
+      .find('.datepicker-day-text')
+      .eq(20)
+      .click({force: true});
     cy.get('#suggestionEndingDateInput-input').click();
-    cy.selectDateTimePickerDate();
+    cy.get('#suggestionEndingDateInput-wrapper.date-time-picker')
+      .find('.datepicker-day-text')
+      .eq(22)
+      .click({force: true});
+
     // save form
     cy.get('[data-cy="saveActivitySuggestion"]').click()
     // check request was done
@@ -93,7 +110,7 @@ describe('Activity Suggestion', () => {
     cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
-    cy.get('[data-cy="activitysuggestions"]').click();
+    cy.get('[data-cy="volunteerActivitySuggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
     // Check if first activity suggestion is approved
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
@@ -120,7 +137,7 @@ describe('Activity Suggestion', () => {
     cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
-    cy.get('[data-cy="activitysuggestions"]').click();
+    cy.get('[data-cy="volunteerActivitySuggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
     // Check if first activity suggestion is rejected
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
