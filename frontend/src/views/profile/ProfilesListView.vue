@@ -11,6 +11,7 @@
         disable-pagination
         :hide-default-footer="true"
         :mobile-breakpoint="0"
+        data-cy="volunteerProfilesTable"
       >
         <template v-slot:item.volunteer.creationDate="{ item }">
           {{ ISOtoString(item.volunteer.creationDate) }}

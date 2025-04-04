@@ -52,7 +52,7 @@
           </div>
         </div>
         <div class="items">
-          <div ref="volunteerId" class="icon-wrapper">
+          <div ref="volunteerId" class="icon-wrapper" data-cy="NumTotalParticipations">
             <span>{{ getNumTotalParticipations() }}</span>
           </div>
           <div class="project-name">
@@ -75,6 +75,7 @@
         <div>
           <v-card class="table">
             <v-data-table
+              data-cy = "selectedParticipationsTable"
               :headers="headers"
               :search="search"
               :items="this.volunteerProfile?.selectedParticipations"

@@ -72,6 +72,7 @@
           @click="$emit('close-volunteer-profile-dialog')"
         >Close</v-btn>
         <v-btn 
+          data-cy ="saveVolunteerProfile"
           v-if="shortBio.replace(/\s+/g, ' ').trim().length >= 10"
           elevation="2"
           @click="registerVolunteerProfile"
