@@ -1,15 +1,25 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.dto.ActivitySuggestionDto;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_ALREADY_APPROVED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_ALREADY_REJECTED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_APPLICATION_DEADLINE_TOO_SOON;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_DESCRIPTION_INVALID;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_NAME_ALREADY_EXISTS;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
-
-import java.time.LocalDateTime;
-
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
 @Entity
 public class ActivitySuggestion {
@@ -151,6 +161,28 @@ public class ActivitySuggestion {
     public void setVolunteer(Volunteer volunteer) {
         this.volunteer = volunteer;
         this.volunteer.addActivitySuggestion(this);
+    }
+
+    public void approve() {
+        suggestionCannotBeApproved();
+        this.setState(State.APPROVED);
+    }
+
+    private void suggestionCannotBeApproved() {
+        if (this.state == State.APPROVED) {
+            throw new HEException(ACTIVITY_SUGGESTION_ALREADY_APPROVED, this.getName());
+        }
+    }
+
+    public void reject() {
+        suggestionCannotBeRejected();
+        this.setState(State.REJECTED);
+    }
+
+    private void suggestionCannotBeRejected() {
+        if (this.state == State.REJECTED) {
+            throw new HEException(ACTIVITY_SUGGESTION_ALREADY_REJECTED, this.name);
+        }
     }
 
     private void verifyInvariants() {

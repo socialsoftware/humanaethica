@@ -40,7 +40,7 @@ class CreateActivitySuggestionServiceTest extends SpockTest {
         result.startingDate == DateHandler.toISOString(IN_TEN_DAYS)
         result.endingDate == DateHandler.toISOString(IN_TWELVE_DAYS)
         result.getState() == ActivitySuggestion.State.IN_REVIEW.name()
-        result.institutionId == institution.id
+        result.institution.id == institution.id
         result.volunteerId == volunteer.id
         and: "the activity suggestion is saved in the database"
         activitySuggestionRepository.findAll().size() == 1

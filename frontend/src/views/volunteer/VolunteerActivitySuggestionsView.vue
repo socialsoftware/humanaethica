@@ -1,44 +1,78 @@
 <template>
-  <v-card class="table">
-    <v-data-table
-      :headers="headers"
-      :items="activitySuggestions"
-      :search="search"
-      disable-pagination
-      :hide-default-footer="true"
-      :mobile-breakpoint="0"
-    >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Search"
-            class="mx-2"
-          />
-          <v-spacer />
-        </v-card-title>
-      </template>
-    </v-data-table>
-  </v-card>
+  <div>
+    <v-card class="table">
+      <v-data-table
+        :headers="headers"
+        :items="activitySuggestions"
+        :search="search"
+        disable-pagination
+        :hide-default-footer="true"
+        :mobile-breakpoint="0"
+        data-cy="volunteerActivitySuggestionTable"
+      >
+        <template v-slot:top>
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Search"
+              class="mx-2"
+            />
+            <v-spacer />
+            <v-btn color="primary" dark @click="newActivitySuggestion" data-cy="newActivitySuggestion"
+              >New Activity Suggestion</v-btn
+            >
+          </v-card-title>
+        </template>     
+      </v-data-table>
+      <activitysuggestion-dialog
+        v-if="currentActivitySuggestion && createActivitySuggestionDialog"
+        v-model="createActivitySuggestionDialog"
+        :activitySuggestion="currentActivitySuggestion"
+        :institutions="institutions"
+        v-on:save-activity-suggestion="onSaveActivitySuggestion"
+        v-on:close-activity-suggestion-dialog="onCloseActivitySuggestionDialog"
+      />
+    </v-card>
+  </div>
+  
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import Institution from '@/models/institution/Institution';
+import RemoteServices from '@/services/RemoteServices';
+import ActivitySuggestionDialog from '@/views/volunteer/ActivitySuggestionDialog.vue';
+import { show } from 'cli-cursor';
 
 @Component({
   components: {
+    'activitysuggestion-dialog': ActivitySuggestionDialog,
   },
+  methods: { show },
 })
+
 export default class VolunteerActivitySuggestionsView extends Vue {
-  //activitySuggestions: ActivitySuggestion[] = []; // TODO: this is the object that will be used to fill in the table
+  activitySuggestions: ActivitySuggestion[] = [];
+  institutions: Institution[] = [];
   search: string = '';
+
+  currentActivitySuggestion: ActivitySuggestion | null = null;
+  createActivitySuggestionDialog: boolean = false;
+
   headers: object = [
     {
       text: 'Name',
       value: 'name',
       align: 'left',
-      width: '10%',
+      width: '5%',
+    },
+    {
+      text: 'Institution',
+      value: 'institution.name',
+      align: 'left',
+      width: '5%',
     },
     {
       text: 'Description',
@@ -93,11 +127,32 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // TODO
+      let userId = this.$store.getters.getUser.id;
+      this.activitySuggestions = await RemoteServices.getVolunteerActivitySuggestions(userId);
+      this.institutions = await RemoteServices.getInstitutions();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  newActivitySuggestion() {
+    this.currentActivitySuggestion = new ActivitySuggestion();
+    this.createActivitySuggestionDialog = true;
+  }
+
+  onCloseActivitySuggestionDialog() {
+    this.currentActivitySuggestion = null;
+    this.createActivitySuggestionDialog = false;
+  }
+
+  onSaveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    this.activitySuggestions = this.activitySuggestions.filter(
+      (a) => a.id !== activitySuggestion.id
+    );
+    this.activitySuggestions.unshift(activitySuggestion);
+    this.createActivitySuggestionDialog = false;
+    this.currentActivitySuggestion = null;
   }
 }
 </script>

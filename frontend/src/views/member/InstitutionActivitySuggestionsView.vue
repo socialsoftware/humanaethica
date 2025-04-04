@@ -21,6 +21,34 @@
           />
         </v-card-title>
       </template>
+      <template v-slot:[`item.action`]="{ item }">
+        <v-tooltip bottom v-if="item.state != 'APPROVED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="green"
+              @click="approveActivitySuggestion(item)"
+              v-on="on"
+              data-cy="approveActivitySuggestion"
+              >mdi-thumb-up
+            </v-icon>
+          </template>
+          <span>Approve Activity Suggestion</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="item.state != 'REJECTED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2 action-button"
+              color="red"
+              @click="rejectActivitySuggestion(item)"
+              v-on="on"
+              data-cy="rejectActivitySuggestion"
+              >mdi-thumb-down
+            </v-icon>
+          </template>
+          <span>Reject Activity Suggestion</span>
+        </v-tooltip>
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -28,15 +56,18 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Institution from '@/models/institution/Institution';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import RemoteServices from '@/services/RemoteServices';
 
 @Component({
   components: {
   },
 })
-export default class VolunteerActivitySuggestionsView extends Vue {
-  //activitySuggestions: ActivitySuggestion[] = []; // TODO: this is the object that will be used to fill in the table
+export default class InstitutionActivitySuggestionsView extends Vue {
+  activitySuggestions: ActivitySuggestion[] = [];
   institution: Institution = new Institution();
   search: string = '';
+
   headers: object = [
     {
       text: 'Name',
@@ -97,13 +128,25 @@ export default class VolunteerActivitySuggestionsView extends Vue {
       value: 'state',
       align: 'left',
       width: '5%',
+    },
+    {
+      text: 'Actions',
+      value: 'action',
+      align: 'left',
+      sortable: false,
+      width: '5%',
     }
   ];
 
   async created() {
     await this.$store.dispatch('loading');
     try {
-      // TODO
+      let userId = this.$store.getters.getUser.id;
+      this.institution = await RemoteServices.getInstitution(userId);
+      if (this.institution != null && this.institution.id != null)
+        this.activitySuggestions = await RemoteServices.getActivitySuggestions(
+            this.institution.id,
+          );
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -112,6 +155,30 @@ export default class VolunteerActivitySuggestionsView extends Vue {
 
   institutionName() {
     return this.institution.name;
+  }
+
+  async approveActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null && this.institution.id != null) {
+      try {
+        const result = await RemoteServices.approveActivitySuggestion(activitySuggestion.id, this.institution.id);
+        const index = this.activitySuggestions.findIndex((a) => a.id === activitySuggestion.id);
+        if (index !== -1) this.$set(this.activitySuggestions, index, result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null && this.institution.id != null) {
+      try {
+        const result = await RemoteServices.rejectActivitySuggestion(activitySuggestion.id, this.institution.id);
+        const index = this.activitySuggestions.findIndex((a) => a.id === activitySuggestion.id);
+        if (index !== -1) this.$set(this.activitySuggestions, index, result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>
