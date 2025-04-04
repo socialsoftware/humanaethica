@@ -23,7 +23,7 @@ describe('Activity Suggestion', () => {
         startingDate: '2025-01-21T09:00:00+00:00',
         endingDate: '2025-01-23T17:00:00+00:00'
       };
-    }).as('registerActivitySuggestion'); //TOASK - mudar isto?
+    }).as('registerActivitySuggestion');
     // intercept get volunteer activity suggestions and get institutions
     cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
     cy.intercept('GET', '/institutions').as('getInstitutions');
@@ -80,11 +80,52 @@ describe('Activity Suggestion', () => {
     // wait for request to be done
     cy.wait('@getInstitution');
     cy.wait('@getActivitySuggestions');
-
+    // check first activity suggestion is in review
     cy.get('[data-cy="memberActivitySuggestionsTable"] tbody tr')
       .should('have.length', 3)
       .eq(0).children().eq(9).should('contain', "IN_REVIEW")
+    // Approve first activity suggestion
+    cy.get('[data-cy="approveActivitySuggestionButton"]').first().click()
+    cy.logout();
 
-    // TODO: approve and reject
+    cy.demoVolunteerLogin();
+    // intercept get volunteer activity suggestions and get institutions
+    cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
+    cy.intercept('GET', '/institutions').as('getInstitutions');
+    // go to volunteer activity suggestions view
+    cy.get('[data-cy="activitysuggestions"]').click();
+    cy.wait('@getVolunteerActivitySuggestions');
+    // Check if first activity suggestion is approved
+    cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
+      .eq(0).children().eq(9).should('contain', "APPROVED")
+
+    cy.logout();
+
+    cy.demoMemberLogin()
+    // intercept requests
+    cy.intercept('GET', '/users/2/getInstitution').as('getInstitution');
+    cy.intercept('GET', '/activitySuggestions/institution/1').as('getActivitySuggestions');
+    // go to institution activity suggestions view
+    cy.get('[data-cy="institution"]').click();
+    cy.get('[data-cy="activitysuggestions"]').click();
+    // wait for request to be done
+    cy.wait('@getInstitution');
+    cy.wait('@getActivitySuggestions');
+    // Reject first activity suggestion
+    cy.get('[data-cy="rejectActivitySuggestionButton"]').first().click()
+    cy.logout();
+
+    cy.demoVolunteerLogin();
+    // intercept get volunteer activity suggestions and get institutions
+    cy.intercept('GET', '/activitySuggestions/volunteer/3').as('getVolunteerActivitySuggestions');
+    cy.intercept('GET', '/institutions').as('getInstitutions');
+    // go to volunteer activity suggestions view
+    cy.get('[data-cy="activitysuggestions"]').click();
+    cy.wait('@getVolunteerActivitySuggestions');
+    // Check if first activity suggestion is rejected
+    cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
+      .eq(0).children().eq(9).should('contain', "REJECTED")
+
+    cy.logout();
   });
 });
