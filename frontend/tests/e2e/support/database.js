@@ -288,7 +288,8 @@ Cypress.Commands.add('createParticipationsForVolunteerProfile', () => {
     credentials: credentials,
   })
   cy.task('queryDatabase',  {
-    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(2, "Cãorrida Solidária", "Has no vacancies",  dayBeforeYesterday.toISOString(), yesterday.toISOString()),
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(2, "Cãorrida Solidária", "Has no vacancies",  dayBeforeYesterday.toISOString(), yesterday.toISOString(),
+    yesterday.toISOString(),2, 1),
      credentials: credentials,
  })
  cy.task('queryDatabase',  {
