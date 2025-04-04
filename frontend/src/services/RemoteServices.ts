@@ -15,6 +15,7 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
+import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
 import InstitutionProfile from '@/models/profile/InstitutionProfile';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
 
@@ -874,6 +875,18 @@ export default class RemoteServices {
       });
   }
 
+
+  static async registerVolunteerProfile(volunteerProfile: VolunteerProfile) {
+    return httpClient
+      .post('/profile/volunteer', volunteerProfile)
+      .then((response) => {
+        return new VolunteerProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   //InstitutionProfile Controller
 
   static async createInstitutionProfile(institutionProfile: InstitutionProfile): Promise<InstitutionProfile> {
@@ -885,6 +898,30 @@ export default class RemoteServices {
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  static async getVolunteerProfile(volunteerId: number): Promise<VolunteerProfile> {
+    return httpClient
+      .get(`/profile/volunteer/${volunteerId}`)
+      .then((response) => {
+        return new VolunteerProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getListVolunteerProfile(): Promise<VolunteerProfile[]> {
+    return httpClient
+    .get('/profile/volunteer/views')
+    .then((response) => {
+      return response.data.map((volunteerProfile: any) => {
+        return new VolunteerProfile(volunteerProfile);
+      });
+    })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+    });
   }
 
   static async getInstitutionProfile(institutionId: number): Promise<InstitutionProfile> {
