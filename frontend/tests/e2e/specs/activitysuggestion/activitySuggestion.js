@@ -46,7 +46,6 @@ describe('Activity Suggestion', () => {
     // select the institution
     cy.get('[data-cy="institutionNameDropdown"]').click();
     cy.get('.v-menu__content')
-      .should('be.visible') // tirar?
       .find('.v-list-item')
       .contains('DEMO INSTITUTION')
       .click();
@@ -114,7 +113,7 @@ describe('Activity Suggestion', () => {
     cy.wait('@getVolunteerActivitySuggestions');
     // Check if first activity suggestion is approved
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
-      .eq(0).children().eq(9).should('contain', "APPROVED")
+      .eq(2).children().eq(9).should('contain', "APPROVED")
 
     cy.logout();
 
@@ -141,7 +140,7 @@ describe('Activity Suggestion', () => {
     cy.wait('@getVolunteerActivitySuggestions');
     // Check if first activity suggestion is rejected
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
-      .eq(0).children().eq(9).should('contain', "REJECTED")
+      .eq(2).children().eq(9).should('contain', "REJECTED")
 
     cy.logout();
   });
