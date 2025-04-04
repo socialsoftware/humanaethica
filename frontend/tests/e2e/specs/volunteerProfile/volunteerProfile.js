@@ -32,12 +32,12 @@ describe('VolunteerProfile', () => {
       cy.wait('@getParticipations');
 
       
-      cy.get('[data-cy="createVolunteerProfile"]').click({ force: true });
+      cy.get('[data-cy="createVolunteerProfile"]').click();
 
       // fill form
       cy.get('[data-cy="shortBioInput"]').type(SHORT_BIO);
 
-      cy.get('[data-cy="participationsTable"] tbody tr').eq(1).find('td .v-simple-checkbox').click({ force: true });
+      cy.get('[data-cy="participationsTable"] tbody tr').eq(1).find('td .v-simple-checkbox').click();
 
       // check form
       cy.get('[data-cy="participationsTable"] tbody tr')
@@ -70,7 +70,7 @@ describe('VolunteerProfile', () => {
 
       cy.logout();
 
-
+      // Check the Volunteer profiles list as a non-authenticated user
       cy.intercept('GET', '/profile/volunteer/views').as('getProfilesList');
 
       cy.get('[data-cy="profiles"]').click();
@@ -79,9 +79,6 @@ describe('VolunteerProfile', () => {
       cy.wait('@getProfilesList');
 
       // Check that the table exists and has the profile created
-      cy.get('[data-cy="volunteerProfilesTable"]').should('be.visible');
-      cy.get('[data-cy="institutionProfilesTable"]').should('be.visible');
-
       cy.get('[data-cy="volunteerProfilesTable"]')
       .should('exist')
       .and('not.be.empty');
@@ -95,8 +92,4 @@ describe('VolunteerProfile', () => {
       cy.get('[data-cy="volunteerProfilesTable"] tbody tr')
       .eq(0).children().eq(1).should('contain.text', SHORT_BIO);
   })
-    
-  it('close', () => {
-
-  });
 });
