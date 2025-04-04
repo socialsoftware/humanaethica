@@ -118,21 +118,6 @@ Cypress.Commands.add('createDatabaseInfoForEnrollments', () => {
 
 Cypress.Commands.add('createDatabaseInfoForActivitySuggestions', () => {
   cy.task('queryDatabase',  {
-    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(1, "A1", "Enrollment is open",  tomorrow.toISOString(), tomorrow.toISOString(),
-      tomorrow.toISOString(),1, 1),
-    credentials: credentials,
-  })
-  cy.task('queryDatabase',  {
-    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(2, "A2", "Enrollment is open and it is already enrolled",  tomorrow.toISOString(), tomorrow.toISOString(),
-      tomorrow.toISOString(),1, 1),
-    credentials: credentials,
-  })
-  cy.task('queryDatabase',  {
-    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(3, "A3", "Enrollment is closed",  yesterday.toISOString(), tomorrow.toISOString(),
-      tomorrow.toISOString(),1, 1),
-    credentials: credentials,
-  })
-  cy.task('queryDatabase',  {
     query: "INSERT INTO " + ACTIVITY_SUGGESTION_COLUMNS + generateActivitySuggestionTuple(1, "AS1", "Collecting and distributing essential food items",  yesterday.toISOString(), tomorrow.toISOString(),
       tomorrow.toISOString(),1, 1, 3),
     credentials: credentials,
@@ -140,10 +125,6 @@ Cypress.Commands.add('createDatabaseInfoForActivitySuggestions', () => {
   cy.task('queryDatabase',  {
     query: "INSERT INTO " + ACTIVITY_SUGGESTION_COLUMNS + generateActivitySuggestionTuple(2, "AS2", "A community-driven effort to plant trees in urban areas",  dayBeforeYesterday.toISOString(), tomorrow.toISOString(),
       tomorrow.toISOString(),1, 1, 3),
-    credentials: credentials,
-  })
-  cy.task('queryDatabase',  {
-    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(1, 1, 3),
     credentials: credentials,
   })
 });
