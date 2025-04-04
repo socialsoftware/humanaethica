@@ -17,7 +17,7 @@
                   (v) => (v && v.replace(/\s+/g,'').trim().length >= 10) || 'Description must be at least 10 characters'
                 ]"
                 required
-                v-model="editInstitutionProfile.shortDescription"
+                v-model="newInstitutionProfile.shortDescription"
                 data-cy="shortDescriptionInput"
               ></v-text-field>
             </v-col>
@@ -95,7 +95,7 @@ export default class InstitutionProfileDialog extends Vue {
   @Prop({ type: Array, required: true }) readonly assessments!: Assessment[];
   @Prop({ type: InstitutionProfile, required: true }) readonly institutionProfileParent!: InstitutionProfile;
 
-  editInstitutionProfile: InstitutionProfile = new InstitutionProfile();
+  newInstitutionProfile: InstitutionProfile = new InstitutionProfile();
   search: string = '';
   selAssessment: Assessment[] = [];
   
@@ -106,7 +106,7 @@ export default class InstitutionProfileDialog extends Vue {
   ];
 
   get canSave(): boolean {
-    return (!! this.editInstitutionProfile.shortDescription &&  this.editInstitutionProfile.shortDescription.replace(/\s+/g,'').trim().length >= 10);
+    return (!! this.newInstitutionProfile.shortDescription &&  this.newInstitutionProfile.shortDescription.replace(/\s+/g,'').trim().length >= 10);
   }
   
   get filteredAssessments() {
@@ -125,14 +125,14 @@ export default class InstitutionProfileDialog extends Vue {
 
 
   async created() {
-    this.editInstitutionProfile = new InstitutionProfile(this.institutionProfileParent);
+    this.newInstitutionProfile = new InstitutionProfile(this.institutionProfileParent);
   }
 
   async createInstitutionProfile() {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try {
-        this.editInstitutionProfile.selectedAssessments = this.selAssessment;
-        const result = await RemoteServices.createInstitutionProfile(this.editInstitutionProfile);
+        this.newInstitutionProfile.selectedAssessments = this.selAssessment;
+        const result = await RemoteServices.createInstitutionProfile(this.newInstitutionProfile);
         this.$emit('save-institutionProfile', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
