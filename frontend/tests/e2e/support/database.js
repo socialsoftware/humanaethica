@@ -10,6 +10,7 @@ const INSTITUTION_COLUMNS = "institutions (id, active, confirmation_token, creat
 const USER_COLUMNS = "users (user_type, id, creation_date, name, role, state, institution_id)";
 const AUTH_USERS_COLUMNS = "auth_users (auth_type, id, active, email, username, user_id)";
 const ACTIVITY_COLUMNS = "activity (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id)";
+const ACTIVITY_SUGGESTION_COLUMNS = "activity_suggestion (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id, volunteer_id)";
 const ENROLLMENT_COLUMNS = "enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id)"
 const PARTICIPATION_COLUMNS = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id)"
 const ASSESSMENT_COLUMNS = "assessment (id, review, review_date, institution_id, volunteer_id)";
@@ -56,6 +57,10 @@ Cypress.Commands.add('deleteAllButArs', () => {
   })
   cy.task('queryDatabase', {
     query: "DELETE FROM ACTIVITY",
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM ACTIVITY_SUGGESTION",
     credentials: credentials,
   })
   cy.task('queryDatabase', {
@@ -113,6 +118,19 @@ Cypress.Commands.add('createDatabaseInfoForEnrollments', () => {
   })
   cy.task('queryDatabase',  {
     query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(5, 2, 3),
+    credentials: credentials,
+  })
+});
+
+Cypress.Commands.add('createDatabaseInfoForActivitySuggestions', () => {
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_SUGGESTION_COLUMNS + generateActivitySuggestionTuple(1, "AS1", "Collecting and distributing essential food items",  yesterday.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1, 3),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_SUGGESTION_COLUMNS + generateActivitySuggestionTuple(2, "AS2", "A community-driven effort to plant trees in urban areas",  dayBeforeYesterday.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1, 3),
     credentials: credentials,
   })
 });
@@ -390,6 +408,21 @@ function generateActivityTuple(id, name, description, deadline, start, end, part
     "', 'Lisbon',  '"
     + start + "', 'APPROVED', " +
     institutionId + ")";
+}
+
+function generateActivitySuggestionTuple(id, name, description, deadline, start, end, participants, institutionId, volunteerId) {
+  return "VALUES ('"
+    + id + "', '"
+    + deadline +
+    "', '2024-08-06 17:58:21.402146', '" +
+    description + "', '"
+    + end + "', '"
+    + name + "', '" +
+    participants +
+    "', 'Lisbon',  '"
+    + start + "', 'IN_REVIEW', '" +
+    institutionId + "', '" +
+    volunteerId + "')";
 }
 
 function generateEnrollmentTuple(id, activityId, volunteerId) {

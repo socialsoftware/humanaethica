@@ -7,6 +7,7 @@
       disable-pagination
       :hide-default-footer="true"
       :mobile-breakpoint="0"
+      data-cy="memberActivitySuggestionsTable"
     >
       <template v-slot:item.institutionName="{ item }">
         {{ institutionName() }}
@@ -29,7 +30,7 @@
               color="green"
               @click="approveActivitySuggestion(item)"
               v-on="on"
-              data-cy="approveActivitySuggestion"
+              data-cy="approveActivitySuggestionButton"
               >mdi-thumb-up
             </v-icon>
           </template>
@@ -42,7 +43,7 @@
               color="red"
               @click="rejectActivitySuggestion(item)"
               v-on="on"
-              data-cy="rejectActivitySuggestion"
+              data-cy="rejectActivitySuggestionButton"
               >mdi-thumb-down
             </v-icon>
           </template>
