@@ -19,9 +19,9 @@ describe('Activity Suggestion', () => {
     // intercept create activity suggestion request and inject date values in the request body
     cy.intercept('POST', '/activitySuggestions', (req) => {
       req.body = {
-        applicationDeadline: '2025-01-11T17:00:00+00:00',
-        startingDate: '2025-01-21T09:00:00+00:00',
-        endingDate: '2025-01-23T17:00:00+00:00'
+        applicationDeadline: '2025-04-11T17:00:00+00:00',
+        startingDate: '2025-04-21T09:00:00+00:00',
+        endingDate: '2025-04-23T17:00:00+00:00'
       };
     }).as('registerActivitySuggestion');
     // intercept get volunteer activity suggestions and get institutions
