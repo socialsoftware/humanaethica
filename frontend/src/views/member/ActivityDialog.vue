@@ -102,6 +102,7 @@
           Close
         </v-btn>
         <v-btn
+          :disabled="!canSave"
           color="blue-darken-1"
           variant="text"
           @click="updateActivity"
@@ -133,8 +134,6 @@ export default class ActivityDialog extends Vue {
 
   editActivity: Activity = new Activity();
 
-  cypressCondition: boolean = false;
-
   async created() {
     this.editActivity = new Activity(this.activity);
   }
@@ -147,14 +146,13 @@ export default class ActivityDialog extends Vue {
 
   get canSave(): boolean {
     return (
-      this.cypressCondition ||
-      (!!this.editActivity.name &&
-        !!this.editActivity.region &&
-        !!this.editActivity.participantsNumberLimit &&
-        !!this.editActivity.description &&
-        !!this.editActivity.startingDate &&
-        !!this.editActivity.endingDate &&
-        !!this.editActivity.applicationDeadline)
+      !!this.editActivity.name &&
+      !!this.editActivity.region &&
+      !!this.editActivity.participantsNumberLimit &&
+      !!this.editActivity.description &&
+      !!this.editActivity.startingDate &&
+      !!this.editActivity.endingDate &&
+      !!this.editActivity.applicationDeadline
     );
   }
 
