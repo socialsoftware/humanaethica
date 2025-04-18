@@ -14,5 +14,12 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>user</name>
+    <dependencies>
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.socialsoftware.humanaethica.common</groupId>
+            <artifactId>common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>
