@@ -8,7 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEEx
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

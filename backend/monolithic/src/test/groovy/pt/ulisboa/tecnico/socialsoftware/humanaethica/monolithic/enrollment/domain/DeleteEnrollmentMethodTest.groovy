@@ -14,7 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Th
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 
 @DataJpaTest
 class DeleteEnrollmentMethodTest extends SpockTest {

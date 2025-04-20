@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

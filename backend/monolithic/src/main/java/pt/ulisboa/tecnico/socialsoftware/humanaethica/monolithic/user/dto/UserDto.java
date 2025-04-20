@@ -4,7 +4,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.Aut
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.Role;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 public class UserDto {
     private Integer id;

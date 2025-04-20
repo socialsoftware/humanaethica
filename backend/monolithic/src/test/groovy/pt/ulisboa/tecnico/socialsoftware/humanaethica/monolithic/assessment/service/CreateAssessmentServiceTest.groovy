@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import spock.lang.Unroll
 
 @DataJpaTest

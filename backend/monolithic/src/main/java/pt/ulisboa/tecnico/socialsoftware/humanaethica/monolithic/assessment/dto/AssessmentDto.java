@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 public class AssessmentDto {
     private Integer id;

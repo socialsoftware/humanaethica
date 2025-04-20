@@ -41,8 +41,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.reposi
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.ActivityService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.repository.ThemeRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.ThemeService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 import spock.lang.Specification
 
 import java.time.LocalDateTime

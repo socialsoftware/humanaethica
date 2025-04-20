@@ -6,7 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

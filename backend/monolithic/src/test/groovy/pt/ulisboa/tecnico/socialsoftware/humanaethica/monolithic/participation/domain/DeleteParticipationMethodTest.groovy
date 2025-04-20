@@ -12,7 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.d
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 
 import java.time.LocalDateTime
 

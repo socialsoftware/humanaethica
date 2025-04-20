@@ -11,8 +11,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.Erro
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 import spock.lang.Unroll
 import spock.mock.DetachedMockFactory
 

@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 public class EnrollmentDto {
     private Integer id;

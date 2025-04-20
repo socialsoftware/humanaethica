@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEEx
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 import spock.mock.DetachedMockFactory
 
 @DataJpaTest

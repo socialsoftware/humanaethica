@@ -10,7 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.Erro
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 import spock.mock.DetachedMockFactory
 import spock.lang.Unroll
 

@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 public class ParticipationDto {
     private Integer id;

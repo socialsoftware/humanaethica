@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils;
 
 public class LinkHandler {
 

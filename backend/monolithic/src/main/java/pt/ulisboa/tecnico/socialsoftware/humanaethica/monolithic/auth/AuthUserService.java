@@ -16,7 +16,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEEx
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.sql.SQLException;
 import java.util.Optional;

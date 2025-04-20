@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.config;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.config;
 
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;

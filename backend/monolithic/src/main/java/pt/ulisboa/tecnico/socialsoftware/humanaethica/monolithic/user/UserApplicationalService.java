@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.LinkHandler;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.LinkHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer;
 
 @Service
 public class UserApplicationalService {

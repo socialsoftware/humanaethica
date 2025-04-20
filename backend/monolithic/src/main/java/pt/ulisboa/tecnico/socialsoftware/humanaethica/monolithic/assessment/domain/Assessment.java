@@ -5,7 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.time.LocalDateTime;
 

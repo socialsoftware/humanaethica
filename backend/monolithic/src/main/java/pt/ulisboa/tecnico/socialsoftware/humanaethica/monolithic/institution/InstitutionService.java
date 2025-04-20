@@ -23,8 +23,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Use
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.repository.ThemeRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.LinkHandler;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.LinkHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
 

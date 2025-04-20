@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.config.CommonModuleConfiguration;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.config.UserModuleConfiguration;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.config.UserModuleConfiguration;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.JwtTokenProvider;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.config.MonolithicModuleConfiguration;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils;

@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 public class ReportDto {
     private Integer id;

@@ -21,7 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.ReportSe
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.ThemeService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 
 @TestConfiguration
 @PropertySource("classpath:application-test-int.properties")

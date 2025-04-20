@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.dto.ThemeDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.util.List;
 

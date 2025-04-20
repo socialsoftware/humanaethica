@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.utils.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
