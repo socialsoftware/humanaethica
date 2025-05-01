@@ -111,13 +111,13 @@ public class InstitutionService {
         }
 
         if (institutionDto.getNif() == null || institutionDto.getNif().length() != 9) {
-            throw new HEException(INVALID_NIF, institutionDto.getEmail());
+            throw new HEException(INVALID_NIF, institutionDto.getNif());
         }
 
         try {
             Integer.parseInt(institutionDto.getNif());
         } catch (NumberFormatException nfe) {
-            throw new HEException(INVALID_NIF, institutionDto.getEmail());
+            throw new HEException(INVALID_NIF, institutionDto.getNif());
         }
 
         if (institutionRepository.findInstitutionByNif(institutionDto.getNif()).isPresent()) {

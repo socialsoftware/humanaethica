@@ -16,13 +16,13 @@ describe('Activity', () => {
 
     cy.demoMemberLogin()
     // intercept create activity request and inject date values in the request body
-    cy.intercept('POST', '/activities', (req) => {
-      req.body = {
-        applicationDeadline: '2024-01-13T12:00:00+00:00',
-        startingDate: '2024-01-14T12:00:00+00:00',
-        endingDate: '2024-01-15T12:00:00+00:00'
-      };
-    }).as('register');
+    // cy.intercept('POST', '/activities', (req) => {
+    //   req.body = {
+    //     applicationDeadline: '2024-01-13T12:00:00+00:00',
+    //     startingDate: '2024-01-14T12:00:00+00:00',
+    //     endingDate: '2024-01-15T12:00:00+00:00'
+    //   };
+    cy.intercept('POST', '/activities').as('register');
     // intercept get institutions
     cy.intercept('GET', '/users/*/getInstitution').as('getInstitutions');
     cy.intercept('GET', '/themes/availableThemes').as('availableTeams')
@@ -40,13 +40,25 @@ describe('Activity', () => {
     cy.get('[data-cy="regionInput"]').type(REGION);
     cy.get('[data-cy="participantsNumberInput"]').type(NUMBER);
     cy.get('[data-cy="descriptionInput"]').type(DESCRIPTION);
+
+    // select dates
     cy.get('#applicationDeadlineInput-input').click();
-    cy.selectDateTimePickerDate();
+    cy.get('#applicationDeadlineInput-wrapper.date-time-picker')
+      .find('.datepicker-day-text')
+      .eq(0)
+      .click({force: true});
     cy.get('#startingDateInput-input').click();
-    cy.selectDateTimePickerDate();
+    cy.get('#startingDateInput-wrapper.date-time-picker')
+      .find('.datepicker-day-text')
+      .eq(1)
+      .click({force: true});
     cy.get('#endingDateInput-input').click();
-    cy.selectDateTimePickerDate();
-    // save form
+    cy.get('#endingDateInput-wrapper.date-time-picker')
+      .find('.datepicker-day-text')
+      .eq(2)
+      .click({force: true});
+
+    // save
     cy.get('[data-cy="saveActivity"]').click()
     // check request was done
     cy.wait('@register')
