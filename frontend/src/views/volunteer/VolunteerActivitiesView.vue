@@ -105,25 +105,25 @@
       </v-data-table>
       <enrollment-dialog
         v-if="currentEnrollment && editEnrollmentDialog"
-        v-model="editEnrollmentDialog"
+        :dialog.sync="editEnrollmentDialog"
         :enrollment="currentEnrollment"
-        v-on:save-enrollment="onSaveEnrollment"
-        v-on:close-enrollment-dialog="onCloseEnrollmentDialog"
+        @save-enrollment="onSaveEnrollment"
+        @close-enrollment-dialog="onCloseEnrollmentDialog"
       />
       <assessment-dialog
         v-if="currentAssessment && editAssessmentDialog"
-        v-model="editAssessmentDialog"
+        :dialog.sync="editAssessmentDialog"
         :assessment="currentAssessment"
         :is_update="false"
-        v-on:save-assessment="onSaveAssessment"
-        v-on:close-assessment-dialog="onCloseAssessmentDialog"
+        @save-assessment="onSaveAssessment"
+        @close-assessment-dialog="onCloseAssessmentDialog"
       />
       <report-dialog
         v-if="currentReport && createReportDialog"
-        v-model="createReportDialog"
+        :dialog.sync="createReportDialog"
         :report="currentReport"
-        v-on:save-report="onSaveReport"
-        v-on:close-report-dialog="onCloseReportDialog"
+        @save-report="onSaveReport"
+        @close-report-dialog="onCloseReportDialog"
       />
     </v-card>
   </div>

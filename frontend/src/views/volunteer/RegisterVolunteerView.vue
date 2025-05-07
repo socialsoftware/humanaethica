@@ -59,61 +59,69 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 
-@Component({
-  components: {},
-})
-export default class RegisterVolunteerView extends Vue {
-  volunteerName: string = '';
-  volunteerEmail: string = '';
-  volunteerUsername: string = '';
-  volunteerDoc: File | null = null;
+export default {
+  name: 'RegisterVolunteerView',
 
-  async submit() {
-    try {
+  data() {
+    return {
+      volunteerName: '',
+      volunteerEmail: '',
+      volunteerUsername: '',
+      volunteerDoc: null as File | null,
+    };
+  },
+
+  methods: {
+    async submit(this: any) {
       if (
-        this.volunteerName.length == 0 ||
-        this.volunteerEmail.length == 0 ||
-        this.volunteerUsername.length == 0
+        this.volunteerName.length === 0 ||
+        this.volunteerEmail.length === 0 ||
+        this.volunteerUsername.length === 0
       ) {
         await this.$store.dispatch(
           'error',
           'Missing information, please check the form again',
         );
         return;
-      } else if (this.volunteerDoc != null) {
-        await RemoteServices.registerVolunteer(
-          {
-            volunteerName: this.volunteerName,
-            volunteerEmail: this.volunteerEmail,
-            volunteerUsername: this.volunteerUsername,
-          },
-          this.volunteerDoc,
-        );
-        await this.$router.push({ name: 'home' });
       }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  }
 
-  async handleFileUpload(event: File) {
-    this.volunteerDoc = event;
-  }
+      if (this.volunteerDoc !== null) {
+        try {
+          await RemoteServices.registerVolunteer(
+            {
+              volunteerName: this.volunteerName,
+              volunteerEmail: this.volunteerEmail,
+              volunteerUsername: this.volunteerUsername,
+            },
+            this.volunteerDoc,
+          );
+          await this.$router.push({ name: 'home' });
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
+      }
 
-  readFile() {
-    RemoteServices.getForm();
-  }
+      await this.$store.dispatch('clearLoading');
+    },
 
-  clear() {
-    this.volunteerName = '';
-    this.volunteerEmail = '';
-    this.volunteerUsername = '';
-  }
-}
+    handleFileUpload(this: any, file: File) {
+      this.volunteerDoc = file;
+    },
+
+    readFile() {
+      RemoteServices.getForm();
+    },
+
+    clear(this: any) {
+      this.volunteerName = '';
+      this.volunteerEmail = '';
+      this.volunteerUsername = '';
+      this.volunteerDoc = null;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

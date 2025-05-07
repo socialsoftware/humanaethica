@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="1300">
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="1300"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">
@@ -114,8 +119,9 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
 import RemoteServices from '@/services/RemoteServices';
@@ -123,41 +129,69 @@ import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 import { ISOtoString } from '@/services/ConvertDateService';
 
-Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
-@Component({
-  methods: { ISOtoString },
-})
-export default class ActivityDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Activity, required: true }) readonly activity!: Activity;
-  @Prop({ type: Array, required: true }) readonly themes!: Theme[];
+export default defineComponent({
+  name: 'ActivityDialog',
 
-  editActivity: Activity = new Activity();
+  components: {
+    VueCtkDateTimePicker,
+  },
 
-  async created() {
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    activity: {
+      type: Object as () => Activity,
+      required: true,
+    },
+    themes: {
+      type: Array as () => Theme[],
+      required: true,
+    },
+  },
+
+  emits: ['close-activity-dialog', 'save-activity'],
+
+  data(this: any) {
+    return {
+      editActivity: new Activity(),
+    };
+  },
+
+  created() {
     this.editActivity = new Activity(this.activity);
-  }
+  },
 
-  isNumberValid(value: any) {
-    if (!/^\d+$/.test(value)) return false;
-    const parsedValue = parseInt(value);
-    return parsedValue >= 1 && parsedValue <= 5;
-  }
+  computed: {
+    canSave(): boolean {
+      return (
+        !!this.editActivity.name &&
+        !!this.editActivity.region &&
+        !!this.editActivity.participantsNumberLimit &&
+        !!this.editActivity.description &&
+        !!this.editActivity.startingDate &&
+        !!this.editActivity.endingDate &&
+        !!this.editActivity.applicationDeadline
+      );
+    },
+  },
 
-  get canSave(): boolean {
-    return (
-      !!this.editActivity.name &&
-      !!this.editActivity.region &&
-      !!this.editActivity.participantsNumberLimit &&
-      !!this.editActivity.description &&
-      !!this.editActivity.startingDate &&
-      !!this.editActivity.endingDate &&
-      !!this.editActivity.applicationDeadline
-    );
-  }
+  methods: {
+    ISOtoString,
 
-  async updateActivity() {
-    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+    isNumberValid(value: any) {
+      if (!/^\d+$/.test(value)) return false;
+      const parsedValue = parseInt(value);
+      return parsedValue >= 1 && parsedValue <= 5;
+    },
+
+    async updateActivity() {
+      const valid = (
+        this.$refs.form as Vue & { validate: () => boolean }
+      ).validate();
+      if (!valid) return;
+
       try {
         const result =
           this.editActivity.id !== null
@@ -170,9 +204,9 @@ export default class ActivityDialog extends Vue {
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
-    }
-  }
-}
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss"></style>

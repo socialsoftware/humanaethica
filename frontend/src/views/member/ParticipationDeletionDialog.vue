@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="800"
+  >
     <v-card>
       <v-card-title>
         <span class="headline"> Delete Participation? </span>
@@ -32,41 +37,62 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
 import Participation from '@/models/participation/Participation';
+import { ISOtoString } from '@/services/ConvertDateService';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class ParticipationDeletionDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Participation, required: true })
-  readonly participation!: Participation;
+export default defineComponent({
+  name: 'ParticipationDeletionDialog',
 
-  editParticipation: Participation = new Participation();
+  emits: [
+    'update:dialog',
+    'delete-participation',
+    'close-participation-dialog',
+  ],
 
-  async created() {
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    participation: {
+      type: Object as () => Participation,
+      required: true,
+    },
+  },
+
+  data(this: any) {
+    return {
+      editParticipation: new Participation(),
+    };
+  },
+
+  created() {
     this.editParticipation = new Participation(this.participation);
-  }
+  },
 
-  async deleteParticipation() {
-    if (this.editParticipation && this.editParticipation.id !== null) {
-      try {
-        const result = await RemoteServices.deleteParticipation(
-          this.editParticipation.id,
-        );
-        this.$emit('delete-participation', result);
-        this.$emit('close-participation-dialog');
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-        console.error('Error deleting participation:', error);
+  methods: {
+    ISOtoString,
+
+    async deleteParticipation() {
+      if (this.editParticipation && this.editParticipation.id !== null) {
+        try {
+          const result = await RemoteServices.deleteParticipation(
+            this.editParticipation.id,
+          );
+          this.$emit('delete-participation', result);
+          this.$emit('close-participation-dialog');
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+          console.error('Error deleting participation:', error);
+        }
       }
-    }
-  }
-}
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss"></style>

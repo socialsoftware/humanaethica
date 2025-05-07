@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false, // prevent Vue 3 issues if testing migration build
+
     "target": "esnext",
     "module": "esnext",
     "strict": true,

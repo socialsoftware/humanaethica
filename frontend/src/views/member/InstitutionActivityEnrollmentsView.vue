@@ -112,11 +112,11 @@
       v-on:close-participation-dialog="onCloseParticipationDialog"
     />
     <participation-deletion-dialog
-      v-if="currentParticipation && editParticipationDeletionDialog"
-      v-model="editParticipationDeletionDialog"
+      v-if="currentParticipation"
+      :dialog.sync="editParticipationDeletionDialog"
       :participation="currentParticipation"
-      v-on:delete-participation="onDeleteParticipation"
-      v-on:close-participation-dialog="onCloseParticipationDialog"
+      @delete-participation="onDeleteParticipation"
+      @close-participation-dialog="onCloseParticipationDialog"
     />
   </v-card>
 </template>

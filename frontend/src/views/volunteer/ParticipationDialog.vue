@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="800"
+  >
     <v-card>
       <v-card-title>
         <span class="headline"> Write Rating </span>
@@ -51,6 +56,7 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
 import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';

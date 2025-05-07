@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="800"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">
@@ -45,50 +50,62 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Report from '@/models/report/Report';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class ReportDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Report, required: true }) readonly report!: Report;
+export default {
+  name: 'ReportDialog',
 
-  newReport: Report = new Report();
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    report: {
+      type: Report,
+      required: true,
+    },
+  },
 
-  async created() {
-    this.newReport = new Report(this.report);
-  }
+  data(this: any) {
+    return {
+      newReport: new Report(this.report),
+    };
+  },
 
-  get canSave(): boolean {
-    return (
-      !!this.newReport.justification &&
-      this.newReport.justification.length >= 10 &&
-      this.newReport.justification.length <= 256
-    );
-  }
+  computed: {
+    canSave(this: any): boolean {
+      return (
+        !!this.newReport.justification &&
+        this.newReport.justification.length >= 10 &&
+        this.newReport.justification.length <= 256
+      );
+    },
+  },
 
-  async createReport() {
-    if (
-      this.newReport.activityId !== null &&
-      (this.$refs.form as Vue & { validate: () => boolean }).validate()
-    ) {
-      try {
-        const result = await RemoteServices.createReport(
-          this.newReport.activityId,
-          this.newReport,
-        );
-        this.$emit('save-report', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+  methods: {
+    ISOtoString, // keeps existing import
+
+    async createReport(this: any) {
+      const form = this.$refs.form as Vue & { validate: () => boolean };
+
+      if (this.newReport.activityId !== null && form.validate()) {
+        try {
+          const result = await RemoteServices.createReport(
+            this.newReport.activityId,
+            this.newReport,
+          );
+          this.$emit('save-report', result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss"></style>

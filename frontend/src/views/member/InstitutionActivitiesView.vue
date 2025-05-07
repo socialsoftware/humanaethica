@@ -77,11 +77,11 @@
     </v-data-table>
     <activity-dialog
       v-if="currentActivity && editActivityDialog"
-      v-model="editActivityDialog"
+      :dialog.sync="editActivityDialog"
       :activity="currentActivity"
       :themes="themes"
-      v-on:save-activity="onSaveActivity"
-      v-on:close-activity-dialog="onCloseActivityDialog"
+      @save-activity="onSaveActivity"
+      @close-activity-dialog="onCloseActivityDialog"
     />
     <suspend-activity-dialog
       v-if="currentActivity && suspendActivityDialog"

@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="800"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">
@@ -49,65 +54,74 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Enrollment from '@/models/enrollment/Enrollment';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class EnrollmentDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Enrollment, required: true }) readonly enrollment!: Enrollment;
+export default {
+  name: 'EnrollmentDialog',
 
-  editEnrollment: Enrollment = new Enrollment();
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    enrollment: {
+      type: Enrollment,
+      required: true,
+    },
+  },
 
-  async created() {
-    this.editEnrollment = new Enrollment(this.enrollment);
-  }
+  data(this: any) {
+    return {
+      editEnrollment: new Enrollment(this.enrollment),
+    };
+  },
 
-  get canSave(): boolean {
-    return (
-      !!this.editEnrollment.motivation &&
-      this.editEnrollment.motivation.length >= 10
-    );
-  }
+  computed: {
+    canSave(this: any): boolean {
+      return (
+        !!this.editEnrollment.motivation &&
+        this.editEnrollment.motivation.length >= 10
+      );
+    },
+  },
 
-  async updateEnrollment() {
-    //editar
-    if (
-      this.editEnrollment.id !== null &&
-      (this.$refs.form as Vue & { validate: () => boolean }).validate()
-    ) {
-      try {
-        const result = await RemoteServices.editEnrollment(
-          this.editEnrollment.id,
-          this.editEnrollment,
-        );
-        this.$emit('update-enrollment', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+  methods: {
+    ISOtoString,
+
+    async updateEnrollment(this: any) {
+      const form = this.$refs.form as Vue & { validate: () => boolean };
+
+      const isValid = form && form.validate();
+      const enrollment = this.editEnrollment;
+
+      if (enrollment.id !== null && isValid) {
+        try {
+          const result = await RemoteServices.editEnrollment(
+            enrollment.id,
+            enrollment,
+          );
+          this.$emit('update-enrollment', result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
+      } else if (enrollment.activityId !== null && isValid) {
+        try {
+          const result = await RemoteServices.createEnrollment(
+            enrollment.activityId,
+            enrollment,
+          );
+          this.$emit('save-enrollment', result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-    //criar
-    else if (
-      this.editEnrollment.activityId !== null &&
-      (this.$refs.form as Vue & { validate: () => boolean }).validate()
-    ) {
-      try {
-        const result = await RemoteServices.createEnrollment(
-          this.editEnrollment.activityId,
-          this.editEnrollment,
-        );
-        this.$emit('save-enrollment', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss"></style>

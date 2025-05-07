@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="800"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">
@@ -47,55 +52,70 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Assessment from '@/models/assessment/Assessment';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class AssessmentDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Assessment, required: true }) readonly assessment!: Assessment;
-  @Prop({ type: Boolean, required: true }) readonly is_update!: Boolean;
+export default {
+  name: 'AssessmentDialog',
 
-  editAssessment: Assessment = new Assessment();
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    assessment: {
+      type: Assessment,
+      required: true,
+    },
+    is_update: {
+      type: Boolean,
+      required: true,
+    },
+  },
 
-  async created() {
-    this.editAssessment = new Assessment(this.assessment);
-  }
+  data(this: any) {
+    return {
+      editAssessment: new Assessment(this.assessment),
+    };
+  },
 
-  get canSave(): boolean {
-    return (
-      !!this.editAssessment.review && this.editAssessment.review.length >= 10
-    );
-  }
+  computed: {
+    canSave(this: any): boolean {
+      return (
+        !!this.editAssessment.review && this.editAssessment.review.length >= 10
+      );
+    },
+  },
 
-  async updateAssessment() {
-    if (
-      this.editAssessment.institutionId !== null &&
-      (this.$refs.form as Vue & { validate: () => boolean }).validate()
-    ) {
-      try {
-        let result;
-        if (this.is_update) {
-          result = await RemoteServices.updateAssessment(this.editAssessment);
-        } else {
-          result = await RemoteServices.createAssessment(
-            this.editAssessment.institutionId,
-            this.editAssessment,
-          );
+  methods: {
+    ISOtoString,
+
+    async updateAssessment(this: any) {
+      const form = this.$refs.form as Vue & { validate: () => boolean };
+
+      if (this.editAssessment.institutionId !== null && form.validate()) {
+        try {
+          let result;
+          if (this.is_update) {
+            result = await RemoteServices.updateAssessment(this.editAssessment);
+          } else {
+            result = await RemoteServices.createAssessment(
+              this.editAssessment.institutionId,
+              this.editAssessment,
+            );
+          }
+
+          this.$emit('save-assessment', result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
         }
-
-        this.$emit('save-assessment', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss"></style>

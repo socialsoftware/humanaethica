@@ -57,11 +57,11 @@
       </v-data-table>
       <assessment-dialog
         v-if="currentAssessment && editAssessmentDialog"
-        v-model="editAssessmentDialog"
+        :dialog.sync="editAssessmentDialog"
         :assessment="currentAssessment"
         :is_update="true"
-        v-on:save-assessment="onSaveAssessment"
-        v-on:close-assessment-dialog="onCloseAssessmentDialog"
+        @save-assessment="onSaveAssessment"
+        @close-assessment-dialog="onCloseAssessmentDialog"
       />
     </v-card>
   </div>

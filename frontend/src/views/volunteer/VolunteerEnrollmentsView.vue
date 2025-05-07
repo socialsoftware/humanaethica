@@ -147,31 +147,31 @@
       </v-data-table>
       <enrollment-dialog
         v-if="currentEnrollment && editEnrollmentDialog"
-        v-model="editEnrollmentDialog"
+        :dialog.sync="editEnrollmentDialog"
         :enrollment="currentEnrollment"
-        v-on:update-enrollment="onUpdateEnrollment"
-        v-on:close-enrollment-dialog="onCloseEnrollmentDialog"
+        @update-enrollment="onUpdateEnrollment"
+        @close-enrollment-dialog="onCloseEnrollmentDialog"
       />
       <assessment-dialog
         v-if="currentAssessment && editAssessmentDialog"
-        v-model="editAssessmentDialog"
+        :dialog.sync="editAssessmentDialog"
         :assessment="currentAssessment"
-        v-on:save-assessment="onSaveAssessment"
-        v-on:close-assessment-dialog="onCloseAssessmentDialog"
+        @save-assessment="onSaveAssessment"
+        @close-assessment-dialog="onCloseAssessmentDialog"
       />
       <participation-dialog
         v-if="currentParticipation && editParticipationDialog"
-        v-model="editParticipationDialog"
+        :dialog.sync="editParticipationDialog"
         :participation="currentParticipation"
-        v-on:save-participation="onSaveParticipation"
-        v-on:close-participation-dialog="onCloseParticipationDialog"
+        @save-participation="onSaveParticipation"
+        @close-participation-dialog="onCloseParticipationDialog"
       />
       <report-dialog
         v-if="currentReport && createReportDialog"
-        v-model="createReportDialog"
+        :dialog.sync="createReportDialog"
         :report="currentReport"
-        v-on:save-report="onSaveReport"
-        v-on:close-report-dialog="onCloseReportDialog"
+        @save-report="onSaveReport"
+        @close-report-dialog="onCloseReportDialog"
       />
     </v-card>
   </div>
