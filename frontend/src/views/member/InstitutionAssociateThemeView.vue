@@ -48,38 +48,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Model, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
-@Component({
-  components: {},
-})
-export default class InstitutionAssociateThemeView extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  valid = true;
-  success = false;
-  themes: Theme[] | [] = [];
-  theme: Theme = new Theme();
 
+export default defineComponent({
+  name: 'InstitutionAssociateThemeView',
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true
+    }
+  },
+  emits: ['update:dialog', 'theme-associated'],
+  data(this: any) {
+    return {
+      valid: true,
+      success: false,
+      themes: [] as Theme[],
+      theme: new Theme()
+    };
+  },
   async created() {
     this.themes = await RemoteServices.getThemesAvailableforInstitution();
-  }
+  },
+  methods: {
+    async submit() {
+      this.success = false;
 
-  async submit() {
-    this.success = false;
+      if (!(this.$refs.form as Vue & { validate: () => boolean }).validate())
+        return;
 
-    if (!(this.$refs.form as Vue & { validate: () => boolean }).validate())
-      return;
-
-    try {
-      await RemoteServices.addThemetoInstitution(this.theme);
-      this.$emit('theme-associated');
-      this.success = true;
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      try {
+        await RemoteServices.addThemetoInstitution(this.theme);
+        this.$emit('theme-associated');
+        this.success = true;
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
     }
   }
-}
+});
 </script>
 
 <style scoped>

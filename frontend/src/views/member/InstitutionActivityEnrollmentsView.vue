@@ -106,10 +106,10 @@
     </v-data-table>
     <participation-selection-dialog
       v-if="currentParticipation && editParticipationSelectionDialog"
-      v-model="editParticipationSelectionDialog"
+      :dialog.sync="editParticipationSelectionDialog"
       :participation="currentParticipation"
-      v-on:save-participation="onSaveParticipation"
-      v-on:close-participation-dialog="onCloseParticipationDialog"
+      @save-participation="onSaveParticipation"
+      @close-participation-dialog="onCloseParticipationDialog"
     />
     <participation-deletion-dialog
       v-if="currentParticipation"

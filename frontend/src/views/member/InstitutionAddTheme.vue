@@ -63,39 +63,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Model, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
-@Component({
-  components: {},
-})
-export default class InstitutionAddTheme extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  valid = true;
-  success = false;
-  theme: Theme = new Theme();
-  themes: Theme[] | [] = [];
-  async created() {
+
+export default defineComponent({
+  name: 'InstitutionAddTheme',
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  data(this: any) {
+    return {
+      valid: true,
+      success: false,
+      theme: new Theme(),
+      themes: [] as Theme[],
+    };
+  },
+  async created(this: any) {
     this.theme = new Theme();
     this.themes = await RemoteServices.getThemesAvailable();
-  }
+  },
+  methods: {
+    async submit(this: any) {
+      this.success = false;
 
-  async submit() {
-    let theme: Theme;
-    this.success = false;
+      const form = this.$refs.form as any;
+      if (!form || !form.validate()) return;
 
-    if (!(this.$refs.form as Vue & { validate: () => boolean }).validate())
-      return;
-
-    try {
-      theme = await RemoteServices.registerThemeInstitution(this.theme);
-      this.$emit('theme-created', theme);
-      this.success = true;
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-  }
-}
+      try {
+        const result = await RemoteServices.registerThemeInstitution(this.theme);
+        this.$emit('theme-created', result);
+        this.success = true;
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    },
+  },
+});
 </script>
 
 <style scoped>

@@ -86,17 +86,17 @@
     </v-data-table>
     <reports-dialog
       v-if="listReportsDialog"
-      v-model="listReportsDialog"
+      :dialog.sync="listReportsDialog"
       :activity="currentActivity"
-      v-on:close-enrollment-dialog="onCloseReportsDialog"
+      @close-enrollment-dialog="onCloseReportsDialog"
     />
     <suspend-activity-dialog
       v-if="currentActivity && suspendActivityDialog"
-      v-model="suspendActivityDialog"
+      :dialog.sync="suspendActivityDialog"
       :activity="currentActivity"
       :themes="themes"
-      v-on:suspend-activity="onSuspendActivity"
-      v-on:close-activity-dialog="onCloseSuspendActivityDialog"
+      @suspend-activity="onSuspendActivity"
+      @close-activity-dialog="onCloseSuspendActivityDialog"
     />
   </v-card>
 </template>

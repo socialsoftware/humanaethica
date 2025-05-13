@@ -47,15 +47,15 @@
     </v-data-table>
     <register-theme
       v-if="addTheme"
-      v-model="addTheme"
-      v-on:theme-created="onCreatedTheme"
-      v-on:close-dialog="onCloseDialog"
+      :dialog.sync="addTheme"
+      @theme-created="onCreatedTheme"
+      @:close-dialog="onCloseDialog"
     />
     <associate-theme
       v-if="associateTheme"
-      v-model="associateTheme"
-      v-on:theme-associated="onAssociateTheme"
-      v-on:close-dialog="onCloseDialog"
+      :dialog.sync="associateTheme"
+      @:theme-associated="onAssociateTheme"
+      @:close-dialog="onCloseDialog"
     />
   </v-card>
 </template>

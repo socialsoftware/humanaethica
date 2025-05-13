@@ -58,60 +58,64 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 
-@Component({
-  components: {},
-})
-export default class RegisterMemberView extends Vue {
-  memberName: string = '';
-  memberEmail: string = '';
-  memberUsername: string = '';
-  memberDoc: File | null = null;
-
-  async submit() {
-    try {
-      if (
-        this.memberName.length == 0 ||
-        this.memberEmail.length == 0 ||
-        this.memberUsername.length == 0
-      ) {
-        await this.$store.dispatch(
-          'error',
-          'Missing information, please check the form again',
-        );
-      } else if (this.memberDoc != null) {
-        await RemoteServices.registerMember(
-          {
-            memberName: this.memberName,
-            memberEmail: this.memberEmail,
-            memberUsername: this.memberUsername,
-          },
-          this.memberDoc,
-        );
-        await this.$router.push({ name: 'home' });
+export default defineComponent({
+  name: 'RegisterMemberView',
+  data() {
+    return {
+      memberName: '',
+      memberEmail: '',
+      memberUsername: '',
+      memberDoc: null as File | null
+    };
+  },
+  methods: {
+    async submit() {
+      try {
+        if (
+          this.memberName.length === 0 ||
+          this.memberEmail.length === 0 ||
+          this.memberUsername.length === 0
+        ) {
+          await this.$store.dispatch(
+            'error',
+            'Missing information, please check the form again'
+          );
+        } else if (this.memberDoc !== null) {
+          await RemoteServices.registerMember(
+            {
+              memberName: this.memberName,
+              memberEmail: this.memberEmail,
+              memberUsername: this.memberUsername
+            },
+            this.memberDoc
+          );
+          await this.$router.push({ name: 'home' });
+        }
+      } catch (error) {
+        await this.$store.dispatch('error', error);
       }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      await this.$store.dispatch('clearLoading');
+    },
+
+    handleFileUpload(file: File) {
+      this.memberDoc = file;
+    },
+
+    readFile() {
+      RemoteServices.getForm();
+    },
+
+    clear() {
+      this.memberName = '';
+      this.memberEmail = '';
+      this.memberUsername = '';
+      this.memberDoc = null;
     }
-    await this.$store.dispatch('clearLoading');
   }
-
-  async handleFileUpload(event: File) {
-    this.memberDoc = event;
-  }
-
-  readFile() {
-    RemoteServices.getForm();
-  }
-
-  clear() {
-    this.memberName = '';
-    this.memberEmail = '';
-    this.memberUsername = '';
-  }
-}
+});
 </script>
 
 <style lang="scss" scoped>

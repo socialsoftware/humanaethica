@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="800">
+  <v-dialog 
+    :value="dialog" 
+    @input="$emit('update:dialog', $event)"
+    persistent 
+    width="800"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">Suspend Activity</span>
@@ -55,44 +60,58 @@
     </v-card>
   </v-dialog>
 </template>
+
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
+import { defineComponent, ref } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Activity from '@/models/activity/Activity';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class SuspendActivityDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Activity, required: true }) readonly activity!: Activity;
-
-  get canSuspend(): boolean {
-    return (
-      !!this.activity.suspensionJustification &&
-      this.activity.suspensionJustification.length >= 10 &&
-      this.activity.suspensionJustification.length <= 250
-    );
-  }
-
-  async suspendActivity() {
-    if (
-      this.activity.id !== null &&
-      (this.$refs.form as Vue & { validate: () => boolean }).validate()
-    ) {
-      try {
-        let result = await RemoteServices.suspendActivity(
-          this.activity.id,
-          this.activity.suspensionJustification,
-        );
-        this.$emit('suspend-activity', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+export default defineComponent({
+  name: 'SuspendActivityDialog',
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    activity: {
+      type: Object as () => Activity,
+      required: true,
+    },
+  },
+  emits: ['update:dialog', 'close-activity-dialog', 'suspend-activity'],
+  data() {
+    return {
+      ISOtoString,
+    };
+  },
+  computed: {
+    canSuspend(): boolean {
+      const justification = this.activity.suspensionJustification;
+      return (
+        !!justification &&
+        justification.length >= 10 &&
+        justification.length <= 250
+      );
+    },
+  },
+  methods: {
+    async suspendActivity() {
+      const form = this.$refs.form as { validate: () => boolean } | undefined;
+      if (this.activity.id != null && form?.validate()) {
+        try {
+          const result = await RemoteServices.suspendActivity(
+            this.activity.id,
+            this.activity.suspensionJustification
+          );
+          this.$emit('suspend-activity', result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
-}
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss"></style>

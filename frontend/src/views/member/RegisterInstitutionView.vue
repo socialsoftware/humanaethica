@@ -99,79 +99,82 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 
-@Component({
-  components: {},
-})
-export default class RegisterInstitutionView extends Vue {
-  institutionName: string = '';
-  institutionEmail: string = '';
-  institutionNif: string = '';
-  memberUsername: string = '';
-  memberEmail: string = '';
-  memberName: string = '';
-  institutionDoc: File | null = null;
-  memberDoc: File | null = null;
-
-  async submit() {
-    try {
-      if (
-        this.institutionName.length == 0 ||
-        this.institutionEmail.length == 0 ||
-        this.institutionNif.length == 0 ||
-        this.memberUsername.length == 0 ||
-        this.memberEmail.length == 0 ||
-        this.memberName.length == 0
-      ) {
-        await this.$store.dispatch(
-          'error',
-          'Missing information, please check the form again',
-        );
-        return;
-      } else if (this.institutionDoc != null && this.memberDoc != null) {
-        await RemoteServices.registerInstitution(
-          {
-            institutionName: this.institutionName,
-            institutionEmail: this.institutionEmail,
-            institutionNif: this.institutionNif,
-            memberUsername: this.memberUsername,
-            memberEmail: this.memberEmail,
-            memberName: this.memberName,
-          },
-          this.institutionDoc,
-          this.memberDoc,
-        );
-        await this.$router.push({ name: 'home' });
+export default defineComponent({
+  name: 'RegisterInstitutionView',
+  data(this: any) {
+    return {
+      institutionName: '',
+      institutionEmail: '',
+      institutionNif: '',
+      memberUsername: '',
+      memberEmail: '',
+      memberName: '',
+      institutionDoc: null as File | null,
+      memberDoc: null as File | null
+    };
+  },
+  methods: {
+    async submit() {
+      try {
+        if (
+          this.institutionName.length === 0 ||
+          this.institutionEmail.length === 0 ||
+          this.institutionNif.length === 0 ||
+          this.memberUsername.length === 0 ||
+          this.memberEmail.length === 0 ||
+          this.memberName.length === 0
+        ) {
+          await this.$store.dispatch(
+            'error',
+            'Missing information, please check the form again'
+          );
+          return;
+        } else if (this.institutionDoc && this.memberDoc) {
+          await RemoteServices.registerInstitution(
+            {
+              institutionName: this.institutionName,
+              institutionEmail: this.institutionEmail,
+              institutionNif: this.institutionNif,
+              memberUsername: this.memberUsername,
+              memberEmail: this.memberEmail,
+              memberName: this.memberName
+            },
+            this.institutionDoc,
+            this.memberDoc
+          );
+          await this.$router.push({ name: 'home' });
+        }
+      } catch (error) {
+        await this.$store.dispatch('error', error);
       }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      await this.$store.dispatch('clearLoading');
+    },
+
+    handleMemberFileUpload(event: File) {
+      this.memberDoc = event;
+    },
+
+    handleInstitutionFileUpload(event: File) {
+      this.institutionDoc = event;
+    },
+
+    readFile() {
+      RemoteServices.getForm();
+    },
+
+    clear() {
+      this.institutionName = '';
+      this.institutionEmail = '';
+      this.institutionNif = '';
+      this.memberUsername = '';
+      this.memberEmail = '';
+      this.memberName = '';
     }
-    await this.$store.dispatch('clearLoading');
   }
-
-  async handleMemberFileUpload(event: File) {
-    this.memberDoc = event;
-  }
-
-  async handleInstitutionFileUpload(event: File) {
-    this.institutionDoc = event;
-  }
-
-  readFile() {
-    RemoteServices.getForm();
-  }
-
-  clear() {
-    this.institutionName = '';
-    this.institutionEmail = '';
-    this.institutionNif = '';
-    this.memberUsername = '';
-    this.memberEmail = '';
-    this.memberName = '';
-  }
-}
+});
 </script>
 
 <style lang="scss" scoped>

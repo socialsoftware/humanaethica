@@ -47,36 +47,53 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Model } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import Theme from '@/models/theme/Theme';
 import RemoteServices from '@/services/RemoteServices';
 
-@Component({})
-export default class ThemesTreeView extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  themes: Theme[] | [] = [];
-  selectedTheme: string | null = null;
+export default defineComponent({
+  name: 'ThemesTreeView',
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  emits: ['close-dialog'],
+  setup(props, { emit }) {
+    const themes = ref<Theme[]>([]);
+    const selectedTheme = ref<string | null>(null);
 
-  async created() {
-    this.themes = await RemoteServices.getThemes();
-  }
+    const getIndentedDisplayName = (level: number) => {
+      const tabChar = '\u00A0'; // non-breaking space
+      return tabChar.repeat(level * 10);
+    };
 
-  getIndentedDisplayName(level: number) {
-    const tabChar = '\u00A0'; // Use non-breaking space character for indentation
-    return tabChar.repeat(level * 10);
-  }
+    const getThemeColor = (state: string) => {
+      switch (state) {
+        case 'SUBMITTED':
+          return 'orange';
+        case 'APPROVED':
+          return 'green';
+        case 'DELETED':
+          return 'red';
+        default:
+          return '';
+      }
+    };
 
-  getThemeColor(state: string) {
-    if (state === 'SUBMITTED') {
-      return 'orange';
-    } else if (state === 'APPROVED') {
-      return 'green';
-    } else if (state === 'DELETED') {
-      return 'red';
-    }
-    return ''; // fallback color
-  }
-}
+    onMounted(async () => {
+      themes.value = await RemoteServices.getThemes();
+    });
+
+    return {
+      themes,
+      selectedTheme,
+      getIndentedDisplayName,
+      getThemeColor,
+    };
+  },
+});
 </script>
 
 <style scoped>

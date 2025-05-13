@@ -75,14 +75,14 @@
     </v-data-table>
     <add-theme
       v-if="addTheme"
-      v-model="addTheme"
-      v-on:theme-created="onCreatedTheme"
-      v-on:close-dialog="onCloseDialog"
+      :dialog.sync="addTheme"
+      @theme-created="onCreatedTheme"
+      @close-dialog="onCloseDialog"
     />
     <tree-view
       v-if="treeView"
-      v-model="treeView"
-      v-on:close-dialog="onCloseDialog"
+      :dialog.sync="treeView"
+      @close-dialog="onCloseDialog"
     />
   </v-card>
 </template>

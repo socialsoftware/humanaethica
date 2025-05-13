@@ -63,39 +63,61 @@
 </template>
 
 <script lang="ts">
-import { Component, Model, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
-@Component({
-  components: {},
-})
-export default class AdminAddTheme extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  valid = true;
-  success = false;
-  theme: Theme = new Theme();
-  themes: Theme[] | [] = [];
-  async created() {
-    this.theme = new Theme();
-    this.themes = await RemoteServices.getThemesAvailable();
-  }
 
-  async submit() {
-    let theme: Theme;
-    this.success = false;
+export default defineComponent({
+  name: 'AdminAddTheme',
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  emits: ['close-dialog', 'theme-created'],
+  setup(props, { emit }) {
+    const valid = ref(true);
+    const success = ref(false);
+    const theme = ref<Theme>(new Theme());
+    const themes = ref<Theme[]>([]);
+    const form = ref();
 
-    if (!(this.$refs.form as Vue & { validate: () => boolean }).validate())
-      return;
+    const fetchThemes = async () => {
+      themes.value = await RemoteServices.getThemesAvailable();
+    };
 
-    try {
-      theme = await RemoteServices.registerTheme(this.theme);
-      this.$emit('theme-created', theme);
-      this.success = true;
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-  }
-}
+    const submit = async () => {
+      success.value = false;
+
+      if (!(form.value?.validate?.())) {
+        return;
+      }
+
+      try {
+        const newTheme = await RemoteServices.registerTheme(theme.value);
+        emit('theme-created', newTheme);
+        success.value = true;
+      } catch (error) {
+        await (form.value as any)?.$store?.dispatch('error', error); // fallback if store is injected in form
+      }
+    };
+
+    onMounted(() => {
+      theme.value = new Theme();
+      fetchThemes();
+    });
+
+    return {
+      valid,
+      success,
+      theme,
+      themes,
+      form,
+      submit,
+    };
+  },
+});
 </script>
 
 <style scoped>
