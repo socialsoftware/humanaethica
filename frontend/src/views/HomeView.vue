@@ -66,7 +66,7 @@ export default {
 
   computed: {
     isLoggedIn(): boolean {
-      return Store.state.token;
+      return !!Store.state.token;
     },
   },
 

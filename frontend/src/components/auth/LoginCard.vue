@@ -15,35 +15,44 @@
           :type="showPassword ? 'text' : 'password'"
           label="Password"
           required
-          @click:append="showPassword = !showPassword"
+          @click:append="togglePassword"
           data-cy="passwordField"
         ></v-text-field>
         <v-btn
           class="white--text"
           color="orange"
-          :disabled="!(username !== '' && password !== '')"
+          :disabled="username === '' || password === ''"
           @click="submit"
           data-cy="submitButton"
-          >login</v-btn
         >
+          login
+        </v-btn>
       </form>
     </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 
-@Component
-export default class LoginCard extends Vue {
-  username: string = '';
-  password: string = '';
-  showPassword: boolean = false;
-
-  submit() {
-    this.$emit('onSubmit', this.username, this.password);
-  }
-}
+export default Vue.extend({
+  name: 'LoginCard',
+  data() {
+    return {
+      username: '',
+      password: '',
+      showPassword: false,
+    };
+  },
+  methods: {
+    togglePassword() {
+      this.showPassword = !this.showPassword;
+    },
+    submit() {
+      this.$emit('onSubmit', this.username, this.password);
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">

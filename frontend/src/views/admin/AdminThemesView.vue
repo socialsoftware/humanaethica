@@ -88,51 +88,46 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import AdminAddTheme from '@/views/admin/AdminAddTheme.vue';
 import ThemesTreeView from '@/views/admin/ThemesTreeView.vue';
 import Theme from '@/models/theme/Theme';
 
-@Component({
+export default Vue.extend({
+  name: 'AdminThemeView',
+
   components: {
     'add-theme': AdminAddTheme,
     'tree-view': ThemesTreeView,
   },
-})
-export default class AdminThemeView extends Vue {
-  themes: Theme[] = [];
-  addTheme: boolean = false;
-  treeView: boolean = false;
-  search: string = '';
-  headers: object = [
-    { text: 'Name', value: 'completeName', align: 'left', width: '5%' },
-    {
-      text: 'Parent',
-      value: 'parentTheme',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Institutions',
-      value: 'institutions',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'State',
-      value: 'state',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+
+  data() {
+    return {
+      themes: [] as Theme[],
+      addTheme: false,
+      treeView: false,
+      search: '',
+      headers: [
+        { text: 'Name', value: 'completeName', align: 'left', width: '5%' },
+        { text: 'Parent', value: 'parentTheme', align: 'left', width: '10%' },
+        {
+          text: 'Institutions',
+          value: 'institutions',
+          align: 'left',
+          width: '10%',
+        },
+        { text: 'State', value: 'state', align: 'left', width: '10%' },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
 
   async created() {
     await this.$store.dispatch('loading');
@@ -142,72 +137,74 @@ export default class AdminThemeView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  },
 
-  newTheme() {
-    this.addTheme = true;
-  }
+  methods: {
+    newTheme() {
+      this.addTheme = true;
+    },
 
-  TreeView() {
-    this.treeView = true;
-  }
+    TreeView() {
+      this.treeView = true;
+    },
 
-  async onCreatedTheme() {
-    this.themes = await RemoteServices.getThemes();
-    this.addTheme = false;
-  }
+    async onCreatedTheme() {
+      this.themes = await RemoteServices.getThemes();
+      this.addTheme = false;
+    },
 
-  onTreeView() {
-    this.treeView = false;
-  }
+    onTreeView() {
+      this.treeView = false;
+    },
 
-  onCloseDialog() {
-    this.addTheme = false;
-    this.treeView = false;
-  }
+    onCloseDialog() {
+      this.addTheme = false;
+      this.treeView = false;
+    },
 
-  async deleteTheme(theme: Theme) {
-    let themeId = theme.id;
-    if (
-      themeId !== null &&
-      confirm('Are you sure you want to delete the theme?')
-    ) {
-      try {
-        this.themes = await RemoteServices.deleteTheme(themeId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async deleteTheme(theme: Theme) {
+      const themeId = theme.id;
+      if (
+        themeId !== null &&
+        confirm('Are you sure you want to delete the theme?')
+      ) {
+        try {
+          this.themes = await RemoteServices.deleteTheme(themeId);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  async validateTheme(theme: Theme) {
-    let themeId = theme.id;
-    if (
-      themeId !== null &&
-      confirm('Are you sure you want to validate this theme?')
-    ) {
-      try {
-        await RemoteServices.validateTheme(themeId);
-        this.themes = await RemoteServices.getThemes();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async validateTheme(theme: Theme) {
+      const themeId = theme.id;
+      if (
+        themeId !== null &&
+        confirm('Are you sure you want to validate this theme?')
+      ) {
+        try {
+          await RemoteServices.validateTheme(themeId);
+          this.themes = await RemoteServices.getThemes();
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  getStateClass(state: string): string {
-    switch (state) {
-      case 'SUBMITTED':
-        return 'orange--text';
-      case 'APPROVED':
-        return 'green--text';
-      case 'DELETED':
-        return 'red--text';
-      default:
-        return '';
-    }
-  }
-}
+    getStateClass(state: string): string {
+      switch (state) {
+        case 'SUBMITTED':
+          return 'orange--text';
+        case 'APPROVED':
+          return 'green--text';
+        case 'DELETED':
+          return 'red--text';
+        default:
+          return '';
+      }
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>

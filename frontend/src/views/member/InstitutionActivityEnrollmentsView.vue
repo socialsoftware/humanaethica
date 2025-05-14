@@ -122,80 +122,74 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Enrollment from '@/models/enrollment/Enrollment';
-import ParticipationSelectionDialog from '@/views/member/ParticipationSelectionDialog.vue';
 import Participation from '@/models/participation/Participation';
+import ParticipationSelectionDialog from '@/views/member/ParticipationSelectionDialog.vue';
 import ParticipationDeletionDialog from '@/views/member/ParticipationDeletionDialog.vue';
 
-@Component({
+export default defineComponent({
+  name: 'InstitutionActivityEnrollmentsView',
   components: {
-    'participation-selection-dialog': ParticipationSelectionDialog,
-    'participation-deletion-dialog': ParticipationDeletionDialog,
+    ParticipationSelectionDialog,
+    ParticipationDeletionDialog,
   },
-})
-export default class InstitutionActivityEnrollmentsView extends Vue {
-  activity!: Activity;
-  enrollments: Enrollment[] = [];
-  participations: Participation[] = [];
-  search: string = '';
-
-  currentParticipation: Participation | null = null;
-  editParticipationSelectionDialog: boolean = false;
-  editParticipationDeletionDialog: boolean = false;
-  showVolunteerRatingDialog: boolean = false;
-
-  headers: object = [
-    {
-      text: 'Name',
-      value: 'volunteerName',
-      align: 'left',
-      width: '30%',
-    },
-    {
-      text: 'Motivation',
-      value: 'motivation',
-      align: 'left',
-      width: '30%',
-    },
-    {
-      text: 'Member Rating',
-      value: 'memberReview',
-      align: 'left',
-      width: '20%',
-    },
-    {
-      text: 'Volunteer Rating',
-      value: 'volunteerReview',
-      align: 'left',
-      width: '20%',
-    },
-    {
-      text: 'Participating',
-      value: 'participating',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Application Date',
-      value: 'enrollmentDateTime',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
-
+  data() {
+    return {
+      activity: {} as Activity,
+      enrollments: [] as Enrollment[],
+      participations: [] as Participation[],
+      search: '',
+      currentParticipation: null as Participation | null,
+      editParticipationSelectionDialog: false,
+      editParticipationDeletionDialog: false,
+      headers: [
+        { text: 'Name', value: 'volunteerName', align: 'left', width: '30%' },
+        {
+          text: 'Motivation',
+          value: 'motivation',
+          align: 'left',
+          width: '30%',
+        },
+        {
+          text: 'Member Rating',
+          value: 'memberReview',
+          align: 'left',
+          width: '20%',
+        },
+        {
+          text: 'Volunteer Rating',
+          value: 'volunteerReview',
+          align: 'left',
+          width: '20%',
+        },
+        {
+          text: 'Participating',
+          value: 'participating',
+          align: 'left',
+          width: '10%',
+        },
+        {
+          text: 'Application Date',
+          value: 'enrollmentDateTime',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
   async created() {
     this.activity = this.$store.getters.getActivity;
-    if (this.activity !== null && this.activity.id !== null) {
+    if (this.activity?.id) {
       await this.$store.dispatch('loading');
       try {
         this.enrollments = await RemoteServices.getActivityEnrollments(
@@ -209,190 +203,135 @@ export default class InstitutionActivityEnrollmentsView extends Vue {
       }
       await this.$store.dispatch('clearLoading');
     }
-  }
-
-  async selectParticipant(enrollment: Enrollment) {
-    let activityId = enrollment.activityId;
-    let volunteerId = enrollment.volunteerId;
-
-    let existingParticipation = this.participations.find(
-      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
-    );
-
-    if (existingParticipation) {
-      this.currentParticipation = existingParticipation;
-      this.currentParticipation.activityId = activityId;
-      this.currentParticipation.volunteerId = volunteerId;
-      this.editParticipationSelectionDialog = true;
-    } else if (this.checkIfActivityHasEnded()) {
-      this.currentParticipation = new Participation();
-      this.currentParticipation.activityId = activityId;
-      this.currentParticipation.volunteerId = volunteerId;
-      this.editParticipationSelectionDialog = true;
-    } else {
-      this.createParticipation(activityId!, volunteerId!);
-    }
-  }
-
-  async createParticipation(activityId: number, volunteerId: number) {
-    this.currentParticipation = new Participation();
-    this.currentParticipation.activityId = activityId;
-    this.currentParticipation.volunteerId = volunteerId;
-    await RemoteServices.createParticipation(
-      this.currentParticipation!.activityId!,
-      this.currentParticipation!,
-    );
-    this.currentParticipation = null;
-    this.enrollments = await RemoteServices.getActivityEnrollments(activityId!);
-    this.participations = await RemoteServices.getActivityParticipations(
-      activityId!,
-    );
-  }
-
-  checkIfActivityHasEnded() {
-    let endingDate = new Date(this.activity.endingDate);
-    let now = new Date();
-    return endingDate < now;
-  }
-
-  checkIfEnrollmentPeriodIsOver() {
-    let endingDate = new Date(this.activity.applicationDeadline);
-    let now = new Date();
-    return endingDate < now;
-  }
-
-  onCloseParticipationDialog() {
-    this.currentParticipation = null;
-    this.editParticipationSelectionDialog = false;
-    this.editParticipationDeletionDialog = false;
-    this.showVolunteerRatingDialog = false;
-  }
-
-  async onSaveParticipation(participation: Participation) {
-    let enrollment = this.enrollments.find(
-      (e) => e.volunteerId === participation.volunteerId,
-    );
-    this.participations = await RemoteServices.getActivityParticipations(
-      participation.activityId,
-    );
-    if (enrollment) enrollment.participating = true;
-
-    this.currentParticipation = null;
-    this.editParticipationSelectionDialog = false;
-  }
-
-  async onDeleteParticipation(participation: Participation) {
-    this.participations = await RemoteServices.getActivityParticipations(
-      participation.activityId,
-    );
-    let enrollment = this.enrollments.find(
-      (e) => e.volunteerId === participation.volunteerId,
-    );
-    if (enrollment) enrollment.participating = false;
-    this.currentParticipation = null;
-    this.editParticipationDeletionDialog = false;
-  }
-
-  async deleteParticipation(enrollment: Enrollment) {
-    let activityId = enrollment.activityId;
-    let volunteerId = enrollment.volunteerId;
-
-    let existingParticipation = this.participations.find(
-      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
-    );
-
-    if (existingParticipation != null) {
-      this.currentParticipation = existingParticipation;
-      this.currentParticipation.activityId = activityId;
-      this.currentParticipation.volunteerId = volunteerId;
-      this.editParticipationDeletionDialog = true;
-    }
-  }
-
-  canParticipate(enrollment: Enrollment) {
-    return (
-      !enrollment.participating &&
-      this.activity.participantsNumberLimit >
-        this.enrollments.filter((e) => e.participating).length
-    );
-  }
-
-  isParticipating(enrollment: Enrollment) {
-    if (enrollment.participating) {
-      return true;
-    }
-  }
-
-  volunteerReviewWritten(enrollment: Enrollment) {
-    try {
-      const existingParticipation = this.participations.find(
+  },
+  methods: {
+    async getActivities() {
+      await this.$store.dispatch('setActivity', null);
+      this.$router.push({ name: 'institution-activities' }).catch(() => {});
+    },
+    async selectParticipant(enrollment: Enrollment) {
+      const existing = this.participations.find(
         (p) =>
           p.activityId === enrollment.activityId &&
           p.volunteerId === enrollment.volunteerId,
       );
-
-      if (existingParticipation) {
-        return !!(
-          existingParticipation.volunteerRating &&
-          existingParticipation.volunteerReview
-        );
+      if (existing) {
+        this.currentParticipation = existing;
+        this.editParticipationSelectionDialog = true;
+      } else if (this.checkIfActivityHasEnded()) {
+        this.currentParticipation = new Participation();
+        this.currentParticipation.activityId = enrollment.activityId;
+        this.currentParticipation.volunteerId = enrollment.volunteerId;
+        this.editParticipationSelectionDialog = true;
       } else {
-        return false;
+        await this.createParticipation(
+          enrollment.activityId!,
+          enrollment.volunteerId!,
+        );
       }
-    } catch (error) {
-      console.error('Error fetching participations:', error);
-      return false;
-    }
-  }
-
-  getMemberReview(enrollment: Enrollment): string {
-    let activityId = enrollment.activityId;
-    let volunteerId = enrollment.volunteerId;
-
-    let participation = this.participations.find(
-      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
-    );
-
-    if (
-      !participation ||
-      participation.memberReview == null ||
-      participation.memberRating == null
-    ) {
-      return '';
-    }
-    const stars = this.convertToStars(participation.memberRating);
-    return `${participation.memberReview}\nRating: ${stars}`;
-  }
-  getVolunteerReview(enrollment: Enrollment): string {
-    let activityId = enrollment.activityId;
-    let volunteerId = enrollment.volunteerId;
-
-    let participation = this.participations.find(
-      (p) => p.activityId === activityId && p.volunteerId === volunteerId,
-    );
-
-    if (
-      !participation ||
-      participation.volunteerReview == null ||
-      participation.volunteerRating == null
-    ) {
-      return '';
-    }
-    const stars = this.convertToStars(participation.volunteerRating);
-    return `${participation.volunteerReview}\nRating: ${stars}`;
-  }
-
-  convertToStars(rating: number): string {
-    const fullStars = '★'.repeat(Math.floor(rating));
-    const emptyStars = '☆'.repeat(Math.floor(5 - rating));
-    return `${fullStars}${emptyStars} ${rating}/5`;
-  }
-
-  async getActivities() {
-    await this.$store.dispatch('setActivity', null);
-    this.$router.push({ name: 'institution-activities' }).catch(() => {});
-  }
-}
+    },
+    async createParticipation(activityId: number, volunteerId: number) {
+      const newParticipation = new Participation();
+      newParticipation.activityId = activityId;
+      newParticipation.volunteerId = volunteerId;
+      await RemoteServices.createParticipation(activityId, newParticipation);
+      this.currentParticipation = null;
+      this.enrollments =
+        await RemoteServices.getActivityEnrollments(activityId);
+      this.participations =
+        await RemoteServices.getActivityParticipations(activityId);
+    },
+    checkIfActivityHasEnded() {
+      return new Date(this.activity.endingDate) < new Date();
+    },
+    checkIfEnrollmentPeriodIsOver() {
+      return new Date(this.activity.applicationDeadline) < new Date();
+    },
+    onCloseParticipationDialog() {
+      this.currentParticipation = null;
+      this.editParticipationSelectionDialog = false;
+      this.editParticipationDeletionDialog = false;
+    },
+    async onSaveParticipation(part: Participation) {
+      const enrollment = this.enrollments.find(
+        (e) => e.volunteerId === part.volunteerId,
+      );
+      if (enrollment) enrollment.participating = true;
+      this.participations = await RemoteServices.getActivityParticipations(
+        part.activityId,
+      );
+      this.currentParticipation = null;
+      this.editParticipationSelectionDialog = false;
+    },
+    async onDeleteParticipation(part: Participation) {
+      const enrollment = this.enrollments.find(
+        (e) => e.volunteerId === part.volunteerId,
+      );
+      if (enrollment) enrollment.participating = false;
+      this.participations = await RemoteServices.getActivityParticipations(
+        part.activityId,
+      );
+      this.currentParticipation = null;
+      this.editParticipationDeletionDialog = false;
+    },
+    async deleteParticipation(enrollment: Enrollment) {
+      const part = this.participations.find(
+        (p) =>
+          p.activityId === enrollment.activityId &&
+          p.volunteerId === enrollment.volunteerId,
+      );
+      if (part) {
+        this.currentParticipation = part;
+        this.editParticipationDeletionDialog = true;
+      }
+    },
+    canParticipate(enrollment: Enrollment) {
+      return (
+        !enrollment.participating &&
+        this.activity.participantsNumberLimit >
+          this.enrollments.filter((e) => e.participating).length
+      );
+    },
+    isParticipating(enrollment: Enrollment) {
+      return !!enrollment.participating;
+    },
+    volunteerReviewWritten(enrollment: Enrollment) {
+      const part = this.participations.find(
+        (p) =>
+          p.activityId === enrollment.activityId &&
+          p.volunteerId === enrollment.volunteerId,
+      );
+      return !!(part?.volunteerRating && part?.volunteerReview);
+    },
+    getMemberReview(enrollment: Enrollment): string {
+      const part = this.participations.find(
+        (p) =>
+          p.activityId === enrollment.activityId &&
+          p.volunteerId === enrollment.volunteerId,
+      );
+      if (!part?.memberReview || !part?.memberRating) return '';
+      return `${part.memberReview}\nRating: ${this.convertToStars(
+        part.memberRating,
+      )}`;
+    },
+    getVolunteerReview(enrollment: Enrollment): string {
+      const part = this.participations.find(
+        (p) =>
+          p.activityId === enrollment.activityId &&
+          p.volunteerId === enrollment.volunteerId,
+      );
+      if (!part?.volunteerReview || !part?.volunteerRating) return '';
+      return `${part.volunteerReview}\nRating: ${this.convertToStars(
+        part.volunteerRating,
+      )}`;
+    },
+    convertToStars(rating: number): string {
+      return `${'★'.repeat(Math.floor(rating))}${'☆'.repeat(
+        5 - Math.floor(rating),
+      )} ${rating}/5`;
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>

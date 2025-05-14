@@ -68,52 +68,53 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Assessment from '@/models/assessment/Assessment';
-import { show } from 'cli-cursor';
 import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
 
-@Component({
+export default Vue.extend({
+  name: 'VolunteerAssessmentsView',
+
   components: {
-    'assessment-dialog': AssessmentDialog,
+    AssessmentDialog,
   },
-  methods: { show },
-})
-export default class VolunteerAssessmentsView extends Vue {
-  assessments: Assessment[] = [];
-  search: string = '';
 
-  currentAssessment: Assessment | null = null;
-  editAssessmentDialog: boolean = false;
-
-  headers: object = [
-    {
-      text: 'Institution',
-      value: 'institutionName',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Review',
-      value: 'review',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Review Date',
-      value: 'reviewDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+  data() {
+    return {
+      assessments: [] as Assessment[],
+      search: '',
+      currentAssessment: null as Assessment | null,
+      editAssessmentDialog: false,
+      headers: [
+        {
+          text: 'Institution',
+          value: 'institutionName',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Review',
+          value: 'review',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Review Date',
+          value: 'reviewDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
 
   async created() {
     await this.$store.dispatch('loading');
@@ -123,52 +124,54 @@ export default class VolunteerAssessmentsView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  },
 
-  editAssessment(item: Assessment) {
-    this.currentAssessment = item;
-    this.editAssessmentDialog = true;
-  }
+  methods: {
+    editAssessment(this: any, item: Assessment) {
+      this.currentAssessment = item;
+      this.editAssessmentDialog = true;
+    },
 
-  async deleteAssessment(assessment: Assessment) {
-    if (
-      assessment.id !== null &&
-      confirm('Are you sure you want to delete the assessment?')
-    ) {
-      try {
-        await RemoteServices.deleteAssessment(assessment.id);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async deleteAssessment(this: any, assessment: Assessment) {
+      if (
+        assessment.id !== null &&
+        confirm('Are you sure you want to delete the assessment?')
+      ) {
+        try {
+          await RemoteServices.deleteAssessment(assessment.id);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
+
+        const index = this.assessments.findIndex(
+          (a: Assessment) => a.id == assessment.id,
+        );
+        if (index !== -1) {
+          this.assessments.splice(index, 1);
+        }
       }
+    },
 
+    onCloseAssessmentDialog(this: any) {
+      this.editAssessmentDialog = false;
+      this.currentAssessment = null;
+    },
+
+    onSaveAssessment(this: any, assessment: Assessment) {
       const index = this.assessments.findIndex(
         (a: Assessment) => a.id == assessment.id,
       );
-      if (index == -1) return;
+      if (index !== -1) {
+        const currentAssessment = this.assessments[index];
+        currentAssessment.review = assessment.review;
+        currentAssessment.reviewDate = assessment.reviewDate;
+      }
 
-      this.assessments.splice(index, 1);
-    }
-  }
-
-  onCloseAssessmentDialog() {
-    this.editAssessmentDialog = false;
-    this.currentAssessment = null;
-  }
-
-  async onSaveAssessment(assessment: Assessment) {
-    const index = this.assessments.findIndex(
-      (a: Assessment) => a.id == assessment.id,
-    );
-    if (index == -1) return;
-
-    let currentAssessment = this.assessments[index];
-    currentAssessment.review = assessment.review;
-    currentAssessment.reviewDate = assessment.reviewDate;
-
-    this.editAssessmentDialog = false;
-    this.currentAssessment = null;
-  }
-}
+      this.editAssessmentDialog = false;
+      this.currentAssessment = null;
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped></style>

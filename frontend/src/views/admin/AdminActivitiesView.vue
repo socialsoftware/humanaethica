@@ -102,119 +102,90 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
-import ListReportsDialog from '@/views/admin/ListReportsDialog.vue';
-import { show } from 'cli-cursor';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
+import ListReportsDialog from '@/views/admin/ListReportsDialog.vue';
 import SuspendActivityDialog from '@/views/member/SuspendActivityDialog.vue';
 
-@Component({
+export default Vue.extend({
+  name: 'AdminActivitiesView',
+
   components: {
     'reports-dialog': ListReportsDialog,
     'suspend-activity-dialog': SuspendActivityDialog,
   },
-  methods: { show },
-})
-export default class AdminActivitiesView extends Vue {
-  activities: Activity[] = [];
-  themes: Theme[] = [];
-  institutions: Institution[] = [];
-  search: string = '';
 
-  currentActivity: Activity | null = null;
-  listReportsDialog: boolean = false;
-  suspendActivityDialog: boolean = false;
-
-  headers: object = [
-    {
-      text: 'ID',
-      value: 'id',
-      align: 'left',
-      width: '1%',
-    },
-    {
-      text: 'Name',
-      value: 'name',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Region',
-      value: 'region',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Participants',
-      value: 'participantsNumberLimit',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Description',
-      value: 'description',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Themes',
-      value: 'themes',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Themes',
-      value: 'themes',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Institution',
-      value: 'institution',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Start Date',
-      value: 'formattedStartingDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Application Deadline',
-      value: 'formattedApplicationDeadline',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'End Date',
-      value: 'formattedEndingDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'State',
-      value: 'state',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Creation Date',
-      value: 'creationDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+  data() {
+    return {
+      activities: [] as Activity[],
+      themes: [] as Theme[],
+      institutions: [] as Institution[],
+      search: '',
+      currentActivity: null as Activity | null,
+      listReportsDialog: false,
+      suspendActivityDialog: false,
+      headers: [
+        { text: 'ID', value: 'id', align: 'left', width: '1%' },
+        { text: 'Name', value: 'name', align: 'left', width: '5%' },
+        { text: 'Region', value: 'region', align: 'left', width: '5%' },
+        {
+          text: 'Participants',
+          value: 'participantsNumberLimit',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Description',
+          value: 'description',
+          align: 'left',
+          width: '10%',
+        },
+        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
+        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
+        {
+          text: 'Institution',
+          value: 'institution',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Start Date',
+          value: 'formattedStartingDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Application Deadline',
+          value: 'formattedApplicationDeadline',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'End Date',
+          value: 'formattedEndingDate',
+          align: 'left',
+          width: '5%',
+        },
+        { text: 'State', value: 'state', align: 'left', width: '5%' },
+        {
+          text: 'Creation Date',
+          value: 'creationDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
 
   async created() {
     await this.$store.dispatch('loading');
@@ -226,52 +197,59 @@ export default class AdminActivitiesView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-  async validateActivity(activity: Activity) {
-    if (activity.id !== null) {
-      try {
-        const result = await RemoteServices.validateActivity(activity.id);
-        this.activities = this.activities.filter((a) => a.id !== activity.id);
-        this.activities.unshift(result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+  },
+
+  methods: {
+    async validateActivity(this: any, activity: Activity) {
+      if (activity.id !== null) {
+        try {
+          const result = await RemoteServices.validateActivity(activity.id);
+          this.activities = this.activities.filter(
+            (a: Activity) => a.id !== activity.id,
+          );
+          this.activities.unshift(result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  suspendActivity(activity: Activity) {
-    this.currentActivity = activity;
-    this.suspendActivityDialog = true;
-  }
+    suspendActivity(this: any, activity: Activity) {
+      this.currentActivity = activity;
+      this.suspendActivityDialog = true;
+    },
 
-  onCloseSuspendActivityDialog() {
-    this.currentActivity = null;
-    this.suspendActivityDialog = false;
-  }
+    onCloseSuspendActivityDialog(this: any) {
+      this.currentActivity = null;
+      this.suspendActivityDialog = false;
+    },
 
-  async onSuspendActivity(activity: Activity) {
-    if (activity.id !== null) {
-      try {
-        this.activities = this.activities.filter((a) => a.id !== activity.id);
-        this.activities.unshift(activity);
-        this.currentActivity = null;
-        this.suspendActivityDialog = false;
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async onSuspendActivity(this: any, activity: Activity) {
+      if (activity.id !== null) {
+        try {
+          this.activities = this.activities.filter(
+            (a: Activity) => a.id !== activity.id,
+          );
+          this.activities.unshift(activity);
+          this.currentActivity = null;
+          this.suspendActivityDialog = false;
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  openReportsDialog(activity: Activity) {
-    this.currentActivity = activity;
-    this.listReportsDialog = true;
-  }
+    openReportsDialog(this: any, activity: Activity) {
+      this.currentActivity = activity;
+      this.listReportsDialog = true;
+    },
 
-  onCloseReportsDialog() {
-    this.listReportsDialog = false;
-    this.currentActivity = null;
-  }
-}
+    onCloseReportsDialog(this: any) {
+      this.listReportsDialog = false;
+      this.currentActivity = null;
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped></style>

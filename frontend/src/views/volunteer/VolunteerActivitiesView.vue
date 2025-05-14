@@ -130,10 +130,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
-import { show } from 'cli-cursor';
 import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
 import Enrollment from '@/models/enrollment/Enrollment';
 import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
@@ -142,102 +141,79 @@ import Participation from '@/models/participation/Participation';
 import ReportDialog from '@/views/volunteer/ReportDialog.vue';
 import Report from '@/models/report/Report';
 
-@Component({
+export default Vue.extend({
+  name: 'VolunteerActivitiesView',
   components: {
     'assessment-dialog': AssessmentDialog,
     'enrollment-dialog': EnrollmentDialog,
     'report-dialog': ReportDialog,
   },
-  methods: { show },
-})
-export default class VolunteerActivitiesView extends Vue {
-  activities: Activity[] = [];
-  enrollments: Enrollment[] = [];
-  participations: Participation[] = [];
-  assessments: Assessment[] = [];
-  reports: Report[] = [];
-  search: string = '';
-
-  currentEnrollment: Enrollment | null = null;
-  editEnrollmentDialog: boolean = false;
-
-  currentAssessment: Assessment | null = null;
-  editAssessmentDialog: boolean = false;
-
-  currentActivtiy: Activity | null = null;
-  currentReport: Report | null = null;
-  createReportDialog: boolean = false;
-
-  headers: object = [
-    {
-      text: 'Name',
-      value: 'name',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Region',
-      value: 'region',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Institution',
-      value: 'institution.name',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Participants Limit',
-      value: 'participantsNumberLimit',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Themes',
-      value: 'themes',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Description',
-      value: 'description',
-      align: 'left',
-      width: '30%',
-    },
-    {
-      text: 'State',
-      value: 'state',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Start Date',
-      value: 'formattedStartingDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'End Date',
-      value: 'formattedEndingDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Application Deadline',
-      value: 'formattedApplicationDeadline',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
-
+  data() {
+    return {
+      activities: [] as Activity[],
+      enrollments: [] as Enrollment[],
+      participations: [] as Participation[],
+      assessments: [] as Assessment[],
+      reports: [] as Report[],
+      search: '',
+      currentEnrollment: null as Enrollment | null,
+      editEnrollmentDialog: false,
+      currentAssessment: null as Assessment | null,
+      editAssessmentDialog: false,
+      currentActivtiy: null as Activity | null,
+      currentReport: null as Report | null,
+      createReportDialog: false,
+      headers: [
+        { text: 'Name', value: 'name', align: 'left', width: '5%' },
+        { text: 'Region', value: 'region', align: 'left', width: '5%' },
+        {
+          text: 'Institution',
+          value: 'institution.name',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Participants Limit',
+          value: 'participantsNumberLimit',
+          align: 'left',
+          width: '5%',
+        },
+        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
+        {
+          text: 'Description',
+          value: 'description',
+          align: 'left',
+          width: '30%',
+        },
+        { text: 'State', value: 'state', align: 'left', width: '5%' },
+        {
+          text: 'Start Date',
+          value: 'formattedStartingDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'End Date',
+          value: 'formattedEndingDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Application Deadline',
+          value: 'formattedApplicationDeadline',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
   async created() {
     await this.$store.dispatch('loading');
     try {
@@ -251,178 +227,147 @@ export default class VolunteerActivitiesView extends Vue {
     }
     await this.$store.dispatch('clearLoading');
     this.updateActivitiesList();
-  }
+  },
+  methods: {
+    reportActivity(activity: Activity) {
+      this.currentReport = new Report();
+      this.currentReport.activityId = activity.id;
+      this.createReportDialog = true;
+      this.currentActivtiy = activity;
+    },
+    canEnroll(activity: Activity) {
+      const deadline = new Date(activity.applicationDeadline);
+      return (
+        deadline > new Date() &&
+        !this.enrollments.some((e) => e.activityId === activity.id)
+      );
+    },
+    applyForActivity(activity: Activity) {
+      this.currentEnrollment = new Enrollment();
+      this.currentEnrollment.activityId = activity.id;
+      this.editEnrollmentDialog = true;
+    },
+    onCloseEnrollmentDialog() {
+      this.editEnrollmentDialog = false;
+      this.currentEnrollment = null;
+    },
+    onSaveEnrollment(enrollment: Enrollment) {
+      this.enrollments.push(enrollment);
+      this.editEnrollmentDialog = false;
+      this.currentEnrollment = null;
+      this.updateActivitiesList();
+    },
+    canAssess(activity: Activity) {
+      const now = new Date();
+      const endDate = new Date(activity.endingDate);
+      return (
+        now > endDate &&
+        this.participations.some((p) => p.activityId === activity.id) &&
+        !this.assessments.some(
+          (a) => a.institutionId === activity.institution.id,
+        )
+      );
+    },
+    writeAssessment(activity: Activity) {
+      this.currentAssessment = new Assessment();
+      this.currentAssessment.institutionId = activity.institution.id;
+      this.editAssessmentDialog = true;
+    },
+    onCloseAssessmentDialog() {
+      this.editAssessmentDialog = false;
+      this.currentAssessment = null;
+    },
+    onSaveAssessment(assessment: Assessment) {
+      this.assessments.push(assessment);
+      this.editAssessmentDialog = false;
+      this.currentAssessment = null;
+    },
+    updateActivitiesList() {
+      this.activities = this.activities.filter(
+        (a) => !this.enrollments.some((e) => e.activityId === a.id),
+      );
+    },
+    canReport(activity: Activity) {
+      const deadline = new Date(activity.endingDate);
+      return (
+        deadline > new Date() &&
+        !this.reports.some((r) => r.activityId === activity.id)
+      );
+    },
+    onCloseReportDialog() {
+      this.createReportDialog = false;
+      this.currentReport = null;
+    },
+    async onSaveReport(report: Report) {
+      this.reports.push(report);
+      this.createReportDialog = false;
+      this.currentReport = null;
 
-  async reportActivity(activity: Activity) {
-    this.currentReport = new Report();
-    this.currentReport.activityId = activity.id;
-    this.createReportDialog = true;
-    this.currentActivtiy = activity;
-  }
-
-  canEnroll(activity: Activity) {
-    let deadline = new Date(activity.applicationDeadline);
-    let now = new Date();
-
-    return (
-      deadline > now &&
-      !this.enrollments.some((e: Enrollment) => e.activityId === activity.id)
-    );
-  }
-
-  applyForActivity(activity: Activity) {
-    this.currentEnrollment = new Enrollment();
-    this.currentEnrollment.activityId = activity.id;
-    this.editEnrollmentDialog = true;
-  }
-
-  onCloseEnrollmentDialog() {
-    this.editEnrollmentDialog = false;
-    this.currentEnrollment = null;
-  }
-
-  async onSaveEnrollment(enrollment: Enrollment) {
-    this.enrollments.push(enrollment);
-    this.editEnrollmentDialog = false;
-    this.currentEnrollment = null;
-    this.updateActivitiesList();
-  }
-
-  canAssess(activity: Activity) {
-    let endDate = new Date(activity.endingDate);
-    let now = new Date();
-
-    return (
-      now > endDate &&
-      this.participations.some(
-        (p: Participation) => p.activityId === activity.id,
-      ) &&
-      !this.assessments.some(
-        (a: Assessment) => a.institutionId === activity.institution.id,
-      )
-    );
-  }
-
-  writeAssessment(activity: Activity) {
-    this.currentAssessment = new Assessment();
-    this.currentAssessment.institutionId = activity.institution.id;
-    this.editAssessmentDialog = true;
-  }
-
-  onCloseAssessmentDialog() {
-    this.editAssessmentDialog = false;
-    this.currentAssessment = null;
-  }
-
-  async onSaveAssessment(assessment: Assessment) {
-    this.assessments.push(assessment);
-    this.editAssessmentDialog = false;
-    this.currentAssessment = null;
-  }
-
-  updateActivitiesList() {
-    this.activities = this.activities.filter(
-      (a: Activity) =>
-        !this.enrollments.some((e: Enrollment) => e.activityId === a.id),
-    );
-  }
-
-  canReport(activity: Activity) {
-    let deadline = new Date(activity.endingDate);
-    let now = new Date();
-
-    return (
-      deadline > now &&
-      !this.reports.some((r: Report) => r.activityId === activity.id)
-    );
-  }
-
-  onCloseReportDialog() {
-    this.createReportDialog = false;
-    this.currentReport = null;
-  }
-
-  async onSaveReport(report: Report) {
-    this.reports.push(report);
-    this.createReportDialog = false;
-    this.currentReport = null;
-
-    if (this.currentActivtiy != null && this.currentActivtiy.id !== null) {
-      try {
-        const result = await RemoteServices.reportActivity(
-          this.$store.getters.getUser.id,
-          this.currentActivtiy.id,
-        );
-        this.activities = this.activities.filter(
-          (a) => a.id !== this.currentActivtiy!.id,
-        );
-        this.activities.unshift(result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+      if (this.currentActivtiy && this.currentActivtiy.id !== null) {
+        try {
+          const result = await RemoteServices.reportActivity(
+            this.$store.getters.getUser.id,
+            this.currentActivtiy.id,
+          );
+          this.activities = this.activities.filter(
+            (a) => a.id !== this.currentActivtiy!.id,
+          );
+          this.activities.unshift(result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
+      this.currentActivtiy = null;
+    },
+    canUnReport(activity: Activity) {
+      const deadline = new Date(activity.endingDate);
+      return (
+        deadline > new Date() &&
+        this.reports.some((r) => r.activityId === activity.id)
+      );
+    },
+    async unReportActivity(activity: Activity) {
+      const index = this.reports.findIndex((r) => r.activityId == activity.id);
+      this.currentReport = this.reports[index];
 
-    this.currentActivtiy = null;
-  }
-
-  canUnReport(activity: Activity) {
-    let deadline = new Date(activity.endingDate);
-    let now = new Date();
-
-    return (
-      deadline > now &&
-      this.reports.some((r: Report) => r.activityId === activity.id)
-    );
-  }
-
-  async unReportActivity(activity: Activity) {
-    const index = this.reports.findIndex(
-      (r: Report) => r.activityId == activity.id,
-    );
-    this.currentReport = this.reports[index];
-
-    if (activity.id !== null) {
-      try {
-        const result = await RemoteServices.validateActivity(activity.id);
-        this.activities = this.activities.filter((a) => a.id !== activity.id);
-        this.activities.unshift(result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+      if (activity.id !== null) {
+        try {
+          const result = await RemoteServices.validateActivity(activity.id);
+          this.activities = this.activities.filter((a) => a.id !== activity.id);
+          this.activities.unshift(result);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
 
-    if (this.currentReport.id !== null) {
-      try {
-        await RemoteServices.deleteReport(this.currentReport.id);
-        this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+      if (this.currentReport && this.currentReport.id !== null) {
+        try {
+          await RemoteServices.deleteReport(this.currentReport.id);
+          this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-    this.currentReport = null;
-  }
+      this.currentReport = null;
+    },
+    async showJustification(activity: Activity) {
+      const index = this.reports.findIndex((r) => r.activityId == activity.id);
+      this.currentReport = this.reports[index];
 
-  async showJustification(activity: Activity) {
-    const index = this.reports.findIndex(
-      (r: Report) => r.activityId == activity.id,
-    );
-    this.currentReport = this.reports[index];
-
-    if (this.currentReport) {
-      this.$set(activity, 'justification', this.currentReport.justification);
-      this.$set(activity, 'showJustification', true);
-    }
-  }
-
-  async hideJustification(activity: Activity) {
-    this.$set(activity, 'showJustification', false);
-  }
-
-  formattedJustification(justification: String) {
-    if (!justification) return '';
-    return justification.replace(/(.{20})/g, '$1<br>');
-  }
-}
+      if (this.currentReport) {
+        this.$set(activity, 'justification', this.currentReport.justification);
+        this.$set(activity, 'showJustification', true);
+      }
+    },
+    hideJustification(activity: Activity) {
+      this.$set(activity, 'showJustification', false);
+    },
+    formattedJustification(justification: string) {
+      if (!justification) return '';
+      return justification.replace(/(.{20})/g, '$1<br>');
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>

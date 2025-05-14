@@ -7,16 +7,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import Vue from 'vue';
 
-@Component
-export default class ErrorMessage extends Vue {
-  dialog: boolean = this.$store.getters.getError;
-  errorMessage: string = this.$store.getters.getErrorMessage;
-
+export default Vue.extend({
+  name: 'ErrorMessage',
+  data() {
+    return {
+      dialog: this.$store.getters.getError as boolean,
+      errorMessage: this.$store.getters.getErrorMessage as string,
+    };
+  },
   created() {
     this.dialog = this.$store.getters.getError;
     this.errorMessage = this.$store.getters.getErrorMessage;
+
     this.$store.watch(
       (state, getters) => getters.getError,
       () => {
@@ -24,15 +28,15 @@ export default class ErrorMessage extends Vue {
         this.errorMessage = this.$store.getters.getErrorMessage;
       },
     );
-  }
-
-  @Watch('dialog')
-  closeError() {
-    if (!this.dialog) {
-      this.$store.dispatch('clearError');
-    }
-  }
-}
+  },
+  watch: {
+    dialog(val: boolean) {
+      if (!val) {
+        this.$store.dispatch('clearError');
+      }
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">

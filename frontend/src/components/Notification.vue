@@ -10,16 +10,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 
-@Component
-export default class Notification extends Vue {
-  dialog: boolean = this.$store.getters.getNotification;
-  messageList: string = this.$store.getters.getNotificationMessageList;
-
+export default defineComponent({
+  name: 'AppNotification',
+  data() {
+    return {
+      dialog: this.$store.getters.getNotification as boolean,
+      messageList: this.$store.getters.getNotificationMessageList as string[],
+    };
+  },
+  watch: {
+    dialog(newVal: boolean) {
+      if (!newVal) {
+        this.$store.dispatch('clearNotification');
+      }
+    },
+  },
   created() {
-    this.dialog = this.$store.getters.getNotification;
-    this.messageList = this.$store.getters.getNotificationMessageList;
     this.$store.watch(
       (state, getters) => getters.getNotification,
       () => {
@@ -27,15 +35,8 @@ export default class Notification extends Vue {
         this.messageList = this.$store.getters.getNotificationMessageList;
       },
     );
-  }
-
-  @Watch('dialog')
-  closeNotification() {
-    if (!this.dialog) {
-      this.$store.dispatch('clearNotification');
-    }
-  }
-}
+  },
+});
 </script>
 
 <style scoped lang="scss">

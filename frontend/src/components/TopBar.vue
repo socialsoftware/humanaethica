@@ -291,58 +291,54 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, computed, getCurrentInstance } from 'vue';
 
-@Component
-export default class TopBar extends Vue {
-  appName: string = process.env.VUE_APP_NAME || 'ENV FILE MISSING';
-  drawer: boolean = false;
+export default defineComponent({
+  name: 'TopBar',
+  setup() {
+    const drawer = ref(false);
 
-  get isLoggedIn() {
-    return this.$store.getters.isLoggedIn;
-  }
+    // Access Vue instance context to reach $store and $router
+    const { proxy } = getCurrentInstance()!;
 
-  get isMember() {
-    return this.$store.getters.isMember;
-  }
+    const isLoggedIn = computed(() => proxy.$store.getters.isLoggedIn);
+    const isMember = computed(() => proxy.$store.getters.isMember);
+    const isAdmin = computed(() => proxy.$store.getters.isAdmin);
+    const isVolunteer = computed(() => proxy.$store.getters.isVolunteer);
 
-  get isAdmin() {
-    return this.$store.getters.isAdmin;
-  }
+    const logout = async () => {
+      await proxy.$store.dispatch('logout');
+      await proxy.$router.push({ name: 'home' }).catch(() => {});
+    };
 
-  get isVolunteer() {
-    return this.$store.getters.isVolunteer;
-  }
+    const login = async () => proxy.$router.push({ name: 'login-user' });
+    const registerInstitution = async () =>
+      proxy.$router.push({ name: 'register-institution' });
+    const registerVolunteer = async () =>
+      proxy.$router.push({ name: 'register-volunteer' });
+    const volunteerActivities = async () =>
+      proxy.$router.push({ name: 'volunteer-activities' });
+    const volunteerEnrollments = async () =>
+      proxy.$router.push({ name: 'volunteer-enrollments' });
+    const volunteerAssessments = async () =>
+      proxy.$router.push({ name: 'volunteer-assessments' });
 
-  async login() {
-    await this.$router.push({ name: 'login-user' }).catch(() => {});
-  }
-
-  async registerInstitution() {
-    await this.$router.push({ name: 'register-institution' }).catch(() => {});
-  }
-
-  async registerVolunteer() {
-    await this.$router.push({ name: 'register-volunteer' }).catch(() => {});
-  }
-
-  async volunteerActivities() {
-    await this.$router.push({ name: 'volunteer-activities' }).catch(() => {});
-  }
-
-  async volunteerEnrollments() {
-    await this.$router.push({ name: 'volunteer-enrollments' }).catch(() => {});
-  }
-
-  async volunteerAssessments() {
-    await this.$router.push({ name: 'volunteer-assessments' }).catch(() => {});
-  }
-
-  async logout() {
-    await this.$store.dispatch('logout');
-    await this.$router.push({ name: 'home' }).catch(() => {});
-  }
-}
+    return {
+      drawer,
+      isLoggedIn,
+      isMember,
+      isAdmin,
+      isVolunteer,
+      logout,
+      login,
+      registerInstitution,
+      registerVolunteer,
+      volunteerActivities,
+      volunteerEnrollments,
+      volunteerAssessments,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

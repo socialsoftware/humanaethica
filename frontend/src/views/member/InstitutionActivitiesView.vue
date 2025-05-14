@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
@@ -103,165 +103,150 @@ import Activity from '@/models/activity/Activity';
 import ActivityDialog from '@/views/member/ActivityDialog.vue';
 import SuspendActivityDialog from '@/views/member/SuspendActivityDialog.vue';
 
-@Component({
+export default Vue.extend({
+  name: 'InstitutionActivitiesView',
+
   components: {
     'activity-dialog': ActivityDialog,
     'suspend-activity-dialog': SuspendActivityDialog,
   },
-})
-export default class InstitutionActivitiesView extends Vue {
-  institution: Institution = new Institution();
-  themes: Theme[] = [];
-  search: string = '';
 
-  currentActivity: Activity | null = null;
-  editActivityDialog: boolean = false;
-  suspendActivityDialog: boolean = false;
-
-  headers: object = [
-    {
-      text: 'Name',
-      value: 'name',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Region',
-      value: 'region',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Participants Limit',
-      value: 'participantsNumberLimit',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Applications',
-      value: 'numberOfEnrollments',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Participations',
-      value: 'numberOfParticipations',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Themes',
-      value: 'themes',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Description',
-      value: 'description',
-      align: 'left',
-      width: '30%',
-    },
-    {
-      text: 'State',
-      value: 'state',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Start Date',
-      value: 'formattedStartingDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'End Date',
-      value: 'formattedEndingDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Application Deadline',
-      value: 'formattedApplicationDeadline',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Creation Date',
-      value: 'creationDate',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+  data() {
+    return {
+      institution: new Institution(),
+      themes: [] as Theme[],
+      search: '',
+      currentActivity: null as Activity | null,
+      editActivityDialog: false,
+      suspendActivityDialog: false,
+      headers: [
+        { text: 'Name', value: 'name', align: 'left', width: '5%' },
+        { text: 'Region', value: 'region', align: 'left', width: '5%' },
+        {
+          text: 'Participants Limit',
+          value: 'participantsNumberLimit',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Applications',
+          value: 'numberOfEnrollments',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Participations',
+          value: 'numberOfParticipations',
+          align: 'left',
+          width: '5%',
+        },
+        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
+        {
+          text: 'Description',
+          value: 'description',
+          align: 'left',
+          width: '30%',
+        },
+        { text: 'State', value: 'state', align: 'left', width: '5%' },
+        {
+          text: 'Start Date',
+          value: 'formattedStartingDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'End Date',
+          value: 'formattedEndingDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Application Deadline',
+          value: 'formattedApplicationDeadline',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Creation Date',
+          value: 'creationDate',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
 
   async created() {
     await this.$store.dispatch('loading');
     try {
-      let userId = this.$store.getters.getUser.id;
+      const userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
       this.themes = await RemoteServices.getThemesAvailable();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  },
 
-  newActivity() {
-    this.currentActivity = new Activity();
-    this.editActivityDialog = true;
-  }
+  methods: {
+    newActivity() {
+      this.currentActivity = new Activity();
+      this.editActivityDialog = true;
+    },
 
-  editActivity(activity: Activity) {
-    this.currentActivity = activity;
-    this.editActivityDialog = true;
-  }
+    editActivity(activity: Activity) {
+      this.currentActivity = activity;
+      this.editActivityDialog = true;
+    },
 
-  onCloseActivityDialog() {
-    this.currentActivity = null;
-    this.editActivityDialog = false;
-  }
+    onCloseActivityDialog() {
+      this.currentActivity = null;
+      this.editActivityDialog = false;
+    },
 
-  onSaveActivity(activity: Activity) {
-    this.institution.activities = this.institution.activities.filter(
-      (a) => a.id !== activity.id,
-    );
-    this.institution.activities.unshift(activity);
-    this.editActivityDialog = false;
-    this.currentActivity = null;
-  }
-
-  suspendActivity(activity: Activity) {
-    this.currentActivity = activity;
-    this.suspendActivityDialog = true;
-  }
-
-  onCloseSuspendActivityDialog() {
-    this.currentActivity = null;
-    this.suspendActivityDialog = false;
-  }
-
-  async onSuspendActivity(activity: Activity) {
-    if (activity.id !== null) {
+    onSaveActivity(activity: Activity) {
+      this.institution.activities = this.institution.activities.filter(
+        (a) => a.id !== activity.id,
+      );
+      this.institution.activities.unshift(activity);
       this.editActivityDialog = false;
       this.currentActivity = null;
+    },
 
-      let userId = this.$store.getters.getUser.id;
-      this.institution = await RemoteServices.getInstitution(userId);
-      this.themes = await RemoteServices.getThemesAvailable();
-    }
-  }
+    suspendActivity(activity: Activity) {
+      this.currentActivity = activity;
+      this.suspendActivityDialog = true;
+    },
 
-  async showEnrollments(activity: Activity) {
-    await this.$store.dispatch('setActivity', activity);
-    await this.$router.push({ name: 'activity-enrollments' });
-  }
-}
+    onCloseSuspendActivityDialog() {
+      this.currentActivity = null;
+      this.suspendActivityDialog = false;
+    },
+
+    async onSuspendActivity(activity: Activity) {
+      if (activity.id !== null) {
+        this.editActivityDialog = false;
+        this.currentActivity = null;
+
+        const userId = this.$store.getters.getUser.id;
+        this.institution = await RemoteServices.getInstitution(userId);
+        this.themes = await RemoteServices.getThemesAvailable();
+      }
+    },
+
+    async showEnrollments(activity: Activity) {
+      await this.$store.dispatch('setActivity', activity);
+      await this.$router.push({ name: 'activity-enrollments' });
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>

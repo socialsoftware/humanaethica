@@ -58,47 +58,56 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
 import Participation from '@/models/participation/Participation';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class ParticipationDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Participation, required: true })
-  readonly participation!: Participation;
-  @Prop({ type: Boolean, required: true }) readonly is_update!: Boolean;
+export default Vue.extend({
+  name: 'ParticipationDialog',
 
-  editParticipation: Participation = new Participation();
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
+    participation: {
+      type: Object as () => Participation,
+      required: true,
+    },
+    is_update: {
+      type: Boolean,
+      required: true,
+    },
+  },
 
-  async created() {
-    this.editParticipation = new Participation(this.participation);
-  }
+  data() {
+    return {
+      editParticipation: new Participation(this.participation),
+    };
+  },
 
-  get isReviewValid(): boolean {
-    return (
-      !!this.editParticipation.volunteerReview &&
-      this.editParticipation.volunteerReview.length >= 10 &&
-      this.editParticipation.volunteerReview.length < 100
-    );
-  }
+  computed: {
+    isReviewValid(): boolean {
+      const review = this.editParticipation.volunteerReview;
+      return !!review && review.length >= 10 && review.length < 100;
+    },
+    isRatingValid(): boolean {
+      return !!this.editParticipation.volunteerRating;
+    },
+  },
 
-  get isRatingValid(): boolean {
-    return !!this.editParticipation.volunteerRating;
-  }
+  methods: {
+    isNumberValid(value: any): boolean {
+      if (value === null || value === undefined || value === '') return true;
+      if (!/^\d+$/.test(value)) return false;
+      const parsed = parseInt(value, 10);
+      return parsed >= 1 && parsed <= 5;
+    },
 
-  isNumberValid(value: any) {
-    if (value === null || value === undefined || value === '') return true;
-    if (!/^\d+$/.test(value)) return false;
-    const parsedValue = parseInt(value);
-    return parsedValue >= 1 && parsedValue <= 5;
-  }
+    async updateParticipation() {
+      const form = this.$refs.form as { validate: () => boolean } | undefined;
+      if (!form || !form.validate()) return;
 
-  async updateParticipation() {
-    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       try {
         if (this.editParticipation.id !== null) {
           const result = await RemoteServices.updateParticipationVolunteer(
@@ -113,9 +122,9 @@ export default class ParticipationDialog extends Vue {
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
-    }
-  }
-}
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss"></style>

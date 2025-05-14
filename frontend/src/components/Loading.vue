@@ -5,27 +5,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import Vue from 'vue';
 
-@Component
-export default class Loading extends Vue {
-  loading: boolean = this.$store.getters.getLoading;
-
+export default Vue.extend({
+  name: 'AppLoading',
+  data() {
+    return {
+      loading: this.$store.getters.getLoading,
+    };
+  },
   created() {
-    this.loading = this.$store.getters.getLoading;
+    // Inicializa e mantém sincronizado com o getter
     this.$store.watch(
       (state, getters) => getters.getLoading,
-      () => {
-        this.loading = this.$store.getters.getLoading;
+      (value: boolean) => {
+        this.loading = value;
+
+        if (!value) {
+          this.$store.dispatch('clearLoading');
+        }
       },
     );
-  }
-
-  @Watch('loading')
-  closeError() {
-    if (!this.loading) {
-      this.$store.dispatch('clearLoading');
-    }
-  }
-}
+  },
+});
 </script>

@@ -1,41 +1,49 @@
 <template>
-  <v-card v-if="error == ''">
+  <v-card v-if="error === ''">
     <v-card-title>{{ title }}</v-card-title>
     <v-card-text v-if="!success">
       <form>
         <v-text-field
-          v-model="username"
+          v-model="passwordState.username"
           label="Username"
           disabled
           required
-        ></v-text-field>
+        />
         <v-text-field
-          v-model="password"
+          v-model="passwordState.password"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
           label="Password"
           required
           @click:append="showPassword = !showPassword"
-        ></v-text-field>
+        />
         <v-text-field
-          v-model="confirmPassword"
+          v-model="passwordState.confirmPassword"
           :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showConfirmPassword ? 'text' : 'password'"
           label="Confirm Password"
           required
-          :rules="[(v) => v == password || 'Passwords don\'t match']"
+          :rules="[
+            (v) => v === passwordState.password || 'Passwords don\'t match',
+          ]"
           @click:append="showConfirmPassword = !showConfirmPassword"
-        ></v-text-field>
+        />
         <v-btn
           color="blue darken-1"
           class="white--text"
-          :disabled="!(password === confirmPassword && password != '')"
+          :disabled="
+            !(
+              passwordState.password === passwordState.confirmPassword &&
+              passwordState.password !== ''
+            )
+          "
           @click="submit"
-          >submit</v-btn
         >
+          submit
+        </v-btn>
       </form>
     </v-card-text>
-    <v-card-text v-if="success">
+    <v-card-text v-else>
       <span class="password-success">Success</span>
     </v-card-text>
   </v-card>
@@ -45,32 +53,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 
-@Component
-export default class PasswordCard extends Vue {
-  @Prop({ required: true })
-  title: string | undefined;
-  @Prop({ required: true })
-  username: string | undefined;
-  @Prop({ required: true })
-  error: string | undefined;
-  @Prop({ required: true })
-  success: boolean | undefined;
-
-  password = '';
-  confirmPassword = '';
-
-  showPassword = false;
-  showConfirmPassword = false;
-
-  created() {}
-
-  submit() {
-    if (this.password == this.confirmPassword)
-      this.$emit('onSubmit', this.password);
-  }
-}
+export default Vue.extend({
+  name: 'PasswordCard',
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    error: {
+      type: String,
+      required: true,
+    },
+    success: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      passwordState: {
+        password: '',
+        confirmPassword: '',
+        username: this.username,
+      },
+      showPassword: false,
+      showConfirmPassword: false,
+    };
+  },
+  methods: {
+    submit() {
+      if (this.passwordState.password === this.passwordState.confirmPassword) {
+        this.$emit('onSubmit', this.passwordState.password);
+      }
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">

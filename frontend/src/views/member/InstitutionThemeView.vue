@@ -61,33 +61,38 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
 import RegisterTheme from '@/views/member/InstitutionAddTheme.vue';
 import InstitutionAssociateThemeView from '@/views/member/InstitutionAssociateThemeView.vue';
 
-@Component({
+export default Vue.extend({
+  name: 'InstitutionThemeView',
+
   components: {
     'register-theme': RegisterTheme,
     'associate-theme': InstitutionAssociateThemeView,
   },
-})
-export default class InstitutionThemeView extends Vue {
-  themes: Theme[] = [];
-  addTheme: boolean = false;
-  associateTheme: boolean = false;
-  search: string = '';
-  headers: object = [
-    { text: 'Name', value: 'completeName', align: 'left', width: '15%' },
-    {
-      text: 'Delete',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+
+  data() {
+    return {
+      themes: [] as Theme[],
+      addTheme: false,
+      associateTheme: false,
+      search: '',
+      headers: [
+        { text: 'Name', value: 'completeName', align: 'left', width: '15%' },
+        {
+          text: 'Delete',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ],
+    };
+  },
 
   async created() {
     await this.$store.dispatch('loading');
@@ -97,46 +102,47 @@ export default class InstitutionThemeView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  },
 
-  newTheme() {
-    this.addTheme = true;
-  }
+  methods: {
+    newTheme() {
+      this.addTheme = true;
+    },
 
-  AssociateTheme() {
-    this.associateTheme = true;
-  }
+    AssociateTheme() {
+      this.associateTheme = true;
+    },
 
-  async onAssociateTheme() {
-    this.themes = await RemoteServices.getThemesbyInstitution();
-    this.associateTheme = false;
-  }
+    async onAssociateTheme() {
+      this.themes = await RemoteServices.getThemesbyInstitution();
+      this.associateTheme = false;
+    },
 
-  onCreatedTheme() {
-    this.addTheme = false;
-  }
+    onCreatedTheme() {
+      this.addTheme = false;
+    },
 
-  onCloseDialog() {
-    this.addTheme = false;
-    this.associateTheme = false;
-  }
+    onCloseDialog() {
+      this.addTheme = false;
+      this.associateTheme = false;
+    },
 
-  async deleteTheme(theme: Theme) {
-    let themeId = theme.id;
-    if (
-      themeId !== null &&
-      confirm('Are you sure you want to delete the theme?')
-    ) {
-      try {
-        await RemoteServices.removeThemetoInstitution(themeId);
-        this.themes = this.themes =
-          await RemoteServices.getThemesbyInstitution();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async deleteTheme(theme: Theme) {
+      const themeId = theme.id;
+      if (
+        themeId !== null &&
+        confirm('Are you sure you want to delete the theme?')
+      ) {
+        try {
+          await RemoteServices.removeThemetoInstitution(themeId);
+          this.themes = await RemoteServices.getThemesbyInstitution();
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
-}
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped></style>

@@ -3,41 +3,53 @@
     <top-bar />
     <div class="scrollbar">
       <error-message />
-      <notification />
-      <loading />
+      <app-notification />
+      <app-loading />
       <router-view />
     </div>
   </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import axios from 'axios';
+
 import TopBar from '@/components/TopBar.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import Notification from '@/components/Notification.vue';
-import Loading from '@/components/Loading.vue';
+import AppNotification from '@/components/Notification.vue';
+import AppLoading from '@/components/Loading.vue';
+
 import '@/assets/css/_global.scss';
 import '@/assets/css/_scrollbar.scss';
 import '@/assets/css/_question.scss';
 
 require('typeface-roboto');
 
-@Component({
-  components: { TopBar, ErrorMessage, Notification, Loading },
-})
-export default class App extends Vue {
+export default Vue.extend({
+  name: 'App',
+
+  components: {
+    TopBar,
+    ErrorMessage,
+    AppNotification,
+    AppLoading,
+  },
+
   created() {
     axios.interceptors.response.use(undefined, (err) => {
-      return new Promise(() => {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+      return new Promise((_, reject) => {
+        if (
+          err?.response?.status === 401 &&
+          err.config &&
+          !err.config.__isRetryRequest
+        ) {
           this.$store.dispatch('logout');
         }
-        throw err;
+        reject(err);
       });
     });
-  }
-}
+  },
+});
 </script>
 
 <style scoped>
