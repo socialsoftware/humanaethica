@@ -16,7 +16,6 @@
         required
         :rules="[(v) => !!v || 'Member email is required']"
       ></v-text-field>
-
       <v-text-field
         v-model="memberUsername"
         label="Username"
@@ -68,7 +67,7 @@ export default defineComponent({
       memberName: '',
       memberEmail: '',
       memberUsername: '',
-      memberDoc: null as File | null
+      memberDoc: null as File | null,
     };
   },
   methods: {
@@ -81,16 +80,16 @@ export default defineComponent({
         ) {
           await this.$store.dispatch(
             'error',
-            'Missing information, please check the form again'
+            'Missing information, please check the form again',
           );
         } else if (this.memberDoc !== null) {
           await RemoteServices.registerMember(
             {
               memberName: this.memberName,
               memberEmail: this.memberEmail,
-              memberUsername: this.memberUsername
+              memberUsername: this.memberUsername,
             },
-            this.memberDoc
+            this.memberDoc,
           );
           await this.$router.push({ name: 'home' });
         }
@@ -113,8 +112,8 @@ export default defineComponent({
       this.memberEmail = '';
       this.memberUsername = '';
       this.memberDoc = null;
-    }
-  }
+    },
+  },
 });
 </script>
 

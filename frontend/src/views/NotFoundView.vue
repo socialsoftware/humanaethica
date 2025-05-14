@@ -3,16 +3,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+export default {
+  name: 'NotFoundView',
 
-@Component
-export default class NotFoundView extends Vue {
-  created() {
+  created(this: any) {
     setTimeout(async () => {
       await this.$router.push({ name: 'home' });
     }, 5000);
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>

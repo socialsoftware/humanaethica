@@ -8,7 +8,6 @@
         required
         :rules="[(v) => !!v || 'Institution name is required']"
       ></v-text-field>
-
       <v-text-field
         v-model="institutionEmail"
         label="E-mail"
@@ -113,7 +112,7 @@ export default defineComponent({
       memberEmail: '',
       memberName: '',
       institutionDoc: null as File | null,
-      memberDoc: null as File | null
+      memberDoc: null as File | null,
     };
   },
   methods: {
@@ -129,7 +128,7 @@ export default defineComponent({
         ) {
           await this.$store.dispatch(
             'error',
-            'Missing information, please check the form again'
+            'Missing information, please check the form again',
           );
           return;
         } else if (this.institutionDoc && this.memberDoc) {
@@ -140,10 +139,10 @@ export default defineComponent({
               institutionNif: this.institutionNif,
               memberUsername: this.memberUsername,
               memberEmail: this.memberEmail,
-              memberName: this.memberName
+              memberName: this.memberName,
             },
             this.institutionDoc,
-            this.memberDoc
+            this.memberDoc,
           );
           await this.$router.push({ name: 'home' });
         }
@@ -172,8 +171,8 @@ export default defineComponent({
       this.memberUsername = '';
       this.memberEmail = '';
       this.memberName = '';
-    }
-  }
+    },
+  },
 });
 </script>
 

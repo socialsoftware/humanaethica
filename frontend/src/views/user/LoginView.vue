@@ -5,31 +5,33 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import LoginCard from '@/components/auth/LoginCard.vue';
 import RegisterUser from '@/models/user/RegisterUser';
 
-@Component({
-  components: { LoginCard },
-})
-export default class LoginView extends Vue {
-  async created() {}
+export default {
+  name: 'LoginView',
 
-  async login(username: string, password: string) {
-    const user = new RegisterUser();
-    user.username = username;
-    user.password = password;
+  components: {
+    LoginCard,
+  },
 
-    await this.$store.dispatch('loading');
-    try {
-      await this.$store.dispatch('userLogin', user);
-      await this.$router.push({ name: 'admin' }).catch(() => {});
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  }
-}
+  methods: {
+    async login(this: any, username: string, password: string) {
+      const user = new RegisterUser();
+      user.username = username;
+      user.password = password;
+
+      await this.$store.dispatch('loading');
+      try {
+        await this.$store.dispatch('userLogin', user);
+        await this.$router.push({ name: 'admin' }).catch(() => {});
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>

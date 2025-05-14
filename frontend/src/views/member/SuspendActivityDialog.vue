@@ -1,8 +1,8 @@
 <template>
-  <v-dialog 
-    :value="dialog" 
+  <v-dialog
+    :value="dialog"
     @input="$emit('update:dialog', $event)"
-    persistent 
+    persistent
     width="800"
   >
     <v-card>
@@ -24,14 +24,13 @@
                     } else if (v.length >= 250) {
                       return 'Suspension reason must be less or equal to 250 characters';
                     }
-
                     return true;
                   },
                 ]"
                 required
                 auto-grow
                 rows="1"
-                v-model="activity.suspensionJustification"
+                v-model="editActivity.suspensionJustification"
                 data-cy="suspensionReasonInput"
               ></v-textarea>
             </v-col>
@@ -62,7 +61,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import { ISOtoString } from '@/services/ConvertDateService';
 import Activity from '@/models/activity/Activity';
@@ -83,11 +82,12 @@ export default defineComponent({
   data() {
     return {
       ISOtoString,
+      editActivity: new Activity(this.activity),
     };
   },
   computed: {
     canSuspend(): boolean {
-      const justification = this.activity.suspensionJustification;
+      const justification = this.editActivity.suspensionJustification;
       return (
         !!justification &&
         justification.length >= 10 &&
@@ -98,11 +98,11 @@ export default defineComponent({
   methods: {
     async suspendActivity() {
       const form = this.$refs.form as { validate: () => boolean } | undefined;
-      if (this.activity.id != null && form?.validate()) {
+      if (this.editActivity.id != null && form?.validate()) {
         try {
           const result = await RemoteServices.suspendActivity(
-            this.activity.id,
-            this.activity.suspensionJustification
+            this.editActivity.id,
+            this.editActivity.suspensionJustification,
           );
           this.$emit('suspend-activity', result);
         } catch (error) {

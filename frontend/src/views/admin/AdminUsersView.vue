@@ -70,140 +70,118 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import User from '@/models/user/User';
 
-@Component
-export default class AdminUsersView extends Vue {
-  users: User[] = [];
-  search: string = '';
-  headers: object = [
-    {
-      text: 'Username',
-      value: 'username',
-      align: 'left',
-      width: '15%',
-    },
-    { text: 'Name', value: 'name', align: 'left', width: '15%' },
-    {
-      text: 'Email',
-      value: 'email',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Role',
-      value: 'role',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Institution',
-      value: 'institutionName',
-      align: 'left',
-      width: '15%',
-    },
-    {
-      text: 'Active',
-      value: 'active',
-      align: 'left',
-      width: '15%',
-    },
-    {
-      text: 'State',
-      value: 'state',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Type',
-      value: 'type',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Creation Date',
-      value: 'creationDate',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Last Access',
-      value: 'lastAccess',
-      align: 'left',
-      width: '30%',
-    },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'left',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+export default {
+  name: 'AdminUsersView',
 
-  async created() {
+  data() {
+    return {
+      users: [] as User[],
+      search: '',
+      headers: [
+        { text: 'Username', value: 'username', align: 'left', width: '15%' },
+        { text: 'Name', value: 'name', align: 'left', width: '15%' },
+        { text: 'Email', value: 'email', align: 'left', width: '10%' },
+        { text: 'Role', value: 'role', align: 'left', width: '5%' },
+        {
+          text: 'Institution',
+          value: 'institutionName',
+          align: 'left',
+          width: '15%',
+        },
+        { text: 'Active', value: 'active', align: 'left', width: '15%' },
+        { text: 'State', value: 'state', align: 'left', width: '10%' },
+        { text: 'Type', value: 'type', align: 'left', width: '10%' },
+        {
+          text: 'Creation Date',
+          value: 'creationDate',
+          align: 'left',
+          width: '10%',
+        },
+        {
+          text: 'Last Access',
+          value: 'lastAccess',
+          align: 'left',
+          width: '30%',
+        },
+        {
+          text: 'Actions',
+          value: 'action',
+          align: 'left',
+          sortable: false,
+          width: '5%',
+        },
+      ] as object[],
+    };
+  },
+
+  async created(this: any) {
     await this.$store.dispatch('loading');
     try {
       this.users = await RemoteServices.getUsers();
-      this.users.forEach((user) => {
-        if (user.institutionName == null) user.institutionName = 'None';
+      this.users.forEach((user: User) => {
+        if (user.institutionName == null) {
+          user.institutionName = 'None';
+        }
       });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  },
 
-  async deleteUser(user: User) {
-    let userId = user.id;
-    if (
-      userId !== null &&
-      confirm('Are you sure you want to delete the user?')
-    ) {
-      try {
-        this.users = await RemoteServices.deleteUser(userId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+  methods: {
+    async deleteUser(this: any, user: User) {
+      const userId = user.id;
+      if (
+        userId !== null &&
+        confirm('Are you sure you want to delete the user?')
+      ) {
+        try {
+          this.users = await RemoteServices.deleteUser(userId);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  async getDocument(user: User) {
-    let userId = user.id;
-    if (userId !== null) {
-      try {
-        await RemoteServices.getUserDocument(userId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async getDocument(this: any, user: User) {
+      const userId = user.id;
+      if (userId !== null) {
+        try {
+          await RemoteServices.getUserDocument(userId);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  async validateUser(user: User) {
-    let userId = user.id;
-    if (
-      userId !== null &&
-      confirm('Are you sure you want to validate this user?')
-    ) {
-      try {
-        await RemoteServices.validateUser(userId);
-        this.users = await RemoteServices.getUsers();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async validateUser(this: any, user: User) {
+      const userId = user.id;
+      if (
+        userId !== null &&
+        confirm('Are you sure you want to validate this user?')
+      ) {
+        try {
+          await RemoteServices.validateUser(userId);
+          this.users = await RemoteServices.getUsers();
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  isDemoUser(user: User) {
-    return (
-      user.username == 'ars' ||
-      user.username == 'demo-member' ||
-      user.username == 'demo-volunteer'
-    );
-  }
-}
+    isDemoUser(this: any, user: User): boolean {
+      return (
+        user.username === 'ars' ||
+        user.username === 'demo-member' ||
+        user.username === 'demo-volunteer'
+      );
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>

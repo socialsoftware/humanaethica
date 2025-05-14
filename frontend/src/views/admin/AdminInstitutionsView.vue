@@ -70,58 +70,40 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Institution from '@/models/institution/Institution';
 
-@Component({
-  components: {},
-})
-export default class AdminInstitutionsView extends Vue {
-  institutions: Institution[] = [];
-  search: string = '';
-  headers: object = [
-    { text: 'Name', value: 'name', align: 'left', width: '25%' },
-    {
-      text: 'Themes',
-      value: 'themes',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Email',
-      value: 'email',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'NIF',
-      value: 'nif',
-      align: 'left',
-      width: '10%',
-    },
-    {
-      text: 'Active',
-      value: 'active',
-      align: 'center',
-      width: '5%',
-    },
-    {
-      text: 'Creation Date',
-      value: 'creationDate',
-      align: 'center',
-      width: '10%',
-    },
-    {
-      text: 'Delete',
-      value: 'action',
-      align: 'center',
-      sortable: false,
-      width: '5%',
-    },
-  ];
+export default {
+  name: 'AdminInstitutionsView',
 
-  async created() {
+  data() {
+    return {
+      institutions: [] as Institution[],
+      search: '',
+      headers: [
+        { text: 'Name', value: 'name', align: 'left', width: '25%' },
+        { text: 'Themes', value: 'themes', align: 'left', width: '10%' },
+        { text: 'Email', value: 'email', align: 'left', width: '10%' },
+        { text: 'NIF', value: 'nif', align: 'left', width: '10%' },
+        { text: 'Active', value: 'active', align: 'center', width: '5%' },
+        {
+          text: 'Creation Date',
+          value: 'creationDate',
+          align: 'center',
+          width: '10%',
+        },
+        {
+          text: 'Delete',
+          value: 'action',
+          align: 'center',
+          sortable: false,
+          width: '5%',
+        },
+      ] as object[],
+    };
+  },
+
+  async created(this: any) {
     await this.$store.dispatch('loading');
     try {
       this.institutions = await RemoteServices.getInstitutions();
@@ -129,53 +111,55 @@ export default class AdminInstitutionsView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  },
 
-  async deleteInstitution(institution: Institution) {
-    let institutionId = institution.id;
-    if (
-      institutionId !== null &&
-      confirm('Are you sure you want to delete the institution?')
-    ) {
-      try {
-        this.institutions =
-          await RemoteServices.deleteInstitution(institutionId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+  methods: {
+    async deleteInstitution(this: any, institution: Institution) {
+      const institutionId = institution.id;
+      if (
+        institutionId !== null &&
+        confirm('Are you sure you want to delete the institution?')
+      ) {
+        try {
+          this.institutions =
+            await RemoteServices.deleteInstitution(institutionId);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  async validateInstitution(institution: Institution) {
-    let institutionId = institution.id;
-    if (
-      institutionId !== null &&
-      confirm('Are you sure you want to validate this institution?')
-    ) {
-      try {
-        this.institutions =
-          await RemoteServices.validateInstitution(institutionId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async validateInstitution(this: any, institution: Institution) {
+      const institutionId = institution.id;
+      if (
+        institutionId !== null &&
+        confirm('Are you sure you want to validate this institution?')
+      ) {
+        try {
+          this.institutions =
+            await RemoteServices.validateInstitution(institutionId);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  async getDocument(institution: Institution) {
-    let institutionId = institution.id;
-    if (institutionId !== null) {
-      try {
-        await RemoteServices.getInstitutionDocument(institutionId);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+    async getDocument(this: any, institution: Institution) {
+      const institutionId = institution.id;
+      if (institutionId !== null) {
+        try {
+          await RemoteServices.getInstitutionDocument(institutionId);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-    }
-  }
+    },
 
-  isDemoInstitution(institution: Institution) {
-    return institution.name === 'DEMO INSTITUTION';
-  }
-}
+    isDemoInstitution(this: any, institution: Institution): boolean {
+      return institution.name === 'DEMO INSTITUTION';
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>

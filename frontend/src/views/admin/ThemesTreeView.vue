@@ -47,29 +47,51 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue';
 import Theme from '@/models/theme/Theme';
 import RemoteServices from '@/services/RemoteServices';
 
-export default defineComponent({
+export default {
   name: 'ThemesTreeView',
+
   props: {
     dialog: {
       type: Boolean,
       required: true,
     },
   },
-  emits: ['close-dialog'],
-  setup(props, { emit }) {
-    const themes = ref<Theme[]>([]);
-    const selectedTheme = ref<string | null>(null);
 
-    const getIndentedDisplayName = (level: number) => {
-      const tabChar = '\u00A0'; // non-breaking space
-      return tabChar.repeat(level * 10);
+  data() {
+    return {
+      themes: [] as Theme[],
+      selectedTheme: null as string | null,
     };
+  },
 
-    const getThemeColor = (state: string) => {
+  watch: {
+    dialog(this: any, newVal: boolean) {
+      if (newVal) {
+        this.loadThemes();
+      }
+    },
+  },
+
+  created(this: any) {
+    if (this.dialog) {
+      this.loadThemes();
+    }
+  },
+
+  methods: {
+    async loadThemes(this: any) {
+      this.themes = await RemoteServices.getThemes();
+    },
+
+    getIndentedDisplayName(level?: number): string {
+      const tabChar = '\u00A0';
+      return tabChar.repeat((level ?? 0) * 10);
+    },
+
+    getThemeColor(state: string): string {
       switch (state) {
         case 'SUBMITTED':
           return 'orange';
@@ -80,20 +102,9 @@ export default defineComponent({
         default:
           return '';
       }
-    };
-
-    onMounted(async () => {
-      themes.value = await RemoteServices.getThemes();
-    });
-
-    return {
-      themes,
-      selectedTheme,
-      getIndentedDisplayName,
-      getThemeColor,
-    };
+    },
   },
-});
+};
 </script>
 
 <style scoped>

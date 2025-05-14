@@ -49,13 +49,13 @@
       v-if="addTheme"
       :dialog.sync="addTheme"
       @theme-created="onCreatedTheme"
-      @:close-dialog="onCloseDialog"
+      @close-dialog="onCloseDialog"
     />
     <associate-theme
       v-if="associateTheme"
       :dialog.sync="associateTheme"
-      @:theme-associated="onAssociateTheme"
-      @:close-dialog="onCloseDialog"
+      @theme-associated="onAssociateTheme"
+      @close-dialog="onCloseDialog"
     />
   </v-card>
 </template>

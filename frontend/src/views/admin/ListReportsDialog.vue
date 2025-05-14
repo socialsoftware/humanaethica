@@ -1,5 +1,5 @@
 <template>
-  <v-dialog 
+  <v-dialog
     :value="dialog"
     @input="$emit('update:dialog', $event)"
     persistent
@@ -40,50 +40,61 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Model } from 'vue-property-decorator';
-import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
 import Activity from '@/models/activity/Activity';
 import Report from '@/models/report/Report';
+import RemoteServices from '@/services/RemoteServices';
+import { ISOtoString } from '@/services/ConvertDateService';
 
-@Component({
-  methods: { ISOtoString },
-})
-export default class ReportDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Activity, required: true }) readonly activity!: Activity;
+export default {
+  name: 'ReportDialog',
 
-  reports: Report[] = [];
-  search: string = '';
-
-  headers: object = [
-    {
-      text: 'Volunteer Name',
-      value: 'volunteerName',
-      align: 'left',
-      width: '5%',
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
     },
-    {
-      text: 'Justification',
-      value: 'justification',
-      align: 'left',
-      width: '5%',
+    activity: {
+      type: Object as () => Activity,
+      required: true,
     },
-  ];
+  },
 
-  async created() {
+  data() {
+    return {
+      reports: [] as Report[],
+      search: '',
+      headers: [
+        {
+          text: 'Volunteer Name',
+          value: 'volunteerName',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Justification',
+          value: 'justification',
+          align: 'left',
+          width: '5%',
+        },
+      ] as object[],
+      ISOtoString,
+    };
+  },
+
+  async created(this: any) {
     await this.$store.dispatch('loading');
     try {
-      if (this.activity != null && this.activity.id != null)
+      if (this.activity != null && this.activity.id != null) {
         this.reports = await RemoteServices.getActivityReports(
           this.activity.id,
         );
+      }
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-}
+  },
+};
 </script>
 
 <style scoped lang="scss"></style>

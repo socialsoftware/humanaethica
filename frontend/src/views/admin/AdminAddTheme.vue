@@ -11,7 +11,6 @@
         <v-card-title>
           <span class="headline">Add Theme</span>
         </v-card-title>
-
         <v-select
           v-model="theme.parentTheme"
           label="Parent Theme (Optional)"
@@ -90,7 +89,7 @@ export default defineComponent({
     const submit = async () => {
       success.value = false;
 
-      if (!(form.value?.validate?.())) {
+      if (!form.value?.validate?.()) {
         return;
       }
 

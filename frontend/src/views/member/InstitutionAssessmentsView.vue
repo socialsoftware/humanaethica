@@ -24,42 +24,45 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Institution from '@/models/institution/Institution';
 import Assessment from '@/models/assessment/Assessment';
 
-@Component
-export default class InstitutionAssessmentsView extends Vue {
-  institution: Institution = new Institution();
-  assessments: Assessment[] = [];
-  search: string = '';
+export default {
+  name: 'InstitutionAssessmentsView',
 
-  headers: object = [
-    {
-      text: 'Review',
-      value: 'review',
-      align: 'left',
-      width: '30%',
-    },
-    {
-      text: 'Volunteer',
-      value: 'volunteerName',
-      align: 'left',
-      width: '5%',
-    },
-    {
-      text: 'Review Date',
-      value: 'reviewDate',
-      align: 'left',
-      width: '5%',
-    },
-  ];
+  data() {
+    return {
+      institution: new Institution(),
+      assessments: [] as Assessment[],
+      search: '',
+      headers: [
+        {
+          text: 'Review',
+          value: 'review',
+          align: 'left',
+          width: '30%',
+        },
+        {
+          text: 'Volunteer',
+          value: 'volunteerName',
+          align: 'left',
+          width: '5%',
+        },
+        {
+          text: 'Review Date',
+          value: 'reviewDate',
+          align: 'left',
+          width: '5%',
+        },
+      ] as object[],
+    };
+  },
 
-  async created() {
+  async created(this: any) {
     await this.$store.dispatch('loading');
     try {
-      let userId = this.$store.getters.getUser.id;
+      const userId = this.$store.getters.getUser.id;
       this.institution = await RemoteServices.getInstitution(userId);
       this.assessments = await RemoteServices.getInstitutionAssessments(
         this.institution.id,
@@ -68,8 +71,8 @@ export default class InstitutionAssessmentsView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>

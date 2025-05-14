@@ -1,9 +1,9 @@
 <template>
-  <v-dialog 
-  :value="dialog"
-  @input="$emit('update:dialog', $event)"
-  persistent 
-  width="800"
+  <v-dialog
+    :value="dialog"
+    @input="$emit('update:dialog', $event)"
+    persistent
+    width="800"
   >
     <v-card>
       <v-card-title>
@@ -112,11 +112,11 @@ export default defineComponent({
             editParticipation.value.id !== null
               ? await RemoteServices.updateParticipationMember(
                   editParticipation.value.id,
-                  editParticipation.value
+                  editParticipation.value,
                 )
               : await RemoteServices.createParticipation(
                   editParticipation.value.activityId!,
-                  editParticipation.value
+                  editParticipation.value,
                 );
 
           emit('save-participation', result);
@@ -129,7 +129,7 @@ export default defineComponent({
 
     onMounted(async () => {
       participations.value = await RemoteServices.getActivityParticipations(
-        editParticipation.value.activityId
+        editParticipation.value.activityId,
       );
     });
 
@@ -138,7 +138,7 @@ export default defineComponent({
       () => props.dialog,
       (val) => {
         dialogRef.value = val;
-      }
+      },
     );
 
     watch(dialogRef, (val) => {

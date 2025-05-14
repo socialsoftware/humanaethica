@@ -1,8 +1,8 @@
 <template v-if="theme">
   <v-dialog
     :value="dialog"
-    @input="$emit('close-dialog')"
-    @keydown.esc="$emit('close-dialog')"
+    @input="$emit('update:dialog', false)"
+    @keydown.esc="$emit('update:dialog', false)"
     max-width="75%"
     max-height="80%"
   >
@@ -11,7 +11,6 @@
         <v-card-title>
           <span class="headline">Associate Theme</span>
         </v-card-title>
-
         <v-select
           v-model="theme"
           label="Theme"
@@ -34,7 +33,7 @@
           <v-spacer />
           <v-btn
             color="blue darken-1"
-            @click="$emit('close-dialog')"
+            @click="$emit('update:dialog', false)"
             data-cy="cancelButton"
             >Close</v-btn
           >
@@ -57,8 +56,8 @@ export default defineComponent({
   props: {
     dialog: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ['update:dialog', 'theme-associated'],
   data(this: any) {
@@ -66,7 +65,7 @@ export default defineComponent({
       valid: true,
       success: false,
       themes: [] as Theme[],
-      theme: new Theme()
+      theme: new Theme(),
     };
   },
   async created() {
@@ -86,8 +85,8 @@ export default defineComponent({
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
-    }
-  }
+    },
+  },
 });
 </script>
 

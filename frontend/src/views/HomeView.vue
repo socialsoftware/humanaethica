@@ -53,47 +53,55 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import Store from '@/store';
 
-@Component
-export default class HomeView extends Vue {
-  appName: string = process.env.VUE_APP_NAME || 'ENV FILE MISSING';
+export default {
+  name: 'HomeView',
 
-  get isLoggedIn() {
-    return Store.state.token;
-  }
+  data() {
+    return {
+      appName: process.env.VUE_APP_NAME || 'ENV FILE MISSING',
+    };
+  },
 
-  async demoVolunteer() {
-    await this.$store.dispatch('loading');
-    try {
-      await this.$store.dispatch('demoVolunteerLogin');
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  }
+  computed: {
+    isLoggedIn(): boolean {
+      return Store.state.token;
+    },
+  },
 
-  async demoMember() {
-    await this.$store.dispatch('loading');
-    try {
-      await this.$store.dispatch('demoMemberLogin');
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  }
+  methods: {
+    async demoVolunteer(this: any) {
+      await this.$store.dispatch('loading');
+      try {
+        await this.$store.dispatch('demoVolunteerLogin');
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    },
 
-  async loginAdmin() {
-    await this.$store.dispatch('loading');
-    try {
-      await this.$store.dispatch('adminLogin');
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  }
-}
+    async demoMember(this: any) {
+      await this.$store.dispatch('loading');
+      try {
+        await this.$store.dispatch('demoMemberLogin');
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    },
+
+    async loginAdmin(this: any) {
+      await this.$store.dispatch('loading');
+      try {
+        await this.$store.dispatch('adminLogin');
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

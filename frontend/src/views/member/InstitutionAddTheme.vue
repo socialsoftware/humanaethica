@@ -11,7 +11,6 @@
         <v-card-title>
           <span class="headline">Add Theme</span>
         </v-card-title>
-
         <v-select
           v-model="theme.parentTheme"
           label="Parent Theme (Optional)"
@@ -95,7 +94,9 @@ export default defineComponent({
       if (!form || !form.validate()) return;
 
       try {
-        const result = await RemoteServices.registerThemeInstitution(this.theme);
+        const result = await RemoteServices.registerThemeInstitution(
+          this.theme,
+        );
         this.$emit('theme-created', result);
         this.success = true;
       } catch (error) {
