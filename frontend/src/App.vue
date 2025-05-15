@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { defineComponent, onMounted } from "vue";
 import axios from 'axios';
 
 import TopBar from '@/components/TopBar.vue';
@@ -23,9 +23,9 @@ import '@/assets/css/_global.scss';
 import '@/assets/css/_scrollbar.scss';
 import '@/assets/css/_question.scss';
 
-require('typeface-roboto');
+import { useMainStore } from '@/store/useMainStore';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'App',
 
   components: {
@@ -35,18 +35,22 @@ export default Vue.extend({
     AppLoading,
   },
 
-  created() {
-    axios.interceptors.response.use(undefined, (err) => {
+  setup() {
+    onMounted(() => {
+      const store = useMainStore();
+
+      axios.interceptors.response.use(undefined, (err) => {
       return new Promise((_, reject) => {
         if (
           err?.response?.status === 401 &&
           err.config &&
           !err.config.__isRetryRequest
         ) {
-          this.$store.dispatch('logout');
+          store.logout();
         }
         reject(err);
       });
+    });
     });
   },
 });

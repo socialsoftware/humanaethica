@@ -1,3 +1,39 @@
+<script setup lang="ts">
+import { useMainStore } from '@/store/useMainStore';
+
+const store = useMainStore();
+
+const demoVolunteer = async () => {
+  store.setLoading();
+  try {
+    await store.demoVolunteerLogin();
+  } catch (error) {
+    store.setError(error as string);
+  }
+  store.clearLoading();
+};
+
+const demoMember = async () => {
+  store.setLoading();
+  try {
+    await store.demoMemberLogin();
+  } catch (error) {
+    store.setError(error as string);
+  }
+  store.clearLoading();
+};
+
+const loginAdmin = async () => {
+  store.setLoading();
+  try {
+    await store.adminLogin();
+  } catch (error) {
+    store.setError(error as string);
+  }
+  store.clearLoading();
+};
+</script>
+
 <template>
   <div class="container">
     <h1 id="home-title" class="display-2 font-weight-thin mb-3"></h1>
@@ -10,7 +46,7 @@
       />
     </div>
 
-    <div class="horizontal-btn-container" v-if="!isLoggedIn">
+    <div class="horizontal-btn-container" v-if="!store.isLoggedIn">
       <v-btn
         href="./login/user"
         depressed
@@ -21,7 +57,7 @@
       </v-btn>
     </div>
 
-    <div class="horizontal-btn-container" v-if="!isLoggedIn">
+    <div class="horizontal-btn-container" v-if="!store.isLoggedIn">
       <v-btn
         depressed
         color="blue accent-1"
@@ -51,121 +87,3 @@
     <v-footer class="footer"> </v-footer>
   </div>
 </template>
-
-<script lang="ts">
-import Store from '@/store';
-
-export default {
-  name: 'HomeView',
-
-  data() {
-    return {
-      appName: process.env.VUE_APP_NAME || 'ENV FILE MISSING',
-    };
-  },
-
-  computed: {
-    isLoggedIn(): boolean {
-      return !!Store.state.token;
-    },
-  },
-
-  methods: {
-    async demoVolunteer(this: any) {
-      await this.$store.dispatch('loading');
-      try {
-        await this.$store.dispatch('demoVolunteerLogin');
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-    },
-
-    async demoMember(this: any) {
-      await this.$store.dispatch('loading');
-      try {
-        await this.$store.dispatch('demoMemberLogin');
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-    },
-
-    async loginAdmin(this: any) {
-      await this.$store.dispatch('loading');
-      try {
-        await this.$store.dispatch('adminLogin');
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-    },
-  },
-};
-</script>
-
-<style lang="scss" scoped>
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-
-  #home-title {
-    background-image: url('img/horizontal.jpg');
-    box-sizing: border-box;
-    color: rgb(255, 255, 255);
-    min-height: auto;
-    min-width: auto;
-    text-align: center;
-    text-decoration: none solid rgb(255, 255, 255);
-    text-rendering: optimizelegibility;
-    text-size-adjust: 100%;
-    column-rule-color: rgb(255, 255, 255);
-    perspective-origin: 229.922px 34px;
-    transform-origin: 229.922px 34px;
-    caret-color: rgb(255, 255, 255);
-    border: 0 none rgb(255, 255, 255);
-    font:
-      normal normal 100 normal 45px / 48px Roboto,
-      sans-serif !important;
-    margin-bottom: 70px !important;
-    outline: rgb(255, 255, 255) none 0;
-    padding: 10px 20px;
-  }
-
-  .horizontal-btn-container {
-    margin-top: 40px;
-    padding-bottom: 30px;
-
-    button,
-    a {
-      margin: 0 10px;
-    }
-  }
-
-  .footer {
-    background-color: rgba(0, 0, 0, 0) !important;
-    display: flex; /* or inline-flex */
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-height: 100px;
-    position: absolute;
-    bottom: 0;
-    overflow: hidden;
-
-    .logo {
-      flex-shrink: 1;
-      width: 20%;
-      max-width: 200px;
-      min-width: 100px;
-      padding: 2%;
-    }
-  }
-}
-</style>

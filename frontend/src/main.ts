@@ -1,17 +1,14 @@
-import Vue from 'vue';
-import App from '@/App.vue';
-import router from '@/router';
-import store from '@/store';
-import vuetify from '@/vuetify';
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import pinia from './store';
+import vuetify from './plugins/vuetify';
 
-Vue.config.productionTip = false;
+import 'vuetify/styles';
+import '@mdi/font/css/materialdesignicons.css';
 
-new Vue({
-  vuetify,
-  router,
-  store,
-  beforeCreate() {
-    this.$store.commit('initialiseStore');
-  },
-  render: (h) => h(App),
-}).$mount('#app');
+const app = createApp(App);
+app.use(router);
+app.use(pinia);
+app.use(vuetify);
+app.mount('#app');

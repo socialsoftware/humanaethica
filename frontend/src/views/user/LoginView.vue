@@ -1,37 +1,40 @@
-<template>
-  <div class="container">
-    <login-card @onSubmit="login"></login-card>
-  </div>
-</template>
-
 <script lang="ts">
+import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
+import { useMainStore } from '@/store/useMainStore';
 import LoginCard from '@/components/auth/LoginCard.vue';
 import RegisterUser from '@/models/user/RegisterUser';
 
-export default {
+export default defineComponent({
   name: 'LoginView',
 
   components: {
     LoginCard,
   },
 
-  methods: {
-    async login(this: any, username: string, password: string) {
+  setup() {
+    const router = useRouter();
+    const store = useMainStore();
+
+    const login = async (username: string, password: string) => {
       const user = new RegisterUser();
       user.username = username;
       user.password = password;
 
-      await this.$store.dispatch('loading');
+      store.setLoading();
       try {
-        await this.$store.dispatch('userLogin', user);
-        await this.$router.push({ name: 'admin' }).catch(() => {});
+        await store.userLogin(user);
+        router.push({ name: 'admin' }).catch(() => {});
       } catch (error) {
-        await this.$store.dispatch('error', error);
+        store.setError(error.message);
+      } finally {
+        store.clearLoading();
       }
-      await this.$store.dispatch('clearLoading');
-    },
-  },
-};
-</script>
+    };
 
-<style lang="scss" scoped></style>
+    return {
+      login,
+    };
+  },
+});
+</script>
