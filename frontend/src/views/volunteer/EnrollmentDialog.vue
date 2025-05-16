@@ -1,127 +1,104 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('update:dialog', $event)"
-    persistent
-    width="800"
-  >
-    <v-card>
-      <v-card-title>
+  <VDialog v-model="dialogModel" persistent width="800">
+    <VCard>
+      <VCardTitle>
         <span class="headline">
-          {{
-            editEnrollment && editEnrollment.id === null
-              ? 'New Application'
-              : 'Edit Application'
-          }}
+          {{ isNewEnrollment ? 'New Application' : 'Edit Application' }}
         </span>
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" lazy-validation>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
+      </VCardTitle>
+
+      <VCardText>
+        <VForm ref="formRef" lazy-validation>
+          <VRow>
+            <VCol cols="12">
+              <VTextarea
                 label="*Motivation"
-                :rules="[(v) => !!v || 'Motivation is required']"
+                :rules="[v => !!v || 'Motivation is required']"
                 required
                 v-model="editEnrollment.motivation"
                 data-cy="motivationInput"
                 auto-grow
                 rows="1"
-              ></v-textarea>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="blue-darken-1"
-          variant="text"
-          @click="$emit('close-enrollment-dialog')"
-        >
-          Close
-        </v-btn>
-        <v-btn
+              />
+            </VCol>
+          </VRow>
+        </VForm>
+      </VCardText>
+
+      <VCardActions>
+        <VSpacer />
+        <VBtn color="primary" @click="closeDialog">Close</VBtn>
+        <VBtn
           v-if="canSave"
-          color="blue-darken-1"
-          variant="text"
-          @click="updateEnrollment"
+          color="primary"
+          @click="submitEnrollment"
           data-cy="saveEnrollment"
         >
           Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { ref, computed, watch } from 'vue';
+import { useMainStore } from '@/store/useMainStore';
 import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
 import Enrollment from '@/models/enrollment/Enrollment';
 
-export default {
-  name: 'EnrollmentDialog',
+const props = defineProps<{
+  dialog: boolean;
+  enrollment: Enrollment;
+}>();
 
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-    enrollment: {
-      type: Enrollment,
-      required: true,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'update:dialog', value: boolean): void;
+  (e: 'close-enrollment-dialog'): void;
+  (e: 'save-enrollment', value: Enrollment): void;
+  (e: 'update-enrollment', value: Enrollment): void;
+}>();
 
-  data(this: any) {
-    return {
-      editEnrollment: new Enrollment(this.enrollment),
-    };
-  },
+const store = useMainStore();
 
-  computed: {
-    canSave(this: any): boolean {
-      return (
-        !!this.editEnrollment.motivation &&
-        this.editEnrollment.motivation.length >= 10
-      );
-    },
-  },
+const dialogModel = ref(props.dialog);
+watch(() => props.dialog, (val) => (dialogModel.value = val));
+watch(dialogModel, (val) => emit('update:dialog', val));
 
-  methods: {
-    ISOtoString,
+const editEnrollment = ref(new Enrollment(props.enrollment));
+const formRef = ref();
 
-    async updateEnrollment(this: any) {
-      const form = this.$refs.form as Vue & { validate: () => boolean };
+const isNewEnrollment = computed(() => editEnrollment.value.id === null);
 
-      const isValid = form && form.validate();
-      const enrollment = this.editEnrollment;
+const canSave = computed(() => {
+  const motivation = editEnrollment.value.motivation;
+  return !!motivation && motivation.length >= 10;
+});
 
-      if (enrollment.id !== null && isValid) {
-        try {
-          const result = await RemoteServices.editEnrollment(
-            enrollment.id,
-            enrollment,
-          );
-          this.$emit('update-enrollment', result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      } else if (enrollment.activityId !== null && isValid) {
-        try {
-          const result = await RemoteServices.createEnrollment(
-            enrollment.activityId,
-            enrollment,
-          );
-          this.$emit('save-enrollment', result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-  },
+const closeDialog = () => {
+  emit('close-enrollment-dialog');
+};
+
+const submitEnrollment = async () => {
+  const form = formRef.value;
+  if (!form || !(await form.validate())) return;
+
+  const enrollment = editEnrollment.value;
+
+  try {
+    if (enrollment.id !== null) {
+      const result = await RemoteServices.editEnrollment(enrollment.id, enrollment);
+      emit('update-enrollment', result);
+    } else if (enrollment.activityId !== null) {
+      const result = await RemoteServices.createEnrollment(enrollment.activityId, enrollment);
+      emit('save-enrollment', result);
+    }
+  } catch (error) {
+    store.triggerError(error);
+  }
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+/* Optional: Add responsive or dialog-specific tweaks here */
+</style>

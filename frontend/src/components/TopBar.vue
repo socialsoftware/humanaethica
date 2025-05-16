@@ -1,352 +1,162 @@
 <template>
   <nav>
-    <v-app-bar clipped-left color="white">
-      <v-app-bar-nav-icon
+    <VAppBar app clipped-left color="white">
+      <VAppBarNavIcon
         aria-label="Menu"
         class="hidden-md-and-up"
         @click.stop="drawer = !drawer"
       />
 
-      <v-toolbar-title data-cy="homeLink">
-        <a href="/">
-          <v-img
-            contain
-            src="../assets/img/logo_horizontal.png"
+      <VToolbarTitle data-cy="homeLink">
+        <RouterLink to="/">
+          <VImg
+            cover
+            src="/img/logo_horizontal.png"
             height="40"
             width="350"
           />
-        </a>
-      </v-toolbar-title>
+        </RouterLink>
+      </VToolbarTitle>
 
-      <v-spacer />
+      <VSpacer />
 
-      <v-menu v-if="isVolunteer" offset-y sopen-on-hover>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
-            data-cy="volunteerActivities"
-            @click="volunteerActivities"
-          >
-            Activities
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
-            data-cy="volunteerEnrollments"
-            @click="volunteerEnrollments"
-          >
-            Enrollments
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
-            data-cy="volunteerAssessments"
-            @click="volunteerAssessments"
-          >
-            Assessments
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
+      <VMenu v-if="isVolunteer" offset-y open-on-hover>
+        <template #activator="{ props }">
+          <div v-bind="props">
+            <VBtn variant="text" color="orange" data-cy="volunteerActivities" @click="volunteerActivities">
+              Activities
+              <VIcon icon="fas fa-user" />
+            </VBtn>
+            <VBtn variant="text" color="orange" data-cy="volunteerEnrollments" @click="volunteerEnrollments">
+              Enrollments
+              <VIcon icon="fas fa-user" />
+            </VBtn>
+            <VBtn variant="text" color="orange" data-cy="volunteerAssessments" @click="volunteerAssessments">
+              Assessments
+              <VIcon icon="fas fa-user" />
+            </VBtn>
+          </div>
         </template>
-      </v-menu>
+      </VMenu>
 
-      <v-menu v-if="isMember" offset-y open-on-hover>
-        <template v-slot:activator="{ on }">
-          <v-btn color="orange" text v-on="on" data-cy="institution">
-            Institution
-          </v-btn>
+      <VMenu v-if="isMember" offset-y open-on-hover>
+        <template #activator="{ props }">
+          <VBtn variant="text" color="orange" v-bind="props" data-cy="institution">Institution</VBtn>
         </template>
-        <v-list dense>
-          <v-list-item to="/member/register" data-cy="members">
-            <v-list-item-content>
-              <v-list-item-title>Register Member</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/themes" data-cy="themes">
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/activities" data-cy="activities">
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/assessments" data-cy="assessments">
-            <v-list-item-content>
-              <v-list-item-title>Assessments</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <VList density="compact">
+          <VListItem to="/member/register"><VListItemTitle>Register Member</VListItemTitle></VListItem>
+          <VListItem to="/member/themes"><VListItemTitle>Themes</VListItemTitle></VListItem>
+          <VListItem to="/member/activities" data-cy="activities"><VListItemTitle>Activities</VListItemTitle></VListItem>
+          <VListItem to="/member/assessments"><VListItemTitle>Assessments</VListItemTitle></VListItem>
+        </VList>
+      </VMenu>
 
-      <v-menu v-if="isAdmin" offset-y open-on-hover>
-        <template v-slot:activator="{ on }">
-          <v-btn color="orange" text v-on="on" data-cy="admin">
-            Administration
-          </v-btn>
+      <VMenu v-if="isAdmin" offset-y open-on-hover>
+        <template #activator="{ props }">
+          <VBtn variant="text" color="orange" v-bind="props" data-cy="admin">Administration</VBtn>
         </template>
-        <v-list dense>
-          <v-list-item to="/admin/users" data-cy="adminUsers">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Users</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/institutions" data-cy="adminInstitutions">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Institutions</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/themes" data-cy="themeManageTheme">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/activities" data-cy="adminActivities">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <VList density="compact">
+          <VListItem to="/admin/users"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Users</VListItemTitle></VListItem>
+          <VListItem to="/admin/institutions"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Institutions</VListItemTitle></VListItem>
+          <VListItem to="/admin/themes"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Themes</VListItemTitle></VListItem>
+          <VListItem to="/admin/activities"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Activities</VListItemTitle></VListItem>
+        </VList>
+      </VMenu>
 
-      <v-toolbar-items class="hidden-sm-and-down" hide-details>
-        <v-btn
-          v-if="!isLoggedIn"
-          text
-          color="orange"
-          @click="registerInstitution"
-        >
-          Register Institution
-        </v-btn>
-        <v-btn
-          v-if="!isLoggedIn"
-          text
-          color="orange"
-          @click="registerVolunteer"
-        >
-          Register Volunteer
-        </v-btn>
-        <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
+      <VToolbarItems class="hidden-sm-and-down">
+        <VBtn v-if="!isLoggedIn" variant="text" color="orange" @click="registerInstitution">Register Institution</VBtn>
+        <VBtn v-if="!isLoggedIn" variant="text" color="orange" @click="registerVolunteer">Register Volunteer</VBtn>
+        <VBtn v-if="!isLoggedIn" variant="text" color="orange" @click="login">
           Login
-          <v-icon>fas fa-sign-in-alt</v-icon>
-        </v-btn>
-
-        <v-btn
-          v-if="isLoggedIn"
-          text
-          color="orange"
-          data-cy="logoutButton"
-          @click="logout"
-        >
+          <VIcon icon="fas fa-sign-in-alt" />
+        </VBtn>
+        <VBtn v-if="isLoggedIn" variant="text" color="orange" data-cy="logoutButton" @click="logout">
           Logout
-          <v-icon>fas fa-sign-out-alt</v-icon>
-        </v-btn>
-      </v-toolbar-items>
-    </v-app-bar>
+          <VIcon icon="fas fa-sign-out-alt" />
+        </VBtn>
+      </VToolbarItems>
+    </VAppBar>
 
-    <!-- Start of mobile side menu -->
-    <v-navigation-drawer v-model="drawer" absolute app dark temporary>
-      <v-toolbar flat>
-        <v-list>
-          <v-list-item>
-            <v-list-item-title class="title">Menu</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-toolbar>
+    <VNavigationDrawer v-model="drawer" absolute app temporary>
+      <VToolbar flat>
+        <VList><VListItemTitle class="title">Menu</VListItemTitle></VList>
+      </VToolbar>
 
-      <v-list class="pt-0" dense>
-        <!-- Volunteer Group-->
-        <v-list-group
-          v-if="isVolunteer"
-          :value="false"
-          prepend-icon="account_circle"
-        >
-          <template v-slot:activator>
-            <v-list-item-title @click="volunteerActivities"
-              >Volunteer</v-list-item-title
-            >
-          </template>
-        </v-list-group>
+      <VList density="compact" class="pt-0">
+        <VListGroup v-if="isVolunteer" :value="false" prepend-icon="fas fa-user">
+          <template #activator><VListItemTitle>Volunteer</VListItemTitle></template>
+          <VListItem @click="volunteerActivities"><VListItemTitle>Activities</VListItemTitle></VListItem>
+          <VListItem @click="volunteerEnrollments"><VListItemTitle>Enrollments</VListItemTitle></VListItem>
+          <VListItem @click="volunteerAssessments"><VListItemTitle>Assessments</VListItemTitle></VListItem>
+        </VListGroup>
 
-        <!-- Member Group-->
-        <v-list-group
-          v-if="isMember"
-          :value="false"
-          prepend-icon="account_circle"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>Institution</v-list-item-title>
-          </template>
-          <v-list-item to="/member/register">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Register Member</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/themes">
-            <v-list-item-action>
-              <v-icon>fas tags</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/activities">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/assessments">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Assessments</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
+        <VListGroup v-if="isMember" :value="false" prepend-icon="fas fa-building">
+          <template #activator><VListItemTitle>Institution</VListItemTitle></template>
+          <VListItem to="/member/register"><VListItemTitle>Register Member</VListItemTitle></VListItem>
+          <VListItem to="/member/themes"><VListItemTitle>Themes</VListItemTitle></VListItem>
+          <VListItem to="/member/activities"><VListItemTitle>Activities</VListItemTitle></VListItem>
+          <VListItem to="/member/assessments"><VListItemTitle>Assessments</VListItemTitle></VListItem>
+        </VListGroup>
 
-        <!-- Administration Group-->
-        <v-list-group
-          v-if="isAdmin"
-          :value="false"
-          prepend-icon="fas fa-file-alt"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>Administration</v-list-item-title>
-          </template>
-          <v-list-item to="/admin/users">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Users</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/institutions">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Institutions</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/themes">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/activities">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-      </v-list>
+        <VListGroup v-if="isAdmin" :value="false" prepend-icon="fas fa-cog">
+          <template #activator><VListItemTitle>Administration</VListItemTitle></template>
+          <VListItem to="/admin/users"><VListItemTitle>Users</VListItemTitle></VListItem>
+          <VListItem to="/admin/institutions"><VListItemTitle>Institutions</VListItemTitle></VListItem>
+          <VListItem to="/admin/themes"><VListItemTitle>Themes</VListItemTitle></VListItem>
+          <VListItem to="/admin/activities"><VListItemTitle>Activities</VListItemTitle></VListItem>
+        </VListGroup>
 
-      <v-list-item v-if="!isLoggedIn" @click="login">
-        <v-list-item-action>
-          <v-icon>fas fa-sign-out-alt</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>Login</v-list-item-content>
-      </v-list-item>
-      <v-list-item v-if="isLoggedIn" @click="logout">
-        <v-list-item-action>
-          <v-icon>fas fa-sign-out-alt</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>Logout</v-list-item-content>
-      </v-list-item>
-    </v-navigation-drawer>
-    <!-- End of mobile side menu -->
+        <VListItem v-if="!isLoggedIn" @click="login">
+          <VListItemAction><VIcon icon="fas fa-sign-in-alt" /></VListItemAction>
+          <VListItemTitle>Login</VListItemTitle>
+        </VListItem>
+
+        <VListItem v-if="isLoggedIn" @click="logout">
+          <VListItemAction><VIcon icon="fas fa-sign-out-alt" /></VListItemAction>
+          <VListItemTitle>Logout</VListItemTitle>
+        </VListItem>
+      </VList>
+    </VNavigationDrawer>
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, getCurrentInstance } from 'vue';
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useMainStore } from '@/store/useMainStore';
 
-export default defineComponent({
-  name: 'TopBar',
-  setup() {
-    const drawer = ref(false);
+const drawer = ref(false);
+const router = useRouter();
+const store = useMainStore();
 
-    // Access Vue instance context to reach $store and $router
-    const { proxy } = getCurrentInstance()!;
+const isLoggedIn = computed(() => store.isLoggedIn);
+const isMember = computed(() => store.isMember);
+const isAdmin = computed(() => store.isAdmin);
+const isVolunteer = computed(() => store.isVolunteer);
 
-    const isLoggedIn = computed(() => proxy.$store.getters.isLoggedIn);
-    const isMember = computed(() => proxy.$store.getters.isMember);
-    const isAdmin = computed(() => proxy.$store.getters.isAdmin);
-    const isVolunteer = computed(() => proxy.$store.getters.isVolunteer);
+const logout = async () => {
+  await store.logout();
+  await router.push({ name: 'home' }).catch(() => {});
+};
 
-    const logout = async () => {
-      await proxy.$store.dispatch('logout');
-      await proxy.$router.push({ name: 'home' }).catch(() => {});
-    };
+const login = () => router.push({ name: 'login-user' });
+const registerInstitution = () => router.push({ name: 'register-institution' });
+const registerVolunteer = () => router.push({ name: 'register-volunteer' });
+const volunteerActivities = () => router.push({ name: 'volunteer-activities' });
+const volunteerEnrollments = () => router.push({ name: 'volunteer-enrollments' });
+const volunteerAssessments = () => router.push({ name: 'volunteer-assessments' });
 
-    const login = async () => proxy.$router.push({ name: 'login-user' });
-    const registerInstitution = async () =>
-      proxy.$router.push({ name: 'register-institution' });
-    const registerVolunteer = async () =>
-      proxy.$router.push({ name: 'register-volunteer' });
-    const volunteerActivities = async () =>
-      proxy.$router.push({ name: 'volunteer-activities' });
-    const volunteerEnrollments = async () =>
-      proxy.$router.push({ name: 'volunteer-enrollments' });
-    const volunteerAssessments = async () =>
-      proxy.$router.push({ name: 'volunteer-assessments' });
-
-    return {
-      drawer,
-      isLoggedIn,
-      isMember,
-      isAdmin,
-      isVolunteer,
-      logout,
-      login,
-      registerInstitution,
-      registerVolunteer,
-      volunteerActivities,
-      volunteerEnrollments,
-      volunteerAssessments,
-    };
-  },
+watch(() => router.currentRoute.value.fullPath, () => {
+  drawer.value = false;
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .no-active::before {
   opacity: 0 !important;
 }
 
 nav {
-  z-index: 400;
+  z-index: 0;
 }
 </style>

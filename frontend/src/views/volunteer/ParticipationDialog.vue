@@ -58,11 +58,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from "vue";
 import RemoteServices from '@/services/RemoteServices';
 import Participation from '@/models/participation/Participation';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ParticipationDialog',
 
   props: {

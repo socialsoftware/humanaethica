@@ -15,17 +15,11 @@ describe('Activity', () => {
     const DESCRIPTION = 'Play card games with elderly over 80';
 
     cy.demoMemberLogin()
-    // intercept create activity request and inject date values in the request body
-    // cy.intercept('POST', '/activities', (req) => {
-    //   req.body = {
-    //     applicationDeadline: '2024-01-13T12:00:00+00:00',
-    //     startingDate: '2024-01-14T12:00:00+00:00',
-    //     endingDate: '2024-01-15T12:00:00+00:00'
-    //   };
+
     cy.intercept('POST', '/activities').as('register');
-    // intercept get institutions
     cy.intercept('GET', '/users/*/getInstitution').as('getInstitutions');
     cy.intercept('GET', '/themes/availableThemes').as('availableTeams')
+
     // go to create activity form
     cy.get('[data-cy="institution"]').click();
 
@@ -41,22 +35,17 @@ describe('Activity', () => {
     cy.get('[data-cy="participantsNumberInput"]').type(NUMBER);
     cy.get('[data-cy="descriptionInput"]').type(DESCRIPTION);
 
-    // select dates
-    cy.get('#applicationDeadlineInput-input').click();
-    cy.get('#applicationDeadlineInput-wrapper.date-time-picker')
-      .find('.datepicker-day-text')
-      .eq(0)
-      .click({force: true});
-    cy.get('#startingDateInput-input').click();
-    cy.get('#startingDateInput-wrapper.date-time-picker')
-      .find('.datepicker-day-text')
-      .eq(1)
-      .click({force: true});
-    cy.get('#endingDateInput-input').click();
-    cy.get('#endingDateInput-wrapper.date-time-picker')
-      .find('.datepicker-day-text')
-      .eq(2)
-      .click({force: true});
+    const deadline = new Date();
+    deadline.setHours(deadline.getHours() + 1);
+    cy.typeDate('[data-cy="applicationDeadline"]', deadline);
+
+    const starting = new Date();
+    starting.setHours(starting.getHours() + 2);
+    cy.typeDate('[data-cy="startingDate"]', starting);
+
+    const ending = new Date();
+    ending.setHours(ending.getHours() + 3);
+    cy.typeDate('[data-cy="endingDate"]', ending);
 
     // save
     cy.get('[data-cy="saveActivity"]').click()

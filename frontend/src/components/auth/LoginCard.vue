@@ -1,15 +1,15 @@
 <template>
-  <v-card>
-    <v-card-title>Login</v-card-title>
-    <v-card-text>
-      <form>
-        <v-text-field
+  <VCard>
+    <VCardTitle>Login</VCardTitle>
+    <VCardText>
+      <form @submit.prevent="submit">
+        <VTextField
           v-model="username"
           label="Username"
           required
           data-cy="usernameField"
-        ></v-text-field>
-        <v-text-field
+        />
+        <VTextField
           v-model="password"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
@@ -17,42 +17,39 @@
           required
           @click:append="togglePassword"
           data-cy="passwordField"
-        ></v-text-field>
-        <v-btn
+        />
+        <VBtn
           class="white--text"
-          color="orange"
+          color="primary"
           :disabled="username === '' || password === ''"
           @click="submit"
           data-cy="submitButton"
         >
           login
-        </v-btn>
+        </VBtn>
       </form>
-    </v-card-text>
-  </v-card>
+    </VCardText>
+  </VCard>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
+<script setup lang="ts">
+import { ref, defineEmits } from 'vue';
 
-export default Vue.extend({
-  name: 'LoginCard',
-  data() {
-    return {
-      username: '',
-      password: '',
-      showPassword: false,
-    };
-  },
-  methods: {
-    togglePassword() {
-      this.showPassword = !this.showPassword;
-    },
-    submit() {
-      this.$emit('onSubmit', this.username, this.password);
-    },
-  },
-});
+const username = ref('');
+const password = ref('');
+const showPassword = ref(false);
+
+const emit = defineEmits<{
+  (e: 'onSubmit', username: string, password: string): void;
+}>();
+
+function togglePassword() {
+  showPassword.value = !showPassword.value;
+}
+
+function submit() {
+  emit('onSubmit', username.value, password.value);
+}
 </script>
 
 <style scoped lang="scss">

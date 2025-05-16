@@ -21,7 +21,7 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
+        <v-chip v-for="theme in item.themes" :key="theme.id">
           {{ theme.completeName }}
         </v-chip>
       </template>
@@ -41,44 +41,36 @@
           {{ item.state }}
         </v-chip>
         <v-chip v-else>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-chip v-on="on">{{ item.state }} </v-chip>
+          <v-tooltip location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-chip v-bind="props">{{ item.state }}</v-chip>
             </template>
             <span>Justification: {{ item.suspensionJustification }}</span>
           </v-tooltip>
         </v-chip>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip
-          bottom
-          v-if="item.state == 'REPORTED' || item.state == 'SUSPENDED'"
-        >
-          <template v-slot:activator="{ on }">
+        <v-tooltip location="bottom" v-if="item.state === 'REPORTED' || item.state === 'SUSPENDED'">
+          <template v-slot:activator="{ props }">
             <v-icon
               class="mr-2 action-button"
               color="green"
-              v-on="on"
+              v-bind="props"
               data-cy="validateButton"
               @click="validateActivity(item)"
-              >mdi-check-bold</v-icon
-            >
+            >mdi-check-bold</v-icon>
           </template>
           <span>Validate Activity</span>
         </v-tooltip>
-        <v-tooltip
-          bottom
-          v-if="item.state == 'REPORTED' || item.state == 'APPROVED'"
-        >
-          <template v-slot:activator="{ on }">
+        <v-tooltip location="bottom" v-if="item.state === 'REPORTED' || item.state === 'APPROVED'">
+          <template v-slot:activator="{ props }">
             <v-icon
               class="mr-2 action-button"
               color="red"
-              v-on="on"
+              v-bind="props"
               data-cy="suspendButton"
               @click="suspendActivity(item)"
-              >mdi-pause-octagon</v-icon
-            >
+            >mdi-pause-octagon</v-icon>
           </template>
           <span>Suspend Activity</span>
         </v-tooltip>
@@ -86,13 +78,13 @@
     </v-data-table>
     <reports-dialog
       v-if="listReportsDialog"
-      :dialog.sync="listReportsDialog"
+      v-model:dialog="listReportsDialog"
       :activity="currentActivity"
       @close-enrollment-dialog="onCloseReportsDialog"
     />
     <suspend-activity-dialog
       v-if="currentActivity && suspendActivityDialog"
-      :dialog.sync="suspendActivityDialog"
+      v-model:dialog="suspendActivityDialog"
       :activity="currentActivity"
       :themes="themes"
       @suspend-activity="onSuspendActivity"
@@ -101,155 +93,99 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import type { DataTableHeader } from 'vuetify';
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
 import ListReportsDialog from '@/views/admin/ListReportsDialog.vue';
 import SuspendActivityDialog from '@/views/member/SuspendActivityDialog.vue';
+import { useMainStore } from '@/store/useMainStore';
 
-export default Vue.extend({
-  name: 'AdminActivitiesView',
+const store = useMainStore();
 
-  components: {
-    'reports-dialog': ListReportsDialog,
-    'suspend-activity-dialog': SuspendActivityDialog,
-  },
+const activities = ref<Activity[]>([]);
+const themes = ref<Theme[]>([]);
+const institutions = ref<Institution[]>([]);
+const search = ref('');
+const currentActivity = ref<Activity | null>(null);
+const listReportsDialog = ref(false);
+const suspendActivityDialog = ref(false);
 
-  data() {
-    return {
-      activities: [] as Activity[],
-      themes: [] as Theme[],
-      institutions: [] as Institution[],
-      search: '',
-      currentActivity: null as Activity | null,
-      listReportsDialog: false,
-      suspendActivityDialog: false,
-      headers: [
-        { text: 'ID', value: 'id', align: 'left', width: '1%' },
-        { text: 'Name', value: 'name', align: 'left', width: '5%' },
-        { text: 'Region', value: 'region', align: 'left', width: '5%' },
-        {
-          text: 'Participants',
-          value: 'participantsNumberLimit',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Description',
-          value: 'description',
-          align: 'left',
-          width: '10%',
-        },
-        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
-        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
-        {
-          text: 'Institution',
-          value: 'institution',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Start Date',
-          value: 'formattedStartingDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Application Deadline',
-          value: 'formattedApplicationDeadline',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'End Date',
-          value: 'formattedEndingDate',
-          align: 'left',
-          width: '5%',
-        },
-        { text: 'State', value: 'state', align: 'left', width: '5%' },
-        {
-          text: 'Creation Date',
-          value: 'creationDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Actions',
-          value: 'action',
-          align: 'left',
-          sortable: false,
-          width: '5%',
-        },
-      ],
-    };
-  },
+const headers = ref<DataTableHeader[]>([
+  { title: 'ID', key: 'id', align: 'start', width: '1%' },
+  { title: 'Name', key: 'name', align: 'start', width: '5%' },
+  { title: 'Region', key: 'region', align: 'start', width: '5%' },
+  { title: 'Participants', key: 'participantsNumberLimit', align: 'start', width: '5%' },
+  { title: 'Description', key: 'description', align: 'start', width: '10%' },
+  { title: 'Themes', key: 'themes', align: 'start', width: '5%' },
+  { title: 'Institution', key: 'institution', align: 'start', width: '5%' },
+  { title: 'Start Date', key: 'formattedStartingDate', align: 'start', width: '5%' },
+  { title: 'Application Deadline', key: 'formattedApplicationDeadline', align: 'start', width: '5%' },
+  { title: 'End Date', key: 'formattedEndingDate', align: 'start', width: '5%' },
+  { title: 'State', key: 'state', align: 'start', width: '5%' },
+  { title: 'Creation Date', key: 'creationDate', align: 'start', width: '5%' },
+  { title: 'Actions', key: 'action', align: 'start', sortable: false, width: '5%' },
+]);
 
-  async created() {
-    await this.$store.dispatch('loading');
-    try {
-      this.activities = await RemoteServices.getActivities();
-      this.themes = await RemoteServices.getThemes();
-      this.institutions = await RemoteServices.getInstitutions();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  },
-
-  methods: {
-    async validateActivity(this: any, activity: Activity) {
-      if (activity.id !== null) {
-        try {
-          const result = await RemoteServices.validateActivity(activity.id);
-          this.activities = this.activities.filter(
-            (a: Activity) => a.id !== activity.id,
-          );
-          this.activities.unshift(result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-
-    suspendActivity(this: any, activity: Activity) {
-      this.currentActivity = activity;
-      this.suspendActivityDialog = true;
-    },
-
-    onCloseSuspendActivityDialog(this: any) {
-      this.currentActivity = null;
-      this.suspendActivityDialog = false;
-    },
-
-    async onSuspendActivity(this: any, activity: Activity) {
-      if (activity.id !== null) {
-        try {
-          this.activities = this.activities.filter(
-            (a: Activity) => a.id !== activity.id,
-          );
-          this.activities.unshift(activity);
-          this.currentActivity = null;
-          this.suspendActivityDialog = false;
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-
-    openReportsDialog(this: any, activity: Activity) {
-      this.currentActivity = activity;
-      this.listReportsDialog = true;
-    },
-
-    onCloseReportsDialog(this: any) {
-      this.listReportsDialog = false;
-      this.currentActivity = null;
-    },
-  },
+onMounted(async () => {
+  store.setLoading();
+  try {
+    activities.value = await RemoteServices.getActivities();
+    themes.value = await RemoteServices.getThemes();
+    institutions.value = await RemoteServices.getInstitutions();
+  } catch (error: any) {
+    store.setError(error.message);
+  }
+  store.clearLoading();
 });
+
+async function validateActivity(activity: Activity) {
+  if (activity.id !== null) {
+    try {
+      const result = await RemoteServices.validateActivity(activity.id);
+      activities.value = activities.value.filter((a) => a.id !== activity.id);
+      activities.value.unshift(result);
+    } catch (error: any) {
+      store.setError(error.message);
+    }
+  }
+}
+
+function suspendActivity(activity: Activity) {
+  currentActivity.value = activity;
+  suspendActivityDialog.value = true;
+}
+
+function onCloseSuspendActivityDialog() {
+  currentActivity.value = null;
+  suspendActivityDialog.value = false;
+}
+
+async function onSuspendActivity(activity: Activity) {
+  if (activity.id !== null) {
+    try {
+      activities.value = activities.value.filter((a) => a.id !== activity.id);
+      activities.value.unshift(activity);
+      currentActivity.value = null;
+      suspendActivityDialog.value = false;
+    } catch (error: any) {
+      store.setError(error.message);
+    }
+  }
+}
+
+function openReportsDialog(activity: Activity) {
+  currentActivity.value = activity;
+  listReportsDialog.value = true;
+}
+
+function onCloseReportsDialog() {
+  listReportsDialog.value = false;
+  currentActivity.value = null;
+}
 </script>
 
 <style lang="scss" scoped></style>

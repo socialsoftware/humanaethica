@@ -1,46 +1,11 @@
-<script setup lang="ts">
-import { useMainStore } from '@/store/useMainStore';
-
-const store = useMainStore();
-
-const demoVolunteer = async () => {
-  store.setLoading();
-  try {
-    await store.demoVolunteerLogin();
-  } catch (error) {
-    store.setError(error as string);
-  }
-  store.clearLoading();
-};
-
-const demoMember = async () => {
-  store.setLoading();
-  try {
-    await store.demoMemberLogin();
-  } catch (error) {
-    store.setError(error as string);
-  }
-  store.clearLoading();
-};
-
-const loginAdmin = async () => {
-  store.setLoading();
-  try {
-    await store.adminLogin();
-  } catch (error) {
-    store.setError(error as string);
-  }
-  store.clearLoading();
-};
-</script>
-
 <template>
   <div class="container">
     <h1 id="home-title" class="display-2 font-weight-thin mb-3"></h1>
+
     <div class="image">
       <v-img
         contain
-        src="../assets/img/Logo_Vertical.png"
+        src="/img/Logo_Vertical.png"
         height="500"
         width="350"
       />
@@ -53,7 +18,8 @@ const loginAdmin = async () => {
         color="blue accent-1"
         data-cy="userLoginButton"
       >
-        User Login <v-icon>fas fa-sign-in-alt</v-icon>
+        <v-icon left>fas fa-sign-in-alt</v-icon>
+        User Login
       </v-btn>
     </div>
 
@@ -64,7 +30,8 @@ const loginAdmin = async () => {
         @click="demoVolunteer"
         data-cy="demoVolunteerLoginButton"
       >
-        <i class="fa fa-graduation-cap" />Demo as volunteer
+        <v-icon left>fa fa-graduation-cap</v-icon>
+        Demo as volunteer
       </v-btn>
       <v-btn
         depressed
@@ -72,7 +39,8 @@ const loginAdmin = async () => {
         @click="demoMember"
         data-cy="demoMemberLoginButton"
       >
-        <i class="fa fa-graduation-cap" />Demo as member
+        <v-icon left>fa fa-graduation-cap</v-icon>
+        Demo as member
       </v-btn>
       <v-btn
         depressed
@@ -80,10 +48,75 @@ const loginAdmin = async () => {
         @click="loginAdmin"
         data-cy="demoAdminLoginButton"
       >
-        <i class="fa fa-graduation-cap" />Login as admin
+        <v-icon left>fa fa-graduation-cap</v-icon>
+        Login as admin
       </v-btn>
     </div>
-
-    <v-footer class="footer"> </v-footer>
   </div>
+
+  <v-footer class="footer">
+    © {{ new Date().getFullYear() }} — HumanaEthica
+  </v-footer>
 </template>
+
+<script setup lang="ts">
+import { useMainStore } from '@/store/useMainStore';
+
+const store = useMainStore();
+
+const withLoading = async (fn: () => Promise<void>) => {
+  store.setLoading();
+  try {
+    await fn();
+  } catch (error: unknown) {
+    store.setError(error instanceof Error ? error.message : 'Unknown error');
+  } finally {
+    store.clearLoading();
+  }
+};
+
+const demoVolunteer = () => withLoading(store.demoVolunteerLogin);
+const demoMember = () => withLoading(store.demoMemberLogin);
+const loginAdmin = () => withLoading(store.adminLogin);
+</script>
+
+<style scoped lang="scss">
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 48px); // ajusta conforme a altura do footer
+  padding: 2rem;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.image {
+  margin-bottom: 2rem;
+}
+
+.horizontal-btn-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.v-btn {
+  min-width: 200px;
+  font-weight: 500;
+}
+
+.footer {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 0.9rem;
+  background-color: #eceff1;
+  color: #555;
+}
+</style>

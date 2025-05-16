@@ -178,6 +178,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
 import RemoteServices from '@/services/RemoteServices';
 import Activity from '@/models/activity/Activity';
 import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
@@ -188,9 +189,10 @@ import Participation from '@/models/participation/Participation';
 import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue';
 import ReportDialog from '@/views/volunteer/ReportDialog.vue';
 import Report from '@/models/report/Report';
-import Vue from 'vue';
 
-export default Vue.extend({
+export default defineComponent({
+  name: 'VolunteerEnrollmentsView',
+
   components: {
     'assessment-dialog': AssessmentDialog,
     'enrollment-dialog': EnrollmentDialog,

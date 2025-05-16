@@ -1,264 +1,224 @@
 <template>
-  <v-card class="table">
-    <v-data-table
+  <VCard class="table">
+    <VDataTable
       :headers="headers"
       :items="institution.activities"
       :search="search"
       disable-pagination
-      :hide-default-footer="true"
+      hide-default-footer
       :mobile-breakpoint="0"
       data-cy="memberActivitiesTable"
     >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
+      <template #top>
+        <VCardTitle>
+          <VTextField
             v-model="search"
-            append-icon="search"
+            append-inner-icon="mdi-magnify"
             label="Search"
             class="mx-2"
           />
-          <v-spacer />
-          <v-btn color="primary" dark @click="newActivity" data-cy="newActivity"
-            >New Activity</v-btn
-          >
-        </v-card-title>
+          <VSpacer />
+          <VBtn color="primary" dark @click="newActivity" data-cy="newActivity">
+            New Activity
+          </VBtn>
+        </VCardTitle>
       </template>
-      <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
+
+      <template #item.themes="{ item }">
+        <VChip v-for="theme in item.themes" :key="theme.id">
           {{ theme.completeName }}
-        </v-chip>
+        </VChip>
       </template>
-      <template v-slot:[`item.state`]="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-chip v-on="on">{{ item.state }} </v-chip>
+
+      <template #item.state="{ item }">
+        <VTooltip location="bottom">
+          <template #activator="{ props }">
+            <VChip v-bind="props">{{ item.state }}</VChip>
           </template>
           <span>Justification: {{ item.suspensionJustification }}</span>
-        </v-tooltip>
+        </VTooltip>
       </template>
-      <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2 action-button"
-              @click="editActivity(item)"
-              v-on="on"
-              >edit
-            </v-icon>
+
+      <template #item.action="{ item }">
+        <VTooltip location="bottom">
+          <template #activator="{ props }">
+            <VIcon class="mr-2 action-button" v-bind="props" @click="editActivity(item)">
+              mdi-pencil
+            </VIcon>
           </template>
           <span>Edit Activity</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
+        </VTooltip>
+
+        <VTooltip location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
+              v-bind="props"
               @click="showEnrollments(item)"
-              v-on="on"
               data-cy="showEnrollments"
-              >fa-solid fa-people-group
-            </v-icon>
+            >
+              mdi-account-group
+            </VIcon>
           </template>
           <span>Show Applications</span>
-        </v-tooltip>
-        <v-tooltip bottom v-if="item.state != 'SUSPENDED'">
-          <template v-slot:activator="{ on }">
-            <v-icon
+        </VTooltip>
+
+        <VTooltip v-if="item.state !== 'SUSPENDED'" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="red"
-              v-on="on"
-              data-cy="suspendButton"
+              v-bind="props"
               @click="suspendActivity(item)"
-              >mdi-pause-octagon</v-icon
+              data-cy="suspendButton"
             >
+              mdi-pause-octagon
+            </VIcon>
           </template>
           <span>Suspend Activity</span>
-        </v-tooltip>
+        </VTooltip>
       </template>
-    </v-data-table>
-    <activity-dialog
+    </VDataTable>
+
+    <!-- Dialogs -->
+    <ActivityDialog
       v-if="currentActivity && editActivityDialog"
-      :dialog.sync="editActivityDialog"
+      v-model:dialog="editActivityDialog"
       :activity="currentActivity"
       :themes="themes"
       @save-activity="onSaveActivity"
       @close-activity-dialog="onCloseActivityDialog"
     />
-    <suspend-activity-dialog
+
+    <SuspendActivityDialog
       v-if="currentActivity && suspendActivityDialog"
-      :dialog.sync="suspendActivityDialog"
+      v-model:dialog="suspendActivityDialog"
       :activity="currentActivity"
       :themes="themes"
       @suspend-activity="onSuspendActivity"
       @close-activity-dialog="onCloseSuspendActivityDialog"
     />
-  </v-card>
+  </VCard>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useMainStore } from '@/store/useMainStore';
 import RemoteServices from '@/services/RemoteServices';
+import Activity from '@/models/activity/Activity';
 import Theme from '@/models/theme/Theme';
 import Institution from '@/models/institution/Institution';
-import Activity from '@/models/activity/Activity';
 import ActivityDialog from '@/views/member/ActivityDialog.vue';
 import SuspendActivityDialog from '@/views/member/SuspendActivityDialog.vue';
 
-export default Vue.extend({
-  name: 'InstitutionActivitiesView',
+const store = useMainStore();
+const router = useRouter();
 
-  components: {
-    'activity-dialog': ActivityDialog,
-    'suspend-activity-dialog': SuspendActivityDialog,
-  },
+const institution = ref(new Institution());
+const themes = ref<Theme[]>([]);
+const search = ref('');
+const currentActivity = ref<Activity | null>(null);
+const editActivityDialog = ref(false);
+const suspendActivityDialog = ref(false);
 
-  data() {
-    return {
-      institution: new Institution(),
-      themes: [] as Theme[],
-      search: '',
-      currentActivity: null as Activity | null,
-      editActivityDialog: false,
-      suspendActivityDialog: false,
-      headers: [
-        { text: 'Name', value: 'name', align: 'left', width: '5%' },
-        { text: 'Region', value: 'region', align: 'left', width: '5%' },
-        {
-          text: 'Participants Limit',
-          value: 'participantsNumberLimit',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Applications',
-          value: 'numberOfEnrollments',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Participations',
-          value: 'numberOfParticipations',
-          align: 'left',
-          width: '5%',
-        },
-        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
-        {
-          text: 'Description',
-          value: 'description',
-          align: 'left',
-          width: '30%',
-        },
-        { text: 'State', value: 'state', align: 'left', width: '5%' },
-        {
-          text: 'Start Date',
-          value: 'formattedStartingDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'End Date',
-          value: 'formattedEndingDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Application Deadline',
-          value: 'formattedApplicationDeadline',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Creation Date',
-          value: 'creationDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Actions',
-          value: 'action',
-          align: 'left',
-          sortable: false,
-          width: '5%',
-        },
-      ],
-    };
-  },
+// Vuetify 3 uses 'key' instead of 'value'
+const headers = [
+  { title: 'Name', key: 'name' },
+  { title: 'Region', key: 'region' },
+  { title: 'Participants Limit', key: 'participantsNumberLimit' },
+  { title: 'Applications', key: 'numberOfEnrollments' },
+  { title: 'Participations', key: 'numberOfParticipations' },
+  { title: 'Themes', key: 'themes' },
+  { title: 'Description', key: 'description' },
+  { title: 'State', key: 'state' },
+  { title: 'Start Date', key: 'formattedStartingDate' },
+  { title: 'End Date', key: 'formattedEndingDate' },
+  { title: 'Application Deadline', key: 'formattedApplicationDeadline' },
+  { title: 'Creation Date', key: 'creationDate' },
+  { title: 'Actions', key: 'action', sortable: false },
+];
 
-  async created() {
-    await this.$store.dispatch('loading');
-    try {
-      const userId = this.$store.getters.getUser.id;
-      this.institution = await RemoteServices.getInstitution(userId);
-      this.themes = await RemoteServices.getThemesAvailable();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+onMounted(async () => {
+  store.setLoading();
+  try {
+    const userId = store.user?.id;
+    if (userId != null) {
+      institution.value = await RemoteServices.getInstitution(userId);
+      themes.value = await RemoteServices.getThemesAvailable();
     }
-    await this.$store.dispatch('clearLoading');
-  },
-
-  methods: {
-    newActivity() {
-      this.currentActivity = new Activity();
-      this.editActivityDialog = true;
-    },
-
-    editActivity(activity: Activity) {
-      this.currentActivity = activity;
-      this.editActivityDialog = true;
-    },
-
-    onCloseActivityDialog() {
-      this.currentActivity = null;
-      this.editActivityDialog = false;
-    },
-
-    onSaveActivity(activity: Activity) {
-      this.institution.activities = this.institution.activities.filter(
-        (a) => a.id !== activity.id,
-      );
-      this.institution.activities.unshift(activity);
-      this.editActivityDialog = false;
-      this.currentActivity = null;
-    },
-
-    suspendActivity(activity: Activity) {
-      this.currentActivity = activity;
-      this.suspendActivityDialog = true;
-    },
-
-    onCloseSuspendActivityDialog() {
-      this.currentActivity = null;
-      this.suspendActivityDialog = false;
-    },
-
-    async onSuspendActivity(activity: Activity) {
-      if (activity.id !== null) {
-        this.editActivityDialog = false;
-        this.currentActivity = null;
-
-        const userId = this.$store.getters.getUser.id;
-        this.institution = await RemoteServices.getInstitution(userId);
-        this.themes = await RemoteServices.getThemesAvailable();
-      }
-    },
-
-    async showEnrollments(activity: Activity) {
-      await this.$store.dispatch('setActivity', activity);
-      await this.$router.push({ name: 'activity-enrollments' });
-    },
-  },
+  } catch (error) {
+    store.setError(error instanceof Error ? error.message : 'Unknown error');
+  } finally {
+    store.clearLoading();
+  }
 });
-</script>
 
-<style lang="scss" scoped>
-.date-fields-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+function newActivity() {
+  currentActivity.value = new Activity();
+  editActivityDialog.value = true;
 }
 
-.date-fields-row {
-  display: flex;
-  gap: 16px;
-  margin-top: 8px;
+function editActivity(activity: Activity) {
+  currentActivity.value = activity;
+  editActivityDialog.value = true;
+}
+
+function onCloseActivityDialog() {
+  currentActivity.value = null;
+  editActivityDialog.value = false;
+}
+
+function onSaveActivity(activity: Activity) {
+  institution.value.activities = institution.value.activities.filter(
+    (a) => a.id !== activity.id,
+  );
+  institution.value.activities.unshift(activity);
+  onCloseActivityDialog();
+}
+
+function suspendActivity(activity: Activity) {
+  currentActivity.value = activity;
+  suspendActivityDialog.value = true;
+}
+
+function onCloseSuspendActivityDialog() {
+  currentActivity.value = null;
+  suspendActivityDialog.value = false;
+}
+
+async function onSuspendActivity() {
+  if (store.user?.id != null) {
+    institution.value = await RemoteServices.getInstitution(store.user.id);
+    themes.value = await RemoteServices.getThemesAvailable();
+    onCloseSuspendActivityDialog();
+  }
+}
+
+async function showEnrollments(activity: Activity) {
+  store.setActivity(activity);
+  await router.push({ name: 'activity-enrollments' });
+}
+</script>
+
+<style scoped lang="scss">
+.table {
+  margin: 2%;
+  width: 96%;
+  padding: 0 20px;
+}
+
+.action-button {
+  padding: 8px !important;
+  background: #d9d9d9;
+  margin: 4px;
+  border-radius: 20px;
+  border: 1px solid #878787 !important;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  color: white !important;
+  background: #878787;
 }
 </style>

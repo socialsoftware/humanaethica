@@ -1,42 +1,29 @@
 <template>
-  <v-alert
+  <VAlert
     v-model="dialog"
     type="error"
     close-text="Close Notification"
-    dismissible
+    closable
+    @update:modelValue="onDialogClose"
   >
     {{ messageList.join(', ') }}
-  </v-alert>
+  </VAlert>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useMainStore } from '@/store/useMainStore';
 
-export default defineComponent({
-  name: 'AppNotification',
-  data() {
-    return {
-      dialog: this.$store.getters.getNotification as boolean,
-      messageList: this.$store.getters.getNotificationMessageList as string[],
-    };
-  },
-  watch: {
-    dialog(newVal: boolean) {
-      if (!newVal) {
-        this.$store.dispatch('clearNotification');
-      }
-    },
-  },
-  created() {
-    this.$store.watch(
-      (state, getters) => getters.getNotification,
-      () => {
-        this.dialog = this.$store.getters.getNotification;
-        this.messageList = this.$store.getters.getNotificationMessageList;
-      },
-    );
-  },
-});
+const store = useMainStore();
+
+const dialog = computed(() => store.notification);
+const messageList = computed(() => store.notificationMessageList);
+
+function onDialogClose(val: boolean) {
+  if (!val) {
+    store.clearNotification();
+  }
+}
 </script>
 
 <style scoped lang="scss">

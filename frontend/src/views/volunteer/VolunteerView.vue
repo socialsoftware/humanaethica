@@ -2,8 +2,6 @@
   <router-view />
 </template>
 
-<script lang="ts">
-export default {
-  name: 'VolunteerView',
-};
+<script setup lang="ts">
+// VolunteerView component – acts as a layout router outlet
 </script>

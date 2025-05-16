@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class DateHandler {
 
@@ -39,10 +40,20 @@ public class DateHandler {
      * Converts ISO8601 string format to LocalDateTime
      */
     public static LocalDateTime toLocalDateTime(String date) {
+        if (date == null || date.isBlank()) return null;
+
         try {
-            return ZonedDateTime.parse(date).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
-        } catch (Exception e) {
-            return null;
+            // Try parsing as ZonedDateTime (e.g., "2025-05-16T08:30:00Z" or with offset)
+            return ZonedDateTime.parse(date)
+                    .withZoneSameInstant(ZoneOffset.UTC)
+                    .toLocalDateTime();
+        } catch (DateTimeParseException ex1) {
+            try {
+                // Try parsing as LocalDateTime (e.g., "2025-05-16T08:30")
+                return LocalDateTime.parse(date);
+            } catch (DateTimeParseException ex2) {
+                return null;
+            }
         }
     }
 

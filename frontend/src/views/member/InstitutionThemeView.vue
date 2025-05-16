@@ -61,13 +61,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from "vue";
 import RemoteServices from '@/services/RemoteServices';
 import Theme from '@/models/theme/Theme';
 import RegisterTheme from '@/views/member/InstitutionAddTheme.vue';
 import InstitutionAssociateThemeView from '@/views/member/InstitutionAssociateThemeView.vue';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'InstitutionThemeView',
 
   components: {

@@ -10,9 +10,8 @@
     "prettier": "prettier --write \"src/**/*.{ts,js,vue,scss}\""
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.5.1",
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@mdi/font": "^7.4.47",
-    "@vuepic/vue-datepicker": "^11.0.2",
     "axios": "^1.6.4",
     "material-design-icons-iconfont": "^6.7.0",
     "pinia": "^2.3.1",
@@ -30,12 +29,15 @@
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/compiler-sfc": "^3.5.14",
+    "cypress": "^14.3.3",
     "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.19.2",
+    "pg": "^8.16.0",
     "prettier": "^3.1.1",
-    "sass": "^1.69.5",
+    "sass": "^1.88.0",
     "sass-loader": "^13.3.3",
-    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
     "vite": "^5.2.8",
     "vuetify-loader": "^2.0.0-alpha.9"
   },

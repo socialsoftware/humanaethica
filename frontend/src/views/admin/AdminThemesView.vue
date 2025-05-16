@@ -88,13 +88,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import RemoteServices from '@/services/RemoteServices';
 import AdminAddTheme from '@/views/admin/AdminAddTheme.vue';
 import ThemesTreeView from '@/views/admin/ThemesTreeView.vue';
 import Theme from '@/models/theme/Theme';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'AdminThemeView',
 
   components: {

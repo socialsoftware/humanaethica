@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Store from '@/store';
+import { useMainStore } from '@/store/useMainStore';
 import TokenAuthUser from '@/models/user/TokenAuthUser';
 import RegisterUser from '@/models/user/RegisterUser';
 import router from '@/router';
@@ -15,17 +15,17 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
+import Store from "@/store";
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
-httpClient.defaults.baseURL =
-  process.env.VUE_APP_ROOT_API || 'http://localhost:8080';
+httpClient.defaults.baseURL = import.meta.env.VITE_APP_ROOT_API || 'http://localhost:8080';
 httpClient.defaults.headers.post['Content-Type'] = 'application/json';
 httpClient.interceptors.request.use(
   (config) => {
+    const store = useMainStore();
     if (config.headers !== undefined && !config.headers.Authorization) {
-      const token = Store.getters.getToken;
-
+      const token = store.token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -34,14 +34,14 @@ httpClient.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 );
+
 httpClient.interceptors.response.use(
   (response) => {
+    const store = useMainStore();
     if (response.data.notification) {
-      if (response.data.notification.errorMessages.length)
-        Store.dispatch(
-          'notification',
-          response.data.notification.errorMessages,
-        );
+      if (response.data.notification.errorMessages.length) {
+        store.notify(response.data.notification.errorMessages);
+      }
       response.data = response.data.response;
     }
     return response;
@@ -812,10 +812,12 @@ export default class RemoteServices {
   // Error
 
   static async errorMessage(error: any): Promise<string> {
+    const store = useMainStore();
+
     if (error.message === 'Network Error') {
       return 'Unable to connect to server';
     } else if (error.message === 'Request failed with status code 403') {
-      await Store.dispatch('logout');
+      await store.logout();
       await router.push({ path: '/' });
       return 'Unauthorized access or expired token';
     } else if (error.message.split(' ')[0] === 'timeout') {
@@ -827,4 +829,5 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
+
 }

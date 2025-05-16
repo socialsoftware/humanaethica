@@ -1,8 +1,7 @@
-import { defineConfig } from 'cypress';
-
+const { defineConfig } = require('cypress');
 const { Client } = require('pg');
 
-async function queryDB(query: string, credentials: string) {
+async function queryDB(query, credentials) {
   const client = new Client(credentials);
   await client.connect();
   const result = await client.query(query);
@@ -11,7 +10,7 @@ async function queryDB(query: string, credentials: string) {
   return result.rows;
 }
 
-export default defineConfig({
+module.exports = defineConfig({
   defaultCommandTimeout: 10000,
   retries: 3,
   fixturesFolder: 'tests/e2e/fixtures',
@@ -27,7 +26,7 @@ export default defineConfig({
         },
       });
     },
-    baseUrl: 'http://localhost:8081',
+    baseUrl: 'http://localhost:5173',
     specPattern: 'tests/e2e/specs/**/*.{js,jsx,ts,tsx}',
     supportFile: 'tests/e2e/support/index.js',
   },

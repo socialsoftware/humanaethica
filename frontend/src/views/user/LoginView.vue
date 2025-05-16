@@ -1,3 +1,7 @@
+<template>
+  <LoginCard @login="login" />
+</template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
@@ -25,7 +29,7 @@ export default defineComponent({
       try {
         await store.userLogin(user);
         router.push({ name: 'admin' }).catch(() => {});
-      } catch (error) {
+      } catch (error: any) {
         store.setError(error.message);
       } finally {
         store.clearLoading();

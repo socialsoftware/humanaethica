@@ -1,17 +1,17 @@
 <template>
   <v-app id="app">
-    <top-bar />
-    <div class="scrollbar">
-      <error-message />
-      <app-notification />
-      <app-loading />
+    <TopBar />
+    <v-main>
+      <ErrorMessage />
+      <AppNotification />
+      <AppLoading />
       <router-view />
-    </div>
+    </v-main>
   </v-app>
 </template>
 
-<script lang="ts">
-import Vue, { defineComponent, onMounted } from "vue";
+<script setup lang="ts">
+import { onMounted } from 'vue';
 import axios from 'axios';
 
 import TopBar from '@/components/TopBar.vue';
@@ -19,44 +19,29 @@ import ErrorMessage from '@/components/ErrorMessage.vue';
 import AppNotification from '@/components/Notification.vue';
 import AppLoading from '@/components/Loading.vue';
 
-import '@/assets/css/_global.scss';
-import '@/assets/css/_scrollbar.scss';
-import '@/assets/css/_question.scss';
-
 import { useMainStore } from '@/store/useMainStore';
 
-export default defineComponent({
-  name: 'App',
+import '@/assets/css/_global.scss';
 
-  components: {
-    TopBar,
-    ErrorMessage,
-    AppNotification,
-    AppLoading,
-  },
+const store = useMainStore();
 
-  setup() {
-    onMounted(() => {
-      const store = useMainStore();
-
-      axios.interceptors.response.use(undefined, (err) => {
-      return new Promise((_, reject) => {
-        if (
-          err?.response?.status === 401 &&
-          err.config &&
-          !err.config.__isRetryRequest
-        ) {
-          store.logout();
-        }
-        reject(err);
-      });
+onMounted(() => {
+  axios.interceptors.response.use(undefined, (err) => {
+    return new Promise((_, reject) => {
+      if (
+        err?.response?.status === 401 &&
+        err.config &&
+        !err.config.__isRetryRequest
+      ) {
+        store.logout();
+      }
+      reject(err);
     });
-    });
-  },
+  });
 });
 </script>
 
-<style scoped>
+<style>
 #app {
   background-color: white;
   background-position: 0 0;
@@ -71,14 +56,10 @@ export default defineComponent({
   flex-direction: column;
   left: 0;
   margin: 0 !important;
-  overflow: hidden;
-  position: absolute;
   text-align: center;
   top: 0;
-  z-index: 1;
 }
 
-/*noinspection CssUnusedSymbol*/
 .application--wrap {
   min-height: initial !important;
 }

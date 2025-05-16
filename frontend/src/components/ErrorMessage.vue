@@ -1,46 +1,41 @@
 <template>
-  <v-dialog v-model="dialog">
-    <v-alert v-model="dialog" type="error" close-text="Close Alert" dismissible>
+  <VDialog v-model="dialog">
+    <VAlert
+      v-model="dialog"
+      type="error"
+      close-text="Close Alert"
+      closable
+      @update:modelValue="onDialogClose"
+    >
       {{ errorMessage }}
-    </v-alert>
-  </v-dialog>
+    </VAlert>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
+<script setup lang="ts">
+import { computed, watch } from 'vue';
+import { useMainStore } from '@/store/useMainStore';
 
-export default Vue.extend({
-  name: 'ErrorMessage',
-  data() {
-    return {
-      dialog: this.$store.getters.getError as boolean,
-      errorMessage: this.$store.getters.getErrorMessage as string,
-    };
-  },
-  created() {
-    this.dialog = this.$store.getters.getError;
-    this.errorMessage = this.$store.getters.getErrorMessage;
+const store = useMainStore();
 
-    this.$store.watch(
-      (state, getters) => getters.getError,
-      () => {
-        this.dialog = this.$store.getters.getError;
-        this.errorMessage = this.$store.getters.getErrorMessage;
-      },
-    );
-  },
-  watch: {
-    dialog(val: boolean) {
-      if (!val) {
-        this.$store.dispatch('clearError');
-      }
-    },
-  },
+// Computed bindings to the Pinia store
+const dialog = computed(() => store.error);
+const errorMessage = computed(() => store.errorMessage);
+
+// Watch dialog visibility and clear error when closed
+function onDialogClose(val: boolean) {
+  if (!val) {
+    store.clearError();
+  }
+}
+
+// Optional: watch for changes (e.g., to trigger transitions or logs)
+watch(() => store.error, () => {
+  // console.log('Error state changed');
 });
 </script>
 
 <style scoped lang="scss">
-/*https://github.com/vuetifyjs/vuetify/issues/9175*/
 .v-dialog__container {
   display: unset !important;
 }
