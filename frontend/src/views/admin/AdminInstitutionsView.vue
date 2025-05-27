@@ -1,6 +1,6 @@
 <template>
-  <v-card class="table">
-    <v-data-table
+  <VCard class="table">
+    <VDataTable
       :headers="headers"
       :items="institutions"
       :search="search"
@@ -8,158 +8,148 @@
       :hide-default-footer="true"
       :mobile-breakpoint="0"
     >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
+      <template #top>
+        <VCardTitle>
+          <VTextField
             v-model="search"
             append-icon="search"
             label="Search"
             class="mx-2"
           />
-        </v-card-title>
+        </VCardTitle>
       </template>
-      <template v-slot:[`item.themes`]="{ item }">
-        <v-chip v-for="theme in item.themes" v-bind:key="theme.id">
+      <template #item.themes="{ item }">
+        <VChip v-for="theme in item.themes" :key="theme.id">
           {{ theme.name }}
-        </v-chip>
+        </VChip>
       </template>
-
-      <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom v-if="item.active && !isDemoInstitution(item)">
-          <template v-slot:activator="{ on }">
-            <v-icon
+      <template #item.action="{ item }">
+        <VTooltip v-if="item.active && !isDemoInstitution(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="red"
-              v-on="on"
+              v-bind="props"
               data-cy="deleteButton"
               @click="deleteInstitution(item)"
-              >delete</v-icon
             >
+              mdi-delete
+            </VIcon>
           </template>
           <span>Delete institution</span>
-        </v-tooltip>
-        <v-tooltip bottom v-if="!isDemoInstitution(item)">
-          <template v-slot:activator="{ on }">
-            <v-icon
+        </VTooltip>
+        <VTooltip v-if="!isDemoInstitution(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="black"
-              v-on="on"
+              v-bind="props"
               data-cy="documentButton"
               @click="getDocument(item)"
-              >description</v-icon
             >
+              mdi-file-document
+            </VIcon>
           </template>
           <span>See document</span>
-        </v-tooltip>
-        <v-tooltip bottom v-if="!item.active && !isDemoInstitution(item)">
-          <template v-slot:activator="{ on }">
-            <v-icon
+        </VTooltip>
+        <VTooltip v-if="!item.active && !isDemoInstitution(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="green"
-              v-on="on"
+              v-bind="props"
               data-cy="validateButton"
               @click="validateInstitution(item)"
-              >mdi-check-bold</v-icon
             >
+              mdi-check-bold
+            </VIcon>
           </template>
           <span>Validate institution</span>
-        </v-tooltip>
+        </VTooltip>
       </template>
-    </v-data-table>
-  </v-card>
+    </VDataTable>
+  </VCard>
 </template>
 
-<script lang="ts">
-import RemoteServices from '@/services/RemoteServices';
-import Institution from '@/models/institution/Institution';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
+import Institution from '@/models/institution/Institution'
 
-export default {
-  name: 'AdminInstitutionsView',
+const store = useMainStore()
+const institutions = ref<Institution[]>([])
+const search = ref('')
 
-  data() {
-    return {
-      institutions: [] as Institution[],
-      search: '',
-      headers: [
-        { text: 'Name', value: 'name', align: 'left', width: '25%' },
-        { text: 'Themes', value: 'themes', align: 'left', width: '10%' },
-        { text: 'Email', value: 'email', align: 'left', width: '10%' },
-        { text: 'NIF', value: 'nif', align: 'left', width: '10%' },
-        { text: 'Active', value: 'active', align: 'center', width: '5%' },
-        {
-          text: 'Creation Date',
-          value: 'creationDate',
-          align: 'center',
-          width: '10%',
-        },
-        {
-          text: 'Delete',
-          value: 'action',
-          align: 'center',
-          sortable: false,
-          width: '5%',
-        },
-      ] as object[],
-    };
-  },
+const headers = [
+  { title: 'Name', key: 'name', align: 'left', width: '25%' },
+  { title: 'Themes', key: 'themes', align: 'left', width: '10%' },
+  { title: 'Email', key: 'email', align: 'left', width: '10%' },
+  { title: 'NIF', key: 'nif', align: 'left', width: '10%' },
+  { title: 'Active', key: 'active', align: 'center', width: '5%' },
+  { title: 'Creation Date', key: 'creationDate', align: 'center', width: '10%' },
+  { title: 'Actions', key: 'action', align: 'center', sortable: false, width: '5%' },
+]
 
-  async created(this: any) {
-    await this.$store.dispatch('loading');
+onMounted(async () => {
+  store.setLoading()
+  try {
+    institutions.value = await RemoteServices.getInstitutions()
+  } catch (error: any) {
+    store.setError(error.message)
+  }
+  store.clearLoading()
+})
+
+async function deleteInstitution(institution: Institution) {
+  const institutionId = institution.id
+  if (
+    institutionId !== null &&
+    window.confirm('Are you sure you want to delete the institution?')
+  ) {
     try {
-      this.institutions = await RemoteServices.getInstitutions();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      institutions.value = await RemoteServices.deleteInstitution(institutionId)
+    } catch (error: any) {
+      store.setError(error.message)
     }
-    await this.$store.dispatch('clearLoading');
-  },
+  }
+}
 
-  methods: {
-    async deleteInstitution(this: any, institution: Institution) {
-      const institutionId = institution.id;
-      if (
-        institutionId !== null &&
-        confirm('Are you sure you want to delete the institution?')
-      ) {
-        try {
-          this.institutions =
-            await RemoteServices.deleteInstitution(institutionId);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
+async function validateInstitution(institution: Institution) {
+  const institutionId = institution.id
+  if (
+    institutionId !== null &&
+    window.confirm('Are you sure you want to validate this institution?')
+  ) {
+    try {
+      institutions.value = await RemoteServices.validateInstitution(institutionId)
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+}
 
-    async validateInstitution(this: any, institution: Institution) {
-      const institutionId = institution.id;
-      if (
-        institutionId !== null &&
-        confirm('Are you sure you want to validate this institution?')
-      ) {
-        try {
-          this.institutions =
-            await RemoteServices.validateInstitution(institutionId);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
+async function getDocument(institution: Institution) {
+  const institutionId = institution.id
+  if (institutionId !== null) {
+    try {
+      await RemoteServices.getInstitutionDocument(institutionId)
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+}
 
-    async getDocument(this: any, institution: Institution) {
-      const institutionId = institution.id;
-      if (institutionId !== null) {
-        try {
-          await RemoteServices.getInstitutionDocument(institutionId);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-
-    isDemoInstitution(this: any, institution: Institution): boolean {
-      return institution.name === 'DEMO INSTITUTION';
-    },
-  },
-};
+function isDemoInstitution(institution: Institution): boolean {
+  return institution.name === 'DEMO INSTITUTION'
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table {
+  overflow-x: auto;
+}
+.action-button {
+  cursor: pointer;
+}
+</style>

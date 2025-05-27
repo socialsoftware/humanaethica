@@ -1,548 +1,513 @@
 <template>
-  <div>
-    <v-card class="table">
-      <v-data-table
-        :headers="headers"
-        :items="activities"
-        :search="search"
-        disable-pagination
-        :hide-default-footer="true"
-        :mobile-breakpoint="0"
-        data-cy="volunteerEnrollmentsTable"
-      >
-        <template v-slot:top>
-          <v-card-title>
-            <v-text-field
-              v-model="search"
-              append-icon="search"
-              label="Search"
-              class="mx-2"
-            />
-            <v-spacer />
-          </v-card-title>
-        </template>
-        <template v-slot:[`item.themes`]="{ item }">
-          <v-chip v-for="theme in item.themes" :key="theme.id">
-            {{ theme.completeName }}
-          </v-chip>
-        </template>
-        <template v-slot:[`item.memberReview`]="{ item }">
-          <span class="review-text">{{ getMemberReview(item) }}</span>
-        </template>
-        <template v-slot:[`item.volunteerReview`]="{ item }">
-          <span class="review-text">{{ getVolunteerReview(item) }}</span>
-        </template>
-        <template v-slot:[`item.state`]="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-chip
-                v-if="item.state === 'REPORTED'"
-                class="mouseover"
-                @mouseover="showJustification(item)"
-                @mouseleave="hideJustification(item)"
-                v-on="on"
-              >
-                {{ item.state }}
-              </v-chip>
-              <v-chip v-else>
-                {{ item.state }}
-              </v-chip>
-            </template>
-            <span v-html="formattedJustification(item.justification)"></span>
-          </v-tooltip>
-        </template>
-        <template v-slot:[`item.action`]="{ item }">
-          <v-tooltip v-if="item.state === 'APPROVED' && canReport(item)" bottom>
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="red"
-                v-on="on"
-                data-cy="reportButton"
-                @click="reportActivity(item)"
-                >warning</v-icon
-              >
-            </template>
-            <span>Report Activity</span>
-          </v-tooltip>
-          <v-tooltip
-            v-if="item.state === 'REPORTED' && canUnReport(item)"
-            bottom
-          >
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="blue"
-                v-on="on"
-                data-cy="UnReportButton"
-                @click="unReportActivity(item)"
-                >warning</v-icon
-              >
-            </template>
-            <span>Unreport Activity</span>
-          </v-tooltip>
-          <v-tooltip
-            v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)"
-            bottom
-          >
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="red"
-                v-on="on"
-                data-cy="deleteEnrollmentButton"
-                @click="deleteEnrollmentForActivity(item)"
-                >fa-sign-in-alt</v-icon
-              >
-            </template>
-            <span>Delete Enrollment</span>
-          </v-tooltip>
-          <v-tooltip
-            v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)"
-            bottom
-          >
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="blue"
-                v-on="on"
-                data-cy="updateEnrollmentButton"
-                @click="editEnrollmentForActivity(item)"
-                >edit</v-icon
-              >
-            </template>
-            <span>Edit Enrollment</span>
-          </v-tooltip>
-          <v-tooltip v-if="item.state === 'APPROVED' && canAssess(item)" bottom>
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="blue"
-                v-on="on"
-                data-cy="writeAssessmentButton"
-                @click="writeAssessment(item)"
-                >fa-solid fa-pen-to-square</v-icon
-              >
-            </template>
-            <span>Write Assessment</span>
-          </v-tooltip>
-          <v-tooltip
-            v-if="canRate(item) && !memberAndVolunteerRatingExist(item)"
-            bottom
-          >
-            <template v-slot:activator="{ on }">
-              <v-icon
-                class="mr-2 action-button"
-                color="blue"
-                darken-5
-                v-on="on"
-                data-cy="writeParticipationButton"
-                @click="giveRating(item)"
-                >fa-solid fa-pen</v-icon
-              >
-            </template>
-            <span>Give Rating</span>
-          </v-tooltip>
-        </template>
-      </v-data-table>
-      <enrollment-dialog
-        v-if="currentEnrollment && editEnrollmentDialog"
-        :dialog.sync="editEnrollmentDialog"
-        :enrollment="currentEnrollment"
-        @update-enrollment="onUpdateEnrollment"
-        @close-enrollment-dialog="onCloseEnrollmentDialog"
-      />
-      <assessment-dialog
-        v-if="currentAssessment && editAssessmentDialog"
-        :dialog.sync="editAssessmentDialog"
-        :assessment="currentAssessment"
-        @save-assessment="onSaveAssessment"
-        @close-assessment-dialog="onCloseAssessmentDialog"
-      />
-      <participation-dialog
-        v-if="currentParticipation && editParticipationDialog"
-        :dialog.sync="editParticipationDialog"
-        :participation="currentParticipation"
-        @save-participation="onSaveParticipation"
-        @close-participation-dialog="onCloseParticipationDialog"
-      />
-      <report-dialog
-        v-if="currentReport && createReportDialog"
-        :dialog.sync="createReportDialog"
-        :report="currentReport"
-        @save-report="onSaveReport"
-        @close-report-dialog="onCloseReportDialog"
-      />
-    </v-card>
-  </div>
+  <VCard class="table">
+    <VDataTable
+      :headers="headers"
+      :items="activities"
+      :search="search"
+      disable-pagination
+      :hide-default-footer="true"
+      :mobile-breakpoint="0"
+      data-cy="volunteerEnrollmentsTable"
+    >
+      <template #top>
+        <VCardTitle>
+          <VTextField
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            class="mx-2"
+          />
+          <VSpacer />
+        </VCardTitle>
+      </template>
+      <template #item.themes="{ item }">
+        <VChip v-for="theme in item.themes" :key="theme.id">
+          {{ theme.completeName }}
+        </VChip>
+      </template>
+      <template #item.memberReview="{ item }">
+        <span class="review-text">{{ getMemberReview(item) }}</span>
+      </template>
+      <template #item.volunteerReview="{ item }">
+        <span class="review-text">{{ getVolunteerReview(item) }}</span>
+      </template>
+      <template #item.state="{ item }">
+        <VTooltip location="bottom">
+          <template #activator="{ props }">
+            <VChip
+              v-if="item.state === 'REPORTED'"
+              class="mouseover"
+              @mouseover="showJustification(item)"
+              @mouseleave="hideJustification(item)"
+              v-bind="props"
+            >
+              {{ item.state }}
+            </VChip>
+            <VChip v-else>
+              {{ item.state }}
+            </VChip>
+          </template>
+          <span v-html="formattedJustification(item.justification)"></span>
+        </VTooltip>
+      </template>
+      <template #item.action="{ item }">
+        <VTooltip v-if="item.state === 'APPROVED' && canReport(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
+              class="mr-2 action-button"
+              color="red"
+              v-bind="props"
+              data-cy="reportButton"
+              @click="reportActivity(item)"
+              aria-label="Report Activity"
+              role="button"
+              tabindex="0"
+            >
+              mdi-alert
+            </VIcon>
+          </template>
+          <span>Report Activity</span>
+        </VTooltip>
+        <VTooltip v-if="item.state === 'REPORTED' && canUnReport(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
+              class="mr-2 action-button"
+              color="blue"
+              v-bind="props"
+              data-cy="UnReportButton"
+              @click="unReportActivity(item)"
+              aria-label="Unreport Activity"
+              role="button"
+              tabindex="0"
+            >
+              mdi-alert
+            </VIcon>
+          </template>
+          <span>Unreport Activity</span>
+        </VTooltip>
+        <VTooltip v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
+              class="mr-2 action-button"
+              color="red"
+              v-bind="props"
+              data-cy="deleteEnrollmentButton"
+              @click="deleteEnrollmentForActivity(item)"
+              aria-label="Delete Enrollment"
+              role="button"
+              tabindex="0"
+            >
+              mdi-logout
+            </VIcon>
+          </template>
+          <span>Delete Enrollment</span>
+        </VTooltip>
+        <VTooltip v-if="item.state === 'APPROVED' && canEditOrRemoveEnroll(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
+              class="mr-2 action-button"
+              color="blue"
+              v-bind="props"
+              data-cy="updateEnrollmentButton"
+              @click="editEnrollmentForActivity(item)"
+              aria-label="Edit Enrollment"
+              role="button"
+              tabindex="0"
+            >
+              mdi-pencil
+            </VIcon>
+          </template>
+          <span>Edit Enrollment</span>
+        </VTooltip>
+        <VTooltip v-if="item.state === 'APPROVED' && canAssess(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
+              class="mr-2 action-button"
+              color="blue"
+              v-bind="props"
+              data-cy="writeAssessmentButton"
+              @click="writeAssessment(item)"
+              aria-label="Write Assessment"
+              role="button"
+              tabindex="0"
+            >
+              mdi-pencil
+            </VIcon>
+          </template>
+          <span>Write Assessment</span>
+        </VTooltip>
+        <VTooltip v-if="canRate(item) && !memberAndVolunteerRatingExist(item)" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
+              class="mr-2 action-button"
+              color="blue"
+              v-bind="props"
+              data-cy="writeParticipationButton"
+              @click="giveRating(item)"
+              aria-label="Give Rating"
+              role="button"
+              tabindex="0"
+            >
+              mdi-star
+            </VIcon>
+          </template>
+          <span>Give Rating</span>
+        </VTooltip>
+      </template>
+    </VDataTable>
+    <EnrollmentDialog
+      v-if="currentEnrollment && editEnrollmentDialog"
+      v-model:dialog="editEnrollmentDialog"
+      :enrollment="currentEnrollment"
+      @update-enrollment="onUpdateEnrollment"
+      @close-enrollment-dialog="onCloseEnrollmentDialog"
+    />
+    <AssessmentDialog
+      v-if="currentAssessment && editAssessmentDialog"
+      v-model:dialog="editAssessmentDialog"
+      :assessment="currentAssessment"
+      @save-assessment="onSaveAssessment"
+      @close-assessment-dialog="onCloseAssessmentDialog"
+    />
+    <ParticipationDialog
+      v-if="currentParticipation && editParticipationDialog"
+      v-model:dialog="editParticipationDialog"
+      :participation="currentParticipation"
+      @save-participation="onSaveParticipation"
+      @close-participation-dialog="onCloseParticipationDialog"
+    />
+    <ReportDialog
+      v-if="currentReport && createReportDialog"
+      v-model:dialog="createReportDialog"
+      :report="currentReport"
+      @save-report="onSaveReport"
+      @close-report-dialog="onCloseReportDialog"
+    />
+  </VCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import RemoteServices from '@/services/RemoteServices';
-import Activity from '@/models/activity/Activity';
-import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue';
-import Enrollment from '@/models/enrollment/Enrollment';
-import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue';
-import Assessment from '@/models/assessment/Assessment';
-import Participation from '@/models/participation/Participation';
-import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue';
-import ReportDialog from '@/views/volunteer/ReportDialog.vue';
-import Report from '@/models/report/Report';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
+import Activity from '@/models/activity/Activity'
+import EnrollmentDialog from '@/views/volunteer/EnrollmentDialog.vue'
+import Enrollment from '@/models/enrollment/Enrollment'
+import AssessmentDialog from '@/views/volunteer/AssessmentDialog.vue'
+import Assessment from '@/models/assessment/Assessment'
+import Participation from '@/models/participation/Participation'
+import ParticipationDialog from '@/views/volunteer/ParticipationDialog.vue'
+import ReportDialog from '@/views/volunteer/ReportDialog.vue'
+import Report from '@/models/report/Report'
 
-export default defineComponent({
-  name: 'VolunteerEnrollmentsView',
+const store = useMainStore()
 
-  components: {
-    'assessment-dialog': AssessmentDialog,
-    'enrollment-dialog': EnrollmentDialog,
-    'participation-dialog': ParticipationDialog,
-    'report-dialog': ReportDialog,
-  },
-  data() {
-    return {
-      activities: [] as Activity[],
-      enrollments: [] as Enrollment[],
-      participations: [] as Participation[],
-      assessments: [] as Assessment[],
-      reports: [] as Report[],
-      search: '',
-      currentEnrollment: null as Enrollment | null,
-      editEnrollmentDialog: false,
-      currentAssessment: null as Assessment | null,
-      editAssessmentDialog: false,
-      currentParticipation: null as Participation | null,
-      editParticipationDialog: false,
-      currentActivity: null as Activity | null,
-      currentReport: null as Report | null,
-      createReportDialog: false,
-      headers: [
-        { text: 'Name', value: 'name', align: 'left', width: '5%' },
-        { text: 'Region', value: 'region', align: 'left', width: '5%' },
-        {
-          text: 'Institution',
-          value: 'institution.name',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Participants Limit',
-          value: 'participantsNumberLimit',
-          align: 'left',
-          width: '5%',
-        },
-        { text: 'Themes', value: 'themes', align: 'left', width: '5%' },
-        {
-          text: 'Description',
-          value: 'description',
-          align: 'left',
-          width: '30%',
-        },
-        {
-          text: 'Member Rating',
-          value: 'memberReview',
-          align: 'left',
-          width: '20%',
-        },
-        {
-          text: 'Volunteer Rating',
-          value: 'volunteerReview',
-          align: 'left',
-          width: '20%',
-        },
-        { text: 'State', value: 'state', align: 'left', width: '5%' },
-        {
-          text: 'Start Date',
-          value: 'formattedStartingDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'End Date',
-          value: 'formattedEndingDate',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Application Deadline',
-          value: 'formattedApplicationDeadline',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Actions',
-          value: 'action',
-          align: 'left',
-          sortable: false,
-          width: '5%',
-        },
-      ],
-    };
-  },
-  created() {
-    this.loadData();
-  },
-  methods: {
-    async loadData() {
-      await this.$store.dispatch('loading');
-      try {
-        this.activities = await RemoteServices.getActivities();
-        this.enrollments = await RemoteServices.getVolunteerEnrollments();
-        this.participations = await RemoteServices.getVolunteerParticipations();
-        this.assessments = await RemoteServices.getVolunteerAssessments();
-        this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-      this.updateActivitiesList();
-    },
-    reportActivity(activity: Activity) {
-      this.currentReport = new Report();
-      this.currentReport.activityId = activity.id;
-      this.createReportDialog = true;
-      this.currentActivity = activity;
-    },
-    getMemberReview(activity: Activity): string {
-      const participation = this.participations.find(
-        (p) => p.activityId === activity.id,
-      );
-      if (
-        !participation ||
-        participation.memberReview == null ||
-        participation.memberRating == null
-      ) {
-        return '';
-      }
-      const stars = this.convertToStars(participation.memberRating);
-      return `${participation.memberReview}\nRating: ${stars}`;
-    },
-    getVolunteerReview(activity: Activity): string {
-      const participation = this.participations.find(
-        (p) => p.activityId === activity.id,
-      );
-      if (
-        !participation ||
-        participation.volunteerReview == null ||
-        participation.volunteerRating == null
-      ) {
-        return '';
-      }
-      const stars = this.convertToStars(participation.volunteerRating);
-      return `${participation.volunteerReview}\nRating: ${stars}`;
-    },
-    convertToStars(rating: number): string {
-      const fullStars = '★'.repeat(Math.floor(rating));
-      const emptyStars = '☆'.repeat(Math.floor(5 - rating));
-      return `${fullStars}${emptyStars} ${rating}/5`;
-    },
-    async deleteEnrollmentForActivity(activity: Activity) {
-      const index = this.enrollments.findIndex(
-        (e) => e.activityId == activity.id,
-      );
-      this.currentEnrollment = this.enrollments[index];
-      if (this.currentEnrollment?.id !== null) {
-        try {
-          await RemoteServices.removeEnrollment(this.currentEnrollment.id);
-          this.enrollments = await RemoteServices.getVolunteerEnrollments();
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-      this.currentEnrollment = null;
-      this.updateActivitiesList();
-    },
-    canEditOrRemoveEnroll(activity: Activity) {
-      let deadline = new Date(activity.applicationDeadline);
-      let now = new Date();
-      return (
-        deadline > now &&
-        this.enrollments.some((e) => e.activityId === activity.id)
-      );
-    },
-    canRate(activity: Activity) {
-      const enrollment = this.enrollments.find(
-        (e) => e.activityId === activity.id,
-      );
-      let endDate = new Date(activity.endingDate);
-      let now = new Date();
-      return now > endDate && enrollment && enrollment.participating;
-    },
-    editEnrollmentForActivity(activity: Activity) {
-      const index = this.enrollments.findIndex(
-        (e) => e.activityId == activity.id,
-      );
-      this.currentEnrollment = this.enrollments[index];
-      this.editEnrollmentDialog = true;
-    },
-    onCloseEnrollmentDialog() {
-      this.editEnrollmentDialog = false;
-      this.currentEnrollment = null;
-    },
-    async onUpdateEnrollment(enrollment: Enrollment) {
-      this.enrollments.push(enrollment);
-      this.editEnrollmentDialog = false;
-      this.currentEnrollment = null;
-      this.enrollments = await RemoteServices.getVolunteerEnrollments();
-    },
-    updateActivitiesList() {
-      this.activities = this.activities.filter((a) =>
-        this.enrollments.some((e) => e.activityId === a.id),
-      );
-    },
-    canAssess(activity: Activity) {
-      let endDate = new Date(activity.endingDate);
-      let now = new Date();
-      return (
-        now > endDate &&
-        this.participations.some((p) => p.activityId === activity.id) &&
-        !this.assessments.some(
-          (a) => a.institutionId === activity.institution.id,
-        )
-      );
-    },
-    giveRating(activity: Activity) {
-      let activityId = activity.id;
-      const enrollment = this.enrollments.find(
-        (e) => e.activityId === activity.id,
-      );
-      let volunteerId = enrollment?.volunteerId;
-      let existingParticipation = this.participations.find(
-        (p) => p.activityId === activityId && p.volunteerId === volunteerId,
-      );
-      if (existingParticipation) {
-        this.currentParticipation = existingParticipation;
-        this.currentParticipation.activityId = activityId;
-        this.currentParticipation.volunteerId = volunteerId;
-        this.editParticipationDialog = true;
-      }
-    },
-    memberAndVolunteerRatingExist(activity: Activity) {
-      const enrollment = this.enrollments.find(
-        (e) => e.activityId === activity.id,
-      );
-      if (enrollment) {
-        const existingParticipation = this.participations.find(
-          (p) =>
-            p.activityId === activity.id &&
-            p.volunteerId === enrollment.volunteerId &&
-            p.memberRating &&
-            p.volunteerRating,
-        );
-        if (existingParticipation) {
-          return true;
-        }
-      }
-      return false;
-    },
-    onCloseParticipationDialog() {
-      this.editParticipationDialog = false;
-      this.currentParticipation = null;
-    },
-    async onSaveParticipation() {
-      this.editParticipationDialog = false;
-      this.currentParticipation = null;
-      this.participations = await RemoteServices.getVolunteerParticipations();
-    },
-    onCloseAssessmentDialog() {
-      this.editAssessmentDialog = false;
-      this.currentAssessment = null;
-    },
-    writeAssessment(activity: Activity) {
-      this.currentAssessment = new Assessment();
-      this.currentAssessment.institutionId = activity.institution.id;
-      this.editAssessmentDialog = true;
-    },
-    async onSaveAssessment(assessment: Assessment) {
-      this.assessments.push(assessment);
-      this.editAssessmentDialog = false;
-      this.currentAssessment = null;
-    },
-    canReport(activity: Activity) {
-      let deadline = new Date(activity.endingDate);
-      let now = new Date();
-      return (
-        deadline > now &&
-        !this.reports.some((r) => r.activityId === activity.id)
-      );
-    },
-    onCloseReportDialog() {
-      this.createReportDialog = false;
-      this.currentReport = null;
-    },
-    async onSaveReport(report: Report) {
-      this.reports.push(report);
-      this.createReportDialog = false;
-      this.currentReport = null;
-      if (this.currentActivity != null && this.currentActivity.id !== null) {
-        try {
-          const result = await RemoteServices.reportActivity(
-            this.$store.getters.getUser.id,
-            this.currentActivity.id,
-          );
-          this.activities = this.activities.filter(
-            (a) => a.id !== this.currentActivity!.id,
-          );
-          this.activities.unshift(result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-      this.currentActivity = null;
-    },
-    canUnReport(activity: Activity) {
-      let deadline = new Date(activity.endingDate);
-      let now = new Date();
-      return (
-        deadline > now && this.reports.some((r) => r.activityId === activity.id)
-      );
-    },
-    async unReportActivity(activity: Activity) {
-      const index = this.reports.findIndex((r) => r.activityId == activity.id);
-      this.currentReport = this.reports[index];
-      if (activity.id !== null) {
-        try {
-          const result = await RemoteServices.validateActivity(activity.id);
-          this.activities = this.activities.filter((a) => a.id !== activity.id);
-          this.activities.unshift(result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-      if (this.currentReport?.id !== null) {
-        try {
-          await RemoteServices.deleteReport(this.currentReport.id);
-          this.reports = await RemoteServices.getVolunteerReportsAsVolunteer();
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-      this.currentReport = null;
-    },
-    async showJustification(activity: Activity) {
-      const index = this.reports.findIndex((r) => r.activityId == activity.id);
-      this.currentReport = this.reports[index];
-      if (this.currentReport) {
-        Vue.set(activity, 'justification', this.currentReport.justification);
-        Vue.set(activity, 'showJustification', true);
-      }
-    },
-    async hideJustification(activity: Activity) {
-      Vue.set(activity, 'showJustification', false);
-    },
-    formattedJustification(justification: string) {
-      if (!justification) return '';
-      return justification.replace(/(.{20})/g, '$1<br>');
-    },
-  },
-});
+const activities = ref<Activity[]>([])
+const enrollments = ref<Enrollment[]>([])
+const participations = ref<Participation[]>([])
+const assessments = ref<Assessment[]>([])
+const reports = ref<Report[]>([])
+const search = ref('')
+const currentEnrollment = ref<Enrollment | null>(null)
+const editEnrollmentDialog = ref(false)
+const currentAssessment = ref<Assessment | null>(null)
+const editAssessmentDialog = ref(false)
+const currentParticipation = ref<Participation | null>(null)
+const editParticipationDialog = ref(false)
+const currentActivity = ref<Activity | null>(null)
+const currentReport = ref<Report | null>(null)
+const createReportDialog = ref(false)
+
+const headers = [
+  { title: 'Name', key: 'name', align: 'left', width: '5%' },
+  { title: 'Region', key: 'region', align: 'left', width: '5%' },
+  { title: 'Institution', key: 'institution.name', align: 'left', width: '5%' },
+  { title: 'Participants Limit', key: 'participantsNumberLimit', align: 'left', width: '5%' },
+  { title: 'Themes', key: 'themes', align: 'left', width: '5%' },
+  { title: 'Description', key: 'description', align: 'left', width: '30%' },
+  { title: 'Member Rating', key: 'memberReview', align: 'left', width: '20%' },
+  { title: 'Volunteer Rating', key: 'volunteerReview', align: 'left', width: '20%' },
+  { title: 'State', key: 'state', align: 'left', width: '5%' },
+  { title: 'Start Date', key: 'formattedStartingDate', align: 'left', width: '5%' },
+  { title: 'End Date', key: 'formattedEndingDate', align: 'left', width: '5%' },
+  { title: 'Application Deadline', key: 'formattedApplicationDeadline', align: 'left', width: '5%' },
+  { title: 'Actions', key: 'action', align: 'left', sortable: false, width: '5%' },
+]
+
+onMounted(async () => {
+  store.setLoading()
+  try {
+    activities.value = await RemoteServices.getActivities()
+    enrollments.value = await RemoteServices.getVolunteerEnrollments()
+    participations.value = await RemoteServices.getVolunteerParticipations()
+    assessments.value = await RemoteServices.getVolunteerAssessments()
+    reports.value = await RemoteServices.getVolunteerReportsAsVolunteer()
+    updateActivitiesList()
+  } catch (error: any) {
+    store.setError(error.message)
+  }
+  store.clearLoading()
+})
+
+function reportActivity(activity: Activity) {
+  currentReport.value = new Report()
+  currentReport.value.activityId = activity.id
+  createReportDialog.value = true
+  currentActivity.value = activity
+}
+
+function getMemberReview(activity: Activity): string {
+  const participation = participations.value.find(
+    (p) => p.activityId === activity.id
+  )
+  if (
+    !participation ||
+    participation.memberReview == null ||
+    participation.memberRating == null
+  ) {
+    return ''
+  }
+  const stars = convertToStars(participation.memberRating)
+  return `${participation.memberReview}\nRating: ${stars}`
+}
+
+function getVolunteerReview(activity: Activity): string {
+  const participation = participations.value.find(
+    (p) => p.activityId === activity.id
+  )
+  if (
+    !participation ||
+    participation.volunteerReview == null ||
+    participation.volunteerRating == null
+  ) {
+    return ''
+  }
+  const stars = convertToStars(participation.volunteerRating)
+  return `${participation.volunteerReview}\nRating: ${stars}`
+}
+
+function convertToStars(rating: number): string {
+  const fullStars = '★'.repeat(Math.floor(rating))
+  const emptyStars = '☆'.repeat(Math.floor(5 - rating))
+  return `${fullStars}${emptyStars} ${rating}/5`
+}
+
+async function deleteEnrollmentForActivity(activity: Activity) {
+  const enrollment = enrollments.value.find((e) => e.activityId == activity.id)
+  currentEnrollment.value = enrollment ?? null
+  if (currentEnrollment.value?.id !== null) {
+    try {
+      await RemoteServices.removeEnrollment(currentEnrollment.value.id)
+      enrollments.value = await RemoteServices.getVolunteerEnrollments()
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+  currentEnrollment.value = null
+  updateActivitiesList()
+}
+
+function canEditOrRemoveEnroll(activity: Activity) {
+  const deadline = new Date(activity.applicationDeadline)
+  const now = new Date()
+  return (
+    deadline > now &&
+    enrollments.value.some((e) => e.activityId === activity.id)
+  )
+}
+
+function canRate(activity: Activity) {
+  const enrollment = enrollments.value.find((e) => e.activityId === activity.id)
+  const endDate = new Date(activity.endingDate)
+  const now = new Date()
+  return now > endDate && enrollment && enrollment.participating
+}
+
+function editEnrollmentForActivity(activity: Activity) {
+  const enrollment = enrollments.value.find((e) => e.activityId == activity.id)
+  currentEnrollment.value = enrollment ?? null
+  editEnrollmentDialog.value = true
+}
+
+function onCloseEnrollmentDialog() {
+  editEnrollmentDialog.value = false
+  currentEnrollment.value = null
+}
+
+async function onUpdateEnrollment(enrollment: Enrollment) {
+  enrollments.value.push(enrollment)
+  editEnrollmentDialog.value = false
+  currentEnrollment.value = null
+  enrollments.value = await RemoteServices.getVolunteerEnrollments()
+}
+
+function updateActivitiesList() {
+  activities.value = activities.value.filter((a) =>
+    enrollments.value.some((e) => e.activityId === a.id)
+  )
+}
+
+function canAssess(activity: Activity) {
+  const endDate = new Date(activity.endingDate)
+  const now = new Date()
+  return (
+    now > endDate &&
+    participations.value.some((p) => p.activityId === activity.id) &&
+    !assessments.value.some(
+      (a) => a.institutionId === activity.institution.id
+    )
+  )
+}
+
+function giveRating(activity: Activity) {
+  const activityId = activity.id
+  const enrollment = enrollments.value.find((e) => e.activityId === activity.id)
+  const volunteerId = enrollment?.volunteerId
+  const existingParticipation = participations.value.find(
+    (p) => p.activityId === activityId && p.volunteerId === volunteerId
+  )
+  if (existingParticipation) {
+    currentParticipation.value = existingParticipation
+    currentParticipation.value.activityId = activityId
+    currentParticipation.value.volunteerId = volunteerId
+    editParticipationDialog.value = true
+  }
+}
+
+function memberAndVolunteerRatingExist(activity: Activity) {
+  const enrollment = enrollments.value.find((e) => e.activityId === activity.id)
+  if (enrollment) {
+    const existingParticipation = participations.value.find(
+      (p) =>
+        p.activityId === activity.id &&
+        p.volunteerId === enrollment.volunteerId &&
+        p.memberRating &&
+        p.volunteerRating
+    )
+    if (existingParticipation) {
+      return true
+    }
+  }
+  return false
+}
+
+function onCloseParticipationDialog() {
+  editParticipationDialog.value = false
+  currentParticipation.value = null
+}
+
+async function onSaveParticipation() {
+  editParticipationDialog.value = false
+  currentParticipation.value = null
+  participations.value = await RemoteServices.getVolunteerParticipations()
+}
+
+function onCloseAssessmentDialog() {
+  editAssessmentDialog.value = false
+  currentAssessment.value = null
+}
+
+function writeAssessment(activity: Activity) {
+  currentAssessment.value = new Assessment()
+  currentAssessment.value.institutionId = activity.institution.id
+  editAssessmentDialog.value = true
+}
+
+async function onSaveAssessment(assessment: Assessment) {
+  assessments.value.push(assessment)
+  editAssessmentDialog.value = false
+  currentAssessment.value = null
+}
+
+function canReport(activity: Activity) {
+  const deadline = new Date(activity.endingDate)
+  const now = new Date()
+  return (
+    deadline > now &&
+    !reports.value.some((r) => r.activityId === activity.id)
+  )
+}
+
+function onCloseReportDialog() {
+  createReportDialog.value = false
+  currentReport.value = null
+}
+
+async function onSaveReport(report: Report) {
+  reports.value.push(report)
+  createReportDialog.value = false
+  currentReport.value = null
+  if (currentActivity.value != null && currentActivity.value.id !== null) {
+    try {
+      const result = await RemoteServices.reportActivity(
+        store.user.id,
+        currentActivity.value.id
+      )
+      activities.value = activities.value.filter(
+        (a) => a.id !== currentActivity.value!.id
+      )
+      activities.value.unshift(result)
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+  currentActivity.value = null
+}
+
+function canUnReport(activity: Activity) {
+  const deadline = new Date(activity.endingDate)
+  const now = new Date()
+  return (
+    deadline > now && reports.value.some((r) => r.activityId === activity.id)
+  )
+}
+
+async function unReportActivity(activity: Activity) {
+  const index = reports.value.findIndex((r) => r.activityId == activity.id)
+  currentReport.value = reports.value[index]
+  if (activity.id !== null) {
+    try {
+      const result = await RemoteServices.validateActivity(activity.id)
+      activities.value = activities.value.filter((a) => a.id !== activity.id)
+      activities.value.unshift(result)
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+  if (currentReport.value?.id !== null) {
+    try {
+      await RemoteServices.deleteReport(currentReport.value.id)
+      reports.value = await RemoteServices.getVolunteerReportsAsVolunteer()
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+  currentReport.value = null
+}
+
+async function showJustification(activity: Activity) {
+  const index = reports.value.findIndex((r) => r.activityId == activity.id)
+  currentReport.value = reports.value[index]
+  if (currentReport.value) {
+    activity.justification = currentReport.value.justification
+    activity.showJustification = true
+  }
+}
+
+function hideJustification(activity: Activity) {
+  activity.showJustification = false
+}
+
+function formattedJustification(justification: string) {
+  if (!justification) return ''
+  return justification.replace(/(.{20})/g, '$1<br>')
+}
 </script>
 
 <style lang="scss" scoped>
 .review-text {
   white-space: pre-line;
 }
-
 .mouseover {
   cursor: pointer;
 }

@@ -1,162 +1,129 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('update:dialog', $event)"
+  <VDialog
+    v-model="dialogModel"
     persistent
-    width="800"
+    max-width="800"
   >
-    <v-card>
-      <v-card-title>
+    <VCard>
+      <VCardTitle>
         <span class="headline">
-          {{
-            editParticipation && editParticipation.id === null
-              ? 'Create Participation'
-              : 'Your Rating'
-          }}
+          {{ editParticipation && editParticipation.id === null ? 'Create Participation' : 'Your Rating' }}
         </span>
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" lazy-validation>
-          <v-row>
-            <v-col cols="12" class="d-flex align-center">
-              <v-text-field
+      </VCardTitle>
+      <VCardText>
+        <VForm ref="form" v-model="valid">
+          <VRow>
+            <VCol cols="12" class="d-flex align-center">
+              <VTextField
                 label="Rating"
-                :rules="[(v) => isNumberValid(v) || 'Rating between 1 and 5']"
+                :rules="[isNumberValid]"
                 v-model="editParticipation.memberRating"
                 data-cy="participantsNumberInput"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-textarea
+              />
+            </VCol>
+            <VCol cols="12">
+              <VTextarea
                 label="Review"
                 v-model="editParticipation.memberReview"
-                :rules="[(v) => !!v || 'Review is required']"
+                :rules="[v => !!v || 'Review is required', v => v.length >= 10 || 'Review must be at least 10 characters', v => v.length < 100 || 'Review must be less than 100 characters']"
                 data-cy="participantsReviewInput"
                 auto-grow
                 rows="1"
-              ></v-textarea>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
+              />
+            </VCol>
+          </VRow>
+        </VForm>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
           color="primary"
-          dark
           variant="text"
-          @click="$emit('close-participation-dialog')"
+          @click="emit('close-participation-dialog')"
         >
           Close
-        </v-btn>
-        <v-btn
+        </VBtn>
+        <VBtn
           v-if="isReviewValid && isRatingValid"
           color="primary"
-          dark
           variant="text"
           @click="createUpdateParticipation"
           data-cy="createParticipation"
         >
           Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, watch, onMounted } from 'vue';
-import RemoteServices from '@/services/RemoteServices';
-import Participation from '@/models/participation/Participation';
+<script lang="ts" setup>
+import { ref, watch, computed } from 'vue'
+import RemoteServices from '@/services/RemoteServices'
+import Participation from '@/models/participation/Participation'
 
-export default defineComponent({
-  name: 'ParticipationSelectionDialog',
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-    participation: {
-      type: Object as () => Participation,
-      required: true,
-    },
-  },
-  emits: ['update:dialog', 'close-participation-dialog', 'save-participation'],
-  setup(props, { emit }) {
-    const dialogRef = ref(props.dialog);
-    const form = ref();
-    const editParticipation = ref(new Participation(props.participation));
-    const participations = ref<Participation[]>([]);
+const props = defineProps<{
+  dialog: boolean
+  participation: Participation
+}>()
+const emit = defineEmits(['update:dialog', 'close-participation-dialog', 'save-participation'])
 
-    const isReviewValid = computed(() => {
-      const review = editParticipation.value.memberReview;
-      return !!review && review.length >= 10 && review.length < 100;
-    });
+const dialogModel = ref(props.dialog)
+const form = ref()
+const valid = ref(true)
+const editParticipation = ref(new Participation(props.participation))
 
-    const isRatingValid = computed(() => {
-      return !!editParticipation.value.memberRating;
-    });
+const isReviewValid = computed(() => {
+  const review = editParticipation.value.memberReview
+  return !!review && review.length >= 10 && review.length < 100
+})
 
-    const isNumberValid = (value: any): boolean => {
-      if (value === null || value === undefined || value === '') return true;
-      if (!/^\d+$/.test(value)) return false;
-      const parsed = parseInt(value);
-      return parsed >= 1 && parsed <= 5;
-    };
+const isRatingValid = computed(() => {
+  return !!editParticipation.value.memberRating
+})
 
-    const createUpdateParticipation = async () => {
-      const valid = (form.value as any)?.validate?.();
-      if (valid) {
-        try {
-          const result =
-            editParticipation.value.id !== null
-              ? await RemoteServices.updateParticipationMember(
-                  editParticipation.value.id,
-                  editParticipation.value,
-                )
-              : await RemoteServices.createParticipation(
-                  editParticipation.value.activityId!,
-                  editParticipation.value,
-                );
+function isNumberValid(value: any) {
+  if (value === null || value === undefined || value === '') return true
+  if (!/^\d+$/.test(value)) return 'Rating between 1 and 5'
+  const parsed = parseInt(value, 10)
+  return (parsed >= 1 && parsed <= 5) || 'Rating between 1 and 5'
+}
 
-          emit('save-participation', result);
-          emit('close-participation-dialog');
-        } catch (error) {
-          await (window as any).$store.dispatch('error', error);
-        }
-      }
-    };
+async function createUpdateParticipation() {
+  if (!form.value || !(await form.value.validate())) return
+  try {
+    let result
+    if (editParticipation.value.id !== null) {
+      result = await RemoteServices.updateParticipationMember(
+        editParticipation.value.id,
+        editParticipation.value
+      )
+    } else {
+      result = await RemoteServices.createParticipation(
+        editParticipation.value.activityId!,
+        editParticipation.value
+      )
+    }
+    emit('save-participation', result)
+    emit('close-participation-dialog')
+  } catch (error: any) {
+    // Optionally handle error with store.setError(error.message)
+  }
+}
 
-    onMounted(async () => {
-      participations.value = await RemoteServices.getActivityParticipations(
-        editParticipation.value.activityId,
-      );
-    });
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) {
+      editParticipation.value = new Participation(props.participation)
+    }
+  }
+)
 
-    // Sync prop -> ref and emit back (v-model binding)
-    watch(
-      () => props.dialog,
-      (val) => {
-        dialogRef.value = val;
-      },
-    );
-
-    watch(dialogRef, (val) => {
-      emit('update:dialog', val);
-    });
-
-    return {
-      dialogRef,
-      form,
-      editParticipation,
-      participations,
-      isReviewValid,
-      isRatingValid,
-      isNumberValid,
-      createUpdateParticipation,
-    };
-  },
-});
+watch(dialogModel, (val) => {
+  emit('update:dialog', val)
+})
 </script>
 
 <style scoped lang="scss"></style>

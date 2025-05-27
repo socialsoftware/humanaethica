@@ -1,43 +1,40 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('update:dialog', $event)"
+  <VDialog
+    v-model="dialogModel"
     persistent
-    width="800"
+    max-width="800"
   >
-    <v-card>
-      <v-card-title>
-        <span class="headline">
-          {{ 'New Report' }}
-        </span>
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" lazy-validation>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
+    <VCard>
+      <VCardTitle>
+        <span class="headline">New Report</span>
+      </VCardTitle>
+      <VCardText>
+        <VForm ref="form" v-model="valid">
+          <VRow>
+            <VCol cols="12">
+              <VTextarea
                 label="*Justification"
-                :rules="[(v) => !!v || 'Justification is required']"
+                :rules="rules"
                 required
-                v-model="newReport.justification"
+                v-model="editReport.justification"
                 data-cy="justificationInput"
                 auto-grow
                 rows="1"
-              ></v-textarea>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
+              />
+            </VCol>
+          </VRow>
+        </VForm>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
           color="blue-darken-1"
           variant="text"
-          @click="$emit('close-report-dialog')"
+          @click="emit('close-report-dialog')"
         >
           Close
-        </v-btn>
-        <v-btn
+        </VBtn>
+        <VBtn
           v-if="canSave"
           color="blue-darken-1"
           variant="text"
@@ -45,67 +42,69 @@
           data-cy="saveReport"
         >
           Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
-import Report from '@/models/report/Report';
+<script lang="ts" setup>
+import { ref, watch, computed } from 'vue'
+import RemoteServices from '@/services/RemoteServices'
+import Report from '@/models/report/Report'
 
-export default {
-  name: 'ReportDialog',
+const props = defineProps<{
+  dialog: boolean
+  report: Report
+}>()
+const emit = defineEmits(['update:dialog', 'close-report-dialog', 'save-report'])
 
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-    report: {
-      type: Report,
-      required: true,
-    },
-  },
+const dialogModel = ref(props.dialog)
+const valid = ref(true)
+const editReport = ref(new Report(props.report))
 
-  data(this: any) {
-    return {
-      newReport: new Report(this.report),
-    };
-  },
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) {
+      editReport.value = new Report(props.report)
+    }
+  }
+)
 
-  computed: {
-    canSave(this: any): boolean {
-      return (
-        !!this.newReport.justification &&
-        this.newReport.justification.length >= 10 &&
-        this.newReport.justification.length <= 256
-      );
-    },
-  },
+watch(dialogModel, (val) => {
+  emit('update:dialog', val)
+})
 
-  methods: {
-    ISOtoString, // keeps existing import
+const rules = [
+  (v: string) => !!v || 'Justification is required',
+  (v: string) => v.length >= 10 || 'Justification must be at least 10 characters',
+  (v: string) => v.length <= 256 || 'Justification must be less than or equal to 256 characters',
+]
 
-    async createReport(this: any) {
-      const form = this.$refs.form as Vue & { validate: () => boolean };
+const canSave = computed(() =>
+  !!editReport.value.justification &&
+  editReport.value.justification.length >= 10 &&
+  editReport.value.justification.length <= 256
+)
 
-      if (this.newReport.activityId !== null && form.validate()) {
-        try {
-          const result = await RemoteServices.createReport(
-            this.newReport.activityId,
-            this.newReport,
-          );
-          this.$emit('save-report', result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-  },
-};
+async function createReport() {
+  const form = (ref as any).form?.value
+  if (editReport.value.activityId !== null && (!form || await form.validate())) {
+    try {
+      const result = await RemoteServices.createReport(
+        editReport.value.activityId,
+        editReport.value
+      )
+      emit('save-report', result)
+    } catch (error: any) {
+      // Use your store's error handler if available
+      // store.setError(error.message)
+      console.error(error)
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss"></style>

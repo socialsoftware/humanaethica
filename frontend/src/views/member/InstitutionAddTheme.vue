@@ -1,113 +1,123 @@
 <template v-if="theme">
-  <v-dialog
-    :value="dialog"
-    @input="$emit('close-dialog')"
-    @keydown.esc="$emit('close-dialog')"
+  <VDialog
+    v-model="dialogModel"
+    @keydown.esc="closeDialog"
     max-width="75%"
     max-height="80%"
   >
-    <v-card>
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-card-title>
+    <VCard>
+      <VForm ref="form" v-model="valid">
+        <VCardTitle>
           <span class="headline">Add Theme</span>
-        </v-card-title>
-        <v-select
+        </VCardTitle>
+        <VSelect
           v-model="theme.parentTheme"
           label="Parent Theme (Optional)"
           :items="themes"
           return-object
           item-value="id"
-          item-text="completeName"
-          required
+          item-title="completeName"
           :menu-props="{ offsetY: true, nudgeLeft: 0, class: 'left-text' }"
           class="move-right"
         >
-          <template v-slot:item="{ item }">
+          <template #item="{ item }">
             <div class="left-text">
               <span class="indentation">{{ item.completeName }}</span>
             </div>
           </template>
-        </v-select>
+        </VSelect>
 
-        <v-card-text class="text-left">
-          <v-text-field
+        <VCardText class="text-left">
+          <VTextField
             v-model="theme.name"
             label="Name"
             data-cy="themeNameInput"
-            :rules="[(value) => !!value || 'Name is required']"
+            :rules="[v => !!v || 'Name is required']"
             required
           />
           <div class="add-theme-feedback-container">
             <span class="add-theme-feedback" v-if="success">
-              {{ theme.name }} added</span
-            >
+              {{ theme.name }} added
+            </span>
           </div>
-        </v-card-text>
+        </VCardText>
 
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="blue darken-1"
-            @click="$emit('close-dialog')"
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="primary"
+            @click="closeDialog"
             data-cy="cancelButton"
-            >Close</v-btn
+            >Close</VBtn
           >
-          <v-btn color="blue darken-1" @click="submit" data-cy="saveButton"
-            >Add</v-btn
+          <VBtn color="primary" @click="submit" data-cy="saveButton"
+            >Add</VBtn
           >
-        </v-card-actions>
-      </v-form>
-    </v-card>
-  </v-dialog>
+        </VCardActions>
+      </VForm>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import RemoteServices from '@/services/RemoteServices';
-import Theme from '@/models/theme/Theme';
+<script lang="ts" setup>
+import { ref, onMounted, watch } from 'vue'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
+import Theme from '@/models/theme/Theme'
 
-export default defineComponent({
-  name: 'InstitutionAddTheme',
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  data(this: any) {
-    return {
-      valid: true,
-      success: false,
-      theme: new Theme(),
-      themes: [] as Theme[],
-    };
-  },
-  async created(this: any) {
-    this.theme = new Theme();
-    this.themes = await RemoteServices.getThemesAvailable();
-  },
-  methods: {
-    async submit(this: any) {
-      this.success = false;
+const props = defineProps<{ dialog: boolean }>()
+const emit = defineEmits(['close-dialog', 'theme-created'])
 
-      const form = this.$refs.form as any;
-      if (!form || !form.validate()) return;
+const mainStore = useMainStore()
 
-      try {
-        const result = await RemoteServices.registerThemeInstitution(
-          this.theme,
-        );
-        this.$emit('theme-created', result);
-        this.success = true;
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    },
-  },
-});
+const dialogModel = ref(props.dialog)
+const valid = ref(true)
+const success = ref(false)
+const theme = ref<Theme | null>(null)
+const themes = ref<Theme[]>([])
+const form = ref()
+
+const closeDialog = () => emit('close-dialog')
+
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) {
+      theme.value = new Theme()
+      fetchThemes()
+      success.value = false
+    }
+  }
+)
+
+watch(dialogModel, (val) => {
+  if (!val) emit('close-dialog')
+})
+
+const fetchThemes = async () => {
+  themes.value = await RemoteServices.getThemesAvailable()
+}
+
+const submit = async () => {
+  success.value = false
+  if (!form.value || !(await form.value.validate())) return
+  try {
+    const result = await RemoteServices.registerThemeInstitution(theme.value)
+    emit('theme-created', result)
+    success.value = true
+  } catch (error:any) {
+    mainStore.setError(error.message)
+  }
+}
+
+onMounted(() => {
+  theme.value = new Theme()
+  fetchThemes()
+})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .add-theme-feedback-container {
   height: 25px;
 }
@@ -116,11 +126,9 @@ export default defineComponent({
   color: #1b5e20;
   text-transform: uppercase;
 }
-
 .left-text {
   text-align: left;
 }
-
 .move-right {
   margin-left: 20px;
   margin-right: 20px;

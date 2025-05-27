@@ -1,6 +1,6 @@
 <template>
-  <v-card class="table">
-    <v-data-table
+  <VCard class="table">
+    <VDataTable
       :headers="headers"
       :items="themes"
       :search="search"
@@ -8,141 +8,152 @@
       :hide-default-footer="true"
       :mobile-breakpoint="0"
     >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
+      <template #top>
+        <VCardTitle>
+          <VTextField
             v-model="search"
             append-icon="search"
             label="Search"
             class="mx-2"
           />
-          <v-spacer />
-          <v-btn color="primary" dark @click="newTheme" data-cy="createButton"
-            >New Theme</v-btn
-          >
-          <v-btn
-            color="primary"
-            dark
-            @click="AssociateTheme"
-            data-cy="createButton"
-            >Associate Theme</v-btn
-          >
-        </v-card-title>
+          <VSpacer />
+          <VBtn color="primary" @click="newTheme" data-cy="createButton">
+            New Theme
+          </VBtn>
+          <VBtn color="primary" @click="associateThemeDialog" data-cy="associateButton">
+            Associate Theme
+          </VBtn>
+        </VCardTitle>
       </template>
-      <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
+      <template #item.action="{ item }">
+        <VTooltip location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="red"
-              v-on="on"
+              v-bind="props"
               data-cy="deleteButton"
               @click="deleteTheme(item)"
-              >delete</v-icon
+              aria-label="Delete Theme"
+              role="button"
+              tabindex="0"
             >
+              mdi-delete
+            </VIcon>
           </template>
           <span>Delete Theme</span>
-        </v-tooltip>
+        </VTooltip>
       </template>
-    </v-data-table>
-    <register-theme
+    </VDataTable>
+    <RegisterTheme
       v-if="addTheme"
-      :dialog.sync="addTheme"
+      v-model:dialog="addTheme"
       @theme-created="onCreatedTheme"
       @close-dialog="onCloseDialog"
     />
-    <associate-theme
+    <AssociateTheme
       v-if="associateTheme"
-      :dialog.sync="associateTheme"
+      v-model:dialog="associateTheme"
       @theme-associated="onAssociateTheme"
       @close-dialog="onCloseDialog"
     />
-  </v-card>
+  </VCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import RemoteServices from '@/services/RemoteServices';
-import Theme from '@/models/theme/Theme';
-import RegisterTheme from '@/views/member/InstitutionAddTheme.vue';
-import InstitutionAssociateThemeView from '@/views/member/InstitutionAssociateThemeView.vue';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
+import RegisterTheme from '@/views/member/InstitutionAddTheme.vue'
+import AssociateTheme from '@/views/member/InstitutionAssociateThemeView.vue'
+import type Theme from '@/models/theme/Theme'
 
-export default defineComponent({
-  name: 'InstitutionThemeView',
+const store = useMainStore()
 
-  components: {
-    'register-theme': RegisterTheme,
-    'associate-theme': InstitutionAssociateThemeView,
+const themes = ref<Theme[]>([])
+const addTheme = ref(false)
+const associateTheme = ref(false)
+const search = ref('')
+
+const headers = [
+  { text: 'Name', value: 'completeName', align: 'left', width: '15%' },
+  {
+    text: 'Delete',
+    value: 'action',
+    align: 'left',
+    sortable: false,
+    width: '5%',
   },
+]
 
-  data() {
-    return {
-      themes: [] as Theme[],
-      addTheme: false,
-      associateTheme: false,
-      search: '',
-      headers: [
-        { text: 'Name', value: 'completeName', align: 'left', width: '15%' },
-        {
-          text: 'Delete',
-          value: 'action',
-          align: 'left',
-          sortable: false,
-          width: '5%',
-        },
-      ],
-    };
-  },
+const fetchThemes = async () => {
+  store.setLoading()
+  try {
+    themes.value = await RemoteServices.getThemesbyInstitution()
+  } catch (error: any) {
+    store.setError(error.message)
+  }
+  store.clearLoading()
+}
 
-  async created() {
-    await this.$store.dispatch('loading');
+onMounted(fetchThemes)
+
+const newTheme = () => {
+  addTheme.value = true
+}
+
+const associateThemeDialog = () => {
+  associateTheme.value = true
+}
+
+const onAssociateTheme = async () => {
+  await fetchThemes()
+  associateTheme.value = false
+}
+
+const onCreatedTheme = () => {
+  addTheme.value = false
+  fetchThemes()
+}
+
+const onCloseDialog = () => {
+  addTheme.value = false
+  associateTheme.value = false
+}
+
+const deleteTheme = async (theme: Theme) => {
+  const themeId = theme.id
+  if (
+    themeId !== null &&
+    window.confirm('Are you sure you want to delete the theme?')
+  ) {
     try {
-      this.themes = await RemoteServices.getThemesbyInstitution();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      await RemoteServices.removeThemetoInstitution(themeId)
+      await fetchThemes()
+    } catch (error: any) {
+      store.setError(error.message)
     }
-    await this.$store.dispatch('clearLoading');
-  },
-
-  methods: {
-    newTheme() {
-      this.addTheme = true;
-    },
-
-    AssociateTheme() {
-      this.associateTheme = true;
-    },
-
-    async onAssociateTheme() {
-      this.themes = await RemoteServices.getThemesbyInstitution();
-      this.associateTheme = false;
-    },
-
-    onCreatedTheme() {
-      this.addTheme = false;
-    },
-
-    onCloseDialog() {
-      this.addTheme = false;
-      this.associateTheme = false;
-    },
-
-    async deleteTheme(theme: Theme) {
-      const themeId = theme.id;
-      if (
-        themeId !== null &&
-        confirm('Are you sure you want to delete the theme?')
-      ) {
-        try {
-          await RemoteServices.removeThemetoInstitution(themeId);
-          this.themes = await RemoteServices.getThemesbyInstitution();
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-  },
-});
+  }
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table {
+  overflow-x: auto;
+  .action-button {
+    cursor: pointer;
+  }
+}
+@media (max-width: 600px) {
+  .table {
+    padding: 0;
+    .v-card-title {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .v-btn {
+      width: 100%;
+    }
+  }
+}
+</style>

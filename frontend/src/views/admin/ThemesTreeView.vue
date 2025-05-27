@@ -1,110 +1,98 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('close-dialog')"
-    @keydown.esc="$emit('close-dialog')"
+  <VDialog
+    v-model="dialogModel"
     max-width="90%"
     max-height="90%"
+    @keydown.esc="emit('close-dialog')"
   >
-    <v-card>
-      <v-card-title>
+    <VCard>
+      <VCardTitle>
         <span class="headline">Themes</span>
-      </v-card-title>
-      <v-card-text class="theme-list">
-        <v-list>
-          <v-list-item-group v-model="selectedTheme">
-            <v-list-item
+      </VCardTitle>
+      <VCardText class="theme-list">
+        <VList>
+          <VListItemGroup v-model="selectedTheme">
+            <VListItem
               v-for="theme in themes"
-              :key="theme.name"
+              :key="theme.id"
               :value="theme.name"
             >
-              <v-list-item-content>
+              <VListItemContent>
                 <div
                   class="left-text"
                   :style="{ color: getThemeColor(theme.state) }"
                 >
-                  <span class="indentation">{{
-                    getIndentedDisplayName(theme.level)
-                  }}</span
-                  >&#9658;{{ theme.name }}
+                  <span class="indentation">{{ getIndentedDisplayName(theme.level) }}</span>
+                  &#9658;{{ theme.name }}
                 </div>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          color="blue darken-1"
-          @click="$emit('close-dialog')"
+              </VListItemContent>
+            </VListItem>
+          </VListItemGroup>
+        </VList>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
+          color="primary"
+          @click="emit('close-dialog')"
           data-cy="cancelButton"
-          >Close</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        >Close</VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import Theme from '@/models/theme/Theme';
-import RemoteServices from '@/services/RemoteServices';
+<script lang="ts" setup>
+import { ref, watch, onMounted } from 'vue'
+import Theme from '@/models/theme/Theme'
+import RemoteServices from '@/services/RemoteServices'
 
-export default {
-  name: 'ThemesTreeView',
+const props = defineProps<{
+  dialog: boolean
+}>()
+const emit = defineEmits(['close-dialog'])
 
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-  },
+const dialogModel = ref(props.dialog)
+const themes = ref<Theme[]>([])
+const selectedTheme = ref<string | null>(null)
 
-  data() {
-    return {
-      themes: [] as Theme[],
-      selectedTheme: null as string | null,
-    };
-  },
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) loadThemes()
+  }
+)
 
-  watch: {
-    dialog(this: any, newVal: boolean) {
-      if (newVal) {
-        this.loadThemes();
-      }
-    },
-  },
+watch(dialogModel, (val) => {
+  if (!val) emit('close-dialog')
+})
 
-  created(this: any) {
-    if (this.dialog) {
-      this.loadThemes();
-    }
-  },
+async function loadThemes() {
+  themes.value = await RemoteServices.getThemes()
+}
 
-  methods: {
-    async loadThemes(this: any) {
-      this.themes = await RemoteServices.getThemes();
-    },
+function getIndentedDisplayName(level?: number): string {
+  const tabChar = '\u00A0'
+  return tabChar.repeat((level ?? 0) * 10)
+}
 
-    getIndentedDisplayName(level?: number): string {
-      const tabChar = '\u00A0';
-      return tabChar.repeat((level ?? 0) * 10);
-    },
+function getThemeColor(state: string): string {
+  switch (state) {
+    case 'SUBMITTED':
+      return 'orange'
+    case 'APPROVED':
+      return 'green'
+    case 'DELETED':
+      return 'red'
+    default:
+      return ''
+  }
+}
 
-    getThemeColor(state: string): string {
-      switch (state) {
-        case 'SUBMITTED':
-          return 'orange';
-        case 'APPROVED':
-          return 'green';
-        case 'DELETED':
-          return 'red';
-        default:
-          return '';
-      }
-    },
-  },
-};
+onMounted(() => {
+  if (props.dialog) loadThemes()
+})
 </script>
 
 <style scoped>
@@ -112,11 +100,9 @@ export default {
   max-height: 500px;
   overflow-y: auto;
 }
-
 .left-text {
   text-align: left;
 }
-
 .indentation {
   margin-right: 5px;
 }

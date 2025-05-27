@@ -1,6 +1,6 @@
 <template>
-  <v-card class="table">
-    <v-data-table
+  <VCard class="table">
+    <VDataTable
       :headers="headers"
       :items="themes"
       :search="search"
@@ -8,203 +8,165 @@
       :hide-default-footer="true"
       :mobile-breakpoint="0"
     >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
+      <template #top>
+        <VCardTitle>
+          <VTextField
             v-model="search"
             append-icon="search"
             label="Search"
             class="mx-2"
           />
-          <v-spacer />
-          <v-btn color="primary" dark @click="TreeView" data-cy="createButton"
-            >Tree</v-btn
-          >
-          <v-btn color="primary" dark @click="newTheme" data-cy="createButton"
-            >New Theme</v-btn
-          >
-        </v-card-title>
+          <VSpacer />
+          <VBtn color="primary" @click="openTreeView" data-cy="createButton">Tree</VBtn>
+          <VBtn color="primary" @click="openNewTheme" data-cy="createButton">New Theme</VBtn>
+        </VCardTitle>
       </template>
-      <template v-slot:[`item.institutions`]="{ item }">
-        <v-for v-for="institution in item.institutions" :key="institution.name">
-          <v-chip> {{ institution.name }} </v-chip>
-        </v-for>
+      <template #item.institutions="{ item }">
+        <VChip v-for="institution in item.institutions" :key="institution.name">
+          {{ institution.name }}
+        </VChip>
       </template>
-      <template v-slot:[`item.parentTheme`]="{ item }">
-        <v-chip v-if="item.parentTheme && item.parentTheme.completeName">
+      <template #item.parentTheme="{ item }">
+        <VChip v-if="item.parentTheme && item.parentTheme.completeName">
           {{ item.parentTheme.completeName }}
-        </v-chip>
+        </VChip>
       </template>
-      <template v-slot:[`item.state`]="{ item }">
+      <template #item.state="{ item }">
         <span :class="getStateClass(item.state)">{{ item.state }}</span>
       </template>
-      <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip
-          bottom
-          v-if="item.state == 'SUBMITTED' || item.state == 'APPROVED'"
-        >
-          <template v-slot:activator="{ on }">
-            <v-icon
+      <template #item.action="{ item }">
+        <VTooltip v-if="item.state === 'SUBMITTED' || item.state === 'APPROVED'" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="red"
-              v-on="on"
+              v-bind="props"
               data-cy="deleteButton"
               @click="deleteTheme(item)"
-              >delete</v-icon
-            >
+            >mdi-delete</VIcon>
           </template>
           <span>Delete Theme</span>
-        </v-tooltip>
-        <v-tooltip
-          bottom
-          v-if="item.state == 'SUBMITTED' || item.state == 'DELETED'"
-        >
-          <template v-slot:activator="{ on }">
-            <v-icon
+        </VTooltip>
+        <VTooltip v-if="item.state === 'SUBMITTED' || item.state === 'DELETED'" location="bottom">
+          <template #activator="{ props }">
+            <VIcon
               class="mr-2 action-button"
               color="green"
-              v-on="on"
+              v-bind="props"
               data-cy="validateButton"
               @click="validateTheme(item)"
-              >mdi-check-bold</v-icon
-            >
+            >mdi-check-bold</VIcon>
           </template>
           <span>Validate Theme</span>
-        </v-tooltip>
+        </VTooltip>
       </template>
-    </v-data-table>
-    <add-theme
+    </VDataTable>
+    <AdminAddTheme
       v-if="addTheme"
-      :dialog.sync="addTheme"
+      v-model:dialog="addTheme"
       @theme-created="onCreatedTheme"
       @close-dialog="onCloseDialog"
     />
-    <tree-view
+    <ThemesTreeView
       v-if="treeView"
-      :dialog.sync="treeView"
+      v-model:dialog="treeView"
       @close-dialog="onCloseDialog"
     />
-  </v-card>
+  </VCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import RemoteServices from '@/services/RemoteServices';
-import AdminAddTheme from '@/views/admin/AdminAddTheme.vue';
-import ThemesTreeView from '@/views/admin/ThemesTreeView.vue';
-import Theme from '@/models/theme/Theme';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
+import AdminAddTheme from '@/views/admin/AdminAddTheme.vue'
+import ThemesTreeView from '@/views/admin/ThemesTreeView.vue'
+import Theme from '@/models/theme/Theme'
 
-export default defineComponent({
-  name: 'AdminThemeView',
+const store = useMainStore()
 
-  components: {
-    'add-theme': AdminAddTheme,
-    'tree-view': ThemesTreeView,
-  },
+const themes = ref<Theme[]>([])
+const addTheme = ref(false)
+const treeView = ref(false)
+const search = ref('')
 
-  data() {
-    return {
-      themes: [] as Theme[],
-      addTheme: false,
-      treeView: false,
-      search: '',
-      headers: [
-        { text: 'Name', value: 'completeName', align: 'left', width: '5%' },
-        { text: 'Parent', value: 'parentTheme', align: 'left', width: '10%' },
-        {
-          text: 'Institutions',
-          value: 'institutions',
-          align: 'left',
-          width: '10%',
-        },
-        { text: 'State', value: 'state', align: 'left', width: '10%' },
-        {
-          text: 'Actions',
-          value: 'action',
-          align: 'left',
-          sortable: false,
-          width: '5%',
-        },
-      ],
-    };
-  },
+const headers = [
+  { title: 'Name', key: 'completeName', align: 'left', width: '5%' },
+  { title: 'Parent', key: 'parentTheme', align: 'left', width: '10%' },
+  { title: 'Institutions', key: 'institutions', align: 'left', width: '10%' },
+  { title: 'State', key: 'state', align: 'left', width: '10%' },
+  { title: 'Actions', key: 'action', align: 'left', sortable: false, width: '5%' },
+]
 
-  async created() {
-    await this.$store.dispatch('loading');
+onMounted(async () => {
+  store.setLoading()
+  try {
+    themes.value = await RemoteServices.getThemes()
+  } catch (error: any) {
+    store.setError(error.message)
+  }
+  store.clearLoading()
+})
+
+function openNewTheme() {
+  addTheme.value = true
+}
+
+function openTreeView() {
+  treeView.value = true
+}
+
+async function onCreatedTheme() {
+  themes.value = await RemoteServices.getThemes()
+  addTheme.value = false
+}
+
+function onCloseDialog() {
+  addTheme.value = false
+  treeView.value = false
+}
+
+async function deleteTheme(theme: Theme) {
+  const themeId = theme.id
+  if (
+    themeId !== null &&
+    window.confirm('Are you sure you want to delete the theme?')
+  ) {
     try {
-      this.themes = await RemoteServices.getThemes();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      themes.value = await RemoteServices.deleteTheme(themeId)
+    } catch (error: any) {
+      store.setError(error.message)
     }
-    await this.$store.dispatch('clearLoading');
-  },
+  }
+}
 
-  methods: {
-    newTheme() {
-      this.addTheme = true;
-    },
+async function validateTheme(theme: Theme) {
+  const themeId = theme.id
+  if (
+    themeId !== null &&
+    window.confirm('Are you sure you want to validate this theme?')
+  ) {
+    try {
+      await RemoteServices.validateTheme(themeId)
+      themes.value = await RemoteServices.getThemes()
+    } catch (error: any) {
+      store.setError(error.message)
+    }
+  }
+}
 
-    TreeView() {
-      this.treeView = true;
-    },
-
-    async onCreatedTheme() {
-      this.themes = await RemoteServices.getThemes();
-      this.addTheme = false;
-    },
-
-    onTreeView() {
-      this.treeView = false;
-    },
-
-    onCloseDialog() {
-      this.addTheme = false;
-      this.treeView = false;
-    },
-
-    async deleteTheme(theme: Theme) {
-      const themeId = theme.id;
-      if (
-        themeId !== null &&
-        confirm('Are you sure you want to delete the theme?')
-      ) {
-        try {
-          this.themes = await RemoteServices.deleteTheme(themeId);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-
-    async validateTheme(theme: Theme) {
-      const themeId = theme.id;
-      if (
-        themeId !== null &&
-        confirm('Are you sure you want to validate this theme?')
-      ) {
-        try {
-          await RemoteServices.validateTheme(themeId);
-          this.themes = await RemoteServices.getThemes();
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    },
-
-    getStateClass(state: string): string {
-      switch (state) {
-        case 'SUBMITTED':
-          return 'orange--text';
-        case 'APPROVED':
-          return 'green--text';
-        case 'DELETED':
-          return 'red--text';
-        default:
-          return '';
-      }
-    },
-  },
-});
+function getStateClass(state: string): string {
+  switch (state) {
+    case 'SUBMITTED':
+      return 'orange--text'
+    case 'APPROVED':
+      return 'green--text'
+    case 'DELETED':
+      return 'red--text'
+    default:
+      return ''
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -213,16 +175,19 @@ export default defineComponent({
 .red--text {
   font-weight: bold;
 }
-
 .orange--text {
   color: orange;
 }
-
 .green--text {
   color: green;
 }
-
 .red--text {
   color: red;
+}
+.table {
+  overflow-x: auto;
+}
+.action-button {
+  cursor: pointer;
 }
 </style>

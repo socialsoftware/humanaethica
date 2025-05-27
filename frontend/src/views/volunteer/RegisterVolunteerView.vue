@@ -1,127 +1,106 @@
 <template>
-  <v-card class="container" elevation="11">
+  <VCard class="container" elevation="11">
     <h2>Volunteer Registration</h2>
-
-    <v-btn @click="readFile"> Download Document </v-btn>
-    <v-form ref="form" lazy-validation>
-      <v-text-field
+    <VBtn @click="readFile">Download Document</VBtn>
+    <VForm ref="form" v-model="valid" lazy-validation>
+      <VTextField
         v-model="volunteerName"
         label="Name"
         required
-        :rules="[(v) => !!v || 'Volunteer name is required']"
-      ></v-text-field>
-
-      <v-text-field
+        :rules="[v => !!v || 'Volunteer name is required']"
+      />
+      <VTextField
         v-model="volunteerEmail"
         label="E-mail"
         required
-        :rules="[(v) => !!v || 'Volunteer email is required']"
-      ></v-text-field>
-
-      <v-text-field
+        :rules="[v => !!v || 'Volunteer email is required']"
+      />
+      <VTextField
         v-model="volunteerUsername"
         label="Username"
         required
-        :rules="[(v) => !!v || 'Volunteer username is required']"
-      ></v-text-field>
-
-      <v-file-input
+        :rules="[v => !!v || 'Volunteer username is required']"
+      />
+      <VFileInput
         counter
         show-size
         truncate-length="7"
         label="Declaration"
         required
-        :rules="[(v) => !!v || 'Declaration is required']"
+        :rules="[v => !!v || 'Declaration is required']"
         dense
         small-chips
         accept=".pdf"
-        @change="handleFileUpload($event)"
-      ></v-file-input>
-
-      <v-btn
+        v-model="volunteerDoc"
+      />
+      <VBtn
         class="mr-4"
         color="orange"
         @click="submit"
-        :disabled="
-          !(
-            volunteerUsername !== '' &&
-            volunteerEmail !== '' &&
-            volunteerName !== '' &&
-            volunteerDoc !== null
-          )
-        "
+        :disabled="!canSubmit"
       >
-        submit
-      </v-btn>
-      <v-btn @click="clear"> clear </v-btn>
-    </v-form>
-  </v-card>
+        Submit
+      </VBtn>
+      <VBtn @click="clear">Clear</VBtn>
+    </VForm>
+  </VCard>
 </template>
 
-<script lang="ts">
-import RemoteServices from '@/services/RemoteServices';
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
 
-export default {
-  name: 'RegisterVolunteerView',
+const store = useMainStore()
+const router = useRouter()
 
-  data() {
-    return {
-      volunteerName: '',
-      volunteerEmail: '',
-      volunteerUsername: '',
-      volunteerDoc: null as File | null,
-    };
-  },
+const volunteerName = ref('')
+const volunteerEmail = ref('')
+const volunteerUsername = ref('')
+const volunteerDoc = ref<File | null>(null)
+const valid = ref(true)
+const form = ref()
 
-  methods: {
-    async submit(this: any) {
-      if (
-        this.volunteerName.length === 0 ||
-        this.volunteerEmail.length === 0 ||
-        this.volunteerUsername.length === 0
-      ) {
-        await this.$store.dispatch(
-          'error',
-          'Missing information, please check the form again',
-        );
-        return;
-      }
+const canSubmit = computed(() =>
+  volunteerName.value !== '' &&
+  volunteerEmail.value !== '' &&
+  volunteerUsername.value !== '' &&
+  volunteerDoc.value !== null
+)
 
-      if (this.volunteerDoc !== null) {
-        try {
-          await RemoteServices.registerVolunteer(
-            {
-              volunteerName: this.volunteerName,
-              volunteerEmail: this.volunteerEmail,
-              volunteerUsername: this.volunteerUsername,
-            },
-            this.volunteerDoc,
-          );
-          await this.$router.push({ name: 'home' });
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
+async function submit() {
+  if (!canSubmit.value) {
+    store.setError('Missing information, please check the form again')
+    return
+  }
+  store.setLoading()
+  try {
+    await RemoteServices.registerVolunteer(
+      {
+        volunteerName: volunteerName.value,
+        volunteerEmail: volunteerEmail.value,
+        volunteerUsername: volunteerUsername.value,
+      },
+      volunteerDoc.value
+    )
+    router.push({ name: 'home' })
+  } catch (error: any) {
+    store.setError(error.message)
+  }
+  store.clearLoading()
+}
 
-      await this.$store.dispatch('clearLoading');
-    },
+function readFile() {
+  RemoteServices.getForm()
+}
 
-    handleFileUpload(this: any, file: File) {
-      this.volunteerDoc = file;
-    },
-
-    readFile() {
-      RemoteServices.getForm();
-    },
-
-    clear(this: any) {
-      this.volunteerName = '';
-      this.volunteerEmail = '';
-      this.volunteerUsername = '';
-      this.volunteerDoc = null;
-    },
-  },
-};
+function clear() {
+  volunteerName.value = ''
+  volunteerEmail.value = ''
+  volunteerUsername.value = ''
+  volunteerDoc.value = null
+}
 </script>
 
 <style lang="scss" scoped>

@@ -44,10 +44,10 @@
           <VBtn variant="text" color="orange" v-bind="props" data-cy="institution">Institution</VBtn>
         </template>
         <VList density="compact">
-          <VListItem to="/member/register"><VListItemTitle>Register Member</VListItemTitle></VListItem>
-          <VListItem to="/member/themes"><VListItemTitle>Themes</VListItemTitle></VListItem>
+          <VListItem to="/member/register" data-cy="members"><VListItemTitle>Register Member</VListItemTitle></VListItem>
+          <VListItem to="/member/themes" data-cy="themes"><VListItemTitle>Themes</VListItemTitle></VListItem>
           <VListItem to="/member/activities" data-cy="activities"><VListItemTitle>Activities</VListItemTitle></VListItem>
-          <VListItem to="/member/assessments"><VListItemTitle>Assessments</VListItemTitle></VListItem>
+          <VListItem to="/member/assessments" data-cy="assessments"><VListItemTitle>Assessments</VListItemTitle></VListItem>
         </VList>
       </VMenu>
 
@@ -56,10 +56,10 @@
           <VBtn variant="text" color="orange" v-bind="props" data-cy="admin">Administration</VBtn>
         </template>
         <VList density="compact">
-          <VListItem to="/admin/users"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Users</VListItemTitle></VListItem>
-          <VListItem to="/admin/institutions"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Institutions</VListItemTitle></VListItem>
-          <VListItem to="/admin/themes"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Themes</VListItemTitle></VListItem>
-          <VListItem to="/admin/activities"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Activities</VListItemTitle></VListItem>
+          <VListItem to="/admin/users" data-cy="adminUsers"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Users</VListItemTitle></VListItem>
+          <VListItem to="/admin/institutions" data-cy="adminInstitutions"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Institutions</VListItemTitle></VListItem>
+          <VListItem to="/admin/themes" data-cy="adminThemes"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Themes</VListItemTitle></VListItem>
+          <VListItem to="/admin/activities" data-cy="adminActivities"><VListItemAction><VIcon icon="fas fa-users" /></VListItemAction><VListItemTitle>Activities</VListItemTitle></VListItem>
         </VList>
       </VMenu>
 

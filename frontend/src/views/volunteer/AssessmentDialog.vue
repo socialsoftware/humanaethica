@@ -1,121 +1,109 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('update:dialog', $event)"
+  <VDialog
+    v-model="dialogModel"
     persistent
-    width="800"
+    max-width="800"
   >
-    <v-card>
-      <v-card-title>
+    <VCard>
+      <VCardTitle>
         <span class="headline">
-          {{
-            editAssessment && editAssessment.id === null
-              ? 'New Assessment'
-              : 'Edit Assessment'
-          }}
+          {{ editAssessment && editAssessment.id === null ? 'New Assessment' : 'Edit Assessment' }}
         </span>
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" lazy-validation>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
+      </VCardTitle>
+      <VCardText>
+        <VForm ref="form" v-model="valid">
+          <VRow>
+            <VCol cols="12">
+              <VTextField
                 label="*Review"
-                :rules="[(v) => !!v || 'Review is required']"
+                :rules="rules"
                 required
                 v-model="editAssessment.review"
                 data-cy="reviewInput"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="blue-darken-1"
+              />
+            </VCol>
+          </VRow>
+        </VForm>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
+          color="primary"
           variant="text"
-          @click="$emit('close-assessment-dialog')"
+          @click="emit('close-assessment-dialog')"
         >
           Close
-        </v-btn>
-        <v-btn
+        </VBtn>
+        <VBtn
           v-if="canSave"
-          color="blue-darken-1"
+          color="primary"
           variant="text"
           @click="updateAssessment"
           data-cy="saveAssessment"
         >
           Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
-import Assessment from '@/models/assessment/Assessment';
+<script lang="ts" setup>
+import { ref, watch, computed } from 'vue'
+import RemoteServices from '@/services/RemoteServices'
+import Assessment from '@/models/assessment/Assessment'
 
-export default {
-  name: 'AssessmentDialog',
+const props = defineProps<{
+  dialog: boolean
+  assessment: Assessment
+  isUpdate: boolean
+}>()
+const emit = defineEmits(['update:dialog', 'close-assessment-dialog', 'save-assessment'])
 
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-    assessment: {
-      type: Assessment,
-      required: true,
-    },
-    is_update: {
-      type: Boolean,
-      required: true,
-    },
-  },
+const dialogModel = ref(props.dialog)
+const valid = ref(true)
+const editAssessment = ref(new Assessment(props.assessment))
 
-  data(this: any) {
-    return {
-      editAssessment: new Assessment(this.assessment),
-    };
-  },
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) {
+      editAssessment.value = new Assessment(props.assessment)
+    }
+  }
+)
 
-  computed: {
-    canSave(this: any): boolean {
-      return (
-        !!this.editAssessment.review && this.editAssessment.review.length >= 10
-      );
-    },
-  },
+watch(dialogModel, (val) => {
+  emit('update:dialog', val)
+})
 
-  methods: {
-    ISOtoString,
+const rules = [
+  (v: string) => !!v || 'Review is required',
+  (v: string) => v.length >= 10 || 'Review must be at least 10 characters',
+]
 
-    async updateAssessment(this: any) {
-      const form = this.$refs.form as Vue & { validate: () => boolean };
+const canSave = computed(() => !!editAssessment.value.review && editAssessment.value.review.length >= 10)
 
-      if (this.editAssessment.institutionId !== null && form.validate()) {
-        try {
-          let result;
-          if (this.is_update) {
-            result = await RemoteServices.updateAssessment(this.editAssessment);
-          } else {
-            result = await RemoteServices.createAssessment(
-              this.editAssessment.institutionId,
-              this.editAssessment,
-            );
-          }
-
-          this.$emit('save-assessment', result);
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
+async function updateAssessment() {
+  const form = (ref as any).form?.value
+  if (editAssessment.value.institutionId !== null && (!form || await form.validate())) {
+    try {
+      let result
+      if (props.isUpdate) {
+        result = await RemoteServices.updateAssessment(editAssessment.value)
+      } else {
+        result = await RemoteServices.createAssessment(
+          editAssessment.value.institutionId,
+          editAssessment.value
+        )
       }
-    },
-  },
-};
+      emit('save-assessment', result)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss"></style>

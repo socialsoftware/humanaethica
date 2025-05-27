@@ -1,98 +1,78 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('update:dialog', $event)"
+  <VDialog
+    v-model="dialogModel"
     persistent
-    width="800"
+    max-width="800"
   >
-    <v-card>
-      <v-card-title>
-        <span class="headline"> Delete Participation? </span>
-      </v-card-title>
-      <v-card-text class="text-body-1 black--text">
+    <VCard>
+      <VCardTitle>
+        <span class="headline">Delete Participation?</span>
+      </VCardTitle>
+      <VCardText class="text-body-1">
         Are you sure you want to delete this participation?<br />
-        WARNING: Deleting this participation will also delete any associated
-        rating.
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
+        WARNING: Deleting this participation will also delete any associated rating.
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
           color="primary"
-          dark
           variant="text"
-          @click="$emit('close-participation-dialog')"
+          @click="emit('close-participation-dialog')"
         >
           Close
-        </v-btn>
-        <v-btn
-          color="red darken-1"
-          dark
+        </VBtn>
+        <VBtn
+          color="red"
           variant="text"
           data-cy="deleteParticipationDialogButton"
           @click="deleteParticipation"
         >
           Confirm
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import RemoteServices from '@/services/RemoteServices';
-import Participation from '@/models/participation/Participation';
-import { ISOtoString } from '@/services/ConvertDateService';
+<script lang="ts" setup>
+import { ref, watch } from 'vue'
+import RemoteServices from '@/services/RemoteServices'
+import Participation from '@/models/participation/Participation'
 
-export default defineComponent({
-  name: 'ParticipationDeletionDialog',
+const props = defineProps<{
+  dialog: boolean
+  participation: Participation
+}>()
+const emit = defineEmits(['update:dialog', 'delete-participation', 'close-participation-dialog'])
 
-  emits: [
-    'update:dialog',
-    'delete-participation',
-    'close-participation-dialog',
-  ],
+const dialogModel = ref(props.dialog)
+const editParticipation = ref(new Participation(props.participation))
 
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-    participation: {
-      type: Object as () => Participation,
-      required: true,
-    },
-  },
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) {
+      editParticipation.value = new Participation(props.participation)
+    }
+  }
+)
 
-  data(this: any) {
-    return {
-      editParticipation: new Participation(),
-    };
-  },
+watch(dialogModel, (val) => {
+  emit('update:dialog', val)
+})
 
-  created() {
-    this.editParticipation = new Participation(this.participation);
-  },
-
-  methods: {
-    ISOtoString,
-
-    async deleteParticipation() {
-      if (this.editParticipation && this.editParticipation.id !== null) {
-        try {
-          const result = await RemoteServices.deleteParticipation(
-            this.editParticipation.id,
-          );
-          this.$emit('delete-participation', result);
-          this.$emit('close-participation-dialog');
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-          console.error('Error deleting participation:', error);
-        }
-      }
-    },
-  },
-});
+async function deleteParticipation() {
+  if (editParticipation.value && editParticipation.value.id !== null) {
+    try {
+      const result = await RemoteServices.deleteParticipation(editParticipation.value.id)
+      emit('delete-participation', result)
+      emit('close-participation-dialog')
+    } catch (error) {
+      // Optionally handle error with store.setError(error.message)
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss"></style>

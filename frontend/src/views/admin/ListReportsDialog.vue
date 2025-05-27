@@ -1,19 +1,16 @@
 <template>
-  <v-dialog
-    :value="dialog"
-    @input="$emit('update:dialog', $event)"
+  <VDialog
+    v-model="dialogModel"
     persistent
-    width="800"
+    max-width="800"
   >
-    <v-card>
-      <v-card-title>
-        <span class="headline">
-          {{ 'Reports' }}
-        </span>
-      </v-card-title>
-      <v-card-text>
-        <v-card class="table">
-          <v-data-table
+    <VCard>
+      <VCardTitle>
+        <span class="headline">Reports</span>
+      </VCardTitle>
+      <VCardText>
+        <VCard class="table">
+          <VDataTable
             :headers="headers"
             :items="reports"
             :search="search"
@@ -21,80 +18,76 @@
             :hide-default-footer="true"
             :mobile-breakpoint="0"
             data-cy="activityReportsTable"
-          ></v-data-table>
-        </v-card>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
+          />
+        </VCard>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
           color="blue-darken-1"
           variant="text"
-          @click="$emit('close-enrollment-dialog')"
+          @click="emit('close-enrollment-dialog')"
           data-cy="closeReportList"
         >
           Close
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
-<script lang="ts">
-import Activity from '@/models/activity/Activity';
-import Report from '@/models/report/Report';
-import RemoteServices from '@/services/RemoteServices';
-import { ISOtoString } from '@/services/ConvertDateService';
+<script lang="ts" setup>
+import { ref, watch, onMounted } from 'vue'
+import Activity from '@/models/activity/Activity'
+import Report from '@/models/report/Report'
+import RemoteServices from '@/services/RemoteServices'
+import { useMainStore } from '@/store/useMainStore'
 
-export default {
-  name: 'ReportDialog',
+const props = defineProps<{
+  dialog: boolean
+  activity: Activity
+}>()
+const emit = defineEmits(['update:dialog', 'close-enrollment-dialog'])
 
-  props: {
-    dialog: {
-      type: Boolean,
-      required: true,
-    },
-    activity: {
-      type: Object as () => Activity,
-      required: true,
-    },
-  },
+const store = useMainStore()
+const dialogModel = ref(props.dialog)
+const reports = ref<Report[]>([])
+const search = ref('')
 
-  data() {
-    return {
-      reports: [] as Report[],
-      search: '',
-      headers: [
-        {
-          text: 'Volunteer Name',
-          value: 'volunteerName',
-          align: 'left',
-          width: '5%',
-        },
-        {
-          text: 'Justification',
-          value: 'justification',
-          align: 'left',
-          width: '5%',
-        },
-      ] as object[],
-      ISOtoString,
-    };
-  },
+const headers = [
+  { title: 'Volunteer Name', key: 'volunteerName', align: 'left', width: '5%' },
+  { title: 'Justification', key: 'justification', align: 'left', width: '5%' }
+]
 
-  async created(this: any) {
-    await this.$store.dispatch('loading');
-    try {
-      if (this.activity != null && this.activity.id != null) {
-        this.reports = await RemoteServices.getActivityReports(
-          this.activity.id,
-        );
-      }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+watch(
+  () => props.dialog,
+  (val) => {
+    dialogModel.value = val
+    if (val) fetchReports()
+  }
+)
+
+watch(dialogModel, (val) => {
+  emit('update:dialog', val)
+})
+
+async function fetchReports() {
+  store.setLoading()
+  try {
+    if (props.activity && props.activity.id != null) {
+      reports.value = await RemoteServices.getActivityReports(props.activity.id)
     }
-    await this.$store.dispatch('clearLoading');
-  },
-};
+  } catch (error: any) {
+    store.setError(error.message)
+  }
+  store.clearLoading()
+}
+
+onMounted(fetchReports)
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.table {
+  overflow-x: auto;
+}
+</style>
