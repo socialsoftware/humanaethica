@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 @Entity
 @Table(name = "activity")

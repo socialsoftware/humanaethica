@@ -2,12 +2,14 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.servi
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import spock.lang.Unroll
 
 @DataJpaTest
@@ -17,7 +19,8 @@ class SuspendActivityServiceTest extends SpockTest {
 
     def setup() {
         def institution = institutionService.getDemoInstitution()
-        member = authUserService.loginDemoMemberAuth().getUser()
+        member = new Member("DEMO_MEMBER","DEMO_MEMBER","demo_member@mail.com",institution, User.State.ACTIVE)
+        userRepository.save(member)
 
         given: "activity info"
         def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,

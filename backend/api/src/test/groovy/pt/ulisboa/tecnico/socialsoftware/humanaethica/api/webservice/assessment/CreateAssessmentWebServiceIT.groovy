@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
 
@@ -29,14 +29,14 @@ class CreateAssessmentWebServiceIT extends SpockTest {
         institution = institutionService.getDemoInstitution()
         def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.TWO_DAYS_AGO, SpockTest.ONE_DAY_AGO, SpockTest.NOW,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
 
         def activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         assessmentDto = new AssessmentDto()
-        assessmentDto.review = SpockTest.ASSESSMENT_REVIEW_1
+        assessmentDto.review = ASSESSMENT_REVIEW_1
     }
 
     def 'volunteer create assessment'() {
@@ -53,11 +53,11 @@ class CreateAssessmentWebServiceIT extends SpockTest {
                 .block()
 
         then:
-        response.review == SpockTest.ASSESSMENT_REVIEW_1
+        response.review == ASSESSMENT_REVIEW_1
         and:
         assessmentRepository.findAll().size() == 1
         def storedAssessment = assessmentRepository.findAll().get(0)
-        storedAssessment.review == SpockTest.ASSESSMENT_REVIEW_1
+        storedAssessment.review == ASSESSMENT_REVIEW_1
 
         cleanup:
         deleteAll()

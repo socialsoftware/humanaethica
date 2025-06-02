@@ -2,16 +2,15 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dom
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.domain.Assessment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
@@ -38,7 +37,7 @@ class UpdateAssessmentMethodTest extends SpockTest {
         institution.getAssessments() >> []
 
         and: "volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
 
         and: "an assessment"
         def assessmentDto
@@ -57,6 +56,7 @@ class UpdateAssessmentMethodTest extends SpockTest {
 
         when:
         assessment.update(assessmentDtoEdit);
+        sleep(1)
 
         then: "checks results"
         assessment.getReview() == ASSESSMENT_REVIEW_2

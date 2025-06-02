@@ -11,11 +11,11 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.rep
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.repository.ThemeRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;

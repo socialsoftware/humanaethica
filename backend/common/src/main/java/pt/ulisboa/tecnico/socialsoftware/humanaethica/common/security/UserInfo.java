@@ -13,23 +13,19 @@ public class UserInfo {
 
     private final Integer id;
     private final String username;
-    private final String name;
     private final String role;
-    private final Integer institutionId;
 
-    public UserInfo(Integer id, String username, String name, String role, Integer institutionId) {
+    public UserInfo(Integer id, String username, String role) {
         this.id = id;
         this.username = username;
-        this.name = name;
         this.role = role;
-        this.institutionId = institutionId;
     }
 
     public Integer getId() { return id; }
     public String getUsername() { return username; }
-    public String getName() { return name; }
+
     public String getRole() { return role; }
-    public Integer getInstitutionId() { return institutionId; }
+
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -54,9 +50,9 @@ public class UserInfo {
         return "UserInfo{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
+
                 ", role=" + role +
-                ", institutionId=" + institutionId +
+
                 '}';
     }
 

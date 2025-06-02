@@ -2,12 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 
 
@@ -33,7 +32,7 @@ class GetVolunteerReportsServiceTest extends SpockTest {
 
     def "get two reports of the same volunteer"() {
         given: 
-        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.APPROVED)
         and:
         createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
         createReport(activityTwo, volunteerOne, REPORT_JUSTIFICATION_2)
@@ -49,7 +48,7 @@ class GetVolunteerReportsServiceTest extends SpockTest {
 
     def "get one report of a volunteer"() {
         given: 
-        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.APPROVED)
         and:
         createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
 

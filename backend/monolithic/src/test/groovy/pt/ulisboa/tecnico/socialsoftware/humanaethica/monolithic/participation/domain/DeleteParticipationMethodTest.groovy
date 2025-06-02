@@ -2,11 +2,10 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
@@ -45,7 +44,7 @@ class DeleteParticipationMethodTest extends SpockTest {
         activityDto.applicationDeadline = DateHandler.toISOString(LocalDateTime.now().minusDays(3))
         activity = new Activity(activityDto, institution, themes)
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
         and: "a participation"
         participationDto = new ParticipationDto()
         participationDto.memberRating = 4
@@ -68,7 +67,7 @@ class DeleteParticipationMethodTest extends SpockTest {
 
     def "delete one of multiple participations in activity"() {
         given: "another participation for the same activity"
-        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, User.State.APPROVED)
         otherParticipation = new Participation(activity, otherVolunteer, participationDto)
 
         when: "one participation is deleted"

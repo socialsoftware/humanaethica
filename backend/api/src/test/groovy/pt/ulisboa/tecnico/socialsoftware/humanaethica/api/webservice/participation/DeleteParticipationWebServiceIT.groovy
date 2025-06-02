@@ -7,9 +7,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
@@ -34,15 +34,15 @@ class DeleteParticipationWebServiceIT extends SpockTest {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1, 3, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.TWO_DAYS_AGO, SpockTest.ONE_DAY_AGO, SpockTest.NOW, null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 3, ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW, null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def participationDto= new ParticipationDto()
         participationDto.volunteerRating = 5
-        participationDto.volunteerReview = SpockTest.VOLUNTEER_REVIEW
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
         participationDto.volunteerId = volunteer.id
 
 
@@ -98,10 +98,10 @@ class DeleteParticipationWebServiceIT extends SpockTest {
 
     def 'login as a member of another institution and try to delete a participation'() {
         given: 'a member'
-        def otherInstitution = new Institution(SpockTest.INSTITUTION_1_NAME, SpockTest.INSTITUTION_1_EMAIL, SpockTest.INSTITUTION_1_NIF)
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def otherMember = createMember(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
-        normalUserLogin(SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD)
+        def otherMember = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_PASSWORD, USER_1_EMAIL, Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
 
         when: 'the member deletes the participation'
         webClient.delete()

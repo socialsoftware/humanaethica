@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
@@ -30,21 +30,21 @@ class GetParticipationsByActivityWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,3, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.TWO_DAYS_AGO, SpockTest.ONE_DAY_AGO, SpockTest.NOW,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,3, ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
-        def volunteerOne = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def volunteerTwo = createVolunteer(SpockTest.USER_2_NAME, SpockTest.USER_2_USERNAME, SpockTest.USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, User.State.APPROVED)
 
         def participationDto1 = new ParticipationDto()
         participationDto1.memberRating = 1
-        participationDto1.memberReview = SpockTest.MEMBER_REVIEW
+        participationDto1.memberReview = MEMBER_REVIEW
         def participationDto2 = new ParticipationDto()
         participationDto2.memberRating = 2
-        participationDto2.memberReview = SpockTest.MEMBER_REVIEW
+        participationDto2.memberReview = MEMBER_REVIEW
 
         and:
         createParticipation(activity, volunteerOne, participationDto1)
@@ -72,10 +72,10 @@ class GetParticipationsByActivityWebServiceIT extends SpockTest {
 
     def 'member of another institution cannot get participations'() {
         given:
-        def otherInstitution = new Institution(SpockTest.INSTITUTION_1_NAME, SpockTest.INSTITUTION_1_EMAIL, SpockTest.INSTITUTION_1_NIF)
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        createMember(SpockTest.USER_3_NAME, SpockTest.USER_3_USERNAME, SpockTest.USER_3_PASSWORD, SpockTest.USER_3_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
-        normalUserLogin(SpockTest.USER_3_USERNAME, SpockTest.USER_3_PASSWORD)
+        createMember(USER_3_NAME, USER_3_USERNAME, USER_3_PASSWORD, USER_3_EMAIL, Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_3_USERNAME, USER_3_PASSWORD)
 
         when:
        webClient.get()

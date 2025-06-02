@@ -7,12 +7,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UpdateAssessmentWebServiceIT extends SpockTest {
@@ -33,14 +33,14 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.THREE_DAYS_AGO, SpockTest.TWO_DAYS_AGO, SpockTest.ONE_DAY_AGO, null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                THREE_DAYS_AGO, TWO_DAYS_AGO, ONE_DAY_AGO, null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def assessmentDto = new AssessmentDto()
-        assessmentDto.review = SpockTest.ASSESSMENT_REVIEW_1
+        assessmentDto.review = ASSESSMENT_REVIEW_1
         assessmentDto.volunteerId = volunteer.id
 
         assessmentService.createAssessment(volunteer.id ,institution.id, assessmentDto)
@@ -54,7 +54,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         def assessmentDtoEdit = new AssessmentDto()
-        assessmentDtoEdit.review = SpockTest.ASSESSMENT_REVIEW_2
+        assessmentDtoEdit.review = ASSESSMENT_REVIEW_2
 
         when: 'then volunteer edits the assessment'
         def response = webClient.put()
@@ -66,11 +66,11 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response"
-        response.review == SpockTest.ASSESSMENT_REVIEW_2
+        response.review == ASSESSMENT_REVIEW_2
         and: "check database"
         assessmentRepository.count() == 1
         def assessment = assessmentRepository.findAll().get(0)
-        assessment.review == SpockTest.ASSESSMENT_REVIEW_2
+        assessment.review == ASSESSMENT_REVIEW_2
 
         cleanup:
         deleteAll()
@@ -81,7 +81,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         demoMemberLogin()
         and:
         def assessmentDtoEdit = new AssessmentDto()
-        assessmentDtoEdit.review = SpockTest.ASSESSMENT_REVIEW_2
+        assessmentDtoEdit.review = ASSESSMENT_REVIEW_2
 
         when: 'the member edits the assessment'
         webClient.put()
@@ -96,7 +96,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         def error = thrown(WebClientResponseException)
         error.statusCode == HttpStatus.FORBIDDEN
         def assessment = assessmentRepository.findAll().get(0)
-        assessment.getReview() == SpockTest.ASSESSMENT_REVIEW_1
+        assessment.getReview() == ASSESSMENT_REVIEW_1
 
         cleanup:
         deleteAll()
@@ -104,15 +104,17 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
 
     def 'login as a volunteer that did not do the assessment'() {
         given: 'another volunteer'
-        def otherInstitution = new Institution(SpockTest.INSTITUTION_1_NAME, SpockTest.INSTITUTION_1_EMAIL, SpockTest.INSTITUTION_1_NIF)
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def volunteer = createVolunteer(SpockTest.USER_2_NAME, SpockTest.USER_2_USERNAME, SpockTest.USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        volunteer.authUser.setPassword(passwordEncoder.encode(SpockTest.USER_2_PASSWORD))
-        userRepository.save(volunteer)
-        normalUserLogin(SpockTest.USER_2_USERNAME, SpockTest.USER_2_PASSWORD)
+        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def auth = authUserRepository.findAuthUserByUserId(otherVolunteer.id)
+        auth = auth.get()
+        auth.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
+        authUserRepository.save(auth)
+        normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
 
         def assessmentDtoEdit = new AssessmentDto()
-        assessmentDtoEdit.review = SpockTest.ASSESSMENT_REVIEW_2
+        assessmentDtoEdit.review = ASSESSMENT_REVIEW_2
 
         when: 'the other volunteer update the assessment'
         webClient.put()
@@ -136,7 +138,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         demoMemberLogin()
         and:
         def assessmentDtoEdit = new AssessmentDto()
-        assessmentDtoEdit.review = SpockTest.ASSESSMENT_REVIEW_2
+        assessmentDtoEdit.review = ASSESSMENT_REVIEW_2
 
         when: 'the admin edits the assessment'
         webClient.put()
@@ -151,7 +153,7 @@ class UpdateAssessmentWebServiceIT extends SpockTest {
         def error = thrown(WebClientResponseException)
         error.statusCode == HttpStatus.FORBIDDEN
         def assessment = assessmentRepository.findAll().get(0)
-        assessment.getReview() == SpockTest.ASSESSMENT_REVIEW_1
+        assessment.getReview() == ASSESSMENT_REVIEW_1
 
         cleanup:
         deleteAll()

@@ -1,22 +1,17 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic
 
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.crypto.password.PasswordEncoder
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.AssessmentRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.domain.Assessment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.AuthUserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.dto.AuthDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.dto.AuthPasswordDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.repository.AuthUserRepository
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.EnrollmentRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment
@@ -30,7 +25,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.ReportSe
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
@@ -111,8 +105,7 @@ class SpockTest extends Specification {
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
 
-    @Autowired
-    AuthUserService authUserService
+
 
     @Autowired
     UserRepository userRepository
@@ -120,20 +113,7 @@ class SpockTest extends Specification {
     @Autowired
     UserService userService
 
-    @Autowired
-    AuthUserRepository authUserRepository
 
-    @Autowired
-    UserApplicationalService userServiceApplicational
-
-    @Autowired
-    PasswordEncoder passwordEncoder
-
-    @Autowired
-    DemoService demoService;
-
-    @Autowired
-    DemoUtils demoUtils
 
     def demoVolunteerLogin() {
         def result = webClient.get()
@@ -188,15 +168,14 @@ class SpockTest extends Specification {
         return result.getUser()
     }
 
-    def createMember(name, userName, password, email, type, institution, state) {
-        def member = new Member(name, userName, email, type, institution, state)
-        member.getAuthUser().setPassword(passwordEncoder.encode(password))
+    def createMember(name, userName,  email,  institution, state) {
+        def member = new Member(name, userName, email,  institution, state)
         userRepository.save(member)
         return member
     }
 
-    def createVolunteer(name, userName, email, type, state) {
-        def volunteer = new Volunteer(name, userName, email, type, state)
+    def createVolunteer(name, userName, email,  state) {
+        def volunteer = new Volunteer(name, userName, email, state)
         userRepository.save(volunteer)
         return volunteer
     }
@@ -330,7 +309,6 @@ class SpockTest extends Specification {
         reportRepository.deleteAll()
         activityRepository.deleteAllActivityTheme()
         activityRepository.deleteAll()
-        authUserRepository.deleteAll()
         userRepository.deleteAll()
         institutionRepository.deleteAll()
         themeRepository.deleteAll()

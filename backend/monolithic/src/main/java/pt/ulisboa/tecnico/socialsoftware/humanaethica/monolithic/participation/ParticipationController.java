@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.security.UserInfo;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto;
 
 import java.security.Principal;
@@ -25,7 +25,7 @@ public class ParticipationController {
     @GetMapping("/participations/volunteer")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public List<ParticipationDto> getVolunteerParticipations(Principal principal) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return participationService.getVolunteerParticipations(userId);
     }
 

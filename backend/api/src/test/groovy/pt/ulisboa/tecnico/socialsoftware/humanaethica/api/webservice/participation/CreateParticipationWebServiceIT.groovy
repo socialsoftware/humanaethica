@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
@@ -31,8 +31,8 @@ class CreateParticipationWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1, 3, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.NOW.plusDays(1), SpockTest.NOW.plusDays(2), SpockTest.NOW.plusDays(3), null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 3, ACTIVITY_DESCRIPTION_1,
+                NOW.plusDays(1), NOW.plusDays(2), NOW.plusDays(3), null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
@@ -41,24 +41,24 @@ class CreateParticipationWebServiceIT extends SpockTest {
 
         def enrollmentDto = new EnrollmentDto()
         enrollmentDto.volunteerId = volunteer.getId()
-        enrollmentDto.motivation = SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
         enrollmentDto.activityId = activity.id
 
         enrollmentService.createEnrollment(volunteer.id, activity.id, enrollmentDto)
 
-        activity.setStartingDate(SpockTest.NOW.minusDays(4))
-        activity.setEndingDate(SpockTest.NOW.minusDays(3))
-        activity.setApplicationDeadline(SpockTest.NOW.minusDays(5))
+        activity.setStartingDate(NOW.minusDays(4))
+        activity.setEndingDate(NOW.minusDays(3))
+        activity.setApplicationDeadline(NOW.minusDays(5))
         activityRepository.save(activity)
 
         participationDtoMember = new ParticipationDto()
         participationDtoMember.memberRating = 5
-        participationDtoMember.memberReview = SpockTest.MEMBER_REVIEW
+        participationDtoMember.memberReview = MEMBER_REVIEW
         participationDtoMember.volunteerId = volunteer.id
 
         participationDtoVolunteer = new ParticipationDto()
         participationDtoVolunteer.volunteerRating = 5
-        participationDtoVolunteer.volunteerReview = SpockTest.VOLUNTEER_REVIEW
+        participationDtoVolunteer.volunteerReview = VOLUNTEER_REVIEW
         participationDtoVolunteer.volunteerId = volunteer.id
     }
 
@@ -77,12 +77,12 @@ class CreateParticipationWebServiceIT extends SpockTest {
 
         then:
         response.memberRating == 5
-        response.memberReview == SpockTest.MEMBER_REVIEW
+        response.memberReview == MEMBER_REVIEW
         and:
         participationRepository.getParticipationsByActivityId(activity.id).size() == 1
         def storedParticipant = participationRepository.getParticipationsByActivityId(activity.id).get(0)
         storedParticipant.memberRating == 5
-        storedParticipant.memberReview == SpockTest.MEMBER_REVIEW
+        storedParticipant.memberReview == MEMBER_REVIEW
 
 
         cleanup:

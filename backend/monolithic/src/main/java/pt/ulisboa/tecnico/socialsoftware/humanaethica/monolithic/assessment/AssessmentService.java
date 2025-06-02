@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer;
@@ -15,7 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository
 import java.util.Comparator;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 @Service
 public class AssessmentService {

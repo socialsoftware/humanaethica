@@ -2,13 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthDemoUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthNormalUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 
 @DataJpaTest
 class CreateUserTest extends SpockTest {
@@ -20,36 +18,18 @@ class CreateUserTest extends SpockTest {
 
         then:
         result.getName() == USER_1_NAME
-        result.getRole() == User.Role.VOLUNTEER
+        result.getRole() == Role.VOLUNTEER
     }
 
     def "create External User: name, username, email, role, state, admin"() {
         when:
-        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
+        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.SUBMITTED)
 
         then:
         result.getName() == USER_1_NAME
         result.getUsername() == USER_1_USERNAME
-        result.getRole() == User.Role.VOLUNTEER
-        result.getAuthUser() != null
-        result.getAuthUser().getUsername() == USER_1_USERNAME
-        result.getAuthUser().getEmail() == USER_1_EMAIL
-        result.getAuthUser() instanceof AuthNormalUser
-        !result.getAuthUser().isActive()
-    }
-
-    def "create Demo User: name, username, email, role, state, admin"() {
-        when:
-        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
-
-        then:
-        result.getName() == USER_1_NAME
-        result.getUsername() == USER_1_USERNAME
-        result.getRole() == User.Role.VOLUNTEER
-        result.getAuthUser() != null
-        result.getAuthUser().getUsername() == USER_1_USERNAME
-        result.getAuthUser().getEmail() == USER_1_EMAIL
-        result.getAuthUser() instanceof AuthDemoUser
+        result.getRole() == Role.VOLUNTEER
+        result.getEmail() == USER_1_EMAIL
     }
 
     @TestConfiguration

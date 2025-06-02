@@ -1,10 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
+
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.Role;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 public class UserDto {
     private Integer id;
@@ -23,16 +23,15 @@ public class UserDto {
 
     private String institutionName;
 
-    private String type;
 
     private String creationDate;
-
-    private String lastAccess;
     
     private boolean hasDocument;
 
     public UserDto() {
     }
+
+
 
     public UserDto(User user) {
         this.id = user.getId();
@@ -42,13 +41,9 @@ public class UserDto {
         this.state = user.getState().toString();
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
         this.hasDocument = user.getDocument() != null;
+        this.email = user.getEmail();
 
-        if (user.getAuthUser() != null) {
-            this.active = user.getAuthUser().isActive();
-            this.type = user.getAuthUser().getType().name();
-            this.email = user.getAuthUser().getEmail();
-            this.lastAccess = DateHandler.toISOString(user.getAuthUser().getLastAccess());
-        }
+        this.active = user.getState() == User.State.ACTIVE;
 
         if (user.getRole().equals(Role.MEMBER)){
             this.institutionName = ((Member) user).getInstitution().getName();
@@ -58,9 +53,6 @@ public class UserDto {
             this.institutionName = null;
     }
 
-    public UserDto(AuthUser authUser) {
-        this(authUser.getUser());
-    }
 
     public Integer getId() {
         return id;
@@ -110,13 +102,6 @@ public class UserDto {
         this.active = active;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getCreationDate() {
         return creationDate;
@@ -126,13 +111,6 @@ public class UserDto {
         this.creationDate = creationDate;
     }
 
-    public String getLastAccess() {
-        return lastAccess;
-    }
-
-    public void setLastAccess(String lastAccess) {
-        this.lastAccess = lastAccess;
-    }
 
     public String getState() {
         return state;

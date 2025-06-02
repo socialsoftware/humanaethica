@@ -5,8 +5,10 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Admin
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
@@ -23,19 +25,20 @@ class ValidateInstitutionWebserviceIT extends SpockTest {
         headers = new HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_JSON)
 
-        def admin = new Admin(SpockTest.USER_2_NAME, SpockTest.USER_2_USERNAME, SpockTest.USER_2_EMAIL, AuthUser.Type.DEMO, User.State.SUBMITTED)
-        admin.authUser.setPassword(passwordEncoder.encode(SpockTest.USER_2_PASSWORD))
-        userRepository.save(admin)
-
-        normalUserLogin(SpockTest.USER_2_USERNAME, SpockTest.USER_2_PASSWORD)
+        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, User.State.SUBMITTED)
+        admin = userRepository.save(admin)
+        def authUser = AuthUser.createAuthUser(admin.getId(), USER_2_USERNAME, USER_2_EMAIL, Type.DEMO, Role.ADMIN,admin.getName())
+        authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
+        authUserRepository.save(authUser)
+        normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
     }
 
     def "validate institution"() {
         given: "one institution"
         def institutionDto = new InstitutionDto()
-        institutionDto.setName(SpockTest.INSTITUTION_1_NAME)
-        institutionDto.setEmail(SpockTest.INSTITUTION_1_EMAIL)
-        institutionDto.setNif(SpockTest.INSTITUTION_1_NIF)
+        institutionDto.setName(INSTITUTION_1_NAME)
+        institutionDto.setEmail(INSTITUTION_1_EMAIL)
+        institutionDto.setNif(INSTITUTION_1_NIF)
         def institution = institutionService.registerInstitution(institutionDto)
 
         when:

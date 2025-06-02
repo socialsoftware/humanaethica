@@ -2,17 +2,16 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 
@@ -44,7 +43,7 @@ class DeleteReportMethodTest extends SpockTest {
         activity = new Activity(activityDtoOne, institution, themes)
 
         and: "volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
 
         and: "report"
         def reportDto = new ReportDto()

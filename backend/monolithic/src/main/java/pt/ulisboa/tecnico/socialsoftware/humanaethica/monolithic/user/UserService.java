@@ -1,28 +1,24 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user;
 
+import com.google.common.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthNormalUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.repository.AuthUserRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserDeletedEvent;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserRegisteredEvent;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Admin;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.UserDocument;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.UserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserDocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 
@@ -31,7 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 @Service
 public class UserService {
@@ -42,13 +38,12 @@ public class UserService {
     private InstitutionRepository institutionRepository;
 
     @Autowired
-    private AuthUserRepository authUserRepository;
-
-    @Autowired
     private UserDocumentRepository userDocumentRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private EventBus eventBus;
+
+
 
     public static final String MAIL_FORMAT = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
@@ -65,103 +60,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createVolunteerWithAuth(String name, String username, String email, AuthUser.Type type, State state) {
-        if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
-            throw new HEException(DUPLICATE_USER, username);
-        }
 
-        Volunteer volunteer = new Volunteer(name, username, email, type, state);
-        userRepository.save(volunteer);
-        return volunteer.getAuthUser();
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createMemberWithAuth(String name, String username, String email, AuthUser.Type type, Institution institution, State state) {
-        if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
-            throw new HEException(DUPLICATE_USER, username);
-        }
-
-        Member member = new Member(name, username, email, type, institution, state);
-        userRepository.save(member);
-        return member.getAuthUser();
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED,
-            propagation = Propagation.REQUIRED)
-    public UserDto registerUser(RegisterUserDto registerUserDto, MultipartFile document) throws IOException {
-        AuthNormalUser authUser = createAuthNormalUser(registerUserDto, State.SUBMITTED);
-
-        if (document != null) {
-            UserDocument userDocument = new UserDocument();
-            userDocument.setName(document.getName());
-            userDocument.setContent(document.getBytes());
-
-            authUser.getUser().setDocument(userDocument);
-            userDocumentRepository.save(userDocument);
-        }
-
-        return new UserDto(authUser);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public RegisterUserDto confirmRegistration(RegisterUserDto registerUserDto) {
-        AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).orElse(null);
-
-        if (authUser == null) {
-            throw new HEException(ErrorMessage.USER_NOT_FOUND, registerUserDto.getUsername());
-        }
-
-        if (registerUserDto.getPassword() == null || registerUserDto.getPassword().isEmpty()) {
-            throw new HEException(INVALID_PASSWORD);
-        }
-
-        try {
-            authUser.confirmRegistration(passwordEncoder, registerUserDto.getConfirmationToken(),
-                    registerUserDto.getPassword());
-        } catch (HEException e) {
-            if (e.getErrorMessage().equals(ErrorMessage.EXPIRED_CONFIRMATION_TOKEN)) {
-                authUser.generateConfirmationToken();
-            } else throw new HEException(e.getErrorMessage());
-        }
-
-        authUser.getUser().setState(State.ACTIVE);
-        return new RegisterUserDto(authUser);
-    }
-
-
-    private AuthNormalUser createAuthNormalUser(RegisterUserDto registerUserDto, State state) {
-        if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().length() == 0) {
-            throw new HEException(INVALID_AUTH_USERNAME, registerUserDto.getUsername());
-        }
-
-        if (registerUserDto.getRole() == null) {
-            throw new HEException(INVALID_ROLE, "null");
-        }
-
-        if (authUserRepository.findAuthUserByUsername(registerUserDto.getUsername()).isPresent()) {
-            throw new HEException(USERNAME_ALREADY_EXIST, registerUserDto.getUsername());
-        }
-
-
-        User user = switch (registerUserDto.getRole()) {
-            case VOLUNTEER -> new Volunteer(registerUserDto.getName(),
-                    registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
-            case MEMBER -> {
-                Institution institution = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND, registerUserDto.getInstitutionId()));
-                yield new Member(registerUserDto.getName(),
-                        registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, institution, state);
-            }
-            case ADMIN -> new Admin(registerUserDto.getName(),
-                    registerUserDto.getUsername(), registerUserDto.getEmail(), AuthUser.Type.NORMAL, state);
-            default -> throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
-        };
-
-        userRepository.save(user);
-
-        return (AuthNormalUser) user.getAuthUser();
-
-    }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<UserDto> deleteUser(int userId) {
@@ -171,6 +70,8 @@ public class UserService {
         if (i != null)
             institutionRepository.save(i);
 
+
+        eventBus.post(new UserDeletedEvent(userId));
         return getUsers();
     }
 
@@ -179,24 +80,100 @@ public class UserService {
         return (userRepository.findById(id).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND))).getDocument();
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public RegisterUserDto validateUser(Integer userId) {
-        AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        if (authUser.isActive() || authUser.getUser().getState().equals(User.State.ACTIVE)){
-            throw new HEException(ErrorMessage.USER_ALREADY_ACTIVE, authUser.getUsername());
-        }
 
-        authUser.getUser().setState(User.State.APPROVED);
-
-        return new RegisterUserDto(authUser);
-    }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public InstitutionDto getInstitution(Integer userId) {
-        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        Member member = (Member) authUser.getUser();
+        Member member = (Member) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
 
         return new InstitutionDto(member.getInstitution(), true, true);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRED)
+    public UserDto registerUser(RegisterUserDto registerUserDto, MultipartFile document) throws IOException {
+
+        if (registerUserDto.getRole() == null) {
+            throw new HEException(INVALID_ROLE, "null");
+        }
+        if (userRepository.findUserByUsername(registerUserDto.getUsername()).isPresent()) {
+            throw new HEException(USERNAME_ALREADY_EXIST, (registerUserDto.getUsername()));
+        }
+        if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().length() == 0) {
+            throw new HEException(INVALID_AUTH_USERNAME, registerUserDto.getUsername());
+        }
+        if (registerUserDto.getEmail() == null || !registerUserDto.getEmail().matches(UserService.MAIL_FORMAT))
+            throw new HEException(INVALID_EMAIL, registerUserDto.getEmail());
+
+        User user = switch (registerUserDto.getRole()) {
+            case VOLUNTEER -> new Volunteer(registerUserDto.getName(),
+                    registerUserDto.getUsername(), registerUserDto.getEmail(), State.SUBMITTED);
+            case MEMBER -> {
+                Institution institution = institutionRepository.findById(registerUserDto.getInstitutionId()).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND, registerUserDto.getInstitutionId()));
+                yield new Member(registerUserDto.getName(),
+                        registerUserDto.getUsername(), registerUserDto.getEmail(), institution, State.SUBMITTED);
+            }
+            case ADMIN -> new Admin(registerUserDto.getName(),
+                    registerUserDto.getUsername(), registerUserDto.getEmail(), State.SUBMITTED);
+            default -> throw new HEException(INVALID_ROLE, registerUserDto.getRole().name());
+        };
+
+        user = userRepository.save(user);
+
+        if (document != null) {
+            UserDocument userDocument = new UserDocument();
+            userDocument.setName(document.getName());
+            userDocument.setContent(document.getBytes());
+
+            user.setDocument(userDocument);
+            userDocumentRepository.save(userDocument);
+        }
+
+
+
+        UserRegisteredEvent event = new UserRegisteredEvent(registerUserDto, user.getId(), Type.NORMAL, user.getRole(), user.getName());
+        eventBus.post(event);
+
+
+        return new UserDto(user);
+    }
+
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Integer createVolunteer(String name, String username, String email,  State state){
+        Volunteer volunteer = new Volunteer(name, username, email, state);
+        return userRepository.save(volunteer).getId();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Integer createMember(String name, String username, String email, Institution institution, State state) {
+        Member member = new Member(name, username, email, institution, state);
+        return userRepository.save(member).getId();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Integer createAdmin(String name, String username, String email, State state) {
+        Admin admin = new Admin(name, username, email, state);
+        return userRepository.save(admin).getId();
+    }
+
+
+    @Transactional
+    public void changeState(Integer userId, User.State newState) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
+        user.setState(newState);
+        userRepository.save(user);
+    }
+
+    public User.State getUserState(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND))
+                .getState();
+    }
+
+    public User getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
     }
 
 }

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
 
@@ -28,14 +28,14 @@ class CreateReportWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         reportDto = new ReportDto()
-        reportDto.justification = SpockTest.REPORT_JUSTIFICATION_1
+        reportDto.justification = REPORT_JUSTIFICATION_1
     }
 
     def 'volunteer create report'() {
@@ -52,11 +52,11 @@ class CreateReportWebServiceIT extends SpockTest {
                 .block()
 
         then:
-        response.justification == SpockTest.REPORT_JUSTIFICATION_1
+        response.justification == REPORT_JUSTIFICATION_1
         and:
         reportRepository.getReportsByActivityId(activity.id).size() == 1
         def storedReport = reportRepository.getReportsByActivityId(activity.id).get(0)
-        storedReport.justification == SpockTest.REPORT_JUSTIFICATION_1
+        storedReport.justification == REPORT_JUSTIFICATION_1
 
         cleanup:
         deleteAll()

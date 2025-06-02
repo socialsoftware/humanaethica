@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
@@ -29,12 +29,12 @@ class ReportActivityWebServiceIT extends SpockTest {
 
         def user = demoMemberLogin()
 
-        def theme = createTheme(SpockTest.THEME_NAME_1, Theme.State.APPROVED,null)
+        def theme = createTheme(THEME_NAME_1, Theme.State.APPROVED,null)
         def themesDto = new ArrayList<>()
         themesDto.add(new ThemeDto(theme,false,false,false))
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,themesDto)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,themesDto)
 
         def activity = activityService.registerActivity(user.id, activityDto)
 
@@ -54,7 +54,7 @@ class ReportActivityWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response status"
-        response.name == SpockTest.ACTIVITY_NAME_1
+        response.name == ACTIVITY_NAME_1
         activityRepository.findAll().size() == 1
         def activity = activityRepository.findAll().get(0)
         activity.state == Activity.State.REPORTED

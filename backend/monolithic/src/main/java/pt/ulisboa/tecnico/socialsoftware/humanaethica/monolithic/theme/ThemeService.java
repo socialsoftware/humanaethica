@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 
 import java.util.Comparator;

@@ -4,14 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import spock.mock.DetachedMockFactory
 
 @DataJpaTest
@@ -36,7 +37,7 @@ class ValidateInstitutionTest extends SpockTest {
         memberDto.setEmail(USER_1_EMAIL)
         memberDto.setUsername(USER_1_EMAIL)
         memberDto.setConfirmationToken(USER_1_TOKEN)
-        memberDto.setRole(User.Role.MEMBER)
+        memberDto.setRole(Role.MEMBER)
         memberDto.setInstitutionId(institution.getId())
 
         member = userService.registerUser(memberDto, null);
@@ -44,7 +45,7 @@ class ValidateInstitutionTest extends SpockTest {
 
     def "validate institution with success"() {
         when:
-        userServiceApplicational.validateUser(member.getId())
+        userService.changeState(member.getId(), User.State.APPROVED)
         institutionService.validateInstitution(institution.getId())
 
         then: "the institution and member are validated"

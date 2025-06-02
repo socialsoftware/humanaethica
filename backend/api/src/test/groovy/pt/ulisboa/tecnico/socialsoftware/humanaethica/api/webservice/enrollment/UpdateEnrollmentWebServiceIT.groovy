@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UpdateEnrollmentWebServiceIT extends SpockTest {
@@ -30,14 +30,14 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def enrollmentDto = new EnrollmentDto()
-        enrollmentDto.motivation = SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
         enrollmentDto.volunteerId = volunteer.id
 
         enrollmentService.createEnrollment(volunteer.id ,activity.id, enrollmentDto)
@@ -51,7 +51,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         demoVolunteerLogin()
 
         def enrollmentDtoEdit = new EnrollmentDto()
-        enrollmentDtoEdit.motivation = SpockTest.ENROLLMENT_MOTIVATION_2
+        enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when: 'then volunteer edits the enrollment'
         def response = webClient.put()
@@ -63,11 +63,11 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response"
-        response.motivation == SpockTest.ENROLLMENT_MOTIVATION_2
+        response.motivation == ENROLLMENT_MOTIVATION_2
         and: "check database"
         enrollmentRepository.count() == 1
         def enrollment = enrollmentRepository.findAll().get(0)
-        enrollment.motivation == SpockTest.ENROLLMENT_MOTIVATION_2
+        enrollment.motivation == ENROLLMENT_MOTIVATION_2
 
         cleanup:
         deleteAll()
@@ -95,7 +95,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         and: 'check database'
         enrollmentRepository.count() == 1
         def enrollment = enrollmentRepository.findAll().get(0)
-        enrollment.getMotivation() == SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollment.getMotivation() == ENROLLMENT_MOTIVATION_1
 
         cleanup:
         deleteAll()
@@ -107,7 +107,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         demoMemberLogin()
         and:
         def enrollmentDtoEdit = new EnrollmentDto()
-        enrollmentDtoEdit.motivation = SpockTest.ENROLLMENT_MOTIVATION_2
+        enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when: 'the member edits the enrollment'
         webClient.put()
@@ -122,7 +122,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         def error = thrown(WebClientResponseException)
         error.statusCode == HttpStatus.FORBIDDEN
         def enrollment = enrollmentRepository.findAll().get(0)
-        enrollment.getMotivation() == SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollment.getMotivation() == ENROLLMENT_MOTIVATION_1
 
         cleanup:
         deleteAll()
@@ -133,7 +133,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         demoMemberLogin()
         and:
         def enrollmentDtoEdit = new EnrollmentDto()
-        enrollmentDtoEdit.motivation = SpockTest.ENROLLMENT_MOTIVATION_2
+        enrollmentDtoEdit.motivation = ENROLLMENT_MOTIVATION_2
 
         when: 'the admin edits the enrollment'
         webClient.put()
@@ -148,7 +148,7 @@ class UpdateEnrollmentWebServiceIT extends SpockTest {
         def error = thrown(WebClientResponseException)
         error.statusCode == HttpStatus.FORBIDDEN
         def enrollment = enrollmentRepository.findAll().get(0)
-        enrollment.getMotivation() == SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollment.getMotivation() == ENROLLMENT_MOTIVATION_1
 
         cleanup:
         deleteAll()

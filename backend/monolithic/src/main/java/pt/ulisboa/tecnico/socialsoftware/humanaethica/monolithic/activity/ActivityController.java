@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.security.UserInfo;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
 
 import java.security.Principal;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ActivityController {
     @PostMapping()
     @PreAuthorize("(hasRole('ROLE_MEMBER'))")
     public ActivityDto registerActivity(Principal principal, @Valid @RequestBody ActivityDto activityDto){
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return activityService.registerActivity(userId, activityDto);
     }
 
@@ -48,7 +48,7 @@ public class ActivityController {
     @PutMapping("/{activityId}/suspend/{justification}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_MEMBER') and hasPermission(#activityId, 'ACTIVITY.MEMBER'))")
     public ActivityDto suspendActivity(Principal principal, @PathVariable Integer activityId, @PathVariable String justification) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return activityService.suspendActivity(activityId, userId, justification);
     }
 

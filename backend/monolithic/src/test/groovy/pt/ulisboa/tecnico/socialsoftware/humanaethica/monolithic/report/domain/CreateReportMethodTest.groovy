@@ -2,10 +2,10 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
@@ -36,6 +36,7 @@ class CreateReportMethodTest extends SpockTest {
 
         when:
         def result = new Report(activity, volunteer, reportDto)
+        sleep(1)
 
         then: "checks results"
         result.justification == REPORT_JUSTIFICATION_1

@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DeleteReportWebServiceIT extends SpockTest {
@@ -30,14 +30,14 @@ class DeleteReportWebServiceIT extends SpockTest {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def reportDto = new ReportDto()
-        reportDto.justification = SpockTest.REPORT_JUSTIFICATION_1
+        reportDto.justification = REPORT_JUSTIFICATION_1
         reportDto.volunteerId = volunteer.id
 
         reportService.createReport(volunteer.id ,activity.id, reportDto)
@@ -59,7 +59,7 @@ class DeleteReportWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response"
-        response.justification == SpockTest.REPORT_JUSTIFICATION_1
+        response.justification == REPORT_JUSTIFICATION_1
         and: "check database"
         reportRepository.count() == 0
 

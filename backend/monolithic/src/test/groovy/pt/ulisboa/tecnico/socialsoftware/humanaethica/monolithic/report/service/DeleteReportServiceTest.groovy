@@ -2,12 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import spock.lang.Unroll
 
@@ -33,7 +32,7 @@ class DeleteReportServiceTest extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_PASSWORD, USER_1_EMAIL,  User.State.APPROVED)
         and: "report"
         report = createReport(activity, volunteer, REPORT_JUSTIFICATION_1)
     }
@@ -52,7 +51,7 @@ class DeleteReportServiceTest extends SpockTest {
     def 'two reports exist and one is removed'() {
         
         given:
-        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL,  User.State.APPROVED)
         def report2 = createReport(activity, volunteer2, REPORT_JUSTIFICATION_2)
         reportRepository.save(report2)
         firstReport = reportRepository.findAll().get(0)
@@ -76,7 +75,7 @@ class DeleteReportServiceTest extends SpockTest {
 
     def 'two reports exist and are both deleted'() {
         given:
-        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, User.State.APPROVED)
         def report2 = createReport(activity, volunteer2, REPORT_JUSTIFICATION_2)
         reportRepository.save(report2)
         firstReport = reportRepository.findAll().get(0)

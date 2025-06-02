@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 
@@ -28,14 +28,14 @@ class CreateEnrollmentWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         enrollmentDto = new EnrollmentDto()
-        enrollmentDto.motivation = SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
     }
 
     def 'volunteer create enrollment'() {
@@ -52,11 +52,11 @@ class CreateEnrollmentWebServiceIT extends SpockTest {
                 .block()
 
         then:
-        response.motivation == SpockTest.ENROLLMENT_MOTIVATION_1
+        response.motivation == ENROLLMENT_MOTIVATION_1
         and:
         enrollmentRepository.getEnrollmentsByActivityId(activity.id).size() == 1
         def storedEnrollment = enrollmentRepository.getEnrollmentsByActivityId(activity.id).get(0)
-        storedEnrollment.motivation == SpockTest.ENROLLMENT_MOTIVATION_1
+        storedEnrollment.motivation == ENROLLMENT_MOTIVATION_1
 
         cleanup:
         deleteAll()

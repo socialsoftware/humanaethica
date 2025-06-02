@@ -3,12 +3,12 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dom
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer;
 
 import java.time.LocalDateTime;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 @Entity
 public class Enrollment {

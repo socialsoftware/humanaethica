@@ -5,11 +5,13 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ConfirmRegistrationWebServiceIT extends SpockTest {
@@ -26,17 +28,20 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
         headers.setContentType(MediaType.APPLICATION_JSON)
 
         registerUserDto = new RegisterUserDto()
-        registerUserDto.setUsername(SpockTest.USER_1_USERNAME)
-        registerUserDto.setPassword(SpockTest.USER_1_PASSWORD)
-        registerUserDto.setConfirmationToken(SpockTest.USER_1_TOKEN)
+        registerUserDto.setUsername(USER_1_USERNAME)
+        registerUserDto.setPassword(USER_1_PASSWORD)
+        registerUserDto.setConfirmationToken(USER_1_TOKEN)
     }
 
     def "user confirms registration"() {
         given: "one inactive user"
-        def user = new Volunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
-        user.getAuthUser().setConfirmationToken(SpockTest.USER_1_TOKEN)
-        user.getAuthUser().setTokenGenerationDate(SpockTest.NOW)
-        userRepository.save(user)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
+        user = userRepository.save(user)
+        def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER, USER_1_NAME)
+        authuser.setConfirmationToken(USER_1_TOKEN)
+        authuser.setTokenGenerationDate(NOW)
+        authUserRepository.save(authuser)
+
 
         when:
         def response = webClient.post()
@@ -48,18 +53,20 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response status"
-        response.email == SpockTest.USER_1_EMAIL
-        response.username == SpockTest.USER_1_USERNAME
+        response.email == USER_1_EMAIL
+        response.username == USER_1_USERNAME
         response.active
-        response.role == User.Role.VOLUNTEER
+        response.role == Role.VOLUNTEER
     }
 
     def "user tries to confirm registration with an expired token"() {
         given: "one inactive user with an expired token"
-        def user = new Volunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
-        user.getAuthUser().setConfirmationToken(SpockTest.USER_1_TOKEN)
-        user.getAuthUser().setTokenGenerationDate(SpockTest.TWO_DAYS_AGO)
-        userRepository.save(user)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
+        user = userRepository.save(user)
+        def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER, USER_1_NAME)
+        authuser.setConfirmationToken(USER_1_TOKEN)
+        authuser.setTokenGenerationDate(TWO_DAYS_AGO)
+        authUserRepository.save(authuser)
 
         when:
         def response = webClient.post()
@@ -72,10 +79,10 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
 
 
         then: "check response status"
-        response.email == SpockTest.USER_1_EMAIL
-        response.username == SpockTest.USER_1_USERNAME
+        response.email == USER_1_EMAIL
+        response.username == USER_1_USERNAME
         response.active == false
-        response.role == User.Role.VOLUNTEER
+        response.role == Role.VOLUNTEER
     }
 
     def cleanup() {

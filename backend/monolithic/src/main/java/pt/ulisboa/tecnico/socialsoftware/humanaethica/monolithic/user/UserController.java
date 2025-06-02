@@ -9,12 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.security.UserInfo;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.UserDocument;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.UserDto;
 
 import java.io.IOException;
@@ -23,8 +23,7 @@ import java.util.List;
 
 @RestController
 public class UserController {
-    @Autowired
-    private UserApplicationalService userApplicationalService;
+
 
     @Autowired
     private UserService userService;
@@ -58,17 +57,14 @@ public class UserController {
 
     }
 
-    @PostMapping("/users/register/confirm")
-    public RegisterUserDto confirmRegistration(@RequestBody RegisterUserDto registerUserDto) {
-        return userApplicationalService.confirmRegistration(registerUserDto);
-    }
 
     @PostMapping("/users/registerInstitutionMember")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void registerMember(Principal principal,
                                @Valid @RequestPart(value = "member") RegisterUserDto registerUserDto,
                                @RequestParam(value = "file") MultipartFile document) throws IOException {
-        Member member = (Member) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        UserInfo userinfo = ((UserInfo) ((Authentication) principal).getPrincipal());
+        Member member = (Member) userService.getUserById(userinfo.getId());
 
         registerUserDto.setRole(Role.MEMBER);
         registerUserDto.setInstitutionId(member.getInstitution().getId());
@@ -82,11 +78,6 @@ public class UserController {
         userService.registerUser(registerUserDto, document);
     }
 
-    @PostMapping("/users/{userId}/validate")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void validateUser(@PathVariable int userId) {
-        userApplicationalService.validateUser(userId);
-    }
 
     @GetMapping("/users/{userId}/getInstitution")
     @PreAuthorize("hasRole('ROLE_MEMBER')")

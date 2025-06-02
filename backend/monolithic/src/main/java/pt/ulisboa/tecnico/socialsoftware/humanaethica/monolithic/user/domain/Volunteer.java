@@ -1,9 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain;
 
 import jakarta.persistence.*;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report;
 
@@ -28,8 +28,8 @@ public class Volunteer extends User {
     public Volunteer() {
     }
 
-    public Volunteer(String name, String username, String email, AuthUser.Type type, State state) {
-        super(name, username, email, Role.VOLUNTEER, type, state);
+    public Volunteer(String name, String username, String email, State state) {
+        super(name, username, email, Role.VOLUNTEER, state);
     }
 
     public Volunteer(String name, State state) {

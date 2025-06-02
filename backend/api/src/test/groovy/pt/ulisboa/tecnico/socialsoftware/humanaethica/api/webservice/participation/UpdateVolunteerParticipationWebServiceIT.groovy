@@ -7,9 +7,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 
@@ -22,6 +22,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
     def volunteer
     def participationId
     def member
+
 
 
     def setup() {
@@ -37,24 +38,24 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1, 3, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.NOW.plusDays(1), SpockTest.NOW.plusDays(2), SpockTest.NOW.plusDays(3), null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 3, ACTIVITY_DESCRIPTION_1,
+                NOW.plusDays(1), NOW.plusDays(2), NOW.plusDays(3), null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        activity.setStartingDate(SpockTest.NOW.minusDays(4))
-        activity.setEndingDate(SpockTest.NOW.minusDays(3))
-        activity.setApplicationDeadline(SpockTest.NOW.minusDays(5))
+        activity.setStartingDate(NOW.minusDays(4))
+        activity.setEndingDate(NOW.minusDays(3))
+        activity.setApplicationDeadline(NOW.minusDays(5))
         activityRepository.save(activity)
 
         def participationDto = new ParticipationDto()
         participationDto.memberRating = 5
-        participationDto.memberReview = SpockTest.MEMBER_REVIEW
+        participationDto.memberReview = MEMBER_REVIEW
         participationDto.volunteerRating = 5
-        participationDto.volunteerReview = SpockTest.VOLUNTEER_REVIEW
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
         participationDto.volunteerId = volunteer.id
 
         participationService.createParticipation(activity.id,participationDto)
@@ -98,7 +99,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         demoVolunteerLogin()
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.volunteerRating = 10
-        participationDtoUpdate.volunteerReview = SpockTest.VOLUNTEER_REVIEW
+        participationDtoUpdate.volunteerReview = VOLUNTEER_REVIEW
 
         when: 'the volunteer edits the participation'
         def response = webClient.put()
@@ -123,10 +124,11 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
 
     def 'log in as another volunteer and try to write a review for a participation by a different volunteer'() {
         given: 'another volunteer'
-        def volunteer = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        volunteer.authUser.setPassword(passwordEncoder.encode(SpockTest.USER_1_PASSWORD))
-        userRepository.save(volunteer)
-        normalUserLogin(SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD)
+        def otherVolunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def authuser = authUserRepository.findAuthUserByUserId(otherVolunteer.getId()).get()
+        authuser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
+        authUserRepository.save(authuser)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.volunteerRating = 1
         participationDtoUpdate.volunteerReview = "ANOTHER_REVIEW"
@@ -146,7 +148,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
         def participation = participationRepository.findAll().get(0)
         participation.getVolunteerRating() == 5
-        participation.getVolunteerReview() == SpockTest.VOLUNTEER_REVIEW
+        participation.getVolunteerReview() == VOLUNTEER_REVIEW
 
 
         cleanup:
@@ -175,7 +177,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
         def participation = participationRepository.findAll().get(0)
         participation.getVolunteerRating() == 5
-        participation.getVolunteerReview() == SpockTest.VOLUNTEER_REVIEW
+        participation.getVolunteerReview() == VOLUNTEER_REVIEW
 
 
         cleanup:
@@ -204,7 +206,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
         def participation = participationRepository.findAll().get(0)
         participation.getVolunteerRating() ==  5
-        participation.getVolunteerReview() == SpockTest.VOLUNTEER_REVIEW
+        participation.getVolunteerReview() == VOLUNTEER_REVIEW
 
 
         cleanup:

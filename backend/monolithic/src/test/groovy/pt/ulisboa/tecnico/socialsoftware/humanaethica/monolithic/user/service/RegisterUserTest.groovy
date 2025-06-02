@@ -4,16 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthNormalUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import spock.lang.Unroll
 import spock.mock.DetachedMockFactory
 
@@ -33,15 +32,15 @@ class RegisterUserTest extends SpockTest {
         userDto = new RegisterUserDto()
         userDto.setUsername(USER_1_USERNAME)
         userDto.setEmail(USER_1_EMAIL)
-        userDto.setRole(User.Role.VOLUNTEER)
+        userDto.setRole(Role.VOLUNTEER)
 
         when:
         def result = userService.registerUser(userDto, null)
 
         then: "the user is saved in the database"
-        authUserRepository.findAll().size() == 1
-        def authUser = (AuthNormalUser) authUserRepository.findAll().get(0)
-        authUser.getConfirmationToken() != null
+        userRepository.findAll().size() == 1
+        //def authUser = (AuthNormalUser) authUserRepository.findAll().get(0)
+        //authUser.getConfirmationToken() != null
         and: "checks if user data is correct"
         result.getUsername() == USER_1_USERNAME
         result.getEmail() == USER_1_EMAIL
@@ -52,14 +51,14 @@ class RegisterUserTest extends SpockTest {
 
     def "the user exists"() {
         given:
-        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.SUBMITTED)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.SUBMITTED)
         userRepository.save(user)
-        ((AuthNormalUser) user.authUser).setActive(true)
+
         and:
         userDto = new RegisterUserDto()
         userDto.setUsername(USER_1_USERNAME)
         userDto.setEmail(USER_1_EMAIL)
-        userDto.setRole(User.Role.VOLUNTEER)
+        userDto.setRole(Role.VOLUNTEER)
 
         when:
         userService.registerUser(userDto, null)
@@ -94,12 +93,12 @@ class RegisterUserTest extends SpockTest {
 
         where:
         username        | email           | role                || errorMessage
-        null            | USER_1_EMAIL    | User.Role.VOLUNTEER || ErrorMessage.INVALID_AUTH_USERNAME
-        "  "            | USER_1_EMAIL    | User.Role.VOLUNTEER || ErrorMessage.INVALID_AUTH_USERNAME
-        USER_1_USERNAME | null            | User.Role.VOLUNTEER || ErrorMessage.INVALID_EMAIL
-        USER_1_USERNAME | ""              | User.Role.VOLUNTEER || ErrorMessage.INVALID_EMAIL
-        USER_1_USERNAME | "test.mail.com" | User.Role.VOLUNTEER || ErrorMessage.INVALID_EMAIL
-        USER_1_USERNAME | "test@"         | User.Role.VOLUNTEER || ErrorMessage.INVALID_EMAIL
+        null            | USER_1_EMAIL    | Role.VOLUNTEER      || ErrorMessage.INVALID_AUTH_USERNAME
+        "  "            | USER_1_EMAIL    | Role.VOLUNTEER      || ErrorMessage.INVALID_AUTH_USERNAME
+        USER_1_USERNAME | null            | Role.VOLUNTEER      || ErrorMessage.INVALID_EMAIL
+        USER_1_USERNAME | ""              | Role.VOLUNTEER      || ErrorMessage.INVALID_EMAIL
+        USER_1_USERNAME | "test.mail.com" | Role.VOLUNTEER      || ErrorMessage.INVALID_EMAIL
+        USER_1_USERNAME | "test@"         | Role.VOLUNTEER      || ErrorMessage.INVALID_EMAIL
         USER_1_USERNAME | USER_1_EMAIL    | null                || ErrorMessage.INVALID_ROLE
     }
 

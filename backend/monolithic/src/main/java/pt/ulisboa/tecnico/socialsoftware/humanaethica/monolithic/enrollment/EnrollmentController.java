@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.security.UserInfo;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto;
 
 import java.security.Principal;
@@ -27,14 +27,14 @@ public class EnrollmentController {
     @GetMapping("/enrollments/volunteer")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public List<EnrollmentDto> getVolunteerEnrollments(Principal principal) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return enrollmentService.getVolunteerEnrollments(userId);
     }
 
     @PostMapping("/activities/{activityId}/enrollments")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public EnrollmentDto createEnrollment(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody EnrollmentDto enrollmentDto) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return enrollmentService.createEnrollment(userId, activityId, enrollmentDto);
     }
 

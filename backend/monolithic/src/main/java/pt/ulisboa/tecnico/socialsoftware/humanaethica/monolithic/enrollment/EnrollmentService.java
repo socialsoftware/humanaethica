@@ -8,14 +8,14 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.repository.ActivityRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 @Service
 public class EnrollmentService {

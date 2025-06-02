@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DeleteEnrollmentWebServiceIT extends SpockTest {
@@ -30,14 +30,14 @@ class DeleteEnrollmentWebServiceIT extends SpockTest {
         def institution = institutionService.getDemoInstitution()
         volunteer = authUserService.loginDemoVolunteerAuth().getUser()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
         def enrollmentDto = new EnrollmentDto()
-        enrollmentDto.motivation = SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
         enrollmentDto.volunteerId = volunteer.id
 
         enrollmentService.createEnrollment(volunteer.id ,activity.id, enrollmentDto)
@@ -59,7 +59,7 @@ class DeleteEnrollmentWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response"
-        response.motivation == SpockTest.ENROLLMENT_MOTIVATION_1
+        response.motivation == ENROLLMENT_MOTIVATION_1
         and: "check database"
         enrollmentRepository.count() == 0
 

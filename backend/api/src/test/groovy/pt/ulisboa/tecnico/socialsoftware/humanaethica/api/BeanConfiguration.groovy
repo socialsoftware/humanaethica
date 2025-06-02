@@ -10,16 +10,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.ActivityService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.AssessmentService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.AuthUserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.config.HEPermissionEvaluator
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.AuthUserService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.config.HEPermissionEvaluator
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.ParticipationService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.ReportService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.ThemeService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserApplicationalService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 

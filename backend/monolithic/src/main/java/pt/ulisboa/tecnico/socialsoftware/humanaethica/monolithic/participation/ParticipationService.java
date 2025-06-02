@@ -4,19 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.repository.ActivityRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 @Service
 public class ParticipationService {
@@ -34,7 +34,7 @@ public class ParticipationService {
 
         return participationRepository.getParticipationsByActivityId(activityId).stream()
                 .sorted(Comparator.comparing(Participation::getAcceptanceDate))
-                .map(participation -> new ParticipationDto(participation, User.Role.MEMBER))
+                .map(participation -> new ParticipationDto(participation, Role.MEMBER))
                 .toList();
     }
 
@@ -44,7 +44,7 @@ public class ParticipationService {
 
         return participationRepository.getParticipationsForVolunteerId(userId).stream()
                 .sorted(Comparator.comparing(Participation::getAcceptanceDate))
-                .map(participation -> new ParticipationDto(participation, User.Role.VOLUNTEER))
+                .map(participation -> new ParticipationDto(participation, Role.VOLUNTEER))
                 .toList();
     }
 
@@ -54,7 +54,7 @@ public class ParticipationService {
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
         participation.memberRating(participationDto);
-        return new ParticipationDto(participation, User.Role.MEMBER);
+        return new ParticipationDto(participation, Role.MEMBER);
     }
 
 
@@ -64,7 +64,7 @@ public class ParticipationService {
         Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new HEException(PARTICIPATION_NOT_FOUND, participationId));
 
         participation.volunteerRating(participationDto);
-        return new ParticipationDto(participation,  User.Role.VOLUNTEER);
+        return new ParticipationDto(participation,  Role.VOLUNTEER);
     }
 
 
@@ -83,7 +83,7 @@ public class ParticipationService {
         Participation participation = new Participation(activity, volunteer, participationDto);
         participationRepository.save(participation);
 
-        return new ParticipationDto(participation, User.Role.MEMBER);
+        return new ParticipationDto(participation, Role.MEMBER);
     }
 
 
@@ -95,6 +95,6 @@ public class ParticipationService {
 
         participation.delete();
         participationRepository.delete(participation);
-        return new ParticipationDto(participation,  User.Role.VOLUNTEER);
+        return new ParticipationDto(participation,  Role.VOLUNTEER);
     }
 }

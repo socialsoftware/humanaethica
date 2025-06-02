@@ -7,9 +7,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
@@ -38,8 +38,8 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1, 3, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.NOW.plusDays(1), SpockTest.NOW.plusDays(2), SpockTest.NOW.plusDays(3), null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1, 3, ACTIVITY_DESCRIPTION_1,
+                NOW.plusDays(1), NOW.plusDays(2), NOW.plusDays(3), null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
@@ -48,21 +48,21 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
 
         def enrollmentDto = new EnrollmentDto()
         enrollmentDto.volunteerId = volunteer.getId()
-        enrollmentDto.motivation = SpockTest.ENROLLMENT_MOTIVATION_1
+        enrollmentDto.motivation = ENROLLMENT_MOTIVATION_1
         enrollmentDto.activityId = activity.id
 
         enrollmentService.createEnrollment(volunteer.id, activity.id, enrollmentDto)
 
-        activity.setStartingDate(SpockTest.NOW.minusDays(4))
-        activity.setEndingDate(SpockTest.NOW.minusDays(3))
-        activity.setApplicationDeadline(SpockTest.NOW.minusDays(5))
+        activity.setStartingDate(NOW.minusDays(4))
+        activity.setEndingDate(NOW.minusDays(3))
+        activity.setApplicationDeadline(NOW.minusDays(5))
         activityRepository.save(activity)
 
         def participationDto = new ParticipationDto()
         participationDto.memberRating = 5
-        participationDto.memberReview = SpockTest.MEMBER_REVIEW
+        participationDto.memberReview = MEMBER_REVIEW
         participationDto.volunteerRating = 5
-        participationDto.volunteerReview = SpockTest.VOLUNTEER_REVIEW
+        participationDto.volunteerReview = VOLUNTEER_REVIEW
         participationDto.volunteerId = volunteer.id
 
         participationService.createParticipation(activity.id,participationDto)
@@ -108,7 +108,7 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         demoMemberLogin()
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.memberRating = 10
-        participationDtoUpdate.memberReview = SpockTest.MEMBER_REVIEW
+        participationDtoUpdate.memberReview = MEMBER_REVIEW
 
         when: 'the member edits the participation'
         def response = webClient.put()
@@ -135,10 +135,10 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
 
     def 'login as a member of another institution and try to edit a participation'() {
         given: 'a member from another institution'
-        def otherInstitution = new Institution(SpockTest.INSTITUTION_1_NAME, SpockTest.INSTITUTION_1_EMAIL, SpockTest.INSTITUTION_1_NIF)
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def otherMember = createMember(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
-        normalUserLogin(SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD)
+        def otherMember = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_PASSWORD, USER_1_EMAIL, Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.memberRating = 3
         participationDtoUpdate.memberReview = "ANOTHER_REVIEW"
@@ -158,7 +158,7 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
         def participation = participationRepository.findAll().get(0)
         participation.getMemberRating() == 5
-        participation.getMemberReview() ==  SpockTest.MEMBER_REVIEW
+        participation.getMemberReview() ==  MEMBER_REVIEW
 
 
 
@@ -172,8 +172,8 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         demoMemberLogin()
         def volunteer = authUserService.loginDemoVolunteerAuth().getUser()
         def institution = institutionService.getDemoInstitution()
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_2, SpockTest.ACTIVITY_REGION_2, 3, SpockTest.ACTIVITY_DESCRIPTION_2,
-                SpockTest.NOW.minusDays(2), SpockTest.NOW.minusDays(1), SpockTest.NOW.plusDays(2), null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_2, ACTIVITY_REGION_2, 3, ACTIVITY_DESCRIPTION_2,
+                NOW.minusDays(2), NOW.minusDays(1), NOW.plusDays(2), null)
         def activity2 = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity2)
 
@@ -236,7 +236,7 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
         def participation = participationRepository.findAll().get(0)
         participation.getMemberRating() ==  5
-        participation.getMemberReview() == SpockTest.MEMBER_REVIEW
+        participation.getMemberReview() == MEMBER_REVIEW
 
 
         cleanup:
@@ -266,7 +266,7 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         error.statusCode == HttpStatus.FORBIDDEN
         def participation = participationRepository.findAll().get(0)
         participation.getMemberRating() ==  5
-        participation.getMemberReview() == SpockTest.MEMBER_REVIEW
+        participation.getMemberReview() == MEMBER_REVIEW
 
 
         cleanup:

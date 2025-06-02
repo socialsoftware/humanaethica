@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 
 @Entity
@@ -16,8 +16,8 @@ public class Member extends User {
     public Member() {
     }
 
-    public Member(String name, String username, String email, AuthUser.Type type, Institution institution, State state) {
-        super(name, username, email, Role.MEMBER, type, state);
+    public Member(String name, String username, String email, Institution institution, State state) {
+        super(name, username, email, Role.MEMBER, state);
         setInstitution(institution);
         institution.addMember(this);
     }

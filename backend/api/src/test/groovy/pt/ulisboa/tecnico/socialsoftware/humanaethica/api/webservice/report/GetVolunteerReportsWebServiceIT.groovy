@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,22 +29,22 @@ class GetVolunteerReportsWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDtoOne = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDtoOne = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         def activityOne = new Activity(activityDtoOne, institution, new ArrayList<>())
         activityRepository.save(activityOne)
 
-        def activityDtoTwo = createActivityDto(SpockTest.ACTIVITY_NAME_2, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDtoTwo = createActivityDto(ACTIVITY_NAME_2, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         def activityTwo = new Activity(activityDtoTwo, institution, new ArrayList<>())
         activityRepository.save(activityTwo)
 
-        volunteer = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
         and:
-        createReport(activityOne, volunteer, SpockTest.REPORT_JUSTIFICATION_1)
-        createReport(activityTwo, volunteer, SpockTest.REPORT_JUSTIFICATION_2)
+        createReport(activityOne, volunteer, REPORT_JUSTIFICATION_1)
+        createReport(activityTwo, volunteer, REPORT_JUSTIFICATION_2)
     }
 
     def "volunteer cannot get reports"(){
@@ -98,8 +98,8 @@ class GetVolunteerReportsWebServiceIT extends SpockTest {
 
         then:
         response.size() == 2
-        response.get(0).justification == SpockTest.REPORT_JUSTIFICATION_1
-        response.get(1).justification == SpockTest.REPORT_JUSTIFICATION_2
+        response.get(0).justification == REPORT_JUSTIFICATION_1
+        response.get(1).justification == REPORT_JUSTIFICATION_2
     }
 
 

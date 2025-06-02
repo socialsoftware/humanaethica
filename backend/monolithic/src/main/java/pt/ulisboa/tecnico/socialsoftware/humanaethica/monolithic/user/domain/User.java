@@ -1,15 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain;
 
 import jakarta.persistence.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 
 import java.time.LocalDateTime;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.INVALID_ROLE;
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.INVALID_STATE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.INVALID_ROLE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.INVALID_STATE;
 
 @Entity
 @Table(name = "users")
@@ -18,8 +18,6 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptio
         discriminatorType = DiscriminatorType.STRING)
 public abstract class User {
     public enum State {SUBMITTED, APPROVED, ACTIVE, DELETED}
-
-    public enum Role {VOLUNTEER, MEMBER, ADMIN}
 
     public static class UserTypes {
         public static final String VOLUNTEER = "VOLUNTEER";
@@ -46,24 +44,27 @@ public abstract class User {
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
-    public AuthUser authUser;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
     private UserDocument document;
 
+    private String username;
+
+    private String email;
+
     protected User() {
     }
 
-    protected User(String name, String username, String email, Role role, AuthUser.Type type, State state) {
+    protected User(String name, String username, String email, Role role, State state) {
         setName(name);
         setRole(role);
         setState(state);
-        setAuthUser(AuthUser.createAuthUser(this, username, email, type));
+        setEmail(email);
+        setUsername(username);
         setCreationDate(DateHandler.now());
     }
 
-    protected User(String name, User.Role role, State state) {
+    protected User(String name, Role role, State state) {
         setName(name);
         setRole(role);
         setState(state);
@@ -79,10 +80,7 @@ public abstract class User {
     }
 
     public String getUsername() {
-        if (authUser == null) {
-            return String.format("%s-%s", getRole().toString().toLowerCase(), getId());
-        }
-        return authUser.getUsername();
+        return username;
     }
 
     public String getName() {
@@ -123,15 +121,15 @@ public abstract class User {
     }
 
     public String getEmail() {
-        return authUser.getEmail();
+        return email;
     }
 
-    public AuthUser getAuthUser() {
-        return authUser;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setAuthUser(AuthUser authUser) {
-        this.authUser = authUser;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public UserDocument getDocument() {
@@ -151,13 +149,11 @@ public abstract class User {
                 ", username='" + getUsername() + '\'' +
                 ", name='" + name + '\'' +
                 ", creationDate=" + creationDate +
-                ", lastAccess=" + authUser.getLastAccess() +
                 '}';
     }
 
     public Institution remove() {
         this.setState(State.DELETED);
-        this.getAuthUser().setActive(false);
         if (this.role.equals(Role.MEMBER)) {
             return ((Member) this).getInstitution();
         } else

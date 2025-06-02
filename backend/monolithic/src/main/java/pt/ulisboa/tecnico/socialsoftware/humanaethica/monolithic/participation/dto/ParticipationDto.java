@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
@@ -18,20 +19,20 @@ public class ParticipationDto {
     public ParticipationDto() {}
 
 
-    public ParticipationDto(Participation participation,  User.Role userRole) {
+    public ParticipationDto(Participation participation,  Role userRole) {
         this.id = participation.getId();
         this.activityId = participation.getActivity().getId();
         this.volunteerId = participation.getVolunteer().getId();
         this.acceptanceDate = DateHandler.toISOString(participation.getAcceptanceDate());
 
-        if (userRole == User.Role.MEMBER) {
+        if (userRole == Role.MEMBER) {
             this.memberRating = participation.getMemberRating();
             this.memberReview = participation.getMemberReview();
             if (participation.getMemberReview() != null) {
                 this.volunteerRating = participation.getVolunteerRating();
                 this.volunteerReview = participation.getVolunteerReview();
             }
-        } else if (userRole == User.Role.VOLUNTEER) {
+        } else if (userRole == Role.VOLUNTEER) {
             this.volunteerRating = participation.getVolunteerRating();
             this.volunteerReview = participation.getVolunteerReview();
             if (participation.getVolunteerReview() != null) {

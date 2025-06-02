@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,18 +29,18 @@ class GetAssessmentsByInstitutionWebServiceIT extends SpockTest {
 
         institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.TWO_DAYS_AGO, SpockTest.ONE_DAY_AGO, SpockTest.NOW,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                TWO_DAYS_AGO, ONE_DAY_AGO, NOW,null)
 
         def activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         institution.addActivity(activity)
 
-        def volunteerOne = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def volunteerTwo = createVolunteer(SpockTest.USER_2_NAME, SpockTest.USER_2_USERNAME, SpockTest.USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, User.State.APPROVED)
 
-        createAssessment(institution, volunteerOne, SpockTest.ASSESSMENT_REVIEW_1)
-        createAssessment(institution, volunteerTwo, SpockTest.ASSESSMENT_REVIEW_2)
+        createAssessment(institution, volunteerOne, ASSESSMENT_REVIEW_1)
+        createAssessment(institution, volunteerTwo, ASSESSMENT_REVIEW_2)
     }
 
     def 'non authenticated user gets two assessment'() {
@@ -55,9 +55,9 @@ class GetAssessmentsByInstitutionWebServiceIT extends SpockTest {
 
         then:
         response.size() == 2
-        response.get(0).review == SpockTest.ASSESSMENT_REVIEW_1
+        response.get(0).review == ASSESSMENT_REVIEW_1
         response.get(0).getReviewDate() != null
-        response.get(1).review == SpockTest.ASSESSMENT_REVIEW_2
+        response.get(1).review == ASSESSMENT_REVIEW_2
         response.get(0).getReviewDate() != null
     }
 

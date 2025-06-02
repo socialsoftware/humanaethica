@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.dto.ThemeDto
@@ -28,12 +28,12 @@ class RegisterActivityWebServiceIT extends SpockTest {
         headers = new HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_JSON)
 
-        def theme = createTheme(SpockTest.THEME_NAME_1, Theme.State.APPROVED,null)
+        def theme = createTheme(THEME_NAME_1, Theme.State.APPROVED,null)
         def themesDto = new ArrayList<ThemeDto>()
         themesDto.add(new ThemeDto(theme,false, false, false))
 
-        activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,themesDto)
+        activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,themesDto)
     }
 
     def "login as member, and create an activity"() {
@@ -50,25 +50,25 @@ class RegisterActivityWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response data"
-        response.name == SpockTest.ACTIVITY_NAME_1
-        response.region == SpockTest.ACTIVITY_REGION_1
+        response.name == ACTIVITY_NAME_1
+        response.region == ACTIVITY_REGION_1
         response.participantsNumberLimit == 2
-        response.description == SpockTest.ACTIVITY_DESCRIPTION_1
-        response.startingDate == DateHandler.toISOString(SpockTest.IN_TWO_DAYS)
-        response.endingDate == DateHandler.toISOString(SpockTest.IN_THREE_DAYS)
-        response.applicationDeadline == DateHandler.toISOString(SpockTest.IN_ONE_DAY)
-        response.themes.get(0).getName() == SpockTest.THEME_NAME_1
+        response.description == ACTIVITY_DESCRIPTION_1
+        response.startingDate == DateHandler.toISOString(IN_TWO_DAYS)
+        response.endingDate == DateHandler.toISOString(IN_THREE_DAYS)
+        response.applicationDeadline == DateHandler.toISOString(IN_ONE_DAY)
+        response.themes.get(0).getName() == THEME_NAME_1
         and: 'check database data'
         activityRepository.count() == 1
         def activity = activityRepository.findAll().get(0)
-        activity.getName() == SpockTest.ACTIVITY_NAME_1
-        activity.getRegion() == SpockTest.ACTIVITY_REGION_1
+        activity.getName() == ACTIVITY_NAME_1
+        activity.getRegion() == ACTIVITY_REGION_1
         activity.getParticipantsNumberLimit() == 2
-        activity.getDescription() == SpockTest.ACTIVITY_DESCRIPTION_1
-        activity.getStartingDate().withNano(0) == SpockTest.IN_TWO_DAYS.withNano(0)
-        activity.getEndingDate().withNano(0) == SpockTest.IN_THREE_DAYS.withNano(0)
-        activity.getApplicationDeadline().withNano(0) == SpockTest.IN_ONE_DAY.withNano(0)
-        activity.themes.get(0).getName() == SpockTest.THEME_NAME_1
+        activity.getDescription() == ACTIVITY_DESCRIPTION_1
+        activity.getStartingDate().withNano(0) == IN_TWO_DAYS.withNano(0)
+        activity.getEndingDate().withNano(0) == IN_THREE_DAYS.withNano(0)
+        activity.getApplicationDeadline().withNano(0) == IN_ONE_DAY.withNano(0)
+        activity.themes.get(0).getName() == THEME_NAME_1
 
         cleanup:
         deleteAll()

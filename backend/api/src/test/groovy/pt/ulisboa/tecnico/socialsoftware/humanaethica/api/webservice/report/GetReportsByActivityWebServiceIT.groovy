@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GetReportsByActivityWebServiceIT extends SpockTest {
@@ -29,17 +29,17 @@ class GetReportsByActivityWebServiceIT extends SpockTest {
 
         def institution = institutionService.getDemoInstitution()
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,1, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,null)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,1, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,null)
 
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
-        def volunteerOne = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def volunteerTwo = createVolunteer(SpockTest.USER_2_NAME, SpockTest.USER_2_USERNAME, SpockTest.USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, User.State.APPROVED)
         and:
-        createReport(activity, volunteerOne, SpockTest.REPORT_JUSTIFICATION_1)
-        createReport(activity, volunteerTwo, SpockTest.REPORT_JUSTIFICATION_2)
+        createReport(activity, volunteerOne, REPORT_JUSTIFICATION_1)
+        createReport(activity, volunteerTwo, REPORT_JUSTIFICATION_2)
     }
 
     def 'member cannot get reports'() {
@@ -93,8 +93,8 @@ class GetReportsByActivityWebServiceIT extends SpockTest {
 
         then:
         response.size() == 2
-        response.get(0).justification == SpockTest.REPORT_JUSTIFICATION_1
-        response.get(1).justification == SpockTest.REPORT_JUSTIFICATION_2
+        response.get(0).justification == REPORT_JUSTIFICATION_1
+        response.get(1).justification == REPORT_JUSTIFICATION_2
     }
 
 }

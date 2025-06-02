@@ -1,14 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.THEME_CAN_NOT_BE_DELETED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.THEME_CAN_NOT_BE_DELETED;
 
 
 @Entity

@@ -2,13 +2,12 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.ser
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import spock.lang.Unroll
 import java.time.LocalDateTime
@@ -31,7 +30,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_PASSWORD, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
         and: "an enrollment"
         enrollment = createEnrollment(activity, volunteer, SpockTest.ENROLLMENT_MOTIVATION_1)
     }
@@ -44,6 +43,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
 
         when:
         def result = enrollmentService.updateEnrollment(enrollment.id, editedEnrollmentDto)
+        sleep(1)
 
         then: "the returned data is correct"
         result.motivation == SpockTest.ENROLLMENT_MOTIVATION_2

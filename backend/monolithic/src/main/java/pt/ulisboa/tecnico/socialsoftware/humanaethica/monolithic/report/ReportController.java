@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.security.UserInfo;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto;
 
 import java.security.Principal;
@@ -33,7 +33,7 @@ public class ReportController {
     @PostMapping("/activities/{activityId}/reports")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public ReportDto createReport(Principal principal, @PathVariable Integer activityId, @Valid @RequestBody ReportDto reportDto) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return reportService.createReport(userId, activityId, reportDto);
     }
 
@@ -46,7 +46,7 @@ public class ReportController {
     @GetMapping("/reports/volunteer")
     @PreAuthorize("(hasRole('ROLE_VOLUNTEER'))")
     public List<ReportDto> getVolunteerReportsAsVolunteer(Principal principal) {
-        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        int userId = ((UserInfo) ((Authentication) principal).getPrincipal()).getId();
         return reportService.getVolunteerReportsAsVolunteer(userId);
     }
 

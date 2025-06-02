@@ -1,5 +1,6 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic
 
+import com.google.common.eventbus.EventBus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -10,14 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.AssessmentService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.AuthUserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.config.HEPermissionEvaluator
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.EnrollmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.ParticipationService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.ReportService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.ActivityService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
@@ -58,10 +54,6 @@ class BeanConfiguration {
         return new UserService()
     }
 
-    @Bean
-    UserApplicationalService userServiceApplicational() {
-        return new UserApplicationalService()
-    }
 
     @Bean
     InstitutionService institutionService() {
@@ -99,34 +91,16 @@ class BeanConfiguration {
         return new ReportService()
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder()
-    }
 
-    @Bean
-    HEPermissionEvaluator hePermissionEvaluator() {
-        return new HEPermissionEvaluator();
-    }
-
-    @Bean
-    AuthUserService authUserService() {
-        return new AuthUserService()
-    }
-
-    @Bean
-    DemoUtils demoUtils() {
-        return new DemoUtils();
-    }
-
-    @Bean
-    DemoService demoService() {
-        return new DemoService();
-    }
 
     @Bean
     Mailer mailer() {
         return new Mailer()
+    }
+
+    @Bean
+    EventBus eventBus() {
+        return new EventBus()
     }
 
     @Bean

@@ -7,10 +7,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.ActivityDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.dto.ThemeDto
@@ -32,12 +32,12 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         def user = demoMemberLogin()
 
-        def theme = createTheme(SpockTest.THEME_NAME_1, Theme.State.APPROVED,null)
+        def theme = createTheme(THEME_NAME_1, Theme.State.APPROVED,null)
         def themesDto = new ArrayList<>()
         themesDto.add(new ThemeDto(theme,false,false,false))
 
-        def activityDto = createActivityDto(SpockTest.ACTIVITY_NAME_1, SpockTest.ACTIVITY_REGION_1,2, SpockTest.ACTIVITY_DESCRIPTION_1,
-                SpockTest.IN_ONE_DAY, SpockTest.IN_TWO_DAYS, SpockTest.IN_THREE_DAYS,themesDto)
+        def activityDto = createActivityDto(ACTIVITY_NAME_1, ACTIVITY_REGION_1,2, ACTIVITY_DESCRIPTION_1,
+                IN_ONE_DAY, IN_TWO_DAYS, IN_THREE_DAYS,themesDto)
 
         def activity = activityService.registerActivity(user.id, activityDto)
 
@@ -50,7 +50,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         def response = webClient.put()
-                .uri('/activities/' + activityId + '/suspend/' + SpockTest.ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -70,7 +70,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activities/' + "222" + '/suspend/' + SpockTest.ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .uri('/activities/' + "222" + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -90,7 +90,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activities/' + activityId + '/suspend/' + SpockTest.ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -110,7 +110,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         def response = webClient.put()
-                .uri('/activities/' + activityId + '/suspend/' + SpockTest.ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -126,14 +126,14 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
     def "member not belonging to the activity tries to suspend it"() {
         given:
-        def otherInstitution = new Institution(SpockTest.INSTITUTION_1_NAME, SpockTest.INSTITUTION_1_EMAIL, SpockTest.INSTITUTION_1_NIF)
+        def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def otherMember = createMember(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, otherInstitution, User.State.APPROVED)
-        normalUserLogin(SpockTest.USER_1_USERNAME, SpockTest.USER_1_PASSWORD)
+        def otherMember = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_PASSWORD, USER_1_EMAIL, Type.NORMAL, otherInstitution, User.State.APPROVED)
+        normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
 
         when:
         webClient.put()
-                .uri('/activities/' + activityId + '/suspend/' + SpockTest.ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .uri('/activities/' + activityId + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)
@@ -154,7 +154,7 @@ class SuspendActivityWebServiceIT extends SpockTest {
 
         when:
         webClient.put()
-                .uri('/activities/' + "222" + '/suspend/' + SpockTest.ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
+                .uri('/activities/' + "222" + '/suspend/' + ACTIVITY_SUSPENSION_JUSTIFICATION_VALID)
                 .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(ActivityDto.class)

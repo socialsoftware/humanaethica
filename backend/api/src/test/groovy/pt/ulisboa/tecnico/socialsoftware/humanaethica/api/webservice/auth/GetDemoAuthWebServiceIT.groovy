@@ -5,10 +5,10 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.dto.AuthDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.dto.AuthDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoUtils
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GetDemoAuthWebServiceIT extends SpockTest {
@@ -34,7 +34,7 @@ class GetDemoAuthWebServiceIT extends SpockTest {
 
         then: "check response "
         response.user.name == DemoUtils.DEMO_VOLUNTEER
-        response.user.role == User.Role.VOLUNTEER
+        response.user.role == Role.VOLUNTEER
     }
 
     def "demo member login"() {
@@ -48,7 +48,7 @@ class GetDemoAuthWebServiceIT extends SpockTest {
 
         then: "check response status"
         response.user.name == DemoUtils.DEMO_MEMBER
-        response.user.role == User.Role.MEMBER
+        response.user.role == Role.MEMBER
     }
 
     def cleanup() {

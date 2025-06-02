@@ -7,15 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.config.AuthUserModuleConfiguration;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.config.CommonModuleConfiguration;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.config.UserModuleConfiguration;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.JwtTokenProvider;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.JwtTokenProvider;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.config.MonolithicModuleConfiguration;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoUtils;
 
 @SpringBootApplication
 @EnableScheduling
-@Import({MonolithicModuleConfiguration.class, CommonModuleConfiguration.class, UserModuleConfiguration.class})
+@Import({MonolithicModuleConfiguration.class, CommonModuleConfiguration.class, UserModuleConfiguration.class, AuthUserModuleConfiguration.class})
 public class HumanaEthicaApplication extends SpringBootServletInitializer implements InitializingBean {
     @Autowired
     private DemoUtils demoUtils;

@@ -7,26 +7,25 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.web.multipart.MultipartFile;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.demo.DemoUtils;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.InstitutionDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.RegisterInstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.DocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserApplicationalService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.RegisterUserDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.repository.ThemeRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -42,14 +41,17 @@ public class InstitutionService {
     DocumentRepository documentRepository;
     @Autowired
     ThemeRepository themeRepository;
-    @Autowired
-    private UserApplicationalService userApplicationalService;
+
     @Autowired
     private UserService userService;
     @Autowired
     private Mailer mailer;
 
     public static final String PASSWORD_CONFIRMATION_MAIL_SUBJECT = "Password Confirmation";
+
+    public static String DEMO_INSTITUTION_NIF = "000000000";
+
+    public static String DEMO_INSTITUTION = "DEMO INSTITUTION";
 
     @Value("${spring.mail.username}")
     private String mailUsername;
@@ -92,8 +94,8 @@ public class InstitutionService {
         addDocument(institution, document);
 
 
-        RegisterUserDto registerUserDto = new RegisterUserDto(registerInstitutionDto);
-        registerUserDto.setRole(User.Role.MEMBER);
+        RegisterUserDto registerUserDto = convertRegisterInstitutionToUserDto(registerInstitutionDto);
+        registerUserDto.setRole(Role.MEMBER);
 
         registerUserDto.setInstitutionId(institution.getId());
         userService.registerUser(registerUserDto, memberDocument);
@@ -161,11 +163,19 @@ public class InstitutionService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Institution getDemoInstitution() {
-        return institutionRepository.findInstitutionByNif(DemoUtils.DEMO_INSTITUTION_NIF).orElseGet(() -> {
-            Institution institution = new Institution(DemoUtils.DEMO_INSTITUTION, "demo_institution@mail.com", DemoUtils.DEMO_INSTITUTION_NIF);
+        return institutionRepository.findInstitutionByNif(DEMO_INSTITUTION_NIF).orElseGet(() -> {
+            Institution institution = new Institution(DEMO_INSTITUTION, "demo_institution@mail.com", DEMO_INSTITUTION_NIF);
             institution.validate();
             institutionRepository.save(institution);
             return institution;
         });
+    }
+
+    private RegisterUserDto convertRegisterInstitutionToUserDto(RegisterInstitutionDto registerInstitutionDto) {
+        RegisterUserDto registerUserDto = new RegisterUserDto();
+        registerUserDto.setName(registerInstitutionDto.getMemberName());
+        registerUserDto.setUsername(registerInstitutionDto.getMemberUsername());
+        registerUserDto.setEmail(registerInstitutionDto.getMemberEmail());
+        return registerUserDto;
     }
 }

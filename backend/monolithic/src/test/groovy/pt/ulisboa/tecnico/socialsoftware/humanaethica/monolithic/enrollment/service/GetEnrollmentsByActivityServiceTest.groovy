@@ -2,12 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.ser
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 
 @DataJpaTest
@@ -31,8 +30,8 @@ class GetEnrollmentsByActivityServiceTest extends SpockTest {
 
     def "get two enrollments of the same activity"() {
         given:
-        def volunteerOne = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
-        def volunteerTwo = createVolunteer(SpockTest.USER_2_NAME, SpockTest.USER_2_USERNAME, SpockTest.USER_2_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, User.State.APPROVED)
         and:
         createEnrollment(activity, volunteerOne, SpockTest.ENROLLMENT_MOTIVATION_1)
         createEnrollment(activity, volunteerTwo, SpockTest.ENROLLMENT_MOTIVATION_2)
@@ -48,7 +47,7 @@ class GetEnrollmentsByActivityServiceTest extends SpockTest {
 
     def "get one enrollment of an activity"() {
         given:
-        def volunteer = createVolunteer(SpockTest.USER_1_NAME, SpockTest.USER_1_USERNAME, SpockTest.USER_1_EMAIL, AuthUser.Type.NORMAL, User.State.APPROVED)
+        def volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
         and:
         createEnrollment(activity, volunteer, SpockTest.ENROLLMENT_MOTIVATION_1)
         createEnrollment(otherActivity, volunteer, SpockTest.ENROLLMENT_MOTIVATION_2)
