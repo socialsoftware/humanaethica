@@ -1,26 +1,24 @@
 <template>
-  <div>
-    <v-card class="table">
-      <v-data-table
-        :headers="headers"
-        :items="activitySuggestions"
-        :search="search"
-        disable-pagination
-        :hide-default-footer="true"
-        :mobile-breakpoint="0"
-        data-cy="communityActivitySuggestionsTable"
-      >
-        <template v-slot:top>
-          <v-card-title>
-            <v-text-field
-              v-model="search"
-              append-icon="search"
-              label="Search"
-              class="mx-2"
-            />
-          </v-card-title>
-        </template>     
-      </v-data-table>
+  <v-card class="table">
+    <v-data-table
+      :headers="headers"
+      :items="activitySuggestions"
+      :search="search"
+      disable-pagination
+      :hide-default-footer="true"
+      :mobile-breakpoint="0"
+      data-cy="communityActivitySuggestionsTable"
+    >
+      <template v-slot:top>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            class="mx-2"
+          />
+        </v-card-title>
+      </template>     
       <template v-slot:[`item.action`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -33,12 +31,13 @@
                 >fa-solid fa-up
               </v-icon>
               <span>Upvote</span>
+              <span class="text-caption grey--text">{{ item.numberVotes }}</span>
             </div>
           </template>
         </v-tooltip>
       </template>
-    </v-card>
-  </div>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -140,8 +139,17 @@ export default class VolunteerActivitySuggestionsView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async upVote() {
-
+  async upVote(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null) {
+      try {
+        await RemoteServices.upvoteActivitySuggestion(activitySuggestion.id);
+        // const updated = await RemoteServices.getActivitySuggestion(activitySuggestion.id);
+        // activitySuggestion.numberVotes = updated.numberVotes; 
+        activitySuggestion.numberVotes++; //má prática
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>

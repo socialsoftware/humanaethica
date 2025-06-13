@@ -530,6 +530,17 @@ export default class RemoteServices {
       });
   }
 
+  static async upvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/volunteer/community/upvotes/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async approveActivitySuggestion(activitySuggestionId: number, institutionId: number) {
     return httpClient
       .put(`/activitySuggestions/institution/${institutionId}/approves/${activitySuggestionId}`)

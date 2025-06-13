@@ -31,6 +31,7 @@ public class ActivitySuggestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private Integer numberVotes = 0;
     private String name;
     private String description;
     private String region;
@@ -53,6 +54,7 @@ public class ActivitySuggestion {
     }
 
     public ActivitySuggestion(Institution institution, Volunteer volunteer, ActivitySuggestionDto activitySuggestionDto) {
+        setNumberVotes(activitySuggestionDto.getNumberVotes());
         setName(activitySuggestionDto.getName());
         setDescription(activitySuggestionDto.getDescription());
         setRegion(activitySuggestionDto.getRegion());
@@ -71,6 +73,14 @@ public class ActivitySuggestion {
 
     public Integer getId() {
         return id;
+    }
+
+    public Integer getNumberVotes() {
+        return numberVotes;
+    }
+
+    public void setNumberVotes(Integer numberVotes) {
+        this.numberVotes = numberVotes;
     }
 
     public String getName() {
@@ -183,6 +193,10 @@ public class ActivitySuggestion {
         if (this.state == State.REJECTED) {
             throw new HEException(ACTIVITY_SUGGESTION_ALREADY_REJECTED, this.name);
         }
+    }
+
+    public void upvote() {
+        this.setNumberVotes(this.getNumberVotes() + 1);
     }
 
     private void verifyInvariants() {

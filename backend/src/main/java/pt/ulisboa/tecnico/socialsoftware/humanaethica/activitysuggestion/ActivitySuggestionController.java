@@ -54,4 +54,10 @@ public class ActivitySuggestionController {
     public ActivitySuggestionDto rejectActivitySuggestion(@PathVariable Integer institutionId, @PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.rejectActivitySuggestion(activitySuggestionId);
     }
+
+    @PutMapping("/volunteer//community/upvotes/{activitySuggestionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ActivitySuggestionDto upvoteActivitySuggestion(@PathVariable Integer activitySuggestionId) {
+        return activitySuggestionService.upvoteActivitySuggestion(activitySuggestionId);
+    }
 }

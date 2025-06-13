@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class ActivitySuggestionDto {
     private Integer id;
+    private Integer numberVotes;
     private String name;
     private String description;
     private String region;
@@ -24,6 +25,7 @@ public class ActivitySuggestionDto {
 
     public ActivitySuggestionDto(ActivitySuggestion activitySuggestion, boolean deepCopyInstitution) {
         setId(activitySuggestion.getId());
+        setNumberVotes(activitySuggestion.getNumberVotes());
         setName(activitySuggestion.getName());
         setDescription(activitySuggestion.getDescription());
         setRegion(activitySuggestion.getRegion());
@@ -46,6 +48,14 @@ public class ActivitySuggestionDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getNumberVotes() {
+        return numberVotes;
+    }
+
+    public void setNumberVotes(Integer numberVotes) {
+        this.numberVotes = numberVotes;
     }
 
     public String getName() {

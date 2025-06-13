@@ -3,6 +3,7 @@ import Institution from '../institution/Institution';
 
 export default class ActivitySuggestion {
     id: number | null = null;
+    numberVotes: number = 0;
     name!: string;
     description!: string;
     region!: string;
@@ -22,6 +23,7 @@ export default class ActivitySuggestion {
     constructor(jsonObj?: ActivitySuggestion) {
         if (jsonObj) {
             this.id = jsonObj.id;
+            this.numberVotes = jsonObj.numberVotes;
             this.name = jsonObj.name;
             this.description = jsonObj.description;
             this.region = jsonObj.region;

@@ -85,4 +85,15 @@ public class ActivitySuggestionService {
 
         return new ActivitySuggestionDto(activitySuggestion, true);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ActivitySuggestionDto upvoteActivitySuggestion(Integer activitySuggestionId) {
+        if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
+                                                                  .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
+
+        activitySuggestion.upvote();
+
+        return new ActivitySuggestionDto(activitySuggestion, true);
+    }
 }
