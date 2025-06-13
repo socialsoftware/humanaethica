@@ -26,16 +26,6 @@
             text
             color="orange"
             v-on="on"
-            data-cy="volunteerActivitySuggestions"
-            @click="volunteerActivitySuggestions"
-          >
-            Activity Suggestions
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
             data-cy="volunteerActivities"
             @click="volunteerActivities"
           >
@@ -141,8 +131,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-
-      <v-menu offset-y open-on-hover>
+      <v-menu v-if="isVolunteer" offset-y open-on-hover>
         <template v-slot:activator="{ on: on }">
           <v-btn
             text
@@ -155,11 +144,21 @@
           </v-btn>
         </template>
         <v-list dense>
-          <v-list-item :to="`/volunteer/activitysuggestions/mine`" data-cy="my-suggestions">
-            <v-list-item-title>My Suggestions</v-list-item-title>
+          <v-list-item v-if="isVolunteer" :to="`/volunteer/activitysuggestions/mine`" data-cy="my-suggestions" class="justify-center">
+            <v-list-item-action class="d-flex align-center justify-center">
+              <v-icon class="mr-2">fas fa-edit</v-icon>
+            </v-list-item-action>
+            <v-list-item-content class="text-center">
+              <v-list-item-title>My Suggestions</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
-          <v-list-item :to="`/volunteer/activitysuggestions/community`" data-cy="community-suggestions">
-            <v-list-item-title>Community Suggestions</v-list-item-title>
+          <v-list-item v-if="isVolunteer" :to="`/volunteer/activitysuggestions/community`" data-cy="community-suggestions" class="justify-center">
+            <v-list-item-action class="d-flex align-center justify-center">
+              <v-icon class="mr-2">fas fa-users</v-icon>
+            </v-list-item-action>
+            <v-list-item-content class="text-center">
+              <v-list-item-title>Community Suggestions</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>

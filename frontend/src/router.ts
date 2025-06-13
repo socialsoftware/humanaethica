@@ -241,20 +241,25 @@ const router = new Router({
         },
         {
           path: 'activitysuggestions',
-          name: 'volunteer-activity-suggestions',
           component: ActivitySuggestionsView,
-          meta: {
-            requiredAuth: 'None',
-            title: APP_NAME + ' - Manage Activity Suggestions',
-          },
           children: [
             {
               path: 'mine',
+              name: 'volunteer-activity-suggestions-mine',
               component: VolunteerActivitySuggestionsView,
+              meta: {
+                requiredAuth: 'None',
+                title: APP_NAME + ' - Manage Volunteer Enrollments',
+              },
             },
             {
               path: 'community',
+              name: 'volunteer-activity-suggestions-community',
               component: ActivitySuggestionsListView,
+              meta: {
+                requiredAuth: 'None',
+                title: APP_NAME + ' - Manage Volunteer Enrollments',
+              },
             }
           ]
         },
