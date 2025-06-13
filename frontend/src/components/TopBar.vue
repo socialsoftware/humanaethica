@@ -143,6 +143,28 @@
       </v-menu>
 
       <v-menu offset-y open-on-hover>
+        <template v-slot:activator="{ on: on }">
+          <v-btn
+            text
+            color="orange"
+            v-on="on"
+            data-cy="volunteerActivitySuggestions"
+          >
+            Activity Suggestions
+            <v-icon right>fas fa-user</v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item :to="`/volunteer/activitysuggestions/mine`" data-cy="my-suggestions">
+            <v-list-item-title>My Suggestions</v-list-item-title>
+          </v-list-item>
+          <v-list-item :to="`/volunteer/activitysuggestions/community`" data-cy="community-suggestions">
+            <v-list-item-title>Community Suggestions</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ on }">
           <v-btn color="orange" text v-on="on" data-cy="profiles">
             Profiles

@@ -32,6 +32,8 @@ import ProfilesListView from "@/views/profile/ProfilesListView.vue";
 import InstitutionProfileView from "@/views/profile/InstitutionProfileView.vue";
 import InstitutionActivitySuggestionsView from "@/views/member/InstitutionActivitySuggestionsView.vue";
 import VolunteerActivitySuggestionsView from "@/views/volunteer/VolunteerActivitySuggestionsView.vue";
+import ActivitySuggestionsView from "@/views/volunteer/ActivitySuggestionsView.vue";
+import ActivitySuggestionsListView from "@/views/volunteer/ActivitySuggestionsListView.vue";
 
 Vue.use(Router);
 
@@ -240,11 +242,21 @@ const router = new Router({
         {
           path: 'activitysuggestions',
           name: 'volunteer-activity-suggestions',
-          component: VolunteerActivitySuggestionsView,
+          component: ActivitySuggestionsView,
           meta: {
             requiredAuth: 'None',
-            title: APP_NAME + ' - Manage Volunteer Activity Suggestions',
+            title: APP_NAME + ' - Manage Activity Suggestions',
           },
+          children: [
+            {
+              path: 'mine',
+              component: VolunteerActivitySuggestionsView,
+            },
+            {
+              path: 'community',
+              component: ActivitySuggestionsListView,
+            }
+          ]
         },
         {
           path: 'enrollments',
