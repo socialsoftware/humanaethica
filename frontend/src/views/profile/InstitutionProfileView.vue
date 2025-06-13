@@ -28,6 +28,14 @@
     </div>
     <div v-else>
       <h1>Institution: {{ institutionProfile?.institution?.name ?? 'N/A' }}</h1>
+      <v-btn
+        color="primary"
+        dark
+        @click="subscribeToInstitution"
+        data-cy="subscribeButton"
+      >
+        Subscribe
+      </v-btn>
       <div class="text-description" data-cy="shortDescription">
         <p><strong>Short Description: </strong> {{ institutionProfile?.shortDescription ?? 'N/A' }}</p>
       </div>
@@ -177,6 +185,40 @@ export default class InstitutionProfileView extends Vue {
   onCloseInstitutionProfileDialog(){
     this.institutionProfile = null;
     this.createDialog = false;
+  }
+
+  async subscribeToInstitution() {
+    console.log("SUBSCRIBED");
+    try {
+      let userId = this.$store.getters.getUser.id;
+      let institutionId = Number(this.$route.params.id);
+
+      await RemoteServices.addSubscription(userId, institutionId);
+
+      this.$store.dispatch('notify', {
+        message: 'Successfully subscribed to the institution!',
+        type: 'success'
+      });
+    } catch (error) {
+      this.$store.dispatch('error', error);
+    }
+  }
+
+  async unsubscribeToInstitution() {
+    console.log("UNSUBSCRIBED");
+    try {
+      let userId = this.$store.getters.getUser.id;
+      let institutionId = Number(this.$route.params.id);
+
+      await RemoteServices.removeSubscription(userId, institutionId);
+
+      this.$store.dispatch('notify', {
+        message: 'Successfully subscribed to the institution!',
+        type: 'success'
+      });
+    } catch (error) {
+      this.$store.dispatch('error', error);
+    }
   }
 
 }

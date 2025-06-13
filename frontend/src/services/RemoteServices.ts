@@ -228,6 +228,22 @@ export default class RemoteServices {
       });
   }
 
+  static async addSubscription(userId: number, institutionId: number) {
+    return httpClient
+      .put(`/users/${userId}/addSubscription/${institutionId}`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async removeSubscription(userId: number, institutionId: number) {
+    return httpClient
+      .put(`/users/${userId}/removeSubscription/${institutionId}`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async removeThemetoInstitution(themeId: number) {
     return httpClient
       .put(`/theme/${themeId}/removeInstitution`)
