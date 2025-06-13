@@ -1,13 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class InstitutionDto {
     private Integer id;
@@ -25,6 +24,9 @@ public class InstitutionDto {
     private List<ThemeDto> themeDto = new ArrayList<>();
 
     private List<ActivityDto> activityDto = new ArrayList<>();
+
+    // private List<VolunteerDto> volunteerDto = new ArrayList<>();
+    // private Integer volunteerId;
 
     public InstitutionDto(){
     }

@@ -1,16 +1,23 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.domain.VolunteerProfile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @DiscriminatorValue(User.UserTypes.VOLUNTEER)
@@ -32,6 +39,10 @@ public class Volunteer extends User {
 
     @OneToOne(mappedBy = "volunteer")
     private VolunteerProfile volunteerProfile;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "institution_subscriptions")
+    private List<Institution> institutions = new ArrayList<>();
 
     public Volunteer() {
     }
@@ -114,5 +125,15 @@ public class Volunteer extends User {
 
     public void setVolunteerProfile(VolunteerProfile volunteerProfile) {
         this.volunteerProfile = volunteerProfile;
+    }
+
+    public void addSubscription(Institution institution) {
+        this.institutions.add(institution);
+        institution.addSubscriber(this);
+    }
+
+    public void removeSubscription(Institution institution) {
+        this.institutions.remove(institution);
+        institution.deleteSubscriber(this);
     }
 }

@@ -101,4 +101,22 @@ public class UserController {
         return userService.getInstitution(userId);
     }
 
+    @PutMapping("/users/{userId}/addSubscription/{institutionId}")
+    //@PutMapping("/users/addSubscription/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public void addSubscription(@PathVariable int userId, @PathVariable int institutionId) {
+    //public void addSubscription(@PathVariable int institutionId, Principal principal) {
+        //Volunteer volunteer = (Volunteer) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        userService.addInstitutionSubscription(userId, institutionId);
+    }
+
+    @PutMapping("/users/{userId}/addSubscription/{institutionId}")
+    //@PutMapping("/users/addSubscription/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public void removeSubscription(@PathVariable int userId, @PathVariable int institutionId) {
+    //public void addSubscription(@PathVariable int institutionId, Principal principal) {
+        //Volunteer volunteer = (Volunteer) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        userService.removeInstitutionSubscription(userId, institutionId);
+    }
+
 }

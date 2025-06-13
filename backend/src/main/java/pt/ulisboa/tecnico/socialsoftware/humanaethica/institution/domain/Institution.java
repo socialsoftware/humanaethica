@@ -1,18 +1,30 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.security.crypto.keygen.KeyGenerators;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.domain.InstitutionProfile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "institutions")
@@ -41,6 +53,9 @@ public class Institution {
     private List<Member> members = new ArrayList<>();
 
     private LocalDateTime tokenGenerationDate;
+
+    @ManyToMany(mappedBy = "institutions")
+    private List<Volunteer> subscribers = new ArrayList<>();
 
     @ManyToMany(mappedBy = "institutions", fetch = FetchType.LAZY)
     private List<Theme> themes = new ArrayList<>();
@@ -209,5 +224,13 @@ public class Institution {
 
     public void setInstitutionProfile(InstitutionProfile institutionProfile) {
         this.institutionProfile = institutionProfile;
+    }
+
+    public void addSubscriber(Volunteer volunteer) {
+        subscribers.add(volunteer);
+    }
+
+    public void deleteSubscriber(Volunteer volunteer) {
+        subscribers.remove(volunteer);
     }
 }

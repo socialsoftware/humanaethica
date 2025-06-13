@@ -206,4 +206,19 @@ public class UserService {
         return new InstitutionDto(member.getInstitution(), true, true);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void addInstitutionSubscription(Integer userId, int institutionId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Volunteer volunteer = (Volunteer) authUser.getUser();
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        volunteer.addSubscription(institution);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeInstitutionSubscription(Integer userId, int institutionId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Volunteer volunteer = (Volunteer) authUser.getUser();
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        volunteer.removeSubscription(institution);
+    }
 }
