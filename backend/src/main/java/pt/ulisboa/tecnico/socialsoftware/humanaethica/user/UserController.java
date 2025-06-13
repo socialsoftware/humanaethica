@@ -110,7 +110,7 @@ public class UserController {
         userService.addInstitutionSubscription(userId, institutionId);
     }
 
-    @PutMapping("/users/{userId}/addSubscription/{institutionId}")
+    @PutMapping("/users/{userId}/removeSubscription/{institutionId}")
     //@PutMapping("/users/addSubscription/{institutionId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public void removeSubscription(@PathVariable int userId, @PathVariable int institutionId) {
