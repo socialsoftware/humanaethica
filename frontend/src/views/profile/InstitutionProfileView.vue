@@ -28,7 +28,11 @@
     </div>
     <div v-else>
       <h1>Institution: {{ institutionProfile?.institution?.name ?? 'N/A' }}</h1>
+      <div class="text-description" data-cy="shortDescription">
+        <p><strong>Short Description: </strong> {{ institutionProfile?.shortDescription ?? 'N/A' }}</p>
+      </div>
       <v-btn
+        v-if="!isMember && !isSubscribed"
         color="primary"
         dark
         @click="subscribeToInstitution"
@@ -36,9 +40,15 @@
       >
         Subscribe
       </v-btn>
-      <div class="text-description" data-cy="shortDescription">
-        <p><strong>Short Description: </strong> {{ institutionProfile?.shortDescription ?? 'N/A' }}</p>
-      </div>
+      <v-btn
+        v-if="!isMember && isSubscribed"
+        color="error"
+        dark
+        @click="unsubscribeFromInstitution"
+        data-cy="unsubscribeButton"
+      >
+        Unsubscribe
+      </v-btn>
       <div class="stats-container">
         <div class="items">
           <div ref="institutionId" class="icon-wrapper" data-cy="numMembers">
@@ -137,6 +147,7 @@ export default class InstitutionProfileView extends Vue {
   hasInstitutionProfile: boolean = false;
   createDialog: boolean = false;
   isMember: boolean = false;
+  isSubscribed: boolean = false;
   search: string = '';
   headers = [
     { text: 'Volunteer Name', value: 'volunteerName', align: 'left', width: '30%'},
@@ -194,28 +205,22 @@ export default class InstitutionProfileView extends Vue {
       let institutionId = Number(this.$route.params.id);
 
       await RemoteServices.addSubscription(userId, institutionId);
-
-      this.$store.dispatch('notify', {
-        message: 'Successfully subscribed to the institution!',
-        type: 'success'
-      });
+      this.isSubscribed = true;
+      
     } catch (error) {
       this.$store.dispatch('error', error);
     }
   }
 
-  async unsubscribeToInstitution() {
+  async unsubscribeFromInstitution() {
     console.log("UNSUBSCRIBED");
     try {
       let userId = this.$store.getters.getUser.id;
       let institutionId = Number(this.$route.params.id);
 
       await RemoteServices.removeSubscription(userId, institutionId);
+      this.isSubscribed = false;
 
-      this.$store.dispatch('notify', {
-        message: 'Successfully subscribed to the institution!',
-        type: 'success'
-      });
     } catch (error) {
       this.$store.dispatch('error', error);
     }
