@@ -163,6 +163,10 @@ public abstract class User {
         document.setUser(this);
     }
 
+    public List<Notification> getNotifications() {
+        return this.notifications;
+    }
+
     public void addNotification(Notification notification) {
         notifications.add(notification);
     }

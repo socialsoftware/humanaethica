@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
@@ -103,12 +104,20 @@ public class UserController {
         return userService.getInstitution(userId);
     }
 
+    @GetMapping("/users/{userId}/getNotifications")
+    // @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
+    public List<NotificationDto> getNotifications(@PathVariable int userId) {
+        System.out.println("🔔 [UserController] getNotifications called for userId = " + userId);
+        return userService.getNotifications(userId);
+    }
+
     @PutMapping("/users/{userId}/addSubscription/{institutionId}")
     //@PutMapping("/users/addSubscription/{institutionId}")
-    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    //@PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public void addSubscription(@PathVariable int userId, @PathVariable int institutionId) {
     //public void addSubscription(@PathVariable int institutionId, Principal principal) {
         //Volunteer volunteer = (Volunteer) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
+        System.out.println("🔔 [UserController] addSubscription called for userId = " + userId + " institutionId = " + institutionId);
         userService.addInstitutionSubscription(userId, institutionId);
     }
 

@@ -59,6 +59,14 @@ public class Notification {
         setRecipient(user);
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -81,6 +89,14 @@ public class Notification {
 
     public void setType(NotificationType type) {
         this.type = type;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 
     public User getRecipient() {

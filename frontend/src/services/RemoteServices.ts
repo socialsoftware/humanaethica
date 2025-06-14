@@ -18,6 +18,7 @@ import Report from '@/models/report/Report';
 import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
 import InstitutionProfile from '@/models/profile/InstitutionProfile';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import Notification from '@/models/notification/Notification';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -733,6 +734,22 @@ export default class RemoteServices {
         });
       })
       .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getNotifications(userId: number): Promise<Notification[]> {
+    console.log("📡 [RemoteServices] Fetching notifications for userId:", userId);
+    return httpClient
+      .get(`/users/${userId}/getNotifications`)
+      .then((response) => {
+        console.log("📥 [RemoteServices] Raw response data:", response.data);
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async (error) => {
+        console.error("❌ [RemoteServices] Error fetching notifications:", error);
         throw Error(await this.errorMessage(error));
       });
   }
