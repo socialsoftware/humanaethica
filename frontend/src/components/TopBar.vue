@@ -220,7 +220,7 @@
             <v-icon>fas fa-sign-in-alt</v-icon>
           </v-btn>
           <v-btn
-            v-if="isLoggedIn && isVolunteer"
+            v-if="isLoggedIn && (isVolunteer || isMember)"
             text
             color="orange"
             data-cy="volunteer-notifications"
@@ -455,28 +455,6 @@ export default class TopBar extends Vue {
   onCloseNotificationDialog() {
     this.showNotifications = false;
   }
-
-  // async fetchVolunteerNotifications() {
-  //   try {
-  //     const userId = this.$store.getters.getUser?.id;
-  //     if (this.isVolunteer && userId) {
-  //       this.volunteerNotifications = await RemoteServices.getNotifications(userId);
-  //     }
-  //   } catch (e) {
-  //     console.error("Failed to fetch notifications", e);
-  //   }
-  // }
-
-  // async fetchMemberNotifications() {
-  //   try {
-  //     const userId = this.$store.getters.getUser?.id;
-  //     if (this.isMember && userId) {
-  //       this.memberNotifications = await RemoteServices.getNotifications(userId);
-  //     }
-  //   } catch (e) {
-  //     console.error("Failed to fetch notifications", e);
-  //   }
-  // }
 
   async logout() {
     await this.$store.dispatch('logout');

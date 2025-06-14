@@ -33,7 +33,7 @@ public class Notification {
     private String message;
     private boolean read = false;
     @Column(name = "creation_date")
-    private LocalDateTime creationDate;
+    private LocalDateTime creationDate = DateHandler.now();
 
     @Enumerated(EnumType.STRING)
     private Notification.NotificationType type;

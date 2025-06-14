@@ -105,28 +105,20 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}/getNotifications")
-    // @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
     public List<NotificationDto> getNotifications(@PathVariable int userId) {
-        System.out.println("🔔 [UserController] getNotifications called for userId = " + userId);
         return userService.getNotifications(userId);
     }
 
     @PutMapping("/users/{userId}/addSubscription/{institutionId}")
-    //@PutMapping("/users/addSubscription/{institutionId}")
-    //@PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public void addSubscription(@PathVariable int userId, @PathVariable int institutionId) {
-    //public void addSubscription(@PathVariable int institutionId, Principal principal) {
-        //Volunteer volunteer = (Volunteer) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
-        System.out.println("🔔 [UserController] addSubscription called for userId = " + userId + " institutionId = " + institutionId);
         userService.addInstitutionSubscription(userId, institutionId);
     }
 
     @PutMapping("/users/{userId}/removeSubscription/{institutionId}")
-    //@PutMapping("/users/addSubscription/{institutionId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public void removeSubscription(@PathVariable int userId, @PathVariable int institutionId) {
-    //public void addSubscription(@PathVariable int institutionId, Principal principal) {
-        //Volunteer volunteer = (Volunteer) ((AuthUser) ((Authentication) principal).getPrincipal()).getUser();
         userService.removeInstitutionSubscription(userId, institutionId);
     }
     

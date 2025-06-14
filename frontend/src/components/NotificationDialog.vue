@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500" persistent>
+  <v-dialog v-model="dialog" max-width="700" persistent>
     <v-card>
       <v-card-title class="headline">Notifications</v-card-title>
       <v-divider></v-divider>
@@ -20,7 +20,6 @@
           class="d-flex align-center justify-center grey--text"
           style="min-height: 100px;"
         >
-        <!-- <div v-else class="text-center grey--text"> -->
           No notifications found.
         </div>
       </v-card-text>
@@ -57,19 +56,12 @@ export default class NotificationDialog extends Vue {
   }
 
   async loadNotifications() {
-    console.log("🔔 [NotificationDialog] Attempting to load notifications...");
-    console.log("🔍 Current User ID: ", this.currentUserID);
     if (this.currentUserID >= 0) {
       try {
-        const notifs = await RemoteServices.getNotifications(this.currentUserID);
-        console.log("✅ Notifications fetched from API: ", notifs);
-        this.notifications = notifs;
-        // this.notifications = await RemoteServices.getNotifications(this.currentUserID);
+        this.notifications = await RemoteServices.getNotifications(this.currentUserID);
       } catch (error) {
         console.error('Error loading notifications:', error);
       }
-    } else {
-      console.warn("⚠️ Invalid user ID provided: ", this.currentUserID);
     }
   }
 
