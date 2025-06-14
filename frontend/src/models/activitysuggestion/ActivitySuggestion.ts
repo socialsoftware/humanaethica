@@ -3,7 +3,7 @@ import Institution from '../institution/Institution';
 
 export default class ActivitySuggestion {
     id: number | null = null;
-    numberVotes: number = 0;
+    numberVotes: number | null = null;
     name!: string;
     description!: string;
     region!: string;
@@ -19,6 +19,7 @@ export default class ActivitySuggestion {
     state!: string;
     institution!: Institution;
     volunteerId: number | null = null;
+    rejectionJustification!: string;
 
     constructor(jsonObj?: ActivitySuggestion) {
         if (jsonObj) {
@@ -33,14 +34,17 @@ export default class ActivitySuggestion {
             this.applicationDeadline = jsonObj.applicationDeadline;
             if (jsonObj.applicationDeadline)
                 this.formattedApplicationDeadline = ISOtoString(jsonObj.applicationDeadline);
+            this.startingDate = jsonObj.startingDate;
             if (jsonObj.startingDate)
                 this.formattedStartingDate = ISOtoString(jsonObj.startingDate);
+            this.endingDate = jsonObj.endingDate;
             if (jsonObj.endingDate)
                 this.formattedEndingDate = ISOtoString(jsonObj.endingDate);
             this.participantsNumberLimit = jsonObj.participantsNumberLimit;
             this.state = jsonObj.state;
             this.institution = jsonObj.institution;
             this.volunteerId = jsonObj.volunteerId;
+            this.rejectionJustification = jsonObj.rejectionJustification;
         }
     }
 }

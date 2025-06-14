@@ -505,6 +505,31 @@ export default class RemoteServices {
       });
   }
 
+  static async updateActivitySuggestion(activitySuggestionId: number, activitySuggestion: ActivitySuggestion,
+                                        institutionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/${activitySuggestionId}/institution/${institutionId}`, activitySuggestion)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getAllActivitySuggestions(): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getActivitySuggestions(institutionId: number): Promise<ActivitySuggestion[]> {
     return httpClient
       .get(`/activitySuggestions/institution/${institutionId}`)
@@ -553,9 +578,9 @@ export default class RemoteServices {
       });
   }
 
-  static async rejectActivitySuggestion(activitySuggestionId: number, institutionId: number) {
+  static async rejectActivitySuggestion(activitySuggestionId: number, institutionId: number, justification: string) {
     return httpClient
-      .put(`/activitySuggestions/institution/${institutionId}/rejects/${activitySuggestionId}`)
+      .put(`/activitySuggestions/institution/${institutionId}/rejects/${activitySuggestionId}/${justification}`)
       .then((response) => {
         return new ActivitySuggestion(response.data);
       })

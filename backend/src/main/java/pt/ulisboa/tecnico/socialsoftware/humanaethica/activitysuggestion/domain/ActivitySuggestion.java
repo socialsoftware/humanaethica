@@ -35,10 +35,12 @@ public class ActivitySuggestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer numberVotes = 0;
+    @Column(name = "number_votes")
+    private Integer numberVotes;
     private String name;
     private String description;
     private String region;
+    private String rejectionJustification;
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
     private LocalDateTime applicationDeadline;
@@ -76,6 +78,20 @@ public class ActivitySuggestion {
         setVolunteer(volunteer);
 
         verifyInvariants();
+    }
+
+    public void update(ActivitySuggestionDto activitySuggestionDto, Institution institutio) {
+        setNumberVotes(activitySuggestionDto.getNumberVotes());
+        setName(activitySuggestionDto.getName());
+        setRegion(activitySuggestionDto.getRegion());
+        setParticipantsNumberLimit(activitySuggestionDto.getParticipantsNumberLimit());
+        setDescription(activitySuggestionDto.getDescription());
+        setStartingDate(DateHandler.toLocalDateTime(activitySuggestionDto.getStartingDate()));
+        setEndingDate(DateHandler.toLocalDateTime(activitySuggestionDto.getEndingDate()));
+        setApplicationDeadline(DateHandler.toLocalDateTime(activitySuggestionDto.getApplicationDeadline()));
+        setInstitution(institution);
+
+        //verifyInvariants();
     }
 
     public Integer getId() {
@@ -191,8 +207,9 @@ public class ActivitySuggestion {
         }
     }
 
-    public void reject() {
+    public void reject(String justification) {
         suggestionCannotBeRejected();
+        this.rejectionJustification = justification;
         this.setState(State.REJECTED);
     }
 
@@ -203,7 +220,8 @@ public class ActivitySuggestion {
     }
 
     public void upvote() {
-        this.setNumberVotes(this.getNumberVotes() + 1);
+        Integer currentVotes = this.getNumberVotes();
+        this.setNumberVotes(currentVotes != null ? currentVotes + 1 : 1);
     }
 
     private void verifyInvariants() {

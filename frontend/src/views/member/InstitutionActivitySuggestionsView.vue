@@ -43,7 +43,7 @@
               color="red"
               @click="rejectActivitySuggestion(item)"
               v-on="on"
-              data-cy="rejectActivitySuggestionButton"
+              data-cy="rejectActivitySuggestion"
               >mdi-thumb-down
             </v-icon>
           </template>
@@ -51,6 +51,15 @@
         </v-tooltip>
       </template>
     </v-data-table>
+    <reject-activity-suggestion-dialog
+      v-if="currentActivitySuggestion && rejectActivitySuggestionDialog"
+      v-model="rejectActivitySuggestionDialog"
+      :activitySuggestion="currentActivitySuggestion"
+      :activitySuggestions="activitySuggestions"
+      :institution="institution"
+      v-on:reject-activity-suggestion="onRejectActivitySuggestion"
+      v-on:close-activity-suggestion-dialog="onCloseRejectActivitySuggestionDialog"
+    />
   </v-card>
 </template>
 
@@ -59,15 +68,21 @@ import { Component, Vue } from 'vue-property-decorator';
 import Institution from '@/models/institution/Institution';
 import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
 import RemoteServices from '@/services/RemoteServices';
+import RejectActivitySuggestionDialog from '@/views/member/RejectActivitySuggestionDialog.vue';
+import { show } from 'cli-cursor';
 
 @Component({
   components: {
+    'reject-activity-suggestion-dialog': RejectActivitySuggestionDialog,
   },
+  methods: { show },
 })
 export default class InstitutionActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
   institution: Institution = new Institution();
   search: string = '';
+  currentActivitySuggestion: ActivitySuggestion | null = null;
+  rejectActivitySuggestionDialog: boolean = false;
 
   headers: object = [
     {
@@ -170,12 +185,26 @@ export default class InstitutionActivitySuggestionsView extends Vue {
     }
   }
 
-  async rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+  rejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
+    this.currentActivitySuggestion = activitySuggestion;
+    this.rejectActivitySuggestionDialog = true;
+  }
+
+  onCloseRejectActivitySuggestionDialog() {
+    this.currentActivitySuggestion = null;
+    this.rejectActivitySuggestionDialog = false;
+  }
+
+  async onRejectActivitySuggestion(activitySuggestion: ActivitySuggestion) {
     if (activitySuggestion.id !== null && this.institution.id != null) {
+      this.currentActivitySuggestion = null;
       try {
-        const result = await RemoteServices.rejectActivitySuggestion(activitySuggestion.id, this.institution.id);
-        const index = this.activitySuggestions.findIndex((a) => a.id === activitySuggestion.id);
-        if (index !== -1) this.$set(this.activitySuggestions, index, result);
+        let userId = this.$store.getters.getUser.id;
+        this.institution = await RemoteServices.getInstitution(userId);
+        if (this.institution != null && this.institution.id != null)
+          this.activitySuggestions = await RemoteServices.getActivitySuggestions(
+              this.institution.id,
+            );
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

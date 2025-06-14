@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion;
 
 import java.util.List;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,17 @@ public class ActivitySuggestionService {
     InstitutionRepository institutionRepository;
     @Autowired
     ActivitySuggestionRepository activitySuggestionRepository;
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ActivitySuggestionDto> getAllActivitySuggestions() {
+        List<ActivitySuggestion> list = activitySuggestionRepository.findAll();
+        System.out.println("Number of activity suggestions: " + list.size());
+
+        return list.stream()
+            .map(activitySuggestion -> new ActivitySuggestionDto(activitySuggestion, true))
+            .sorted(Comparator.comparing(ActivitySuggestionDto::getName, String.CASE_INSENSITIVE_ORDER))
+            .toList();
+    }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivitySuggestionDto> getActivitySuggestionsByInstitution(Integer institutionId) {
@@ -66,6 +78,19 @@ public class ActivitySuggestionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ActivitySuggestionDto updateActivitySuggestion(Integer activitySuggestionId, ActivitySuggestionDto activitySuggestionDto,  Integer institutionId) {
+        if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId).orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
+
+        if (institutionId == null) throw new HEException(INSTITUTION_NOT_FOUND);
+        Institution institution =  institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+
+        activitySuggestion.update(activitySuggestionDto, institution);
+
+        return new ActivitySuggestionDto(activitySuggestion, true);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ActivitySuggestionDto approveActivitySuggestion(Integer activitySuggestionId) {
         if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
         ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
@@ -77,11 +102,11 @@ public class ActivitySuggestionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ActivitySuggestionDto rejectActivitySuggestion(Integer activitySuggestionId) {
+    public ActivitySuggestionDto rejectActivitySuggestion(Integer activitySuggestionId, String justification) {
         if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
         ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
                                                                   .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
-        activitySuggestion.reject();
+        activitySuggestion.reject(justification);
 
         return new ActivitySuggestionDto(activitySuggestion, true);
     }

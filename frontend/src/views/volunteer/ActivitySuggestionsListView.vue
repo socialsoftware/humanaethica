@@ -20,21 +20,34 @@
         </v-card-title>
       </template>     
       <template v-slot:[`item.action`]="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <div class="d-flex align-center">
-              <v-icon
-                class="mr-2 action-button"
-                color="blue"
-                @click="upVote(item)"
-                data-cy="upVoteButton"
-                >fa-solid fa-up
-              </v-icon>
-              <span>Upvote</span>
-              <span class="text-caption grey--text">{{ item.numberVotes }}</span>
-            </div>
-          </template>
-        </v-tooltip>
+        <div class="d-flex align-center">
+          <v-tooltip bottom v-if="item.state === 'IN_REVIEW'">
+            <template v-slot:activator="{ on }">
+              <div v-on="on">
+                <v-btn
+                  icon
+                  @click="upVote(item)"
+                  :disabled="votedSuggestionIds.has(item.id) || item.volunteerId === currentUserId"
+                  data-cy="upVoteButton"
+                  style="font-size: 28px;"
+                >
+                  <v-icon :color="(votedSuggestionIds.has(item.id) || item.volunteerId === currentUserId) ? 'grey' : 'blue'">
+                    mdi-arrow-up-bold
+                  </v-icon>
+                </v-btn>
+              </div>
+            </template>
+            <span>
+              {{ item.volunteerId === currentUserId ? 'Cannot vote on your own suggestion' : 'Upvote' }}
+            </span>
+          </v-tooltip>
+          <span
+            class="ml-2 font-weight-medium"
+            style="font-size: 16px; color: #333;"
+          >
+            {{ item.numberVotes }}
+          </span>
+        </div>
       </template>
     </v-data-table>
   </v-card>
@@ -55,6 +68,11 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
   institutions: Institution[] = [];
   search: string = '';
+  numberVotes: number | null = null;
+  currentUserId: number | null = null;
+
+  // IDs das sugestões que já foram votadas nesta sessão
+  votedSuggestionIds: Set<number> = new Set();
 
   currentActivitySuggestion: ActivitySuggestion | null = null;
 
@@ -128,11 +146,12 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   ];
 
   async created() {
+    this.currentUserId = this.$store.getters.getUser.id;
     await this.$store.dispatch('loading');
     try {
-      let userId = this.$store.getters.getUser.id;
-      this.activitySuggestions = await RemoteServices.getVolunteerActivitySuggestions(userId);
+      this.activitySuggestions = await RemoteServices.getAllActivitySuggestions();
       this.institutions = await RemoteServices.getInstitutions();
+      this.numberVotes = 0;
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -140,12 +159,17 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   }
 
   async upVote(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null) {
+    if (activitySuggestion.id !== null && !this.votedSuggestionIds.has(activitySuggestion.id)) {
+      this.votedSuggestionIds.add(activitySuggestion.id);
       try {
         await RemoteServices.upvoteActivitySuggestion(activitySuggestion.id);
         // const updated = await RemoteServices.getActivitySuggestion(activitySuggestion.id);
-        // activitySuggestion.numberVotes = updated.numberVotes; 
-        activitySuggestion.numberVotes++; //má prática
+        // activitySuggestion.numberVotes = updated.numberVotes;
+        if (activitySuggestion.numberVotes == null) {
+          activitySuggestion.numberVotes = 1;
+        } else {
+          activitySuggestion.numberVotes += 1;
+        } 
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

@@ -2,7 +2,13 @@
   <v-dialog v-model="dialog" persistent width="1300">
     <v-card>
       <v-card-title>
-        <span class="headline">New Activity Suggestion</span>
+        <span class="headline">
+          {{
+            editActivitySuggestion && editActivitySuggestion.id === null
+              ? 'New Activity Suggestion'
+              : 'Edit Activity Suggestion'
+          }}
+        </span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form" lazy-validation>
@@ -12,7 +18,7 @@
                 label="*Name"
                 :rules="[(v) => !!v || 'Activity Suggestion name is required']"
                 required
-                v-model="newActivitySuggestion.name"
+                v-model="editActivitySuggestion.name"
                 data-cy="suggestionNameInput"
               ></v-text-field>
             </v-col>
@@ -20,7 +26,7 @@
               <v-select
                 label="*Institution"
                 :rules="[(v) => !!v || 'Institution name is required']"
-                v-model="newActivitySuggestion.institution"
+                v-model="editActivitySuggestion.institution"
                 :items="institutions"
                 return-object
                 item-text="name"
@@ -43,7 +49,7 @@
                   },
                 ]"
                 required
-                v-model="newActivitySuggestion.description"
+                v-model="editActivitySuggestion.description"
                 data-cy="suggestionDescriptionInput"
               ></v-text-field>
             </v-col>
@@ -52,7 +58,7 @@
                 label="*Region"
                 :rules="[(v) => !!v || 'Region name is required']"
                 required
-                v-model="newActivitySuggestion.region"
+                v-model="editActivitySuggestion.region"
                 data-cy="suggestionRegionInput"
               ></v-text-field>
             </v-col>
@@ -65,14 +71,14 @@
                     'Number of participants between 1 and 5 is required',
                 ]"
                 required
-                v-model="newActivitySuggestion.participantsNumberLimit"
+                v-model="editActivitySuggestion.participantsNumberLimit"
                 data-cy="suggestionParticipantsNumberInput"
               ></v-text-field>
             </v-col>
             <v-col>
               <VueCtkDateTimePicker
                 id="suggestionApplicationDeadlineInput"
-                v-model="newActivitySuggestion.applicationDeadline"
+                v-model="editActivitySuggestion.applicationDeadline"
                 format="YYYY-MM-DDTHH:mm:ssZ"
                 label="*Application Deadline"
               ></VueCtkDateTimePicker>
@@ -80,7 +86,7 @@
             <v-col>
               <VueCtkDateTimePicker
                 id="suggestionStartingDateInput"
-                v-model="newActivitySuggestion.startingDate"
+                v-model="editActivitySuggestion.startingDate"
                 format="YYYY-MM-DDTHH:mm:ssZ"
                 label="*Starting Date"
               ></VueCtkDateTimePicker>
@@ -88,7 +94,7 @@
             <v-col>
               <VueCtkDateTimePicker
                 id="suggestionEndingDateInput"
-                v-model="newActivitySuggestion.endingDate"
+                v-model="editActivitySuggestion.endingDate"
                 format="YYYY-MM-DDTHH:mm:ssZ"
                 label="*Ending Date"
               ></VueCtkDateTimePicker>
@@ -109,7 +115,7 @@
           v-if="canSave"
           color="blue-darken-1"
           variant="text"
-          @click="registerActivitySuggestion"
+          @click="updateActivitySuggestion"
           data-cy="saveActivitySuggestion"
         >
           Save
@@ -136,11 +142,11 @@ export default class ActivitySuggestionDialog extends Vue {
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
   @Prop({ type: Array, required: true }) readonly institutions!: Institution[];
 
-  newActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
+  editActivitySuggestion: ActivitySuggestion = new ActivitySuggestion();
   cypressCondition: boolean = false;
 
   async created() {
-    this.newActivitySuggestion = new ActivitySuggestion(this.activitySuggestion);
+    this.editActivitySuggestion = new ActivitySuggestion(this.activitySuggestion);
   }
 
   isNumberValid(value: any) {
@@ -152,28 +158,36 @@ export default class ActivitySuggestionDialog extends Vue {
   get canSave(): boolean {
     return (
       this.cypressCondition ||
-      (!!this.newActivitySuggestion.name &&
-        !!this.newActivitySuggestion.region &&
-        !!this.newActivitySuggestion.institution &&
-        !!this.newActivitySuggestion.participantsNumberLimit &&
-        !!this.newActivitySuggestion.description &&
-        this.newActivitySuggestion.description.replace(/\s+/g, ' ').trim().length >= 10 &&
-        !!this.newActivitySuggestion.startingDate &&
-        !!this.newActivitySuggestion.endingDate &&
-        !!this.newActivitySuggestion.applicationDeadline)
+      (!!this.editActivitySuggestion.name &&
+        !!this.editActivitySuggestion.region &&
+        !!this.editActivitySuggestion.institution &&
+        !!this.editActivitySuggestion.participantsNumberLimit &&
+        !!this.editActivitySuggestion.description &&
+        this.editActivitySuggestion.description.replace(/\s+/g, ' ').trim().length >= 10 &&
+        !!this.editActivitySuggestion.startingDate &&
+        !!this.editActivitySuggestion.endingDate &&
+        !!this.editActivitySuggestion.applicationDeadline)
     );
   }
 
-  async registerActivitySuggestion() {
+  async updateActivitySuggestion() {
     if (
-      this.newActivitySuggestion.institution !== null &&
-      this.newActivitySuggestion.institution.id !== null &&
+      this.editActivitySuggestion.institution !== null &&
+      this.editActivitySuggestion.institution.id !== null &&
       (this.$refs.form as Vue & { validate: () => boolean }).validate()
     ) {
       try {
-        const result = await RemoteServices.registerActivitySuggestion(
-          this.newActivitySuggestion,
-          this.newActivitySuggestion.institution.id);
+        const result = 
+          this.editActivitySuggestion.id != null
+            ? await RemoteServices.updateActivitySuggestion(
+                this.editActivitySuggestion.id,
+                this.editActivitySuggestion,
+                this.editActivitySuggestion.institution.id
+              )
+            : await RemoteServices.registerActivitySuggestion(
+                this.editActivitySuggestion,
+                this.editActivitySuggestion.institution.id
+              );
         this.$emit('save-activity-suggestion', result);
       } catch (error) {
         await this.$store.dispatch('error', error);

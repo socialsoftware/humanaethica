@@ -24,6 +24,11 @@ public class ActivitySuggestionController {
     @Autowired
     private ActivitySuggestionService activitySuggestionService;
 
+    @GetMapping()
+    public List<ActivitySuggestionDto> getAllActivitySuggestions(Principal principal) {
+        return this.activitySuggestionService.getAllActivitySuggestions();
+    }
+
     @GetMapping("/institution/{institutionId}")
     @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')")
     public List<ActivitySuggestionDto> getActivitySuggestions(@PathVariable Integer institutionId) {
@@ -43,19 +48,25 @@ public class ActivitySuggestionController {
         return activitySuggestionService.createActivitySuggestion(userId, institutionId, activitySuggestionDto);
     }
 
+    @PutMapping("/{activitySuggestionId}/institution/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ActivitySuggestionDto updateActivitySuggestion(@PathVariable int activitySuggestionId, @Valid @RequestBody ActivitySuggestionDto activitySuggestionDto, @PathVariable Integer institutionId){
+        return activitySuggestionService.updateActivitySuggestion(activitySuggestionId, activitySuggestionDto, institutionId);
+    }
+
     @PutMapping("/institution/{institutionId}/approves/{activitySuggestionId}")
     @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')")
     public ActivitySuggestionDto approveActivitySuggestion(@PathVariable Integer institutionId, @PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.approveActivitySuggestion(activitySuggestionId);
     }
 
-    @PutMapping("/institution/{institutionId}/rejects/{activitySuggestionId}")
+    @PutMapping("/institution/{institutionId}/rejects/{activitySuggestionId}/{justification}")
     @PreAuthorize("hasRole('ROLE_MEMBER') and hasPermission(#institutionId, 'INSTITUTION.MEMBER')")
-    public ActivitySuggestionDto rejectActivitySuggestion(@PathVariable Integer institutionId, @PathVariable Integer activitySuggestionId) {
-        return activitySuggestionService.rejectActivitySuggestion(activitySuggestionId);
+    public ActivitySuggestionDto rejectActivitySuggestion(@PathVariable Integer institutionId, @PathVariable Integer activitySuggestionId, @PathVariable String justification) {
+        return activitySuggestionService.rejectActivitySuggestion(activitySuggestionId, justification);
     }
 
-    @PutMapping("/volunteer//community/upvotes/{activitySuggestionId}")
+    @PutMapping("/volunteer/community/upvotes/{activitySuggestionId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
     public ActivitySuggestionDto upvoteActivitySuggestion(@PathVariable Integer activitySuggestionId) {
         return activitySuggestionService.upvoteActivitySuggestion(activitySuggestionId);
