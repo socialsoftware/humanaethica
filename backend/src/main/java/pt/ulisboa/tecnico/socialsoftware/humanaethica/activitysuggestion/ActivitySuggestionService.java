@@ -18,6 +18,7 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.NotificationService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
 
@@ -29,6 +30,8 @@ public class ActivitySuggestionService {
     InstitutionRepository institutionRepository;
     @Autowired
     ActivitySuggestionRepository activitySuggestionRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivitySuggestionDto> getAllActivitySuggestions() {
@@ -74,6 +77,8 @@ public class ActivitySuggestionService {
         ActivitySuggestion activitySuggestion = new ActivitySuggestion(institution, volunteer, activitySuggestionDto);
         activitySuggestionRepository.save(activitySuggestion);
 
+        notificationService.createActivitySuggestionNotifications(institution, activitySuggestion);
+
         return new ActivitySuggestionDto(activitySuggestion, true);
     }
 
@@ -86,6 +91,7 @@ public class ActivitySuggestionService {
         Institution institution =  institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
 
         activitySuggestion.update(activitySuggestionDto, institution);
+        notificationService.editActivitySuggestionNotifications(institution, activitySuggestion);
 
         return new ActivitySuggestionDto(activitySuggestion, true);
     }
@@ -118,6 +124,7 @@ public class ActivitySuggestionService {
                                                                   .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
 
         activitySuggestion.upvote();
+        notificationService.createUpvoteNotifications(activitySuggestion);
 
         return new ActivitySuggestionDto(activitySuggestion, true);
     }

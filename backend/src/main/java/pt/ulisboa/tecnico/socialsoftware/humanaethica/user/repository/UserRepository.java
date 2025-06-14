@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
@@ -15,4 +16,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT v FROM Volunteer v JOIN v.institutions i WHERE i.id = :institutionId")
     List<Volunteer> findVolunteersSubscribedToInstitution(Integer institutionId);
+
+    @Query("SELECT m FROM Member m WHERE m.institution.id = :institutionId")
+    List<Member> findMembersByInstitutionId(Integer institutionId);
+
+    @Query("SELECT a.volunteer FROM ActivitySuggestion a WHERE a.id = :suggestionId")
+    Volunteer findVolunteerByActivitySuggestionId(Integer suggestionId);
 }

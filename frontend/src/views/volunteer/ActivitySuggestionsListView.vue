@@ -21,24 +21,30 @@
       </template>     
       <template v-slot:[`item.action`]="{ item }">
         <div class="d-flex align-center">
-          <v-tooltip bottom v-if="item.state === 'IN_REVIEW'">
+          <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <div v-on="on">
                 <v-btn
                   icon
                   @click="upVote(item)"
-                  :disabled="votedSuggestionIds.has(item.id) || item.volunteerId === currentUserId"
+                  :disabled="votedSuggestionIds.has(item.id) || item.volunteerId === currentUserId || item.state !== 'IN_REVIEW'"
                   data-cy="upVoteButton"
                   style="font-size: 28px;"
                 >
-                  <v-icon :color="(votedSuggestionIds.has(item.id) || item.volunteerId === currentUserId) ? 'grey' : 'blue'">
+                  <v-icon :color="(votedSuggestionIds.has(item.id) || item.volunteerId === currentUserId || item.state !== 'IN_REVIEW') ? 'grey' : 'blue'">
                     mdi-arrow-up-bold
                   </v-icon>
                 </v-btn>
               </div>
             </template>
             <span>
-              {{ item.volunteerId === currentUserId ? 'Cannot vote on your own suggestion' : 'Upvote' }}
+              {{
+                item.volunteerId === currentUserId
+                  ? 'Cannot vote on your own suggestion'
+                  : item.state !== 'IN_REVIEW'
+                    ? 'Suggestion is no longer in review'
+                    : 'Upvote'
+              }}
             </span>
           </v-tooltip>
           <span

@@ -24,7 +24,8 @@ public class Notification {
     public enum NotificationType {
         ACTIVITY_PUBLISHED,
         ACTIVITY_SUGGESTION_SUBMITTED,
-        ACTIVITY_SUGGESTION_UPDATED
+        ACTIVITY_SUGGESTION_UPDATED,
+        ACTIVITY_SUGGESTION_UPVOTED
     }
 
     @Id
