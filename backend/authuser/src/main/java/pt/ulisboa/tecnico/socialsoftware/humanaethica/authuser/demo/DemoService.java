@@ -35,7 +35,7 @@ public class DemoService {
         AuthUser authUser = authUserRepository.findAuthUserByUsername("ars").orElseGet(() -> {
 
             Integer userId = userService.createAdmin("ars", "ars", "ars_admin@mail.com",  State.ACTIVE);
-            AuthUser authuser = AuthUser.createAuthUser(userId,"ars", "ars_admin@mail.com", Type.DEMO, Role.ADMIN, "ars");
+            AuthUser authuser = AuthUser.createAuthUser(userId,"ars", "ars_admin@mail.com", Type.DEMO, Role.ADMIN);
             authuser.setPassword(passwordEncoder.encode("ars"));
             authuser = authUserRepository.save(authuser);
             return authuser;

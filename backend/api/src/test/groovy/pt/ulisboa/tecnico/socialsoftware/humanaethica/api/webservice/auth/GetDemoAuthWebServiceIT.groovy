@@ -33,7 +33,7 @@ class GetDemoAuthWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response "
-        response.user.name == DemoUtils.DEMO_VOLUNTEER
+        response.user.username == DemoUtils.DEMO_VOLUNTEER.toLowerCase()
         response.user.role == Role.VOLUNTEER
     }
 
@@ -47,7 +47,7 @@ class GetDemoAuthWebServiceIT extends SpockTest {
                 .block()
 
         then: "check response status"
-        response.user.name == DemoUtils.DEMO_MEMBER
+        response.user.username == DemoUtils.DEMO_MEMBER.toLowerCase()
         response.user.role == Role.MEMBER
     }
 

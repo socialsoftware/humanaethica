@@ -29,7 +29,7 @@ class GetAuthoritiesTest extends SpockTest {
         given:
         user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.SUBMITTED)
         user = userRepository.save(user)
-        authuser = AuthUser.createAuthUser(user.getId(), user.getUsername(), user.getEmail(), Type.NORMAL, Role.VOLUNTEER, user.getName())
+        authuser = AuthUser.createAuthUser(user.getId(), user.getUsername(), user.getEmail(), Type.NORMAL, Role.VOLUNTEER)
         authUserRepository.save(authuser)
         when:
         def result = authuser.getAuthorities()
@@ -52,7 +52,7 @@ class GetAuthoritiesTest extends SpockTest {
 
         user = new Member(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  institution, User.State.SUBMITTED)
         user = userRepository.save(user)
-        authuser = AuthUser.createAuthUser(user.getId(), user.getUsername(), user.getEmail(), Type.NORMAL, Role.MEMBER, user.getName())
+        authuser = AuthUser.createAuthUser(user.getId(), user.getUsername(), user.getEmail(), Type.NORMAL, Role.MEMBER)
         authUserRepository.save(authuser)
 
         when:
@@ -69,7 +69,7 @@ class GetAuthoritiesTest extends SpockTest {
         given:
         user = new Admin(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
         user = userRepository.save(user)
-        authuser = AuthUser.createAuthUser(user.getId(), user.getUsername(), user.getEmail(), Type.NORMAL, Role.ADMIN, user.getName())
+        authuser = AuthUser.createAuthUser(user.getId(), user.getUsername(), user.getEmail(), Type.NORMAL, Role.ADMIN)
         authUserRepository.save(authuser)
 
         when:

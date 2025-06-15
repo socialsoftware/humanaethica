@@ -37,7 +37,7 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
         given: "one inactive user"
         def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
         user = userRepository.save(user)
-        def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER, USER_1_NAME)
+        def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authuser.setConfirmationToken(USER_1_TOKEN)
         authuser.setTokenGenerationDate(NOW)
         authUserRepository.save(authuser)
@@ -63,7 +63,7 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
         given: "one inactive user with an expired token"
         def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
         user = userRepository.save(user)
-        def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER, USER_1_NAME)
+        def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authuser.setConfirmationToken(USER_1_TOKEN)
         authuser.setTokenGenerationDate(TWO_DAYS_AGO)
         authUserRepository.save(authuser)

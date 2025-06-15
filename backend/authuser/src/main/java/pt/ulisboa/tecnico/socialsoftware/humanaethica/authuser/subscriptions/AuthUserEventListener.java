@@ -35,7 +35,7 @@ public class AuthUserEventListener {
         }
 
 
-        authUserRepository.save(AuthUser.createAuthUser(event.getUserId(), registerUserDto.getUsername(), registerUserDto.getEmail(), event.getType(), registerUserDto.getRole(), registerUserDto.getName()));
+        authUserRepository.save(AuthUser.createAuthUser(event.getUserId(), registerUserDto.getUsername(), registerUserDto.getEmail(), event.getType(), registerUserDto.getRole()));
     }
 
     @Subscribe

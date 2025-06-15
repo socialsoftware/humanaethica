@@ -28,7 +28,7 @@ class RegisterUserWebServiceIT extends SpockTest {
 
         def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL,  User.State.SUBMITTED)
         admin = userRepository.save(admin)
-        def authUser = AuthUser.createAuthUser(admin.getId(), USER_2_USERNAME, USER_2_EMAIL, Type.DEMO, Role.ADMIN, USER_2_NAME)
+        def authUser = AuthUser.createAuthUser(admin.getId(), USER_2_USERNAME, USER_2_EMAIL, Type.DEMO, Role.ADMIN)
         authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
         authUserRepository.save(authUser)
         normalUserLogin(USER_2_USERNAME, USER_2_PASSWORD)

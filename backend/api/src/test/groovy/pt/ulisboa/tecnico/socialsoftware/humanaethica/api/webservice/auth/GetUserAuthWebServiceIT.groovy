@@ -33,7 +33,7 @@ class GetUserAuthWebServiceIT extends SpockTest {
         given: "one inactive user with an expired "
         user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
         user = userRepository.save(user)
-        def authUser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER, USER_1_NAME)
+        def authUser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
         authUserRepository.save(authUser)
 

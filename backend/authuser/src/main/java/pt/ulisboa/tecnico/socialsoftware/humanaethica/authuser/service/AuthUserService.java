@@ -27,8 +27,6 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.E
 
 @Service
 public class AuthUserService {
-    /*@Autowired
-    private UserService userService;*/
 
     @Autowired
     private AuthService authService;

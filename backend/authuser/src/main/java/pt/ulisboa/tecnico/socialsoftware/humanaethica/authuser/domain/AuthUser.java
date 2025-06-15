@@ -53,25 +53,23 @@ public abstract class AuthUser implements UserDetails {
     @Column(name = "last_access")
     private LocalDateTime lastAccess;
 
-    private String name;
 
     protected AuthUser() {
     }
 
-    protected AuthUser(Integer user_id, String username, String email,Role role, String name) {
+    protected AuthUser(Integer user_id, String username, String email,Role role) {
         setUser(user_id);
         setUsername(username);
         setEmail(email);
         setRole(role);
-        setName(name);
     }
 
-    public static AuthUser createAuthUser(Integer userId, String username, String email, Type type, Role role, String name) {
+    public static AuthUser createAuthUser(Integer userId, String username, String email, Type type, Role role) {
         switch (type) {
             case NORMAL:
-                return new AuthNormalUser(userId, username, email, role, name);
+                return new AuthNormalUser(userId, username, email, role);
             case DEMO:
-                return new AuthDemoUser(userId, username, email, role, name);
+                return new AuthDemoUser(userId, username, email, role);
             default:
                 throw new HEException(INVALID_TYPE_FOR_AUTH_USER);
         }
@@ -192,12 +190,6 @@ public abstract class AuthUser implements UserDetails {
         return true;
     }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /*public void remove() {
         user.setAuthUser(null);

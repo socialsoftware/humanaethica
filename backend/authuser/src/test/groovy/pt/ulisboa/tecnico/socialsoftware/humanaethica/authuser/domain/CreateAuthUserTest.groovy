@@ -28,7 +28,7 @@ class CreateAuthUserTest extends SpockTest {
     @Unroll
     def "create auth user type=#type | active=#active | type=#type"() {
         given:
-        authUser = AuthUser.createAuthUser(userId, USER_1_USERNAME, USER_1_EMAIL, type, Role.VOLUNTEER, USER_1_NAME)
+        authUser = AuthUser.createAuthUser(userId, USER_1_USERNAME, USER_1_EMAIL, type, Role.VOLUNTEER)
         authUserRepository.save(authUser)
 
         when:

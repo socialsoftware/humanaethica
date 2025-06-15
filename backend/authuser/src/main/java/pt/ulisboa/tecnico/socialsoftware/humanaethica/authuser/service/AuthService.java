@@ -40,7 +40,7 @@ public class AuthService {
         }
 
         Integer volunteerId = userService.createVolunteer(name, username, email, state);
-        return authUserRepository.save(AuthUser.createAuthUser(volunteerId, username, email, type, Role.VOLUNTEER,name));
+        return authUserRepository.save(AuthUser.createAuthUser(volunteerId, username, email, type, Role.VOLUNTEER));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -51,7 +51,7 @@ public class AuthService {
 
         Integer memberId = userService.createMember(name, username, email, institution, state);
 
-        return authUserRepository.save(AuthUser.createAuthUser(memberId, username, email, type, Role.MEMBER, name));
+        return authUserRepository.save(AuthUser.createAuthUser(memberId, username, email, type, Role.MEMBER));
     }
 
 
@@ -101,7 +101,6 @@ public class AuthService {
         RegisterUserDto dto = new RegisterUserDto();
 
         dto.setId(authUser.getId());
-        dto.setName(authUser.getName());
         dto.setUsername(authUser.getUsername());
         dto.setEmail(authUser.getEmail());
         dto.setPassword(authUser.getPassword());

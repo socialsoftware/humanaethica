@@ -172,7 +172,7 @@ class SpockTest extends Specification {
     def createMember(name, userName, password, email, type, institution, state) {
         def member = new Member(name, userName, email, institution, state)
         member = userRepository.save(member)
-        def authUser = AuthUser.createAuthUser(member.getId(), userName, email, type, Role.MEMBER, name)
+        def authUser = AuthUser.createAuthUser(member.getId(), userName, email, type, Role.MEMBER)
         authUser.setPassword(passwordEncoder.encode(password))
         authUserRepository.save(authUser)
         return member
@@ -181,7 +181,7 @@ class SpockTest extends Specification {
     def createVolunteer(name, userName, email, type, state) {
         def volunteer = new Volunteer(name, userName, email, state)
         volunteer= userRepository.save(volunteer)
-        def authUser = AuthUser.createAuthUser(volunteer.getId(), userName, email, type, Role.VOLUNTEER, name)
+        def authUser = AuthUser.createAuthUser(volunteer.getId(), userName, email, type, Role.VOLUNTEER)
         authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
         authUserRepository.save(authUser)
         return volunteer

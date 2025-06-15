@@ -39,8 +39,8 @@ public class AuthNormalUser extends AuthUser {
     public AuthNormalUser() {
     }
 
-    public AuthNormalUser(Integer userId, String username, String email, Role role, String name) {
-        super(userId, username, email, role, name);
+    public AuthNormalUser(Integer userId, String username, String email, Role role) {
+        super(userId, username, email, role);
         setActive(false);
         checkRole(isActive());
         generateConfirmationToken();

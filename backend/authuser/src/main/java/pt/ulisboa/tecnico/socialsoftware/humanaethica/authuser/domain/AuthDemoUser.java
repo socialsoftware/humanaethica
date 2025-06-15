@@ -21,7 +21,7 @@ public class AuthDemoUser extends AuthUser {
     public AuthDemoUser() {
     }
 
-    public AuthDemoUser(Integer userId, String username, String email, Role role, String name) {
-        super(userId, username, email, role, name);
+    public AuthDemoUser(Integer userId, String username, String email, Role role) {
+        super(userId, username, email, role);
     }
 }

@@ -15,7 +15,7 @@ class DemoAuthTest extends SpockTest {
         def result = authUserService.loginDemoMemberAuth()
 
         then:
-        result.user.name == DemoUtils.DEMO_MEMBER
+        result.user.username == DemoUtils.DEMO_MEMBER.toLowerCase()
         result.user.role == Role.MEMBER
     }
 
@@ -24,7 +24,7 @@ class DemoAuthTest extends SpockTest {
         def result = authUserService.loginDemoVolunteerAuth()
 
         then:
-        result.user.name == DemoUtils.DEMO_VOLUNTEER
+        result.user.username == DemoUtils.DEMO_VOLUNTEER.toLowerCase()
         result.user.role == Role.VOLUNTEER
     }
 

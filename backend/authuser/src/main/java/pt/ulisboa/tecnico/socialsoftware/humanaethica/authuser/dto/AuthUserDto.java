@@ -6,7 +6,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 
 public class AuthUserDto {
     private Integer id;
-    private String name;
     private String username;
     private String email;
     private Role role;
@@ -15,7 +14,6 @@ public class AuthUserDto {
 
     public AuthUserDto(AuthUser authUser) {
         this.id = authUser.getUserID();
-        this.name = authUser.getName();
         this.username = authUser.getUsername();
         this.email = authUser.getEmail();
         this.role = authUser.getRole();
@@ -27,14 +25,6 @@ public class AuthUserDto {
 
     public Integer getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUsername() {

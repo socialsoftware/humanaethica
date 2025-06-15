@@ -20,7 +20,7 @@ class CheckConfirmationTokenTest extends SpockTest {
     def setup() {
         user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
         user = userRepository.save(user)
-        authUser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER, USER_1_NAME)
+        authUser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authUserRepository.save(authUser)
 
     }
