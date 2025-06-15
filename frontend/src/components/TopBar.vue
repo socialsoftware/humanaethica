@@ -220,24 +220,22 @@
             <v-icon>fas fa-sign-in-alt</v-icon>
           </v-btn>
           <template v-if="isLoggedIn && (isVolunteer || isMember)">
-            <v-badge
-              :content="unreadCount"
-              color="red"
-              overlap
-              :value="unreadCount > 0"
-              offset-y="4"
-              offset-x="4"
-              class="bell-badge"
-            >
-              <v-btn
+            <v-btn
                 icon
                 color="orange"
                 data-cy="volunteer-notifications"
                 @click="openNotifications"
+            >
+              <v-badge
+                  :content="unreadCount"
+                  color="red"
+                  overlap
+                  :value="unreadCount > 0"
+                  class="bell-badge"
               >
                 <v-icon color="orange">fas fa-bell</v-icon>
-              </v-btn>
-            </v-badge>
+              </v-badge>
+            </v-btn>
           </template>
           <v-btn
             v-if="isLoggedIn"
@@ -462,8 +460,9 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'volunteer-assessments' }).catch(() => {});
   }
 
-  openNotifications() {
+  async openNotifications() {
     console.log("OPEN NOTIFS");
+    await this.loadNotifications();
     this.showNotifications = true;
   }
 

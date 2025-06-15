@@ -3,6 +3,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
@@ -77,6 +79,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void markAllAsRead(Integer userId) {
         List<Notification> notifications = notificationRepository.findByUserIdAndReadFalse(userId);
         for (Notification notification : notifications) {
