@@ -779,6 +779,17 @@ export default class RemoteServices {
       });
   }
 
+  static async markNotificationsAsRead(userId: number) {
+    console.log("📡 [RemoteServices] Marking notifications as read for userId:", userId);
+    return httpClient
+      .put(`/${userId}/notifications/read`)
+      .then((response) => new Notification(response.data))
+      .catch(async (error) => {
+        console.error("❌ [RemoteServices] Error marking notifications as read:", error);
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createAssessment(institutionId: number, assessment: Assessment) {
     return httpClient
       .post(`/institutions/${institutionId}/assessments`, assessment)

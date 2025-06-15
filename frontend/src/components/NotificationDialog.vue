@@ -40,28 +40,28 @@
 <script lang="ts">
 import { Component, Vue, Model, Prop } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import Notification from '@/models/notification/Notification';
+//import Notification from '@/models/notification/Notification';
 
 @Component
 export default class NotificationDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ required: true }) readonly userId!: number;
+  @Prop({ required: true }) readonly notifications!: Notification[];
 
-  notifications: Notification[] = [];
+  //notifications: Notification[] = [];
   currentUserID: number = -1;
 
   async created() {
     this.currentUserID = this.userId;
-    await this.loadNotifications();
+    await this.markNotificationsAsRead();
   }
-
-  async loadNotifications() {
-    if (this.currentUserID >= 0) {
-      try {
-        this.notifications = await RemoteServices.getNotifications(this.currentUserID);
-      } catch (error) {
-        console.error('Error loading notifications:', error);
-      }
+  
+  async markNotificationsAsRead() {
+    try {
+      await RemoteServices.markNotificationsAsRead(this.currentUserID);
+      this.$emit('notifications-read');
+    } catch (error) {
+      console.error('Failed to mark notifications as read:', error);
     }
   }
 

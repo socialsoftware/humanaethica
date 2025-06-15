@@ -219,15 +219,26 @@
             Login
             <v-icon>fas fa-sign-in-alt</v-icon>
           </v-btn>
-          <v-btn
-            v-if="isLoggedIn && (isVolunteer || isMember)"
-            text
-            color="orange"
-            data-cy="volunteer-notifications"
-            @click="openNotifications"
-          >
-            <v-icon color="orange">fas fa-bell</v-icon>
-          </v-btn>
+          <template v-if="isLoggedIn && (isVolunteer || isMember)">
+            <v-badge
+              :content="unreadCount"
+              color="red"
+              overlap
+              :value="unreadCount > 0"
+              offset-y="4"
+              offset-x="4"
+              class="bell-badge"
+            >
+              <v-btn
+                icon
+                color="orange"
+                data-cy="volunteer-notifications"
+                @click="openNotifications"
+              >
+                <v-icon color="orange">fas fa-bell</v-icon>
+              </v-btn>
+            </v-badge>
+          </template>
           <v-btn
             v-if="isLoggedIn"
             text
@@ -379,13 +390,15 @@
       v-if="showNotifications"
       v-model="showNotifications"
       :userId="this.$store.getters.getUser.id"
+      :notifications="notifications"
+      @notifications-read="onNotificationsRead"
       v-on:close-notification-dialog="onCloseNotificationDialog"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from "@/services/RemoteServices";
 import Notification from '@/models/notification/Notification';
 import NotificationDialog from '@/components/NotificationDialog.vue';
@@ -402,6 +415,8 @@ export default class TopBar extends Vue {
 
   institutionId: number | null = null;
   showNotifications: boolean = false;
+  notifications: Notification[] = [];
+  unreadCount: number = 0;
 
   get isLoggedIn() {
     return this.$store.getters.isLoggedIn;
@@ -456,9 +471,41 @@ export default class TopBar extends Vue {
     this.showNotifications = false;
   }
 
+  onNotificationsRead() {
+    this.unreadCount = 0;
+  }
+
   async logout() {
     await this.$store.dispatch('logout');
     await this.$router.push({ name: 'home' }).catch(() => {});
+  }
+
+  get userId() {
+    return this.$store.state.user?.id;
+  }
+
+  @Watch('userId')
+  async onUserIdChange() {
+    console.log('👤 User ID changed, reloading notifications');
+    await this.loadNotifications();
+  }
+
+  async loadNotifications() {
+    let user = this.$store.getters.getUser;
+    if (user && user.id >= 0) {
+      try {
+        this.notifications = await RemoteServices.getNotifications(user.id);
+        console.log("📬 Notificações carregadas no pai:", this.notifications.map(n => ({
+          id: n.id,
+          mensagem: n.message,
+          lida: n.read
+        })));
+        this.unreadCount = this.notifications.filter(n => !n.read).length;
+        console.log(this.unreadCount);
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
+    }
   }
 
   async created() {
@@ -480,6 +527,11 @@ export default class TopBar extends Vue {
 <style lang="scss" scoped>
 .no-active::before {
   opacity: 0 !important;
+}
+
+.bell-badge {
+  align-items: center;
+  display: inline-flex;
 }
 
 nav {
