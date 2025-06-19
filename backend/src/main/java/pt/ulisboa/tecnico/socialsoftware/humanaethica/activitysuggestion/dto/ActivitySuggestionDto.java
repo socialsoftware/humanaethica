@@ -55,7 +55,7 @@ public class ActivitySuggestionDto {
     }
 
     public void setNumberVotes(Integer numberVotes) {
-        this.numberVotes = numberVotes;
+        this.numberVotes = (numberVotes != null) ? numberVotes : 0;
     }
 
     public String getName() {

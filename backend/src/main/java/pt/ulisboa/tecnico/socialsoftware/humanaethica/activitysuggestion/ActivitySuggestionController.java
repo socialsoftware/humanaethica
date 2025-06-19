@@ -68,7 +68,22 @@ public class ActivitySuggestionController {
 
     @PutMapping("/volunteer/community/upvotes/{activitySuggestionId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public ActivitySuggestionDto upvoteActivitySuggestion(@PathVariable Integer activitySuggestionId) {
-        return activitySuggestionService.upvoteActivitySuggestion(activitySuggestionId);
+    public ActivitySuggestionDto upvoteActivitySuggestion(Principal principal, @PathVariable Integer activitySuggestionId) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activitySuggestionService.upvoteActivitySuggestion(userId, activitySuggestionId);
+    }
+
+    @PutMapping("/volunteer/community/upvotes/{activitySuggestionId}/remove")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ActivitySuggestionDto removeUpvoteActivitySuggestion(Principal principal, @PathVariable Integer activitySuggestionId) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activitySuggestionService.removeUpvoteActivitySuggestion(userId, activitySuggestionId);
+    }
+
+    @GetMapping("/volunteer/community/votedSuggestions")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public List<ActivitySuggestionDto> getVotedActivitySuggestions(Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activitySuggestionService.getVotedActivitySuggestions(userId);
     }
 }

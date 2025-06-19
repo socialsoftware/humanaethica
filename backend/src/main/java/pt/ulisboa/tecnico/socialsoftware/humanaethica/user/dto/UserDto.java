@@ -1,9 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class UserDto {
@@ -31,6 +35,8 @@ public class UserDto {
     
     private boolean hasDocument;
 
+    private Map<Integer, Boolean> activitySuggestionVotes;
+
     public UserDto() {
     }
 
@@ -56,6 +62,15 @@ public class UserDto {
 
         else
             this.institutionName = null;
+
+        if (user.getRole().equals(Role.VOLUNTEER)) {
+            Volunteer volunteer = (Volunteer) user;
+            if (volunteer.getActivitySuggestionVotes() != null) {
+                this.activitySuggestionVotes = volunteer.getActivitySuggestionVotes();
+            } else {
+                this.activitySuggestionVotes = new HashMap<>();
+            }
+        }
     }
 
     public UserDto(AuthUser authUser) {
@@ -156,5 +171,9 @@ public class UserDto {
 
     public void setHasDocument(boolean hasDocument) {
         this.hasDocument = hasDocument;
+    }
+
+    public Map<Integer, Boolean> getActivitySuggestionVotes() {
+        return activitySuggestionVotes;
     }
 }

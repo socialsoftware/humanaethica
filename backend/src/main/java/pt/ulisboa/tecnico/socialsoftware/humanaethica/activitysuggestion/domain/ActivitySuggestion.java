@@ -36,7 +36,7 @@ public class ActivitySuggestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "number_votes")
-    private Integer numberVotes;
+    private Integer numberVotes = 0;
     private String name;
     private String description;
     private String region;
@@ -91,7 +91,7 @@ public class ActivitySuggestion {
         setApplicationDeadline(DateHandler.toLocalDateTime(activitySuggestionDto.getApplicationDeadline()));
         setInstitution(institution);
 
-        //verifyInvariants();
+        verifyInvariants();
     }
 
     public Integer getId() {
@@ -103,7 +103,7 @@ public class ActivitySuggestion {
     }
 
     public void setNumberVotes(Integer numberVotes) {
-        this.numberVotes = numberVotes;
+        this.numberVotes = (numberVotes != null) ? numberVotes : 0;
     }
 
     public String getName() {
@@ -222,6 +222,16 @@ public class ActivitySuggestion {
     public void upvote() {
         Integer currentVotes = this.getNumberVotes();
         this.setNumberVotes(currentVotes != null ? currentVotes + 1 : 1);
+    }
+
+    public void removeUpvote() {
+        Integer currentVotes = this.getNumberVotes();
+
+        if (currentVotes != null && currentVotes > 0) {
+            this.setNumberVotes(currentVotes - 1);
+        } else {
+            this.setNumberVotes(0);
+        }
     }
 
     private void verifyInvariants() {

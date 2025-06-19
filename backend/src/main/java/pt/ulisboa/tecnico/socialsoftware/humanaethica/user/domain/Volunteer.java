@@ -1,19 +1,28 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.domain.ActivitySuggestion;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_NOT_FOUND;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.domain.VolunteerProfile;
@@ -43,6 +52,15 @@ public class Volunteer extends User {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "institution_subscriptions")
     private List<Institution> institutions = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(
+        name = "volunteer_votes",
+        joinColumns = @JoinColumn(name = "volunteer_id")
+    )
+    @MapKeyColumn(name = "activity_suggestion_id")
+    @Column(name = "votes")
+    private Map<Integer, Boolean> activitySuggestionVotes = new HashMap<>();
 
     public Volunteer() {
     }
@@ -135,5 +153,25 @@ public class Volunteer extends User {
     public void removeSubscription(Institution institution) {
         this.institutions.remove(institution);
         institution.deleteSubscriber(this);
+    }
+
+    public Map<Integer, Boolean> getActivitySuggestionVotes() {
+        return activitySuggestionVotes;
+    }
+
+    public void addUpvoteActivitySuggestion(ActivitySuggestion activitySuggestion) {
+        if (activitySuggestion == null || activitySuggestion.getId() == null) {
+            throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        }
+        activitySuggestionVotes.put(activitySuggestion.getId(), true);
+        activitySuggestion.upvote();
+    }
+
+    public void removeUpvoteActivitySuggestion(ActivitySuggestion activitySuggestion) {
+        if (activitySuggestion == null || activitySuggestion.getId() == null) {
+            throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        }
+        activitySuggestionVotes.remove(activitySuggestion.getId());
+        activitySuggestion.removeUpvote();
     }
 }

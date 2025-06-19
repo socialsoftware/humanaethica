@@ -1,7 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion;
 
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,10 +37,9 @@ public class ActivitySuggestionService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivitySuggestionDto> getAllActivitySuggestions() {
-        List<ActivitySuggestion> list = activitySuggestionRepository.findAll();
-        System.out.println("Number of activity suggestions: " + list.size());
+        List<ActivitySuggestion> activitySuggestions = activitySuggestionRepository.findAll();
 
-        return list.stream()
+        return activitySuggestions.stream()
             .map(activitySuggestion -> new ActivitySuggestionDto(activitySuggestion, true))
             .sorted(Comparator.comparing(ActivitySuggestionDto::getName, String.CASE_INSENSITIVE_ORDER))
             .toList();
@@ -118,14 +119,53 @@ public class ActivitySuggestionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ActivitySuggestionDto upvoteActivitySuggestion(Integer activitySuggestionId) {
+    public ActivitySuggestionDto upvoteActivitySuggestion(Integer userId, Integer activitySuggestionId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+        Volunteer volunteer = (Volunteer) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
+        
         if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
         ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
                                                                   .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
 
-        activitySuggestion.upvote();
+        volunteer.addUpvoteActivitySuggestion(activitySuggestion);
         notificationService.createUpvoteNotifications(activitySuggestion);
 
         return new ActivitySuggestionDto(activitySuggestion, true);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ActivitySuggestionDto removeUpvoteActivitySuggestion(Integer userId, Integer activitySuggestionId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+        Volunteer volunteer = (Volunteer) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
+        
+        if (activitySuggestionId == null) throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        ActivitySuggestion activitySuggestion = activitySuggestionRepository.findById(activitySuggestionId)
+                                                                  .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
+
+        volunteer.removeUpvoteActivitySuggestion(activitySuggestion);
+        notificationService.createUpvoteNotifications(activitySuggestion);
+
+        return new ActivitySuggestionDto(activitySuggestion, true);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<ActivitySuggestionDto> getVotedActivitySuggestions(Integer userId) {
+        if (userId == null) throw new HEException(USER_NOT_FOUND);
+        Volunteer volunteer = (Volunteer) userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
+
+        Map<Integer, Boolean> votesMap = volunteer.getActivitySuggestionVotes();
+
+        List<Integer> votedIds = votesMap.entrySet().stream()
+                                         .filter(Map.Entry::getValue) // só os que têm valor true
+                                         .map(Map.Entry::getKey)
+                                         .collect(Collectors.toList());
+
+        List<ActivitySuggestion> activitySuggestions = activitySuggestionRepository.findAllById(votedIds);
+
+        return activitySuggestions.stream()
+            .map(activitySuggestion -> new ActivitySuggestionDto(activitySuggestion, true))
+            .sorted(Comparator.comparing(ActivitySuggestionDto::getName, String.CASE_INSENSITIVE_ORDER))
+            .toList();
+    }
+
 }

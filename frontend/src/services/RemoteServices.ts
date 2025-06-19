@@ -517,6 +517,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getVotedActivitySuggestions(): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions/volunteer/community/votedSuggestions`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getAllActivitySuggestions(): Promise<ActivitySuggestion[]> {
     return httpClient
       .get(`/activitySuggestions`)
@@ -565,6 +578,17 @@ export default class RemoteServices {
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  static async removeUpvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+    .put(`/activitySuggestions/volunteer/community/upvotes/${activitySuggestionId}/remove`)
+    .then((response) => {
+      return new ActivitySuggestion(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   static async approveActivitySuggestion(activitySuggestionId: number, institutionId: number) {
