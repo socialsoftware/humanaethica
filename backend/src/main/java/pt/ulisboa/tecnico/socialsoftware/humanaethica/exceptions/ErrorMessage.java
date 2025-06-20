@@ -50,6 +50,7 @@ public enum ErrorMessage {
     ACTIVITY_SUGGESTION_ALREADY_REJECTED("Activity suggestion is already rejected with name %s"),
     ACTIVITY_SUGGESTION_APROVAL_AFTER_DEADLINE("Activity suggestion can't be approved after the deadline has ended"),
     ACTIVITY_SUGGESTION_REJECTION_AFTER_DEADLINE("Activity suggestion can't be rejected after the deadline has ended."),
+    ACTIVITY_SUGGESTION_REJECTION_JUSTIFICATION_INVALID("Activity suggestion rejection justification is invalid."),
     ENROLLMENT_NOT_FOUND("Enrollment not found with id %d"),
     ENROLLMENT_REQUIRES_MOTIVATION("To apply to an activity you have to write a motivation longer than 10 characters"),
     ENROLLMENT_VOLUNTEER_IS_ALREADY_ENROLLED("The volunteer is already enrolled"),

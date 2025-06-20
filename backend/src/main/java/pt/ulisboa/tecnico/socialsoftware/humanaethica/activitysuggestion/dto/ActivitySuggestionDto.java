@@ -10,6 +10,7 @@ public class ActivitySuggestionDto {
     private String name;
     private String description;
     private String region;
+    private String rejectionJustification;
     private String creationDate;
     private String applicationDeadline;
     private String startingDate;
@@ -29,6 +30,7 @@ public class ActivitySuggestionDto {
         setName(activitySuggestion.getName());
         setDescription(activitySuggestion.getDescription());
         setRegion(activitySuggestion.getRegion());
+        setRejectionJustification(activitySuggestion.getRejectionJustification());
         setCreationDate(DateHandler.toISOString(activitySuggestion.getCreationDate()));
         setApplicationDeadline(DateHandler.toISOString(activitySuggestion.getApplicationDeadline()));
         setStartingDate(DateHandler.toISOString(activitySuggestion.getStartingDate()));
@@ -80,6 +82,14 @@ public class ActivitySuggestionDto {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public void setRejectionJustification(String justification) {
+        this.rejectionJustification = justification;
+    }
+
+    public String getRejectionJustification() {
+        return this.rejectionJustification;
     }
 
     public String getCreationDate() {

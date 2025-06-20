@@ -25,7 +25,7 @@
           </v-card-title>
         </template>
         <template v-slot:[`item.action`]="{ item }">
-          <v-tooltip bottom v-if="item.state == 'IN_REVIEW'">
+          <v-tooltip bottom v-if="item.state === 'IN_REVIEW'">
             <template v-slot:activator="{ on }">
               <v-icon
                 class="mr-2 action-button"
@@ -36,7 +36,18 @@
             </template>
             <span>Edit Activity Suggestion</span>
           </v-tooltip>
-        </template> 
+        </template>
+        <template v-slot:[`item.state`]="{ item }">
+          <v-tooltip bottom v-if="item.state === 'REJECTED'">
+            <template v-slot:activator="{ on }">
+              <v-chip v-on="on" color="red lighten-2" dark>{{ item.state }}</v-chip>
+            </template>
+            <span>Justification: {{ item.rejectionJustification }}</span>
+          </v-tooltip>
+          <v-chip v-else>
+            {{ item.state }}
+          </v-chip>
+        </template>
       </v-data-table>
       <activitysuggestion-dialog
         v-if="currentActivitySuggestion && editActivitySuggestionDialog"

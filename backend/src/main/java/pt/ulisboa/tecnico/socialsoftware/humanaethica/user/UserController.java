@@ -105,7 +105,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}/getNotifications")
-    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER') or hasRole('ROLE_ADMIN')")
     public List<NotificationDto> getNotifications(@PathVariable int userId) {
         return userService.getNotifications(userId);
     }

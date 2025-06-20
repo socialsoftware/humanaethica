@@ -19,6 +19,7 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_APPLICATION_DEADLINE_TOO_SOON;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_DESCRIPTION_INVALID;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_NAME_ALREADY_EXISTS;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUGGESTION_REJECTION_JUSTIFICATION_INVALID;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.domain.Notification;
@@ -27,7 +28,8 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 @Entity
 public class ActivitySuggestion {
-
+    private static final int MIN_JUSTIFICATION_SIZE = 10;
+    private static final int MAX_JUSTIFICATION_SIZE = 250;
     public static final int DAYS_AFTER_PROPOSAL = 7;
 
     public enum State {APPROVED, REJECTED, IN_REVIEW}
@@ -128,6 +130,10 @@ public class ActivitySuggestion {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getRejectionJustification() {
+        return this.rejectionJustification;
     }
 
     public LocalDateTime getCreationDate() {
@@ -238,6 +244,7 @@ public class ActivitySuggestion {
         descriptionIsLongEnough();
         nameIsUnique();
         applicationDeadlineDaysAfterProposal(DAYS_AFTER_PROPOSAL);
+        rejectionJustificationTextSize();
     }
 
     private void descriptionIsLongEnough() {
@@ -256,6 +263,21 @@ public class ActivitySuggestion {
     private void applicationDeadlineDaysAfterProposal(int daysAfterProposal) {
         if(this.applicationDeadline == null || this.applicationDeadline.isBefore(this.creationDate.plusDays(daysAfterProposal))) {
             throw new HEException(ACTIVITY_SUGGESTION_APPLICATION_DEADLINE_TOO_SOON, daysAfterProposal);
+        }
+    }
+
+    private void rejectionJustificationTextSize() {
+        if (this.state != State.REJECTED) {
+            return;
+        }
+
+        if (this.rejectionJustification == null) {
+            throw new HEException(ACTIVITY_SUGGESTION_REJECTION_JUSTIFICATION_INVALID);
+        }
+
+        var textSize = this.rejectionJustification.length();
+        if (textSize < MIN_JUSTIFICATION_SIZE || textSize > MAX_JUSTIFICATION_SIZE) {
+            throw new HEException(ACTIVITY_SUGGESTION_REJECTION_JUSTIFICATION_INVALID);
         }
     }
 }
