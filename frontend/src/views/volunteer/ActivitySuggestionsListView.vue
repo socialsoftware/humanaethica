@@ -28,23 +28,23 @@
                   class="upvote-btn"
                   v-if="isVotesLoaded"
                   icon
-                  @click="toggleVote(item)"
+                  @click="toggleUpvote(item, true)"
                   :disabled="item.volunteerId === currentUserId || item.state !== 'IN_REVIEW'"
                   data-cy="upVoteButton"
                 >
                 <v-icon
                   class="vote-icon"
-                  :color="getVoteColor(item)"
+                  :color="getVoteColor(item, true)"
                   :style="getVoteIconStyle(item)"
                 >
-                  {{ getVoteIcon(item) }}
+                  {{ getVoteIcon(item, true) }}
                 </v-icon>
                 </v-btn>
               </div>
             </template>
             <span>
               {{
-                getVoteTooltip(item)
+                getVoteTooltip(item, true)
               }}
             </span>
           </v-tooltip>
@@ -54,6 +54,28 @@
           >
             {{ item.numberVotes }}
           </span>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <div v-on="on">
+                <v-btn
+                  class="downvote-btn"
+                  icon
+                  @click="toggleDownvote(item)"
+                  :disabled="item.volunteerId === currentUserId || item.state !== 'IN_REVIEW'"
+                  data-cy="downVoteButton"
+                >
+                  <v-icon
+                    class="vote-icon"
+                    :color="getVoteColor(item, false)"
+                    :style="getVoteIconStyle(item)"
+                  >
+                    {{ getVoteIcon(item, false) }}
+                  </v-icon>
+                </v-btn>
+              </div>
+            </template>
+            <span>{{ getVoteTooltip(item, false) }}</span>
+          </v-tooltip>
         </div>
       </template>
     </v-data-table>
@@ -75,12 +97,12 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   activitySuggestions: ActivitySuggestion[] = [];
   institutions: Institution[] = [];
   search: string = '';
-  numberVotes: number | null = null;
   currentUserId: number | null = null;
   isVotesLoaded: boolean = false;
 
   // Activity Suggestion IDs that have already been voted
-  votedSuggestionIds: number[] = [];
+  votedUpSuggestionIds: number[] = [];
+  votedDownSuggestionIds: number[] = [];
 
   headers: object = [
     {
@@ -158,13 +180,21 @@ export default class VolunteerActivitySuggestionsView extends Vue {
       this.activitySuggestions = await RemoteServices.getAllActivitySuggestions();
       this.institutions = await RemoteServices.getInstitutions();
 
-      let votedSuggestions = await RemoteServices.getVotedActivitySuggestions();
+      const upvoted = await RemoteServices.getUpvotedActivitySuggestions();
+      const downvoted = await RemoteServices.getDownvotedActivitySuggestions();
 
-      votedSuggestions.forEach((suggestion: ActivitySuggestion) => {
-        if (suggestion.id !== null && !this.votedSuggestionIds.includes(suggestion.id)) {
-          this.votedSuggestionIds.push(suggestion.id);
+      upvoted.forEach((s: ActivitySuggestion) => {
+        if (s.id !== null && !this.votedUpSuggestionIds.includes(s.id)) {
+          this.votedUpSuggestionIds.push(s.id);
         }
       });
+
+      downvoted.forEach((s: ActivitySuggestion) => {
+        if (s.id !== null && !this.votedDownSuggestionIds.includes(s.id)) {
+          this.votedDownSuggestionIds.push(s.id);
+        }
+      });
+
       this.isVotesLoaded = true;
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -173,8 +203,8 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   }
 
   async upVote(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null && !this.votedSuggestionIds.includes(activitySuggestion.id)) {
-      this.votedSuggestionIds.push(activitySuggestion.id);
+    if (activitySuggestion.id !== null && !this.votedUpSuggestionIds.includes(activitySuggestion.id)) {
+      this.votedUpSuggestionIds.push(activitySuggestion.id);
       try {
         await RemoteServices.upvoteActivitySuggestion(activitySuggestion.id);
         if (activitySuggestion.numberVotes == null) {
@@ -189,11 +219,11 @@ export default class VolunteerActivitySuggestionsView extends Vue {
   }
 
   async removeUpVote(activitySuggestion: ActivitySuggestion) {
-    if (activitySuggestion.id !== null && this.votedSuggestionIds.includes(activitySuggestion.id)) {
+    if (activitySuggestion.id !== null && this.votedUpSuggestionIds.includes(activitySuggestion.id)) {
       try {
         await RemoteServices.removeUpvoteActivitySuggestion(activitySuggestion.id);
-        this.votedSuggestionIds = this.votedSuggestionIds.filter(id => id !== activitySuggestion.id);
-        if (activitySuggestion.numberVotes != null && activitySuggestion.numberVotes > 0) {
+        this.votedUpSuggestionIds = this.votedUpSuggestionIds.filter(id => id !== activitySuggestion.id);
+        if (activitySuggestion.numberVotes != null) {
           activitySuggestion.numberVotes -= 1;
         }
       } catch (error) {
@@ -202,62 +232,113 @@ export default class VolunteerActivitySuggestionsView extends Vue {
     }
   }
 
-  toggleVote(activitySuggestion: ActivitySuggestion) {
+  async downVote(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null && !this.votedDownSuggestionIds.includes(activitySuggestion.id)) {
+      this.votedDownSuggestionIds.push(activitySuggestion.id);
+      try {
+        await RemoteServices.downvoteActivitySuggestion(activitySuggestion.id);
+        if (activitySuggestion.numberVotes == null) {
+          activitySuggestion.numberVotes = -1;
+        } else {
+          activitySuggestion.numberVotes -= 1;
+        }
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  async removeDownVote(activitySuggestion: ActivitySuggestion) {
+    if (activitySuggestion.id !== null && this.votedDownSuggestionIds.includes(activitySuggestion.id)) {
+      try {
+        await RemoteServices.removeDownvoteActivitySuggestion(activitySuggestion.id);
+        this.votedDownSuggestionIds = this.votedDownSuggestionIds.filter(id => id !== activitySuggestion.id);
+        if (activitySuggestion.numberVotes != null) {
+          activitySuggestion.numberVotes += 1;
+        }
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
+
+  toggleUpvote(activitySuggestion: ActivitySuggestion) {
     if (!activitySuggestion.id) return;
+    const id = activitySuggestion.id;
 
-    const hasVoted = this.votedSuggestionIds.includes(activitySuggestion.id);
+    const votedUp = this.votedUpSuggestionIds.includes(id);
+    const votedDown = this.votedDownSuggestionIds.includes(id);
 
-    if (hasVoted) {
+    if (votedUp) {
       this.removeUpVote(activitySuggestion);
     } else {
+      if (votedDown) {
+        this.removeDownVote(activitySuggestion); // removes the previous downvote
+      }
       this.upVote(activitySuggestion);
     }
   }
 
-  getVoteIcon(item: ActivitySuggestion): string {
-    if (item.id === null) return 'disabled-icon';
-    const isVoted = this.votedSuggestionIds.includes(item.id);
-    const isOwn = item.volunteerId === this.currentUserId;
-    const isInactive = isVoted || isOwn || item.state !== 'IN_REVIEW';
+  toggleDownvote(activitySuggestion: ActivitySuggestion) {
+    if (!activitySuggestion.id) return;
+    const id = activitySuggestion.id;
 
-    if (isInactive && isVoted) return 'mdi-arrow-up-bold';
-    if (!isInactive) return 'mdi-arrow-up-bold-outline';
-    return 'mdi-arrow-up-bold';
+    const votedDown = this.votedDownSuggestionIds.includes(id);
+    const votedUp = this.votedUpSuggestionIds.includes(id);
+
+    if (votedDown) {
+      this.removeDownVote(activitySuggestion);
+    } else {
+      if (votedUp) {
+        this.removeUpVote(activitySuggestion); // removes the previous upvote
+      }
+      this.downVote(activitySuggestion);
+    }
   }
 
-  getVoteColor(item: ActivitySuggestion): string {
-    if (item.id === null) return 'blue';
-    const isVoted = this.votedSuggestionIds.includes(item.id);
-    const isOwn = item.volunteerId === this.currentUserId;
-    const isInactive = isVoted || isOwn || item.state !== 'IN_REVIEW';
+  getVoteIcon(item: ActivitySuggestion, isUpvote: boolean): string {
+    if (!item.id) return 'disabled-icon';
+    const votedUp = this.votedUpSuggestionIds.includes(item.id);
+    const votedDown = this.votedDownSuggestionIds.includes(item.id);
 
-    if (isVoted) return 'blue';
-    if (!isInactive) return 'black';
-    return 'blue';
+    if (isUpvote) {
+      return votedUp ? 'mdi-arrow-up-bold' : 'mdi-arrow-up-bold-outline';
+    } else {
+      return votedDown ? 'mdi-arrow-down-bold' : 'mdi-arrow-down-bold-outline';
+    }
   }
 
-  getVoteTooltip(item: ActivitySuggestion): string {
-    if (item.volunteerId === this.currentUserId) {
-      return 'Cannot vote on your own suggestion';
-    }
-    if (item.state !== 'IN_REVIEW') {
-      return 'Suggestion is no longer in review';
-    }
-    if (item.id && this.votedSuggestionIds.includes(item.id)) {
-      return 'Remove Upvote';
-    }
-    return 'Upvote';
+  getVoteColor(item: ActivitySuggestion, isUpvote: boolean): string {
+    if (!item.id) return 'blue';
+    const votedUp = this.votedUpSuggestionIds.includes(item.id);
+    const votedDown = this.votedDownSuggestionIds.includes(item.id);
+
+    if (isUpvote && votedUp) return 'blue';
+    if (!isUpvote && votedDown) return 'red';
+
+    return 'black';
+  }
+
+  getVoteTooltip(item: ActivitySuggestion, isUpvote: boolean): string {
+    if (item.volunteerId === this.currentUserId) return 'Cannot vote on your own suggestion';
+    if (item.state !== 'IN_REVIEW') return 'Suggestion is no longer in review';
+
+    const isVoted = isUpvote
+      ? this.votedUpSuggestionIds.includes(item.id!)
+      : this.votedDownSuggestionIds.includes(item.id!);
+
+    return isVoted ? (isUpvote ? 'Remove Upvote' : 'Remove Downvote') : (isUpvote ? 'Upvote' : 'Downvote');
   }
 
   getVoteIconStyle(item: ActivitySuggestion) {
     if (!item.id) return {};
 
-    const isVoted = this.votedSuggestionIds.includes(item.id);
+    const isVoted = this.votedUpSuggestionIds.includes(item.id) || this.votedDownSuggestionIds.includes(item.id);
     const isOwn = item.volunteerId === this.currentUserId;
     const isInactive = isVoted || isOwn || item.state !== 'IN_REVIEW';
 
     // Apply a slightly larger scale to filled and disabled icons to match the clicked button
-    const scale = isVoted || isInactive ? 1.1 : 1.0;
+    const scale = isInactive ? 1.2 : 1.0;
 
     return {
       transform: `scale(${scale})`,
@@ -286,5 +367,13 @@ export default class VolunteerActivitySuggestionsView extends Vue {
 
 .upvote-btn:hover:not([disabled]) .vote-icon {
   color: #1976D2 !important;  /* blue from Vuetify */
+}
+
+.downvote-btn {
+  transition: border-color 0.3s ease;
+}
+
+.downvote-btn:hover:not([disabled]) .vote-icon {
+  color: #FF5252 !important;  /* red accent from Vuetify */
 }
 </style>

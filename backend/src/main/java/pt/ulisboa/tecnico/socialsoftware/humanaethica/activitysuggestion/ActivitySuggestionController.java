@@ -80,10 +80,31 @@ public class ActivitySuggestionController {
         return activitySuggestionService.removeUpvoteActivitySuggestion(userId, activitySuggestionId);
     }
 
-    @GetMapping("/volunteer/community/votedSuggestions")
+    @PutMapping("/volunteer/community/downvotes/{activitySuggestionId}")
     @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
-    public List<ActivitySuggestionDto> getVotedActivitySuggestions(Principal principal) {
+    public ActivitySuggestionDto downvoteActivitySuggestion(Principal principal, @PathVariable Integer activitySuggestionId) {
         int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
-        return activitySuggestionService.getVotedActivitySuggestions(userId);
+        return activitySuggestionService.downvoteActivitySuggestion(userId, activitySuggestionId);
+    }
+
+    @PutMapping("/volunteer/community/downvotes/{activitySuggestionId}/remove")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ActivitySuggestionDto removeDownvoteActivitySuggestion(Principal principal, @PathVariable Integer activitySuggestionId) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activitySuggestionService.removeDownvoteActivitySuggestion(userId, activitySuggestionId);
+    }
+
+    @GetMapping("/volunteer/community/upvotedSuggestions")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public List<ActivitySuggestionDto> getUpvotedActivitySuggestions(Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activitySuggestionService.getUpvotedActivitySuggestions(userId);
+    }
+
+    @GetMapping("/volunteer/community/downvotedSuggestions")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public List<ActivitySuggestionDto> getDownvotedActivitySuggestions(Principal principal) {
+        int userId = ((AuthUser) ((Authentication) principal).getPrincipal()).getUser().getId();
+        return activitySuggestionService.getDownvotedActivitySuggestions(userId);
     }
 }

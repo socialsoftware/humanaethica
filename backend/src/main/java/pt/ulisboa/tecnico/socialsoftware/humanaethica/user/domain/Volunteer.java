@@ -163,7 +163,7 @@ public class Volunteer extends User {
         if (activitySuggestion == null || activitySuggestion.getId() == null) {
             throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
         }
-        activitySuggestionVotes.put(activitySuggestion.getId(), true);
+        activitySuggestionVotes.put(activitySuggestion.getId(), true);  // true means upvote
         activitySuggestion.upvote();
     }
 
@@ -173,5 +173,21 @@ public class Volunteer extends User {
         }
         activitySuggestionVotes.remove(activitySuggestion.getId());
         activitySuggestion.removeUpvote();
+    }
+
+    public void addDownvoteActivitySuggestion(ActivitySuggestion activitySuggestion) {
+        if (activitySuggestion == null || activitySuggestion.getId() == null) {
+            throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        }
+        activitySuggestionVotes.put(activitySuggestion.getId(), false);  // false means upvote
+        activitySuggestion.downvote();
+    }
+
+    public void removeDownvoteActivitySuggestion(ActivitySuggestion activitySuggestion) {
+        if (activitySuggestion == null || activitySuggestion.getId() == null) {
+            throw new HEException(ACTIVITY_SUGGESTION_NOT_FOUND);
+        }
+        activitySuggestionVotes.remove(activitySuggestion.getId());
+        activitySuggestion.removeDownvote();
     }
 }

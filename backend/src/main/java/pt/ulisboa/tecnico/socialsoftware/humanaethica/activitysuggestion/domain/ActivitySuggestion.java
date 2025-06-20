@@ -232,12 +232,17 @@ public class ActivitySuggestion {
 
     public void removeUpvote() {
         Integer currentVotes = this.getNumberVotes();
+        this.setNumberVotes(currentVotes != null ? currentVotes - 1 : 0);
+    }
 
-        if (currentVotes != null && currentVotes > 0) {
-            this.setNumberVotes(currentVotes - 1);
-        } else {
-            this.setNumberVotes(0);
-        }
+    public void downvote() {
+        Integer currentVotes = this.getNumberVotes();
+        this.setNumberVotes(currentVotes != null ? currentVotes - 1 : -1);
+    }
+
+    public void removeDownvote() {
+        Integer currentVotes = this.getNumberVotes();
+        this.setNumberVotes(currentVotes != null ? currentVotes + 1 : 0);
     }
 
     private void verifyInvariants() {

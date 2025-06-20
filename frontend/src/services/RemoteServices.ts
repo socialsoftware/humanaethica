@@ -517,9 +517,22 @@ export default class RemoteServices {
       });
   }
 
-  static async getVotedActivitySuggestions(): Promise<ActivitySuggestion[]> {
+  static async getUpvotedActivitySuggestions(): Promise<ActivitySuggestion[]> {
     return httpClient
-      .get(`/activitySuggestions/volunteer/community/votedSuggestions`)
+      .get(`/activitySuggestions/volunteer/community/upvotedSuggestions`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDownvotedActivitySuggestions(): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions/volunteer/community/downvotedSuggestions`)
       .then((response) => {
         return response.data.map((activitySuggestion: any) => {
           return new ActivitySuggestion(activitySuggestion);
@@ -583,6 +596,28 @@ export default class RemoteServices {
   static async removeUpvoteActivitySuggestion(activitySuggestionId: number) {
     return httpClient
     .put(`/activitySuggestions/volunteer/community/upvotes/${activitySuggestionId}/remove`)
+    .then((response) => {
+      return new ActivitySuggestion(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async downvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/volunteer/community/downvotes/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async removeDownvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+    .put(`/activitySuggestions/volunteer/community/downvotes/${activitySuggestionId}/remove`)
     .then((response) => {
       return new ActivitySuggestion(response.data);
     })
