@@ -245,6 +245,17 @@ export default class RemoteServices {
       });
   }
 
+  static async isSubscribed(userId: number, institutionId: number): Promise<boolean> {
+    return httpClient
+      .get(`/users/${userId}/subscriptions/${institutionId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async removeThemetoInstitution(themeId: number) {
     return httpClient
       .put(`/theme/${themeId}/removeInstitution`)
@@ -304,6 +315,35 @@ export default class RemoteServices {
         }
       })
       .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  // Notification Controller
+
+  static async getNotifications(userId: number): Promise<Notification[]> {
+    console.log("📡 [RemoteServices] Fetching notifications for userId:", userId);
+    return httpClient
+      .get(`/users/${userId}/getNotifications`)
+      .then((response) => {
+        console.log("📥 [RemoteServices] Raw response data:", response.data);
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async (error) => {
+        console.error("❌ [RemoteServices] Error fetching notifications:", error);
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async markNotificationsAsRead(userId: number) {
+    console.log("📡 [RemoteServices] Marking notifications as read for userId:", userId);
+    return httpClient
+      .put(`/${userId}/notifications/read`)
+      .then((response) => new Notification(response.data))
+      .catch(async (error) => {
+        console.error("❌ [RemoteServices] Error marking notifications as read:", error);
         throw Error(await this.errorMessage(error));
       });
   }
@@ -818,33 +858,6 @@ export default class RemoteServices {
         });
       })
       .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
-  static async getNotifications(userId: number): Promise<Notification[]> {
-    console.log("📡 [RemoteServices] Fetching notifications for userId:", userId);
-    return httpClient
-      .get(`/users/${userId}/getNotifications`)
-      .then((response) => {
-        console.log("📥 [RemoteServices] Raw response data:", response.data);
-        return response.data.map((notification: any) => {
-          return new Notification(notification);
-        });
-      })
-      .catch(async (error) => {
-        console.error("❌ [RemoteServices] Error fetching notifications:", error);
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
-  static async markNotificationsAsRead(userId: number) {
-    console.log("📡 [RemoteServices] Marking notifications as read for userId:", userId);
-    return httpClient
-      .put(`/${userId}/notifications/read`)
-      .then((response) => new Notification(response.data))
-      .catch(async (error) => {
-        console.error("❌ [RemoteServices] Error marking notifications as read:", error);
         throw Error(await this.errorMessage(error));
       });
   }

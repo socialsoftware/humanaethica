@@ -32,7 +32,7 @@
         <p><strong>Short Description: </strong> {{ institutionProfile?.shortDescription ?? 'N/A' }}</p>
       </div>
       <v-btn
-        v-if="!isMember && !isSubscribed"
+        v-if="isVolunteer && !isSubscribed"
         color="primary"
         dark
         @click="subscribeToInstitution"
@@ -41,7 +41,7 @@
         Subscribe
       </v-btn>
       <v-btn
-        v-if="!isMember && isSubscribed"
+        v-if="isVolunteer && isSubscribed"
         color="error"
         dark
         @click="unsubscribeFromInstitution"
@@ -147,6 +147,7 @@ export default class InstitutionProfileView extends Vue {
   hasInstitutionProfile: boolean = false;
   createDialog: boolean = false;
   isMember: boolean = false;
+  isVolunteer: boolean = false;
   isSubscribed: boolean = false;
   search: string = '';
   headers = [
@@ -170,6 +171,11 @@ export default class InstitutionProfileView extends Vue {
         }
         
         this.isMember = true;
+      } else if (this.$store.getters.getUser !== null && this.$store.getters.getUser.role === 'VOLUNTEER') {
+        let userId = this.$store.getters.getUser.id;
+        let institutionId = Number(this.$route.params.id);
+        this.isSubscribed = await RemoteServices.isSubscribed(userId, institutionId);
+        this.isVolunteer = true;
       }
       if(this.institutionProfile && this.institutionProfile.id !== null && this.institutionProfile.id !== undefined){
         this.hasInstitutionProfile = true;
