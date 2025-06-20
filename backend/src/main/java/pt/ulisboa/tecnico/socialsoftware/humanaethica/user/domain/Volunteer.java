@@ -50,7 +50,11 @@ public class Volunteer extends User {
     private VolunteerProfile volunteerProfile;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "institution_subscriptions")
+    @JoinTable(
+        name = "institution_subscriptions",
+        joinColumns = @JoinColumn(name = "volunteer_id"),
+        inverseJoinColumns = @JoinColumn(name = "institution_id")
+    )
     private List<Institution> institutions = new ArrayList<>();
 
     @ElementCollection

@@ -17,6 +17,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT v FROM Volunteer v JOIN v.institutions i WHERE i.id = :institutionId")
     List<Volunteer> findVolunteersSubscribedToInstitution(Integer institutionId);
 
+    @Query(value = "SELECT EXISTS ( " +
+                   "SELECT 1 FROM institution_subscriptions " +
+                   "WHERE volunteer_id = :volunteerId AND institution_id = :institutionId )",
+           nativeQuery = true)
+    boolean isVolunteerSubscribedToInstitution(Integer volunteerId, Integer institutionId);
+
+
     @Query("SELECT m FROM Member m WHERE m.institution.id = :institutionId")
     List<Member> findMembersByInstitutionId(Integer institutionId);
 

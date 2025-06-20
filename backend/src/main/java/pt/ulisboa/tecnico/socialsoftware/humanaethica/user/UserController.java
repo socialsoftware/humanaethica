@@ -122,4 +122,10 @@ public class UserController {
         userService.removeInstitutionSubscription(userId, institutionId);
     }
     
+    @GetMapping("/users/{userId}/subscriptions/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ResponseEntity<Boolean> isSubscribed(@PathVariable int userId, @PathVariable int institutionId) {
+        boolean isSubscribed = userService.isSubscribed(userId, institutionId);
+        return ResponseEntity.ok(isSubscribed);
+    }
 }

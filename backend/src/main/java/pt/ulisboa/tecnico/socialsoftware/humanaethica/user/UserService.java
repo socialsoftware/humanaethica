@@ -232,4 +232,11 @@ public class UserService {
         Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
         volunteer.removeSubscription(institution);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean isSubscribed(Integer userId, Integer institutionId) {
+        userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
+        institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        return userRepository.isVolunteerSubscribedToInstitution(userId, institutionId);
+    }
 }
