@@ -461,7 +461,6 @@ export default class TopBar extends Vue {
   }
 
   async openNotifications() {
-    console.log("OPEN NOTIFS");
     await this.loadNotifications();
     this.showNotifications = true;
   }
@@ -485,7 +484,6 @@ export default class TopBar extends Vue {
 
   @Watch('userId')
   async onUserIdChange() {
-    console.log('👤 User ID changed, reloading notifications');
     await this.loadNotifications();
   }
 
@@ -494,13 +492,7 @@ export default class TopBar extends Vue {
     if (user && user.id >= 0) {
       try {
         this.notifications = await RemoteServices.getNotifications(user.id);
-        console.log("📬 Notificações carregadas no pai:", this.notifications.map(n => ({
-          id: n.id,
-          mensagem: n.message,
-          lida: n.read
-        })));
         this.unreadCount = this.notifications.filter(n => !n.read).length;
-        console.log(this.unreadCount);
       } catch (error) {
         console.error('Error loading notifications:', error);
       }

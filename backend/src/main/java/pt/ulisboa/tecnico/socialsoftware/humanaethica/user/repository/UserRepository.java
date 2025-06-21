@@ -23,7 +23,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
            nativeQuery = true)
     boolean isVolunteerSubscribedToInstitution(Integer volunteerId, Integer institutionId);
 
-
     @Query("SELECT m FROM Member m WHERE m.institution.id = :institutionId")
     List<Member> findMembersByInstitutionId(Integer institutionId);
 

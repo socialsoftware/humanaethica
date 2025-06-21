@@ -205,7 +205,6 @@ export default class InstitutionProfileView extends Vue {
   }
 
   async subscribeToInstitution() {
-    console.log("SUBSCRIBED");
     try {
       let userId = this.$store.getters.getUser.id;
       let institutionId = Number(this.$route.params.id);
@@ -219,7 +218,6 @@ export default class InstitutionProfileView extends Vue {
   }
 
   async unsubscribeFromInstitution() {
-    console.log("UNSUBSCRIBED");
     try {
       let userId = this.$store.getters.getUser.id;
       let institutionId = Number(this.$route.params.id);
