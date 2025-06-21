@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,11 +17,21 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 public class Notification {
 
     public enum NotificationType {
-        ACTIVITY_PUBLISHED,
-        ACTIVITY_SUGGESTION_SUBMITTED,
-        ACTIVITY_SUGGESTION_UPDATED,
-        ACTIVITY_SUGGESTION_UPVOTED,
-        ACTIVITY_SUGGESTION_DOWNVOTED
+        ACTIVITY_PUBLISHED("A new activity \"%s\" was published by %s!"),
+        ACTIVITY_SUGGESTION_SUBMITTED("A new activity suggestion \"%s\" was published to your institution!"),
+        ACTIVITY_SUGGESTION_UPDATED("The activity suggestion \"%s\" from your institution was just edited!"),
+        ACTIVITY_SUGGESTION_UPVOTED("Your activity suggestion \"%s\" has just received an upvote!"),
+        ACTIVITY_SUGGESTION_DOWNVOTED("Your activity suggestion \"%s\" has just received a downvote!");
+
+        private final String label;
+
+        NotificationType(String label) {
+            this.label = label;
+        }
+
+        public String formatMessage(Object... args) {
+            return String.format(label, args);
+        }
     }
 
     @Id
@@ -34,19 +42,15 @@ public class Notification {
     @Column(name = "creation_date")
     private LocalDateTime creationDate = DateHandler.now();
 
-    @Enumerated(EnumType.STRING)
-    private Notification.NotificationType type;
-
     @ManyToOne
     private User user;
 
     public Notification() {
     }
 
-    public Notification(String message, NotificationType type, User user) {
+    public Notification(String message, User user) {
         setMessage(message);
         setCreationDate(DateHandler.now());
-        setType(type);
         setRecipient(user);
     }
 
@@ -72,14 +76,6 @@ public class Notification {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public NotificationType getType() {
-        return type;
-    }
-
-    public void setType(NotificationType type) {
-        this.type = type;
     }
 
     public boolean isRead() {

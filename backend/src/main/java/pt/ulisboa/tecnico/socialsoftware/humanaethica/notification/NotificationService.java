@@ -24,15 +24,11 @@ public class NotificationService {
 
     public void createActivityNotifications(Institution institution, Activity activity) {
         List<Volunteer> subscribers = userRepository.findVolunteersSubscribedToInstitution(institution.getId());
+        String message = Notification.NotificationType.ACTIVITY_PUBLISHED.formatMessage(activity.getName(), institution.getName());
 
         List<Notification> notifications = subscribers.stream()
             .map(volunteer -> {
-                Notification n = new Notification();
-                n.setRecipient(volunteer);
-                n.setType(Notification.NotificationType.ACTIVITY_PUBLISHED);
-                n.setActivity(activity);
-                n.setMessage("A new activity \"" + activity.getName() + "\" was published by " + institution.getName() + "!");
-                return n;
+                return new Notification(message, volunteer);
             }).toList();
 
         notificationRepository.saveAll(notifications);
@@ -40,14 +36,11 @@ public class NotificationService {
 
     public void createActivitySuggestionNotifications(Institution institution, ActivitySuggestion activitySuggestion) {
         List<Member> members = userRepository.findMembersByInstitutionId(institution.getId());
+        String message = Notification.NotificationType.ACTIVITY_SUGGESTION_SUBMITTED.formatMessage(activitySuggestion.getName());
 
         List<Notification> notifications = members.stream()
             .map(member -> {
-                Notification n = new Notification();
-                n.setRecipient(member);
-                n.setType(Notification.NotificationType.ACTIVITY_SUGGESTION_SUBMITTED);
-                n.setMessage("A new activity suggestion \"" + activitySuggestion.getName() + "\" was published to your institution!");
-                return n;
+                return new Notification(message, member);
             }).toList();
 
         notificationRepository.saveAll(notifications);
@@ -55,14 +48,11 @@ public class NotificationService {
 
     public void editActivitySuggestionNotifications(Institution institution, ActivitySuggestion activitySuggestion) {
         List<Member> members = userRepository.findMembersByInstitutionId(institution.getId());
+        String message = Notification.NotificationType.ACTIVITY_SUGGESTION_UPDATED.formatMessage(activitySuggestion.getName());
 
         List<Notification> notifications = members.stream()
             .map(member -> {
-                Notification n = new Notification();
-                n.setRecipient(member);
-                n.setType(Notification.NotificationType.ACTIVITY_SUGGESTION_UPDATED);
-                n.setMessage("The activity suggestion \"" + activitySuggestion.getName() + "\" from your institution was just edited!");
-                return n;
+                return new Notification(message, member);
             }).toList();
 
         notificationRepository.saveAll(notifications);
@@ -70,23 +60,15 @@ public class NotificationService {
 
     public void createUpvoteNotifications(ActivitySuggestion activitySuggestion) {
         Volunteer volunteer = userRepository.findVolunteerByActivitySuggestionId(activitySuggestion.getId());
-
-        Notification notification = new Notification();
-        notification.setRecipient(volunteer);
-        notification.setType(Notification.NotificationType.ACTIVITY_SUGGESTION_UPVOTED);
-        notification.setMessage("Your activity suggestion \"" + activitySuggestion.getName() + "\" has just received an upvote!");
-
+        String message = Notification.NotificationType.ACTIVITY_SUGGESTION_UPVOTED.formatMessage(activitySuggestion.getName());
+        Notification notification = new Notification(message, volunteer);
         notificationRepository.save(notification);
     }
 
     public void createDownvoteNotifications(ActivitySuggestion activitySuggestion) {
         Volunteer volunteer = userRepository.findVolunteerByActivitySuggestionId(activitySuggestion.getId());
-
-        Notification notification = new Notification();
-        notification.setRecipient(volunteer);
-        notification.setType(Notification.NotificationType.ACTIVITY_SUGGESTION_DOWNVOTED);
-        notification.setMessage("Your activity suggestion \"" + activitySuggestion.getName() + "\" has just received a downvote!");
-
+        String message = Notification.NotificationType.ACTIVITY_SUGGESTION_DOWNVOTED.formatMessage(activitySuggestion.getName());
+        Notification notification = new Notification(message, volunteer);
         notificationRepository.save(notification);
     }
 
