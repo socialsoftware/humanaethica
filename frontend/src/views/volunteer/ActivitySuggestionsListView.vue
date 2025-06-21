@@ -50,7 +50,7 @@
           </v-tooltip>
           <span
             class="ml-2 font-weight-medium"
-            style="font-size: 16px; color: #333;"
+            style="font-size: 16px; color: #333; min-width: 32px; text-align: center;"
           >
             {{ item.numberVotes }}
           </span>
@@ -168,7 +168,7 @@ export default class VolunteerActivitySuggestionsView extends Vue {
     {
       text: 'Actions',
       value: 'action',
-      align: 'left',
+      align: 'center',
       width: '5%',
     },
   ];
@@ -338,7 +338,7 @@ export default class VolunteerActivitySuggestionsView extends Vue {
     const isInactive = isVoted || isOwn || item.state !== 'IN_REVIEW';
 
     // Apply a slightly larger scale to filled and disabled icons to match the clicked button
-    const scale = isInactive ? 1.2 : 1.0;
+    const scale = isInactive ? 1.1 : 1.0;
 
     return {
       transform: `scale(${scale})`,
