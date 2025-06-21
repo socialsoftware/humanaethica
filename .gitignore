@@ -8,4 +8,3 @@ backend/src/main/resources/static/documents/declarations
 frontend/cypress.env.json
 data/access.log
 data/error.log
-reset_frontend.sh
