@@ -35,10 +35,8 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081", "http://localhost:8080")
+                .allowedOriginPatterns("*")
                 .allowedMethods("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE")
-                .allowedHeaders("*")
-                .allowCredentials(true)
                 .maxAge(MAX_AGE_SECS);
     }
 }
