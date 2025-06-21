@@ -35,7 +35,6 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMes
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.THEME_NOT_APPROVED;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.domain.Notification;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
@@ -79,9 +78,6 @@ public class Activity {
 
     @OneToMany(mappedBy = "activity")
     private List<Report> reports = new ArrayList<>();
-
-    @OneToMany(mappedBy = "activity")
-    private List<Notification> notifications = new ArrayList<>();
 
     public Activity() {
     }
