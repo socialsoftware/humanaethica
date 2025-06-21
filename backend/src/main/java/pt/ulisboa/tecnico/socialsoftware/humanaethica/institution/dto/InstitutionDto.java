@@ -25,9 +25,6 @@ public class InstitutionDto {
 
     private List<ActivityDto> activityDto = new ArrayList<>();
 
-    // private List<VolunteerDto> volunteerDto = new ArrayList<>();
-    // private Integer volunteerId;
-
     public InstitutionDto(){
     }
 

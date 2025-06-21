@@ -49,7 +49,7 @@ public class Volunteer extends User {
     @OneToOne(mappedBy = "volunteer")
     private VolunteerProfile volunteerProfile;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "institution_subscriptions",
         joinColumns = @JoinColumn(name = "volunteer_id"),
