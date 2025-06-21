@@ -146,7 +146,7 @@ export default class InstitutionActivitySuggestionsView extends Vue {
       width: '5%',
     },
     {
-      text: 'Upvotes',
+      text: 'Votes',
       value: 'numberVotes',
       align: 'left',
       width: '5%',
