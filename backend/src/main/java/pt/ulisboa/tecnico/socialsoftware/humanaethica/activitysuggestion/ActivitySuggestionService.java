@@ -129,7 +129,6 @@ public class ActivitySuggestionService {
 
         volunteer.addUpvoteActivitySuggestion(activitySuggestion);
         notificationService.createUpvoteNotifications(activitySuggestion);
-
         return new ActivitySuggestionDto(activitySuggestion, true);
     }
 
@@ -156,7 +155,7 @@ public class ActivitySuggestionService {
                                                                   .orElseThrow(() -> new HEException(ACTIVITY_SUGGESTION_NOT_FOUND, activitySuggestionId));
 
         volunteer.addDownvoteActivitySuggestion(activitySuggestion);
-        notificationService.createUpvoteNotifications(activitySuggestion);
+        notificationService.createDownvoteNotifications(activitySuggestion);
         return new ActivitySuggestionDto(activitySuggestion, true);
     }
 
@@ -181,7 +180,7 @@ public class ActivitySuggestionService {
         Map<Integer, Boolean> votesMap = volunteer.getActivitySuggestionVotes();
 
         List<Integer> votedIds = votesMap.entrySet().stream()
-                                         .filter(Map.Entry::getValue) // only entries with true (ipvotes)
+                                         .filter(Map.Entry::getValue) // only entries with true (upvotes)
                                          .map(Map.Entry::getKey)
                                          .collect(Collectors.toList());
 

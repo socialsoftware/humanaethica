@@ -79,6 +79,17 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    public void createDownvoteNotifications(ActivitySuggestion activitySuggestion) {
+        Volunteer volunteer = userRepository.findVolunteerByActivitySuggestionId(activitySuggestion.getId());
+
+        Notification notification = new Notification();
+        notification.setRecipient(volunteer);
+        notification.setType(Notification.NotificationType.ACTIVITY_SUGGESTION_DOWNVOTED);
+        notification.setMessage("Your activity suggestion \"" + activitySuggestion.getName() + "\" has just received a downvote!");
+
+        notificationRepository.save(notification);
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void markAllAsRead(Integer userId) {
         List<Notification> notifications = notificationRepository.findByUserIdAndReadFalse(userId);
