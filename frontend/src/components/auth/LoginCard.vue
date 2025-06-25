@@ -40,7 +40,7 @@ const password = ref('');
 const showPassword = ref(false);
 
 const emit = defineEmits<{
-  (e: 'onSubmit', username: string, password: string): void;
+  (e: 'login', username: string, password: string): void;
 }>();
 
 function togglePassword() {
@@ -48,7 +48,7 @@ function togglePassword() {
 }
 
 function submit() {
-  emit('onSubmit', username.value, password.value);
+  emit('login', username.value, password.value);
 }
 </script>
 

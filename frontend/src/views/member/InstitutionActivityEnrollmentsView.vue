@@ -169,12 +169,13 @@ async function selectParticipant(enrollment: Enrollment) {
       p.volunteerId === enrollment.volunteerId
   )
   if (existing) {
-    currentParticipation.value = existing
+    currentParticipation.value = { ...existing }
     editParticipationSelectionDialog.value = true
   } else if (checkIfActivityHasEnded()) {
-    currentParticipation.value = new Participation()
-    currentParticipation.value.activityId = enrollment.activityId
-    currentParticipation.value.volunteerId = enrollment.volunteerId
+    const newPart = new Participation()
+    newPart.activityId = enrollment.activityId
+    newPart.volunteerId = enrollment.volunteerId
+    currentParticipation.value = newPart
     editParticipationSelectionDialog.value = true
   } else {
     await createParticipation(enrollment.activityId!, enrollment.volunteerId!)

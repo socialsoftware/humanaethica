@@ -93,7 +93,7 @@ async function createUpdateParticipation() {
   if (!form.value || !(await form.value.validate())) return
   try {
     let result
-    if (editParticipation.value.id !== null) {
+    if (editParticipation.value.id !== null && editParticipation.value.id !== undefined) {
       result = await RemoteServices.updateParticipationMember(
         editParticipation.value.id,
         editParticipation.value
@@ -107,7 +107,6 @@ async function createUpdateParticipation() {
     emit('save-participation', result)
     emit('close-participation-dialog')
   } catch (error: any) {
-    // Optionally handle error with store.setError(error.message)
   }
 }
 

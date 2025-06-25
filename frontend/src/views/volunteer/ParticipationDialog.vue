@@ -70,6 +70,7 @@ const emit = defineEmits(['update:dialog', 'close-participation-dialog', 'save-p
 
 const dialogModel = ref(props.dialog)
 const valid = ref(true)
+const form = ref()
 const editParticipation = ref(new Participation(props.participation))
 
 watch(
@@ -104,22 +105,17 @@ function isNumberValid(value: any) {
 }
 
 async function updateParticipation() {
-  const form = (ref as any).form?.value
-  if (!form || !(await form.validate())) return
-
+  if (!form.value || !(await form.value.validate())) return
   try {
-    if (editParticipation.value.id !== null) {
+    if (editParticipation.value.id !== null && editParticipation.value.id !== undefined) {
       const result = await RemoteServices.updateParticipationVolunteer(
         editParticipation.value.id,
         editParticipation.value
       )
       emit('save-participation', result)
       emit('close-participation-dialog')
-    } else {
-      throw new Error('Participation ID is required for updating')
-    }
+    } 
   } catch (error: any) {
-    console.error(error)
   }
 }
 </script>

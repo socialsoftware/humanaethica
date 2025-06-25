@@ -1,15 +1,15 @@
 <template>
-  <VDialog v-model="dialog">
+  <div class="error-banner-container" v-if="dialog">
     <VAlert
-      v-model="dialog"
       type="error"
-      close-text="Close Alert"
       closable
+      close-text="Close Alert"
       @update:modelValue="onDialogClose"
+      class="error-banner"
     >
       {{ errorMessage }}
     </VAlert>
-  </VDialog>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -18,33 +18,33 @@ import { useMainStore } from '@/store/useMainStore';
 
 const store = useMainStore();
 
-// Computed bindings to the Pinia store
 const dialog = computed(() => store.error);
 const errorMessage = computed(() => store.errorMessage);
 
-// Watch dialog visibility and clear error when closed
 function onDialogClose(val: boolean) {
   if (!val) {
     store.clearError();
   }
 }
 
-// Optional: watch for changes (e.g., to trigger transitions or logs)
-watch(() => store.error, () => {
-  // console.log('Error state changed');
-});
+watch(() => store.error, () => {});
 </script>
 
 <style scoped lang="scss">
-.v-dialog__container {
-  display: unset !important;
+.error-banner-container {
+  position: fixed;
+  top: 24px;
+  left: 0;
+  width: 100vw;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
 }
 
-.v-alert {
-  z-index: 9999;
-  position: absolute;
-  left: 20px;
-  top: 80px;
-  width: calc(100% - 40px);
+.error-banner {
+  width: 600px;
+  max-width: 90vw;
+  pointer-events: all;
 }
 </style>

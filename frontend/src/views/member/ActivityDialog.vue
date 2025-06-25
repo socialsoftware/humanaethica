@@ -60,7 +60,7 @@
             <v-col>
               <label class="text-subtitle-2 font-weight-medium">*Application Deadline</label>
               <VTextField
-                v-model="editActivity.applicationDeadline"
+                v-model="applicationDeadlineLocal"
                 type="datetime-local"
                 data-cy="applicationDeadline"
                 density="comfortable"
@@ -72,7 +72,7 @@
             <v-col>
               <label class="text-subtitle-2 font-weight-medium">*Starting Date</label>
               <VTextField
-                v-model="editActivity.startingDate"
+                v-model="startingDateLocal"
                 type="datetime-local"
                 data-cy="startingDate"
                 density="comfortable"
@@ -84,7 +84,7 @@
             <v-col>
               <label class="text-subtitle-2 font-weight-medium">*Ending Date</label>
               <VTextField
-                v-model="editActivity.endingDate"
+                v-model="endingDateLocal"
                 type="datetime-local"
                 data-cy="endingDate"
                 density="comfortable"
@@ -130,6 +130,55 @@ const internalDialog = computed({
 const form = ref();
 const formValid = ref(false);
 const editActivity = ref(new Activity(props.activity));
+
+// Date conversion helpers
+function toDatetimeLocal(val: string | null | undefined): string {
+  if (!val) return '';
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return '';
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return (
+    d.getFullYear() +
+    '-' +
+    pad(d.getMonth() + 1) +
+    '-' +
+    pad(d.getDate()) +
+    'T' +
+    pad(d.getHours()) +
+    ':' +
+    pad(d.getMinutes())
+  );
+}
+function fromDatetimeLocal(val: string): string {
+  return val ? new Date(val).toISOString() : '';
+}
+const applicationDeadlineLocal = computed({
+  get: () => toDatetimeLocal(editActivity.value.applicationDeadline),
+  set: (val: string) => {
+    editActivity.value.applicationDeadline = fromDatetimeLocal(val);
+  },
+});
+const startingDateLocal = computed({
+  get: () => toDatetimeLocal(editActivity.value.startingDate),
+  set: (val: string) => {
+    editActivity.value.startingDate = fromDatetimeLocal(val);
+  },
+});
+const endingDateLocal = computed({
+  get: () => toDatetimeLocal(editActivity.value.endingDate),
+  set: (val: string) => {
+    editActivity.value.endingDate = fromDatetimeLocal(val);
+  },
+});
+
+watch(
+  () => props.dialog,
+  (val) => {
+    if (val) {
+      editActivity.value = new Activity(props.activity);
+    }
+  }
+);
 
 watch(() => props.activity, (newVal) => {
   editActivity.value = new Activity(newVal);

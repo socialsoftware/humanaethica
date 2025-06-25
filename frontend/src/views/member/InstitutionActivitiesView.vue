@@ -160,7 +160,7 @@ function newActivity() {
 }
 
 function editActivity(activity: Activity) {
-  currentActivity.value = activity;
+  currentActivity.value = new Activity(activity);
   editActivityDialog.value = true;
 }
 

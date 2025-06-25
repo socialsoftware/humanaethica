@@ -367,9 +367,7 @@ function giveRating(activity: Activity) {
     (p) => p.activityId === activityId && p.volunteerId === volunteerId
   )
   if (existingParticipation) {
-    currentParticipation.value = existingParticipation
-    currentParticipation.value.activityId = activityId
-    currentParticipation.value.volunteerId = volunteerId
+    currentParticipation.value = { ...existingParticipation }
     editParticipationDialog.value = true
   }
 }
