@@ -8,21 +8,16 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 
 @DataJpaTest
 class UserAuthTest extends SpockTest {
 
-    User user
     AuthUser authUser
 
 
     def setup() {
-        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
-        user = userRepository.save(user)
-        authUser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
+        authUser = AuthUser.createAuthUser(1, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authUser.setActive(true)
         authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
         authUserRepository.save(authUser)

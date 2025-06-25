@@ -51,10 +51,10 @@ class BeanConfiguration {
         return new UserService()
     }*/
 
-    @Bean
+    /*@Bean
     UserApplicationalService userServiceApplicational() {
         return new UserApplicationalService()
-    }
+    }*/
 
 
     @Bean

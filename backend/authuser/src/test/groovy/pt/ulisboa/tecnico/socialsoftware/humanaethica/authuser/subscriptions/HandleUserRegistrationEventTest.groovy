@@ -45,23 +45,6 @@ class HandleUserRegistrationEventTest extends SpockTest {
     }
 
 
-    def "handleUserRegistrationEvent: is correctly subscribed and triggered by event bus"() {
-        given:
-
-
-        when:
-        userService.registerUser(dto, null)
-
-        then:
-        def result = authUserRepository.findAuthUserByUsername(USER_1_USERNAME).get()
-        result.username == USER_1_USERNAME
-        result.email == USER_1_EMAIL
-        result.role.name() == Role.VOLUNTEER.name()
-        result.userId != null
-    }
-
-
-
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

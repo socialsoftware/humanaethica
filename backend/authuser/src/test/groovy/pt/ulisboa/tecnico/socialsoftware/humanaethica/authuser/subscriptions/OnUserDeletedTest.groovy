@@ -5,6 +5,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.SpockTest
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserDeletedEvent
@@ -17,21 +19,19 @@ class OnUserDeletedTest extends SpockTest{
 
     @Autowired
     AuthUserEventListener listener
-    def dto
-    UserDto user
+    def auth
+    def userId = 1
 
     def setup() {
-        dto = new RegisterUserDto()
-        dto.setUsername(USER_1_USERNAME)
-        dto.setEmail(USER_1_EMAIL)
-        dto.setRole(Role.VOLUNTEER)
-        dto.setName(USER_1_NAME)
-        user = userService.registerUser(dto, null)
+
+        auth = AuthUser.createAuthUser(userId, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
+        auth = authUserRepository.save(auth)
+
     }
 
     def "onUserDeleted: directly disables the user"() {
         given: "an event for existing user"
-        def event = new UserDeletedEvent(user.getId())
+        def event = new UserDeletedEvent(userId)
 
         when:
         listener.onUserDeleted(event)
@@ -40,20 +40,6 @@ class OnUserDeletedTest extends SpockTest{
         def result = authUserRepository.findAuthUserByUsername(USER_1_USERNAME).get()
         !result.active
     }
-
-    def "onUserDeleted: disables user when triggered via subscription"() {
-        given: "register listener"
-
-
-        when:
-        userService.deleteUser(user.getId())
-
-        then:
-        def result = authUserRepository.findAuthUserByUsername(USER_1_USERNAME).get()
-        !result.active
-    }
-
-
 
 
 

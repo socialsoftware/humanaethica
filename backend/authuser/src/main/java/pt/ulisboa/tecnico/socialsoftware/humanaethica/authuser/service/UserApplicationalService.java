@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,17 +11,19 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserServic
 
 @Service
 public class UserApplicationalService {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private AuthService authService;
 
-    @Autowired
-    private Mailer mailer;
+    private final AuthService authService;
+
+    private final Mailer mailer;
 
     @Value("${spring.mail.username}")
     private String mailUsername;
+
+    public UserApplicationalService(AuthService authService, Mailer mailer) {
+        this.authService = authService;
+        this.mailer = mailer;
+    }
 
     public RegisterUserDto confirmRegistration(RegisterUserDto registerUserDto) {
         RegisterUserDto user = authService.confirmRegistration(registerUserDto);

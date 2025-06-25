@@ -15,14 +15,11 @@ import spock.lang.Unroll
 
 @DataJpaTest
 class CreateAuthUserTest extends SpockTest {
-    def user
     def authUser
     def userId
 
     def setup() {
-        user = new Volunteer(USER_1_NAME, User.State.SUBMITTED)
-        user = userRepository.save(user)
-        userId = user.getId()
+        userId = 1
     }
 
     @Unroll

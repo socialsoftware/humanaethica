@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -23,14 +22,17 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.E
 @Service
 public class AuthService {
 
-    @Autowired
-    private AuthUserRepository authUserRepository;
+    private final AuthUserRepository authUserRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthService(AuthUserRepository authUserRepository, UserService userService, PasswordEncoder passwordEncoder) {
+        this.authUserRepository = authUserRepository;
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

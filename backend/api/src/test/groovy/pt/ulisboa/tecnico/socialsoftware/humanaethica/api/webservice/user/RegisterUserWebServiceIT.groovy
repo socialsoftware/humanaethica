@@ -54,6 +54,7 @@ class RegisterUserWebServiceIT extends SpockTest {
         response.username == USER_1_USERNAME
         response.email == USER_1_EMAIL
         response.role == Role.VOLUNTEER.name()
+        authUserRepository.findAuthUserByUsername(USER_1_USERNAME).isPresent()
 
         cleanup:
         deleteAll()

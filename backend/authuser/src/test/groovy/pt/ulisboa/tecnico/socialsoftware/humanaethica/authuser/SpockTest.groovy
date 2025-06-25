@@ -104,8 +104,8 @@ class SpockTest extends Specification {
     @Autowired
     AuthUserRepository authUserRepository
 
-    @Autowired
-    UserApplicationalService userServiceApplicational
+    /*@Autowired
+    UserApplicationalService userServiceApplicational*/
 
     @Autowired
     PasswordEncoder passwordEncoder
@@ -116,60 +116,9 @@ class SpockTest extends Specification {
     @Autowired
     DemoUtils demoUtils
 
-    def demoVolunteerLogin() {
-        def result = webClient.get()
-                .uri('/auth/demo/volunteer')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .retrieve()
-                .bodyToMono(AuthDto.class)
-                .block()
 
-        headers.setBearerAuth(result.token)
 
-        return result.getUser()
-    }
-
-    def demoMemberLogin() {
-        def result = webClient.get()
-                .uri('/auth/demo/member')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .retrieve()
-                .bodyToMono(AuthDto.class)
-                .block()
-
-        headers.setBearerAuth(result.token)
-
-        return result.getUser()
-    }
-
-    def demoAdminLogin() {
-        def result = webClient.get()
-                .uri('/auth/demo/admin')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .retrieve()
-                .bodyToMono(AuthDto.class)
-                .block()
-
-        headers.setBearerAuth(result.token)
-
-        return result.getUser()
-    }
-
-    def normalUserLogin(username, password) {
-        def result = webClient.post()
-                .uri('/auth/user')
-                .headers(httpHeaders -> httpHeaders.putAll(headers))
-                .bodyValue(new AuthPasswordDto(username, password))
-                .retrieve()
-                .bodyToMono(AuthDto.class)
-                .block()
-
-        headers.setBearerAuth(result.token)
-
-        return result.getUser()
-    }
-
-    def createMember(name, userName, password, email, type, institution, state) {
+    /*def createMember(name, userName, password, email, type, institution, state) {
         def member = new Member(name, userName, email, institution, state)
         member = userRepository.save(member)
         def authUser = AuthUser.createAuthUser(member.getId(), userName, email, type, Role.MEMBER)
@@ -185,7 +134,7 @@ class SpockTest extends Specification {
         authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
         authUserRepository.save(authUser)
         return volunteer
-    }
+    }*/
 
 
 
