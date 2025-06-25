@@ -9,7 +9,7 @@
       :mobile-breakpoint="0"
     >
       <template #top>
-        <VCardTitle>
+        <VCardTitle class="d-flex align-center">
           <VTextField
             v-model="search"
             append-icon="search"
@@ -17,10 +17,10 @@
             class="mx-2"
           />
           <VSpacer />
-          <VBtn color="primary" @click="newTheme" data-cy="createButton">
+          <VBtn color="primary" class="ml-2" @click="newTheme" data-cy="createButton">
             New Theme
           </VBtn>
-          <VBtn color="primary" @click="associateThemeDialog" data-cy="associateButton">
+          <VBtn color="primary" class="ml-2" @click="associateThemeDialog" data-cy="associateButton">
             Associate Theme
           </VBtn>
         </VCardTitle>

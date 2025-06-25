@@ -9,7 +9,7 @@
       :mobile-breakpoint="0"
     >
       <template #top>
-        <VCardTitle>
+        <VCardTitle class="d-flex align-center">
           <VTextField
             v-model="search"
             append-icon="search"
@@ -17,8 +17,22 @@
             class="mx-2"
           />
           <VSpacer />
-          <VBtn color="primary" @click="openTreeView" data-cy="createButton">Tree</VBtn>
-          <VBtn color="primary" @click="openNewTheme" data-cy="createButton">New Theme</VBtn>
+          <VBtn
+            color="primary"
+            class="ml-2"
+            @click="openTreeView"
+            data-cy="createButton"
+          >
+            Tree
+          </VBtn>
+          <VBtn
+            color="primary"
+            class="ml-2"
+            @click="openNewTheme"
+            data-cy="createButton"
+          >
+            New Theme
+          </VBtn>
         </VCardTitle>
       </template>
       <template #item.institutions="{ item }">

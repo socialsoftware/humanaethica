@@ -1,12 +1,7 @@
-<template v-if="theme">
-  <VDialog
-    v-model="dialogModel"
-    @keydown.esc="closeDialog"
-    max-width="75%"
-    max-height="80%"
-  >
+<template>
+  <VDialog v-model="dialogModel" max-width="75%" max-height="80%">
     <VCard>
-      <VForm ref="form" v-model="valid">
+      <VForm ref="form" v-model="valid" lazy-validation>
         <VCardTitle>
           <span class="headline">Add Theme</span>
         </VCardTitle>
@@ -17,7 +12,7 @@
           return-object
           item-value="id"
           item-title="completeName"
-          :menu-props="{ offsetY: true, nudgeLeft: 0, class: 'left-text' }"
+          :menu-props="{ offsetY: true, class: 'left-text' }"
           class="move-right"
         >
           <template #item="{ item }">
@@ -26,13 +21,12 @@
             </div>
           </template>
         </VSelect>
-
         <VCardText class="text-left">
           <VTextField
             v-model="theme.name"
             label="Name"
             data-cy="themeNameInput"
-            :rules="[v => !!v || 'Name is required']"
+            :rules="[(value) => !!value || 'Name is required']"
             required
           />
           <div class="add-theme-feedback-container">
@@ -41,73 +35,57 @@
             </span>
           </div>
         </VCardText>
-
         <VCardActions>
           <VSpacer />
-          <VBtn
-            color="primary"
-            @click="closeDialog"
-            data-cy="cancelButton"
-            >Close</VBtn
-          >
-          <VBtn color="primary" @click="submit" data-cy="saveButton"
-            >Add</VBtn
-          >
+          <VBtn color="primary" @click="emit('close-dialog')" data-cy="cancelButton">Close</VBtn>
+          <VBtn color="primary" @click="submit" data-cy="saveButton">Add</VBtn>
         </VCardActions>
       </VForm>
     </VCard>
   </VDialog>
 </template>
 
-<script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
-import { useMainStore } from '@/store/useMainStore'
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
 import RemoteServices from '@/services/RemoteServices'
 import Theme from '@/models/theme/Theme'
 
 const props = defineProps<{ dialog: boolean }>()
 const emit = defineEmits(['close-dialog', 'theme-created'])
 
-const mainStore = useMainStore()
-
-const dialogModel = ref(props.dialog)
 const valid = ref(true)
 const success = ref(false)
-const theme = ref<Theme | null>(null)
+const theme = ref<Theme>(new Theme())
 const themes = ref<Theme[]>([])
 const form = ref()
+const dialogModel = ref(props.dialog)
 
-const closeDialog = () => emit('close-dialog')
-
-watch(
-  () => props.dialog,
-  (val) => {
-    dialogModel.value = val
-    if (val) {
-      theme.value = new Theme()
-      fetchThemes()
-      success.value = false
-    }
+watch(() => props.dialog, (val) => {
+  dialogModel.value = val
+  if (val) {
+    theme.value = new Theme()
+    fetchThemes()
+    success.value = false
   }
-)
-
-watch(dialogModel, (val) => {
-  if (!val) emit('close-dialog')
 })
 
-const fetchThemes = async () => {
+watch(dialogModel, (val) => {
+  emit('update:dialog', val)
+})
+
+async function fetchThemes() {
   themes.value = await RemoteServices.getThemesAvailable()
 }
 
-const submit = async () => {
+async function submit() {
   success.value = false
   if (!form.value || !(await form.value.validate())) return
   try {
-    const result = await RemoteServices.registerThemeInstitution(theme.value)
-    emit('theme-created', result)
+    const newTheme = await RemoteServices.registerThemeInstitution(theme.value)
+    emit('theme-created', newTheme)
     success.value = true
-  } catch (error:any) {
-    mainStore.setError(error.message)
+  } catch (error: any) {
+    // Optionally handle error with store.setError(error.message)
   }
 }
 
@@ -117,7 +95,7 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .add-theme-feedback-container {
   height: 25px;
 }

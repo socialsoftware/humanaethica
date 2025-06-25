@@ -19,6 +19,7 @@
           item-title="completeName"
           :menu-props="{ offsetY: true, class: 'left-text' }"
           class="move-right"
+          attach="body"
         >
           <template #item="{ item }">
             <div class="left-text">

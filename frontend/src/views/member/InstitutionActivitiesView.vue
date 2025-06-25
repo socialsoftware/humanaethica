@@ -10,7 +10,7 @@
       data-cy="memberActivitiesTable"
     >
       <template #top>
-        <VCardTitle>
+        <VCardTitle class="d-flex align-center">
           <VTextField
             v-model="search"
             append-inner-icon="mdi-magnify"
@@ -18,7 +18,7 @@
             class="mx-2"
           />
           <VSpacer />
-          <VBtn color="primary" dark @click="newActivity" data-cy="newActivity">
+          <VBtn color="primary" dark @click="newActivity" data-cy="newActivity" class="ml-2">
             New Activity
           </VBtn>
         </VCardTitle>
