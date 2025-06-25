@@ -77,7 +77,7 @@
                 data-cy="startingDate"
                 density="comfortable"
                 variant="outlined"
-                :rules="[v => !!v || 'Required']"
+                :rules="startingDateRules"
               />
             </v-col>
 
@@ -89,7 +89,7 @@
                 data-cy="endingDate"
                 density="comfortable"
                 variant="outlined"
-                :rules="[v => !!v || 'Required']"
+                :rules="endingDateRules"
               />
             </v-col>
           </VRow>
@@ -193,6 +193,26 @@ function isNumberValid(value: any): boolean {
   const parsed = parseInt(value);
   return !isNaN(parsed) && parsed >= 1 && parsed <= 5;
 }
+
+const startingDateRules = computed(() => [
+  (v: string) => !!v || 'Required',
+  (v: string) => {
+    if (!v || !editActivity.value.applicationDeadline) return true;
+    const start = new Date(fromDatetimeLocal(v));
+    const deadline = new Date(editActivity.value.applicationDeadline);
+    return start >= deadline || 'Starting date must be after application deadline';
+  }
+]);
+
+const endingDateRules = computed(() => [
+  (v: string) => !!v || 'Required',
+  (v: string) => {
+    if (!v || !editActivity.value.startingDate) return true;
+    const end = new Date(fromDatetimeLocal(v));
+    const start = new Date(editActivity.value.startingDate);
+    return end >= start || 'Ending date must be after starting date';
+  }
+]);
 
 async function updateActivity() {
   const valid = await form.value?.validate();
