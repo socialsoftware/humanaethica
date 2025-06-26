@@ -9,15 +9,15 @@
           <v-row>
             <v-col cols="12">
               <v-textarea
-                label="*Suspension reason"
+                label="*Rejection reason"
                 :rules="[
                   (v) => {
                     if (!v) {
-                      return 'Suspension reason is required';
+                      return 'Rejection reason is required';
                     } else if (v.length <= 10) {
-                      return 'Suspension reason must be 10 or more characters';
+                      return 'Rejection reason must be 10 or more characters';
                     } else if (v.length >= 250) {
-                      return 'Suspension reason must be less or equal to 250 characters';
+                      return 'Rejection reason must be less or equal to 250 characters';
                     }
 
                     return true;
@@ -49,7 +49,7 @@
           @click="rejectActivitySuggestion"
           data-cy="rejectActivitySuggestion"
         >
-          Suspend
+          Reject
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -65,7 +65,7 @@ import Institution from '@/models/institution/Institution';
 @Component({
   methods: { ISOtoString },
 })
-export default class SuspendActivityDialog extends Vue {
+export default class RejectActivitySuggestionDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: ActivitySuggestion, required: true }) readonly activitySuggestion!: ActivitySuggestion;
   @Prop({ type: Array, required: true }) readonly activitySuggestions!: ActivitySuggestion[];

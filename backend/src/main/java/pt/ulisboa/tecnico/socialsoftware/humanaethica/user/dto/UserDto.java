@@ -35,8 +35,6 @@ public class UserDto {
     
     private boolean hasDocument;
 
-    private Map<Integer, Boolean> activitySuggestionVotes;
-
     public UserDto() {
     }
 
@@ -63,14 +61,6 @@ public class UserDto {
         else
             this.institutionName = null;
 
-        if (user.getRole().equals(Role.VOLUNTEER)) {
-            Volunteer volunteer = (Volunteer) user;
-            if (volunteer.getActivitySuggestionVotes() != null) {
-                this.activitySuggestionVotes = volunteer.getActivitySuggestionVotes();
-            } else {
-                this.activitySuggestionVotes = new HashMap<>();
-            }
-        }
     }
 
     public UserDto(AuthUser authUser) {
@@ -171,9 +161,5 @@ public class UserDto {
 
     public void setHasDocument(boolean hasDocument) {
         this.hasDocument = hasDocument;
-    }
-
-    public Map<Integer, Boolean> getActivitySuggestionVotes() {
-        return activitySuggestionVotes;
     }
 }

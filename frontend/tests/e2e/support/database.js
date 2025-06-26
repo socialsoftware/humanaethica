@@ -64,6 +64,10 @@ Cypress.Commands.add('deleteAllButArs', () => {
     credentials: credentials,
   })
   cy.task('queryDatabase', {
+    query: "DELETE FROM NOTIFICATIONS",
+    credentials: credentials,
+  });
+  cy.task('queryDatabase', {
     query: "DELETE FROM AUTH_USERS WHERE NOT (username = 'ars')",
     credentials: credentials,
   });

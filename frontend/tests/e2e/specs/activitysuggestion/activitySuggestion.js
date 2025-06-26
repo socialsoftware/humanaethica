@@ -14,14 +14,15 @@ describe('Activity Suggestion', () => {
     const REGION = 'Porto';
     const NUMBER = '4';
     const DESCRIPTION = 'A workshop to teach basic computer skills to seniors';
+    const JUSTIFICATION = 'This activity suggestion will be rejected for testing.'
 
     cy.demoVolunteerLogin()
     // intercept create activity suggestion request and inject date values in the request body
     cy.intercept('POST', '/activitySuggestions/institution/1', (req) => {
       req.body = {
-        applicationDeadline: '2025-04-11T17:00:00+00:00',
-        startingDate: '2025-04-21T09:00:00+00:00',
-        endingDate: '2025-04-23T17:00:00+00:00'
+        applicationDeadline: '2025-07-11T17:00:00+00:00',
+        startingDate: '2025-07-21T09:00:00+00:00',
+        endingDate: '2025-07-23T17:00:00+00:00'
       };
     }).as('registerActivitySuggestion');
     // intercept get volunteer activity suggestions and get institutions
@@ -29,13 +30,14 @@ describe('Activity Suggestion', () => {
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
     cy.get('[data-cy="volunteerActivitySuggestions"]').click();
+    cy.get('[data-cy="my-suggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
     // check existing table entries
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
       .should('have.length', 2)
       .eq(0)
       .children()
-      .should('have.length', 10)
+      .should('have.length', 11)
 
     // go to create activity suggestion form
     cy.get('[data-cy="newActivitySuggestion"]').click();
@@ -77,7 +79,7 @@ describe('Activity Suggestion', () => {
       .should('have.length', 3)
       .eq(0)
       .children()
-      .should('have.length', 10)
+      .should('have.length', 11)
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
       .eq(0).children().eq(0).should('contain', NAME)
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
@@ -110,8 +112,9 @@ describe('Activity Suggestion', () => {
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
     cy.get('[data-cy="volunteerActivitySuggestions"]').click();
+    cy.get('[data-cy="my-suggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
-    // Check if first activity suggestion is approved
+    // Check if the activity suggestion is approved
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
       .eq(2).children().eq(9).should('contain', "APPROVED")
 
@@ -129,6 +132,9 @@ describe('Activity Suggestion', () => {
     cy.wait('@getActivitySuggestions');
     // Reject first activity suggestion
     cy.get('[data-cy="rejectActivitySuggestionButton"]').first().click()
+    cy.get('[data-cy="rejectionReasonInput"]').type(JUSTIFICATION)
+    cy.get('[data-cy="rejectActivitySuggestion"]').click()
+
     cy.logout();
 
     cy.demoVolunteerLogin();
@@ -137,8 +143,9 @@ describe('Activity Suggestion', () => {
     cy.intercept('GET', '/institutions').as('getInstitutions');
     // go to volunteer activity suggestions view
     cy.get('[data-cy="volunteerActivitySuggestions"]').click();
+    cy.get('[data-cy="my-suggestions"]').click();
     cy.wait('@getVolunteerActivitySuggestions');
-    // Check if first activity suggestion is rejected
+    // Check if the activity suggestion is rejected
     cy.get('[data-cy="volunteerActivitySuggestionsTable"] tbody tr')
       .eq(2).children().eq(9).should('contain', "REJECTED")
 

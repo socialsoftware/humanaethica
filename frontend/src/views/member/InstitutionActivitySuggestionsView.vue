@@ -43,7 +43,7 @@
               color="red"
               @click="rejectActivitySuggestion(item)"
               v-on="on"
-              data-cy="rejectActivitySuggestion"
+              data-cy="rejectActivitySuggestionButton"
               >mdi-thumb-down
             </v-icon>
           </template>
