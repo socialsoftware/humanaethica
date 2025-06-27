@@ -3,8 +3,8 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain;
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.domain.VolunteerProfile;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 
 import java.time.LocalDateTime;
@@ -29,6 +29,8 @@ public class Participation {
     private Activity activity;
     @ManyToOne
     private Volunteer volunteer;
+    @ManyToOne
+    private VolunteerProfile volunteerProfile;
 
     public Participation() {}
 
@@ -128,6 +130,14 @@ public class Participation {
     public void setVolunteer(Volunteer volunteer) {
         this.volunteer = volunteer;
         this.volunteer.addParticipation(this);
+    }
+
+    public VolunteerProfile getVolunteerProfile() {
+        return volunteerProfile;
+    }
+
+    public void setVolunteerProfile(VolunteerProfile volunteerProfile) {
+        this.volunteerProfile = volunteerProfile;
     }
 
     private void verifyInvariants() {

@@ -1,20 +1,44 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain;
 
-import jakarta.persistence.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.enrollment.domain.Enrollment;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_ALREADY_APPROVED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_ALREADY_EXISTS;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_ALREADY_REPORTED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_ALREADY_SUSPENDED;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_APPLICATION_DEADLINE_AFTER_START;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_DESCRIPTION_INVALID;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_INVALID_DATE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_NAME_INVALID;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_REGION_NAME_INVALID;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SHOULD_HAVE_ONE_TO_FIVE_PARTICIPANTS;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_START_AFTER_END;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUSPENSION_AFTER_END;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_SUSPENSION_JUSTIFICATION_INVALID;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.THEME_NOT_APPROVED;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 @Entity
 @Table(name = "activity")

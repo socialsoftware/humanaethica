@@ -1,32 +1,35 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user;
 
-import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+
+import jakarta.validation.Valid;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
-
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 public class UserController {
@@ -101,4 +104,28 @@ public class UserController {
         return userService.getInstitution(userId);
     }
 
+    @GetMapping("/users/{userId}/getNotifications")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_VOLUNTEER') or hasRole('ROLE_ADMIN')")
+    public List<NotificationDto> getNotifications(@PathVariable int userId) {
+        return userService.getNotifications(userId);
+    }
+
+    @PutMapping("/users/{userId}/addSubscription/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public void addSubscription(@PathVariable int userId, @PathVariable int institutionId) {
+        userService.addInstitutionSubscription(userId, institutionId);
+    }
+
+    @PutMapping("/users/{userId}/removeSubscription/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public void removeSubscription(@PathVariable int userId, @PathVariable int institutionId) {
+        userService.removeInstitutionSubscription(userId, institutionId);
+    }
+    
+    @GetMapping("/users/{userId}/subscriptions/{institutionId}")
+    @PreAuthorize("hasRole('ROLE_VOLUNTEER')")
+    public ResponseEntity<Boolean> isSubscribed(@PathVariable int userId, @PathVariable int institutionId) {
+        boolean isSubscribed = userService.isSubscribed(userId, institutionId);
+        return ResponseEntity.ok(isSubscribed);
+    }
 }

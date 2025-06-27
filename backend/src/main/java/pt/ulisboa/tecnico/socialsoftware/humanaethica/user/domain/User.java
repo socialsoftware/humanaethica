@@ -1,15 +1,32 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain;
 
-import jakarta.persistence.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_ROLE;
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_STATE;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.domain.Notification;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 @Entity
 @Table(name = "users")
@@ -45,6 +62,9 @@ public abstract class User {
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     public AuthUser authUser;
@@ -141,6 +161,18 @@ public abstract class User {
     public void setDocument(UserDocument document) {
         this.document = document;
         document.setUser(this);
+    }
+
+    public List<Notification> getNotifications() {
+        return this.notifications;
+    }
+
+    public void addNotification(Notification notification) {
+        notifications.add(notification);
+    }
+
+    public void deleteNotification(Notification notification) {
+        notifications.remove(notification);
     }
 
     @Override

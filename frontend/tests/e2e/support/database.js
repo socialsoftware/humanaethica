@@ -10,10 +10,13 @@ const INSTITUTION_COLUMNS = "institutions (id, active, confirmation_token, creat
 const USER_COLUMNS = "users (user_type, id, creation_date, name, role, state, institution_id)";
 const AUTH_USERS_COLUMNS = "auth_users (auth_type, id, active, email, username, user_id)";
 const ACTIVITY_COLUMNS = "activity (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id)";
+const ACTIVITY_SUGGESTION_COLUMNS = "activity_suggestion (id, application_deadline, creation_date, description, ending_date, name, participants_number_limit, region, starting_date, state, institution_id, volunteer_id)";
 const ENROLLMENT_COLUMNS = "enrollment (id, enrollment_date_time, motivation, activity_id, volunteer_id)"
 const PARTICIPATION_COLUMNS = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id)"
 const ASSESSMENT_COLUMNS = "assessment (id, review, review_date, institution_id, volunteer_id)";
 const REPORT_COLUMNS = "report (id, justification, activity_id, volunteer_id)";
+const PARTICIPATION_COLUMNS_NEW = "participation (id, acceptance_date, member_rating, member_review, volunteer_rating, volunteer_review, activity_id, volunteer_id)";
+const PARTICIPATION_COLUMNS_INSTITUTION = "participation (id, acceptance_date, member_rating, activity_id, volunteer_id, volunteer_rating)";
 
 
 const now = new Date();
@@ -27,12 +30,21 @@ const dayBeforeYesterday = new Date(now);
 dayBeforeYesterday.setDate(now.getDate() - 2);
 
 Cypress.Commands.add('deleteAllButArs', () => {
+
   cy.task('queryDatabase', {
     query: "DELETE FROM ASSESSMENT",
     credentials: credentials,
   })
+  cy.task('queryDatabase',{
+    query: "DELETE FROM INSTITUTION_PROFILE",
+    credentials: credentials,
+  });
   cy.task('queryDatabase', {
     query: "DELETE FROM PARTICIPATION",
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM VOLUNTEER_PROFILE",
     credentials: credentials,
   })
   cy.task('queryDatabase', {
@@ -47,6 +59,14 @@ Cypress.Commands.add('deleteAllButArs', () => {
     query: "DELETE FROM ACTIVITY",
     credentials: credentials,
   })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM ACTIVITY_SUGGESTION",
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "DELETE FROM NOTIFICATIONS",
+    credentials: credentials,
+  });
   cy.task('queryDatabase', {
     query: "DELETE FROM AUTH_USERS WHERE NOT (username = 'ars')",
     credentials: credentials,
@@ -102,6 +122,19 @@ Cypress.Commands.add('createDatabaseInfoForEnrollments', () => {
   })
   cy.task('queryDatabase',  {
     query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(5, 2, 3),
+    credentials: credentials,
+  })
+});
+
+Cypress.Commands.add('createDatabaseInfoForActivitySuggestions', () => {
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_SUGGESTION_COLUMNS + generateActivitySuggestionTuple(1, "AS1", "Collecting and distributing essential food items",  yesterday.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1, 3),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_SUGGESTION_COLUMNS + generateActivitySuggestionTuple(2, "AS2", "A community-driven effort to plant trees in urban areas",  dayBeforeYesterday.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1, 3),
     credentials: credentials,
   })
 });
@@ -253,6 +286,96 @@ Cypress.Commands.add('createDatabaseInfoForVolunteerAssessments', () => {
   })
 });
 
+
+Cypress.Commands.add('createParticipationsForVolunteerProfile', () => {
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + USER_COLUMNS + generateUserTuple(4, "VOLUNTEER","DEMO-VOLUNTEER-2", "VOLUNTEER", "NULL"),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + AUTH_USERS_COLUMNS + generateAuthUserTuple(4, "DEMO", "demo-volunteer-2", 4),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + USER_COLUMNS + generateUserTuple(5, "VOLUNTEER","DEMO-VOLUNTEER-5", "VOLUNTEER", "NULL"),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + AUTH_USERS_COLUMNS + generateAuthUserTuple(5, "DEMO", "demo-volunteer-3", 5),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(1, "Latidos do Bem", "Has vacancies",  dayBeforeYesterday.toISOString(), yesterday.toISOString(),
+      yesterday.toISOString(),2, 1),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(2, "Cãorrida Solidária", "Has no vacancies",  dayBeforeYesterday.toISOString(), yesterday.toISOString(),
+    yesterday.toISOString(),2, 1),
+     credentials: credentials,
+ })
+ cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(1, 1, 3),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(2, 1, 4),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(3, 2, 3),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ENROLLMENT_COLUMNS + generateEnrollmentTuple(4, 2, 5),
+    credentials: credentials,
+  })
+ cy.task('queryDatabase', {
+    query: "INSERT INTO " + PARTICIPATION_COLUMNS_NEW + generateParticipationTupleNew( 1, "2025-03-15 21:32:26.130136",	5,	"O voluntário foi muito prestável na organização da cãorrida.",	5, 	"Evento muito bem organizado!", 2,	3	),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase', {
+    query: "INSERT INTO " + PARTICIPATION_COLUMNS_NEW + generateParticipationTupleNew( 2, "2025-03-15 21:34:02.772345",	5	,"A ajuda do voluntário foi muito útil, obrigado! ",	4,	"A feira foi bem organizada!",	1,	3),
+      credentials: credentials,
+  })
+});
+
+Cypress.Commands.add('createDatabaseInfoForInstitutionProfile', () => {
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(1, "A1", "Same institution is enrolled and participates", dayBeforeYesterday.toISOString(), yesterday.toISOString(),
+      yesterday.toISOString(),1, 1),
+    credentials: credentials,
+  })
+  
+  cy.task( 'queryDatabase', {
+    query: "INSERT INTO " + ACTIVITY_COLUMNS + generateActivityTuple(2, "A2", "Enrollment is open and it is already enrolled",  tomorrow.toISOString(), tomorrow.toISOString(),
+      tomorrow.toISOString(),1, 1),
+    credentials: credentials,
+  })
+
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ASSESSMENT_COLUMNS + generateAssessmentTuple(1, "Participation numa cãorrida da Demo Institution. O evento foi muito bem organizado, parabéns!", 1, 3),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + ASSESSMENT_COLUMNS + generateAssessmentTuple(2, "Muito mau!", 1, 3),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + PARTICIPATION_COLUMNS_INSTITUTION + generateParticipationTupleForInstitutionProfile(1, 1, 3, 5),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + PARTICIPATION_COLUMNS_INSTITUTION + generateParticipationTupleForInstitutionProfile(2, 2, 3, 4),
+    credentials: credentials,
+  })
+  cy.task('queryDatabase',  {
+    query: "INSERT INTO " + PARTICIPATION_COLUMNS_INSTITUTION + generateParticipationTupleForInstitutionProfile(3, 2, 3, 5),
+    credentials: credentials,
+  })
+});
+
+
 function generateAuthUserTuple(id, authType, username, userId) {
   return "VALUES ('"
     + authType + "', '"
@@ -291,6 +414,21 @@ function generateActivityTuple(id, name, description, deadline, start, end, part
     institutionId + ")";
 }
 
+function generateActivitySuggestionTuple(id, name, description, deadline, start, end, participants, institutionId, volunteerId) {
+  return "VALUES ('"
+    + id + "', '"
+    + deadline +
+    "', '2024-08-06 17:58:21.402146', '" +
+    description + "', '"
+    + end + "', '"
+    + name + "', '" +
+    participants +
+    "', 'Lisbon',  '"
+    + start + "', 'IN_REVIEW', '" +
+    institutionId + "', '" +
+    volunteerId + "')";
+}
+
 function generateEnrollmentTuple(id, activityId, volunteerId) {
   return "VALUES ("
     + id + ", '2022-08-06 17:58:21.402146', 'sql-inserted-motivation', "
@@ -303,6 +441,21 @@ function generateParticipationTuple(id, activityId, volunteerId) {
     + id + ", '2024-02-06 18:51:37.595713', '5', " +
     activityId + ", " +
     volunteerId + ")";
+}
+
+function generateParticipationTupleNew(id, acceptance_date, member_rating, member_review, volunteer_rating, volunteer_review, activity_id, volunteer_id ){
+   return "VALUES ('"
+    + id + "', '" + acceptance_date + "', '" +
+    member_rating + "', '"  + member_review + "', '"  + volunteer_rating +
+    "', '"  + volunteer_review + "', '"  + activity_id + "', '"  + volunteer_id +
+      "')";
+}
+
+function generateParticipationTupleForInstitutionProfile(id, activityId, volunteerId, volunteer_rating) {
+  return "VALUES ("
+    + id + ", '2024-02-06 18:51:37.595713', '5', " +
+    activityId + ", " +
+    volunteerId +", "+ volunteer_rating + ")";
 }
 
 function generateAssessmentTuple(id, review, institutionId, volunteerId) {

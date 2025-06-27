@@ -1,302 +1,420 @@
 <template>
-  <nav>
-    <v-app-bar clipped-left color="white">
-      <v-app-bar-nav-icon
-        aria-label="Menu"
-        class="hidden-md-and-up"
-        @click.stop="drawer = !drawer"
-      />
+  <div>
+    <nav>
+      <v-app-bar clipped-left color="white">
+        <v-app-bar-nav-icon
+          aria-label="Menu"
+          class="hidden-md-and-up"
+          @click.stop="drawer = !drawer"
+        />
 
-      <v-toolbar-title data-cy="homeLink">
-        <a href="/">
-          <v-img
-            contain
-            src="../assets/img/logo_horizontal.png"
-            height="40"
-            width="350"
-          />
-        </a>
-      </v-toolbar-title>
+        <v-toolbar-title data-cy="homeLink">
+          <a href="/">
+            <v-img
+              contain
+              src="../assets/img/logo_horizontal.png"
+              height="40"
+              width="350"
+            />
+          </a>
+        </v-toolbar-title>
 
-      <v-spacer />
+        <v-spacer />
 
-      <v-menu v-if="isVolunteer" offset-y sopen-on-hover>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
-            data-cy="volunteerActivities"
-            @click="volunteerActivities"
-          >
-            Activities
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
-            data-cy="volunteerEnrollments"
-            @click="volunteerEnrollments"
-          >
-            Enrollments
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
-          <v-btn
-            text
-            color="orange"
-            v-on="on"
-            data-cy="volunteerAssessments"
-            @click="volunteerAssessments"
-          >
-            Assessments
-            <v-icon>fas fa-user</v-icon>
-          </v-btn>
-        </template>
-      </v-menu>
-
-      <v-menu v-if="isMember" offset-y open-on-hover>
-        <template v-slot:activator="{ on }">
-          <v-btn color="orange" text v-on="on" data-cy="institution">
-            Institution
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item to="/member/register" data-cy="members">
-            <v-list-item-content>
-              <v-list-item-title>Register Member</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/themes" data-cy="themes">
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/activities" data-cy="activities">
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/assessments" data-cy="assessments">
-            <v-list-item-content>
-              <v-list-item-title>Assessments</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <v-menu v-if="isAdmin" offset-y open-on-hover>
-        <template v-slot:activator="{ on }">
-          <v-btn color="orange" text v-on="on" data-cy="admin">
-            Administration
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item to="/admin/users" data-cy="adminUsers">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Users</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/institutions" data-cy="adminInstitutions">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Institutions</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/themes" data-cy="themeManageTheme">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/activities" data-cy="adminActivities">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <v-toolbar-items class="hidden-sm-and-down" hide-details>
-        <v-btn
-          v-if="!isLoggedIn"
-          text
-          color="orange"
-          @click="registerInstitution"
-        >
-          Register Institution
-        </v-btn>
-        <v-btn
-          v-if="!isLoggedIn"
-          text
-          color="orange"
-          @click="registerVolunteer"
-        >
-          Register Volunteer
-        </v-btn>
-        <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
-          Login
-          <v-icon>fas fa-sign-in-alt</v-icon>
-        </v-btn>
-
-        <v-btn
-          v-if="isLoggedIn"
-          text
-          color="orange"
-          data-cy="logoutButton"
-          @click="logout"
-        >
-          Logout
-          <v-icon>fas fa-sign-out-alt</v-icon>
-        </v-btn>
-      </v-toolbar-items>
-    </v-app-bar>
-
-    <!-- Start of mobile side menu -->
-    <v-navigation-drawer v-model="drawer" absolute app dark temporary>
-      <v-toolbar flat>
-        <v-list>
-          <v-list-item>
-            <v-list-item-title class="title">Menu</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-toolbar>
-
-      <v-list class="pt-0" dense>
-        <!-- Volunteer Group-->
-        <v-list-group
-          v-if="isVolunteer"
-          :value="false"
-          prepend-icon="account_circle"
-        >
-          <template v-slot:activator>
-            <v-list-item-title @click="volunteerActivities"
-              >Volunteer</v-list-item-title
+        <v-menu v-if="isVolunteer" offset-y sopen-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              text
+              color="orange"
+              v-on="on"
+              data-cy="volunteerActivities"
+              @click="volunteerActivities"
             >
+              Activities
+              <v-icon>fas fa-user</v-icon>
+            </v-btn>
+            <v-btn
+              text
+              color="orange"
+              v-on="on"
+              data-cy="volunteerEnrollments"
+              @click="volunteerEnrollments"
+            >
+              Enrollments
+              <v-icon>fas fa-user</v-icon>
+            </v-btn>
+            <v-btn
+              text
+              color="orange"
+              v-on="on"
+              data-cy="volunteerAssessments"
+              @click="volunteerAssessments"
+            >
+              Assessments
+              <v-icon>fas fa-user</v-icon>
+            </v-btn>
           </template>
-        </v-list-group>
+        </v-menu>
 
-        <!-- Member Group-->
-        <v-list-group
-          v-if="isMember"
-          :value="false"
-          prepend-icon="account_circle"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>Institution</v-list-item-title>
+        <v-menu v-if="isMember" offset-y open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn color="orange" text v-on="on" data-cy="institution">
+              Institution
+            </v-btn>
           </template>
-          <v-list-item to="/member/register">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Register Member</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/themes">
-            <v-list-item-action>
-              <v-icon>fas tags</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/activities">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/member/assessments">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Assessments</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
+          <v-list dense>
+            <v-list-item to="/member/register" data-cy="members">
+              <v-list-item-content>
+                <v-list-item-title>Register Member</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/themes" data-cy="themes">
+              <v-list-item-content>
+                <v-list-item-title>Themes</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/activities" data-cy="activities">
+              <v-list-item-content>
+                <v-list-item-title>Activities</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/activitysuggestions" data-cy="activitysuggestions">
+              <v-list-item-content>
+                <v-list-item-title>Activity Suggestions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/assessments" data-cy="assessments">
+              <v-list-item-content>
+                <v-list-item-title>Assessments</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-        <!-- Administration Group-->
-        <v-list-group
-          v-if="isAdmin"
-          :value="false"
-          prepend-icon="fas fa-file-alt"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>Administration</v-list-item-title>
+        <v-menu v-if="isAdmin" offset-y open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn color="orange" text v-on="on" data-cy="admin">
+              Administration
+            </v-btn>
           </template>
-          <v-list-item to="/admin/users">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Users</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/institutions">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Institutions</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/themes">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Themes</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/admin/activities">
-            <v-list-item-action>
-              <v-icon>fas fa-users</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Activities</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-      </v-list>
+          <v-list dense>
+            <v-list-item to="/admin/users" data-cy="adminUsers">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Users</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/admin/institutions" data-cy="adminInstitutions">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Institutions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/admin/themes" data-cy="themeManageTheme">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Themes</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/admin/activities" data-cy="adminActivities">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Activities</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-menu v-if="isVolunteer" offset-y open-on-hover>
+          <template v-slot:activator="{ on: on }">
+            <v-btn
+              text
+              color="orange"
+              v-on="on"
+              data-cy="volunteerActivitySuggestions"
+            >
+              Activity Suggestions
+              <v-icon right>fas fa-user</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item v-if="isVolunteer" :to="`/volunteer/activitysuggestions/mine`" data-cy="my-suggestions" class="justify-center">
+              <v-list-item-action class="d-flex align-center justify-center">
+                <v-icon class="mr-2">fas fa-edit</v-icon>
+              </v-list-item-action>
+              <v-list-item-content class="text-center">
+                <v-list-item-title>My Suggestions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item v-if="isVolunteer" :to="`/volunteer/activitysuggestions/community`" data-cy="community-suggestions" class="justify-center">
+              <v-list-item-action class="d-flex align-center justify-center">
+                <v-icon class="mr-2">fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content class="text-center">
+                <v-list-item-title>Community Suggestions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-      <v-list-item v-if="!isLoggedIn" @click="login">
-        <v-list-item-action>
-          <v-icon>fas fa-sign-out-alt</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>Login</v-list-item-content>
-      </v-list-item>
-      <v-list-item v-if="isLoggedIn" @click="logout">
-        <v-list-item-action>
-          <v-icon>fas fa-sign-out-alt</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>Logout</v-list-item-content>
-      </v-list-item>
-    </v-navigation-drawer>
-    <!-- End of mobile side menu -->
-  </nav>
+        <v-menu offset-y open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn color="orange" text v-on="on" data-cy="profiles">
+              Profiles
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item v-if="isMember" :to="`/profiles/institution/${this.institutionId}`" data-cy="member-profile">
+              <v-list-item-action>
+                <v-icon>fas fa-address-card</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Institution Profile</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item v-if="isVolunteer" :to="`/profiles/volunteer/${this.$store.getters.getUser.id}`" data-cy="volunteer-profile">
+              <v-list-item-action>
+                <v-icon>fas fa-address-card</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>My Profile</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/profiles/view" data-cy="view-profiles">
+              <v-list-item-action>
+                <v-icon>fas fa-address-book</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>View Profiles</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-toolbar-items class="hidden-sm-and-down" hide-details>
+          <v-btn
+            v-if="!isLoggedIn"
+            text
+            color="orange"
+            @click="registerInstitution"
+          >
+            Register Institution
+          </v-btn>
+          <v-btn
+            v-if="!isLoggedIn"
+            text
+            color="orange"
+            @click="registerVolunteer"
+          >
+            Register Volunteer
+          </v-btn>
+          <v-btn v-if="!isLoggedIn" text color="orange" @click="login">
+            Login
+            <v-icon>fas fa-sign-in-alt</v-icon>
+          </v-btn>
+          <template v-if="isLoggedIn && (isVolunteer || isMember)">
+            <v-btn
+                icon
+                color="orange"
+                data-cy="volunteer-notifications"
+                @click="openNotifications"
+            >
+              <v-badge
+                  :content="unreadCount"
+                  color="red"
+                  overlap
+                  :value="unreadCount > 0"
+                  class="bell-badge"
+              >
+                <v-icon color="orange">fas fa-bell</v-icon>
+              </v-badge>
+            </v-btn>
+          </template>
+          <v-btn
+            v-if="isLoggedIn"
+            text
+            color="orange"
+            data-cy="logoutButton"
+            @click="logout"
+          >
+            Logout
+            <v-icon>fas fa-sign-out-alt</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-app-bar>
+
+      <!-- Start of mobile side menu -->
+      <v-navigation-drawer v-model="drawer" absolute app dark temporary>
+        <v-toolbar flat>
+          <v-list>
+            <v-list-item>
+              <v-list-item-title class="title">Menu</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-toolbar>
+
+        <v-list class="pt-0" dense>
+          <!-- Volunteer Group-->
+          <v-list-group
+            v-if="isVolunteer"
+            :value="false"
+            prepend-icon="account_circle"
+          >
+            <template v-slot:activator>
+              <v-list-item-title @click="volunteerActivities"
+                >Volunteer</v-list-item-title
+              >
+            </template>
+          </v-list-group>
+
+          <!-- Member Group-->
+          <v-list-group
+            v-if="isMember"
+            :value="false"
+            prepend-icon="account_circle"
+          >
+            <template v-slot:activator>
+              <v-list-item-title>Institution</v-list-item-title>
+            </template>
+            <v-list-item to="/member/register">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Register Member</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/themes">
+              <v-list-item-action>
+                <v-icon>fas tags</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Themes</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/activities">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Activities</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/activitysuggestions">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Activity Suggestions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/member/assessments">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Assessments</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+
+          <!-- Administration Group-->
+          <v-list-group
+            v-if="isAdmin"
+            :value="false"
+            prepend-icon="fas fa-file-alt"
+          >
+            <template v-slot:activator>
+              <v-list-item-title>Administration</v-list-item-title>
+            </template>
+            <v-list-item to="/admin/users">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Users</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/admin/institutions">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Institutions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/admin/themes">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Themes</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/admin/activities">
+              <v-list-item-action>
+                <v-icon>fas fa-users</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Activities</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+        </v-list>
+
+        <v-list-item v-if="!isLoggedIn" @click="login">
+          <v-list-item-action>
+            <v-icon>fas fa-sign-out-alt</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Login</v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="isLoggedIn" @click="logout">
+          <v-list-item-action>
+            <v-icon>fas fa-sign-out-alt</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Logout</v-list-item-content>
+        </v-list-item>
+      </v-navigation-drawer>
+      <!-- End of mobile side menu -->
+    </nav>
+    <notification-dialog
+      v-if="showNotifications"
+      v-model="showNotifications"
+      :userId="this.$store.getters.getUser.id"
+      :notifications="notifications"
+      @notifications-read="onNotificationsRead"
+      v-on:close-notification-dialog="onCloseNotificationDialog"
+    />
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import RemoteServices from "@/services/RemoteServices";
+import Notification from '@/models/notification/Notification';
+import NotificationDialog from '@/components/NotificationDialog.vue';
 
-@Component
+@Component({
+  components: {
+    'notification-dialog': NotificationDialog,
+  },
+})
+
 export default class TopBar extends Vue {
   appName: string = process.env.VUE_APP_NAME || 'ENV FILE MISSING';
   drawer: boolean = false;
+
+  institutionId: number | null = null;
+  showNotifications: boolean = false;
+  notifications: Notification[] = [];
+  unreadCount: number = 0;
 
   get isLoggedIn() {
     return this.$store.getters.isLoggedIn;
@@ -330,6 +448,10 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'volunteer-activities' }).catch(() => {});
   }
 
+  async volunteerActivitySuggestions() {
+    await this.$router.push({ name: 'volunteer-activity-suggestions' }).catch(() => {});
+  }
+
   async volunteerEnrollments() {
     await this.$router.push({ name: 'volunteer-enrollments' }).catch(() => {});
   }
@@ -338,9 +460,57 @@ export default class TopBar extends Vue {
     await this.$router.push({ name: 'volunteer-assessments' }).catch(() => {});
   }
 
+  async openNotifications() {
+    await this.loadNotifications();
+    this.showNotifications = true;
+  }
+
+  onCloseNotificationDialog() {
+    this.showNotifications = false;
+  }
+
+  onNotificationsRead() {
+    this.unreadCount = 0;
+  }
+
   async logout() {
     await this.$store.dispatch('logout');
     await this.$router.push({ name: 'home' }).catch(() => {});
+  }
+
+  get userId() {
+    return this.$store.state.user?.id;
+  }
+
+  @Watch('userId')
+  async onUserIdChange() {
+    await this.loadNotifications();
+  }
+
+  async loadNotifications() {
+    let user = this.$store.getters.getUser;
+    if (user && user.id >= 0) {
+      try {
+        this.notifications = await RemoteServices.getNotifications(user.id);
+        this.unreadCount = this.notifications.filter(n => !n.read).length;
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
+    }
+  }
+
+  async created() {
+    if (this.isMember) {
+      let institution = await RemoteServices.getInstitution(this.$store.getters.getUser.id);
+      this.institutionId = institution.id;
+    }
+  }
+
+  async updated() {
+    if (this.isMember) {
+      let institution = await RemoteServices.getInstitution(this.$store.getters.getUser.id);
+      this.institutionId = institution.id;
+    }
   }
 }
 </script>
@@ -348,6 +518,11 @@ export default class TopBar extends Vue {
 <style lang="scss" scoped>
 .no-active::before {
   opacity: 0 !important;
+}
+
+.bell-badge {
+  align-items: center;
+  display: inline-flex;
 }
 
 nav {

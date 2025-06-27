@@ -1,11 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica
 
 import org.springframework.http.HttpHeaders
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.ActivitySuggestionService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.dto.ActivitySuggestionDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activitysuggestion.repository.ActivitySuggestionRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.assessment.domain.Assessment
@@ -24,7 +27,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institu
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.ParticipationService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.domain.Participation
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.participation.dto.ParticipationDto
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.InstitutionProfileService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.repository.InstitutionProfileRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.repository.VolunteerProfileRepository
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.profile.VolunteerProfileService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.ReportService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.report.domain.Report
@@ -70,12 +76,19 @@ class SpockTest extends Specification {
     public static final LocalDateTime IN_ONE_DAY = DateHandler.now().plusDays(1)
     public static final LocalDateTime IN_TWO_DAYS = DateHandler.now().plusDays(2)
     public static final LocalDateTime IN_THREE_DAYS = DateHandler.now().plusDays(3)
+    public static final LocalDateTime IN_SIX_DAYS = DateHandler.now().plusDays(6)
+    public static final LocalDateTime IN_EIGHT_DAYS = DateHandler.now().plusDays(8)
+    public static final LocalDateTime IN_TEN_DAYS = DateHandler.now().plusDays(10)
+    public static final LocalDateTime IN_TWELVE_DAYS = DateHandler.now().plusDays(12)
 
     // institution
 
     public static final String INSTITUTION_1_EMAIL = "institution1@mail.com"
     public static final String INSTITUTION_1_NAME = "institution1"
     public static final String INSTITUTION_1_NIF = "123456789"
+    public static final String INSTITUTION_2_EMAIL = "institution2@mail.com"
+    public static final String INSTITUTION_2_NAME = "institution2"
+    public static final String INSTITUTION_2_NIF = "012345678"
 
     @Autowired
     InstitutionService institutionService
@@ -98,15 +111,35 @@ class SpockTest extends Specification {
     public static final String USER_1_NAME = "User 1 Name"
     public static final String USER_2_NAME = "User 2 Name"
     public static final String USER_3_NAME = "User 3 Name"
+    public static final String USER_4_NAME = "User 4 Name"
+    public static final String USER_5_NAME = "User 5 Name"
+    public static final String USER_6_NAME = "User 6 Name"
+    public static final String USER_7_NAME = "User 7 Name"
+    public static final String USER_8_NAME = "User 8 Name"
+    public static final String USER_9_NAME = "User 9 Name"
     public static final String USER_1_USERNAME = "rfs"
     public static final String USER_2_USERNAME = "jps"
     public static final String USER_3_USERNAME = "amm"
+    public static final String USER_4_USERNAME = "user4"
+    public static final String USER_5_USERNAME = "user5"
+    public static final String USER_6_USERNAME = "user6"
+    public static final String USER_7_USERNAME = "user7"
+    public static final String USER_8_USERNAME = "user8"
+    public static final String USER_9_USERNAME = "user9"
     public static final String USER_1_EMAIL = "user1@mail.com"
     public static final String USER_2_EMAIL = "user2@mail.com"
     public static final String USER_3_EMAIL = "user3@mail.com"
+    public static final String USER_4_EMAIL = "user4@mail.com"
+    public static final String USER_5_EMAIL = "user5@mail.com"
+    public static final String USER_6_EMAIL = "user6@mail.com"
+    public static final String USER_7_EMAIL = "user7@mail.com"
+    public static final String USER_8_EMAIL = "user8@mail.com"
+    public static final String USER_9_EMAIL = "user9@mail.com"
     public static final String USER_1_PASSWORD = "1234@WS4544"
     public static final String USER_2_PASSWORD = "4321@7877578"
     public static final String USER_3_PASSWORD = "4321@7877579"
+    public static final String USER_4_PASSWORD = "4321@7877579"
+    public static final String USER_5_PASSWORD = "4321@7877579"
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
 
@@ -129,7 +162,7 @@ class SpockTest extends Specification {
     PasswordEncoder passwordEncoder
 
     @Autowired
-    DemoService demoService;
+    DemoService demoService
 
     @Autowired
     DemoUtils demoUtils
@@ -200,6 +233,13 @@ class SpockTest extends Specification {
         return volunteer
     }
 
+    def createVolunteerWithPassword(name, userName, password, email, type, state) {
+        def volunteer = new Volunteer(name, userName, email, type, state)
+        volunteer.getAuthUser().setPassword(passwordEncoder.encode(password))
+        userRepository.save(volunteer)
+        return volunteer
+    }
+
     // theme
 
     public static final String THEME_NAME_1 = "THEME_NAME 1"
@@ -224,8 +264,10 @@ class SpockTest extends Specification {
     public static final String ACTIVITY_NAME_3 = "activity name 3"
     public static final String ACTIVITY_REGION_1 = "activity region 1"
     public static final String ACTIVITY_REGION_2 = "activity region 2"
+    public static final String ACTIVITY_REGION_3 = "activity region 3"
     public static final String ACTIVITY_DESCRIPTION_1 = "activity description 1"
     public static final String ACTIVITY_DESCRIPTION_2 = "activity description 2"
+    public static final String ACTIVITY_DESCRIPTION_3 = "activity description 3"
     public static final String ACTIVITY_SUSPENSION_JUSTIFICATION_VALID = "This is a valid justification."
 
     @Autowired
@@ -247,6 +289,33 @@ class SpockTest extends Specification {
         activityDto
     }
 
+    // activity suggestion
+    @Autowired
+    ActivitySuggestionRepository activitySuggestionRepository
+
+    @Autowired
+    ActivitySuggestionService activitySuggestionService
+
+
+    def createActivitySuggestionDto(name, region, number, description, deadline, start, end) {
+        def activitySuggestionDto = new ActivitySuggestionDto()
+        activitySuggestionDto.setName(name)
+        activitySuggestionDto.setRegion(region)
+        activitySuggestionDto.setParticipantsNumberLimit(number)
+        activitySuggestionDto.setDescription(description)
+        activitySuggestionDto.setStartingDate(DateHandler.toISOString(start))
+        activitySuggestionDto.setEndingDate(DateHandler.toISOString(end))
+        activitySuggestionDto.setApplicationDeadline(DateHandler.toISOString(deadline))
+        activitySuggestionDto
+    }
+
+    def getObjectId(objectId, object) {
+        if (objectId == EXIST)
+            return object.id
+        else if (objectId == NO_EXIST)
+            return 222
+        return null
+    }
 
     // enrollment
 
@@ -302,6 +371,46 @@ class SpockTest extends Specification {
         return assessment
     }
 
+    // volunteer profile
+
+    public static final String VOLUNTEER_SHORT_BIO = "This is a volunteer's valid short bio"
+
+    @Autowired
+    VolunteerProfileService volunteerProfileService
+    @Autowired
+    VolunteerProfileRepository volunteerProfileRepository
+
+    public static final String EXIST = 'exist'
+    public static final String NO_EXIST = 'noExist'
+    public static final String EXIST_NO_PROFILE = 'existButNoProfile'
+
+    def getProfileObjectId(objectId, objectWithProfile, objectWithoutProfile=null) {
+        if (objectId == EXIST)
+            return objectWithProfile.id
+        else if (objectId == NO_EXIST)
+            return 222
+        else if (objectId == EXIST_NO_PROFILE)
+            return objectWithoutProfile.id
+        else
+            return null
+    }
+
+    def getExistingOrNullDto(value, volunteerProfileDto) {
+        if (value == EXIST) {
+            return volunteerProfileDto
+        }
+        return null
+    }
+
+    // institution profile
+
+    public static final String INSTITUTION_SHORT_DESC = "This is an institution's valid short description"
+
+    @Autowired
+    InstitutionProfileService institutionProfileService
+    @Autowired
+    InstitutionProfileRepository institutionProfileRepository
+
     // report
 
     public static final String REPORT_JUSTIFICATION_1 = "report justification 1"
@@ -326,14 +435,16 @@ class SpockTest extends Specification {
         assessmentRepository.deleteAll()
         participationRepository.deleteAll()
         enrollmentRepository.deleteAll()
+        volunteerProfileRepository.deleteAll()
+        institutionProfileRepository.deleteAll()
         reportRepository.deleteAll()
         activityRepository.deleteAllActivityTheme()
         activityRepository.deleteAll()
+        activitySuggestionRepository.deleteAll()
         authUserRepository.deleteAll()
         userRepository.deleteAll()
         institutionRepository.deleteAll()
         themeRepository.deleteAll()
-
     }
 
 

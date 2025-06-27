@@ -26,6 +26,14 @@ import VolunteerView from '@/views/volunteer/VolunteerView.vue';
 import InstitutionActivityEnrollmentsView from '@/views/member/InstitutionActivityEnrollmentsView.vue';
 import InstitutionAssessmentsView from '@/views/member/InstitutionAssessmentsView.vue';
 import VolunteerEnrollmentsView from '@/views/volunteer/VolunteerEnrollmentsView.vue';
+import VolunteerProfileView from "@/views/profile/VolunteerProfileView.vue";
+import ProfilesView from "@/views/profile/ProfilesView.vue";
+import ProfilesListView from "@/views/profile/ProfilesListView.vue";
+import InstitutionProfileView from "@/views/profile/InstitutionProfileView.vue";
+import InstitutionActivitySuggestionsView from "@/views/member/InstitutionActivitySuggestionsView.vue";
+import VolunteerActivitySuggestionsView from "@/views/volunteer/VolunteerActivitySuggestionsView.vue";
+import ActivitySuggestionsView from "@/views/volunteer/ActivitySuggestionsView.vue";
+import ActivitySuggestionsListView from "@/views/volunteer/ActivitySuggestionsListView.vue";
 
 Vue.use(Router);
 
@@ -144,6 +152,15 @@ const router = new Router({
           },
         },
         {
+          path: 'activitysuggestions',
+          name: 'institution-activity-suggestions',
+          component: InstitutionActivitySuggestionsView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Manage Activity Suggestions - Member',
+          },
+        },
+        {
           path: 'enrollments',
           name: 'activity-enrollments',
           component: InstitutionActivityEnrollmentsView,
@@ -173,6 +190,42 @@ const router = new Router({
       ],
     },
     {
+      path: '/profiles',
+      name: 'profiles',
+      component: ProfilesView,
+      children: [
+        {
+          path: 'view',
+          name: 'profiles-view',
+          component: ProfilesListView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Profiles',
+          },
+        },
+        {
+          path: 'volunteer/:id',
+          props: true,
+          name: 'volunteer-profile',
+          component: VolunteerProfileView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Volunteer Profile',
+          },
+        },
+        {
+          path: 'institution/:id',
+          props: true,
+          name: 'institution-profile',
+          component: InstitutionProfileView,
+          meta: {
+            requiredAuth: 'None',
+            title: APP_NAME + ' - Institution Profile',
+          },
+        }
+      ],
+    },
+    {
       path: '/volunteer',
       name: 'volunteer',
       component: VolunteerView,
@@ -185,6 +238,30 @@ const router = new Router({
             requiredAuth: 'None',
             title: APP_NAME + ' - Manage Volunteer Activities',
           },
+        },
+        {
+          path: 'activitysuggestions',
+          component: ActivitySuggestionsView,
+          children: [
+            {
+              path: 'mine',
+              name: 'volunteer-activity-suggestions-mine',
+              component: VolunteerActivitySuggestionsView,
+              meta: {
+                requiredAuth: 'None',
+                title: APP_NAME + ' - Manage Volunteer Enrollments',
+              },
+            },
+            {
+              path: 'community',
+              name: 'volunteer-activity-suggestions-community',
+              component: ActivitySuggestionsListView,
+              meta: {
+                requiredAuth: 'None',
+                title: APP_NAME + ' - Manage Volunteer Enrollments',
+              },
+            }
+          ]
         },
         {
           path: 'enrollments',

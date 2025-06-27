@@ -1,9 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.utils.DateHandler;
 
 public class UserDto {
@@ -56,6 +60,7 @@ public class UserDto {
 
         else
             this.institutionName = null;
+
     }
 
     public UserDto(AuthUser authUser) {

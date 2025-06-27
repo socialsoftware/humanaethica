@@ -15,6 +15,10 @@ import Enrollment from '@/models/enrollment/Enrollment';
 import Participation from '@/models/participation/Participation';
 import Assessment from '@/models/assessment/Assessment';
 import Report from '@/models/report/Report';
+import VolunteerProfile from '@/models/volunteerProfile/VolunteerProfile';
+import InstitutionProfile from '@/models/profile/InstitutionProfile';
+import ActivitySuggestion from '@/models/activitysuggestion/ActivitySuggestion';
+import Notification from '@/models/notification/Notification';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -36,7 +40,7 @@ httpClient.interceptors.request.use(
 );
 httpClient.interceptors.response.use(
   (response) => {
-    if (response.data.notification) {
+    if (response.data != null && response.data.notification) {
       if (response.data.notification.errorMessages.length)
         Store.dispatch(
           'notification',
@@ -225,6 +229,33 @@ export default class RemoteServices {
       });
   }
 
+  static async addSubscription(userId: number, institutionId: number) {
+    return httpClient
+      .put(`/users/${userId}/addSubscription/${institutionId}`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async removeSubscription(userId: number, institutionId: number) {
+    return httpClient
+      .put(`/users/${userId}/removeSubscription/${institutionId}`)
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async isSubscribed(userId: number, institutionId: number): Promise<boolean> {
+    return httpClient
+      .get(`/users/${userId}/subscriptions/${institutionId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async removeThemetoInstitution(themeId: number) {
     return httpClient
       .put(`/theme/${themeId}/removeInstitution`)
@@ -283,6 +314,30 @@ export default class RemoteServices {
           link.parentNode.removeChild(link);
         }
       })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  // Notification Controller
+
+  static async getNotifications(userId: number): Promise<Notification[]> {
+    return httpClient
+      .get(`/users/${userId}/getNotifications`)
+      .then((response) => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async markNotificationsAsRead(userId: number) {
+    return httpClient
+      .put(`/${userId}/notifications/read`)
+      .then((response) => new Notification(response.data))
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
@@ -402,6 +457,8 @@ export default class RemoteServices {
       });
   }
 
+  // Activity Controller
+
   static async registerActivity(activity: Activity) {
     return httpClient
       .post('/activities', activity)
@@ -464,6 +521,162 @@ export default class RemoteServices {
       .put(`/activities/${activityId}/report`)
       .then((response) => {
         return new Activity(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  // Activity Suggestion Controller
+  static async registerActivitySuggestion(activitySuggestion: ActivitySuggestion,
+                                          institutionId: number) {
+    return httpClient
+      .post(`/activitySuggestions/institution/${institutionId}`, activitySuggestion)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateActivitySuggestion(activitySuggestionId: number, activitySuggestion: ActivitySuggestion,
+                                        institutionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/${activitySuggestionId}/institution/${institutionId}`, activitySuggestion)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getUpvotedActivitySuggestions(): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions/volunteer/community/upvotedSuggestions`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDownvotedActivitySuggestions(): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions/volunteer/community/downvotedSuggestions`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getAllActivitySuggestions(): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getActivitySuggestions(institutionId: number): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions/institution/${institutionId}`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+      });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getVolunteerActivitySuggestions(volunteerId: number): Promise<ActivitySuggestion[]> {
+    return httpClient
+      .get(`/activitySuggestions/volunteer/${volunteerId}`)
+      .then((response) => {
+        return response.data.map((activitySuggestion: any) => {
+          return new ActivitySuggestion(activitySuggestion);
+        });        
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async upvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/volunteer/community/upvotes/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async removeUpvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+    .put(`/activitySuggestions/volunteer/community/upvotes/${activitySuggestionId}/remove`)
+    .then((response) => {
+      return new ActivitySuggestion(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async downvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/volunteer/community/downvotes/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async removeDownvoteActivitySuggestion(activitySuggestionId: number) {
+    return httpClient
+    .put(`/activitySuggestions/volunteer/community/downvotes/${activitySuggestionId}/remove`)
+    .then((response) => {
+      return new ActivitySuggestion(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async approveActivitySuggestion(activitySuggestionId: number, institutionId: number) {
+    return httpClient
+      .put(`/activitySuggestions/institution/${institutionId}/approves/${activitySuggestionId}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async rejectActivitySuggestion(activitySuggestionId: number, institutionId: number, justification: string) {
+    return httpClient
+      .put(`/activitySuggestions/institution/${institutionId}/rejects/${activitySuggestionId}/${justification}`)
+      .then((response) => {
+        return new ActivitySuggestion(response.data);
       })
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
@@ -807,6 +1020,79 @@ export default class RemoteServices {
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+
+  static async registerVolunteerProfile(volunteerProfile: VolunteerProfile) {
+    return httpClient
+      .post('/profile/volunteer', volunteerProfile)
+      .then((response) => {
+        return new VolunteerProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  //InstitutionProfile Controller
+
+  static async createInstitutionProfile(institutionProfile: InstitutionProfile): Promise<InstitutionProfile> {
+    return httpClient
+      .post('/profile/institution', institutionProfile)
+      .then((response) => {
+          return new InstitutionProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getVolunteerProfile(volunteerId: number): Promise<VolunteerProfile> {
+    return httpClient
+      .get(`/profile/volunteer/${volunteerId}`)
+      .then((response) => {
+        return new VolunteerProfile(response.data);
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getListVolunteerProfile(): Promise<VolunteerProfile[]> {
+    return httpClient
+    .get('/profile/volunteer/views')
+    .then((response) => {
+      return response.data.map((volunteerProfile: any) => {
+        return new VolunteerProfile(volunteerProfile);
+      });
+    })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async getInstitutionProfile(institutionId: number): Promise<InstitutionProfile> {
+    return httpClient
+    .get(`/profile/institution/${institutionId}`)
+    .then((response) => {
+      return new InstitutionProfile(response.data);
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async getInstitutionsProfiles(): Promise<InstitutionProfile[]> {
+    return httpClient
+    .get('/profile/institutions/views')
+    .then((response) => {
+      return response.data.map((institutionProfile: any) => {
+        return new InstitutionProfile(institutionProfile);
+      });
+    })
+    .catch(async (error) => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   // Error

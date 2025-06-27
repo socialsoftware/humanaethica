@@ -1,4 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.activity;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -6,22 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.ACTIVITY_NOT_FOUND;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.THEME_NOT_FOUND;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USER_NOT_FOUND;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.NotificationService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.dto.ThemeDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.repository.ThemeRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
-
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ActivityService {
@@ -33,6 +33,8 @@ public class ActivityService {
     UserRepository userRepository;
     @Autowired
     InstitutionRepository institutionRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<ActivityDto> getActivities() {
@@ -53,6 +55,7 @@ public class ActivityService {
         Activity activity = new Activity(activityDto, institution, themes);
 
         activityRepository.save(activity);
+        notificationService.createActivityNotifications(institution, activity);
 
         return new ActivityDto(activity, true);
     }

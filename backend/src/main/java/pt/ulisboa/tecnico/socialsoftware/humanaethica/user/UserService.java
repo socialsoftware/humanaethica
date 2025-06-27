@@ -1,5 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.user;
 
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,38 +12,34 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.domain.Activity;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.dto.ActivityDto;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.activity.repository.ActivityRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.AuthUserService;
+
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.dto.AuthUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.auth.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.DUPLICATE_USER;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INSTITUTION_NOT_FOUND;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_AUTH_USERNAME;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_PASSWORD;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.INVALID_ROLE;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USERNAME_ALREADY_EXIST;
+import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.USER_NOT_FOUND;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.institution.repository.InstitutionRepository;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.theme.domain.Theme;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.domain.Notification;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Admin;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.UserDocument;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.Volunteer;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.domain.User.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserDocumentRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.user.repository.UserRepository;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static pt.ulisboa.tecnico.socialsoftware.humanaethica.exceptions.ErrorMessage.*;
 
 @Service
 public class UserService {
@@ -206,4 +207,36 @@ public class UserService {
         return new InstitutionDto(member.getInstitution(), true, true);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<NotificationDto> getNotifications(Integer userId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        List<Notification> notifications =  authUser.getUser().getNotifications();
+        return notifications.stream()
+            .map(notification-> new NotificationDto(notification))
+            .sorted(Comparator.comparing(NotificationDto::getCreationDate).reversed())
+            .toList();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void addInstitutionSubscription(Integer userId, int institutionId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Volunteer volunteer = (Volunteer) authUser.getUser();
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        volunteer.addSubscription(institution);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeInstitutionSubscription(Integer userId, int institutionId) {
+        AuthUser authUser = authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
+        Volunteer volunteer = (Volunteer) authUser.getUser();
+        Institution institution = institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        volunteer.removeSubscription(institution);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean isSubscribed(Integer userId, Integer institutionId) {
+        userRepository.findById(userId).orElseThrow(() -> new HEException(USER_NOT_FOUND));
+        institutionRepository.findById(institutionId).orElseThrow(() -> new HEException(INSTITUTION_NOT_FOUND));
+        return userRepository.isVolunteerSubscribedToInstitution(userId, institutionId);
+    }
 }
