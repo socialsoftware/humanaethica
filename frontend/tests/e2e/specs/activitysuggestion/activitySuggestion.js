@@ -16,13 +16,21 @@ describe('Activity Suggestion', () => {
     const DESCRIPTION = 'A workshop to teach basic computer skills to seniors';
     const JUSTIFICATION = 'This activity suggestion will be rejected for testing.'
 
+    const now = new Date();
+    const inEightDays = new Date(now);
+    inEightDays.setDate(now.getDate() + 8);
+    const inTenDays = new Date(now);
+    inTenDays.setDate(now.getDate() + 10);
+    const inElevenDays = new Date(now);
+    inElevenDays.setDate(now.getDate() + 11);
+
     cy.demoVolunteerLogin()
     // intercept create activity suggestion request and inject date values in the request body
     cy.intercept('POST', '/activitySuggestions/institution/1', (req) => {
       req.body = {
-        applicationDeadline: '2025-07-11T17:00:00+00:00',
-        startingDate: '2025-07-21T09:00:00+00:00',
-        endingDate: '2025-07-23T17:00:00+00:00'
+        applicationDeadline: inEightDays.toISOString(),
+        startingDate: inTenDays.toISOString(),
+        endingDate: inElevenDays.toISOString()
       };
     }).as('registerActivitySuggestion');
     // intercept get volunteer activity suggestions and get institutions
