@@ -50,6 +50,7 @@
       v-model:dialog="addTheme"
       @theme-created="onCreatedTheme"
       @close-dialog="onCloseDialog"
+      @theme-error="onThemeError"
     />
     <AssociateTheme
       v-if="associateTheme"
@@ -134,6 +135,10 @@ const deleteTheme = async (theme: Theme) => {
       store.setError(error.message)
     }
   }
+}
+
+function onThemeError(message: string) {
+  store.setError(message);
 }
 </script>
 

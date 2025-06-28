@@ -11,22 +11,15 @@
           <span class="headline">Add Theme</span>
         </VCardTitle>
         <VSelect
-          v-model="theme.parentTheme"
           label="Parent Theme (Optional)"
+          v-model="theme.parentTheme"
           :items="themes"
           return-object
-          item-value="id"
           item-title="completeName"
+          item-value="id"
           :menu-props="{ offsetY: true, class: 'left-text' }"
           class="move-right"
-          attach="body"
-        >
-          <template #item="{ item }">
-            <div class="left-text">
-              <span class="indentation">{{ item.completeName }}</span>
-            </div>
-          </template>
-        </VSelect>
+        />
         <VCardText class="text-left">
           <VTextField
             v-model="theme.name"
@@ -67,7 +60,7 @@ import Theme from '@/models/theme/Theme'
 const props = defineProps<{
   dialog: boolean
 }>()
-const emit = defineEmits(['close-dialog', 'theme-created'])
+const emit = defineEmits(['close-dialog', 'theme-created', 'theme-error'])
 
 const valid = ref(true)
 const success = ref(false)
@@ -95,6 +88,7 @@ watch(dialogModel, (val) => {
 
 async function fetchThemes() {
   themes.value = await RemoteServices.getThemesAvailable()
+  
 }
 
 async function submit() {
@@ -107,7 +101,7 @@ async function submit() {
     emit('theme-created', newTheme)
     success.value = true
   } catch (error: any) {
-    // Optionally handle error with store.setError(error.message)
+    emit('theme-error', error instanceof Error ? error.message : 'Unknown error')
   }
 }
 

@@ -80,7 +80,6 @@
       </template>
     </VDataTable>
 
-    <!-- Dialogs -->
     <ActivityDialog
       v-if="currentActivity && editActivityDialog"
       v-model:dialog="editActivityDialog"
@@ -88,6 +87,7 @@
       :themes="themes"
       @save-activity="onSaveActivity"
       @close-activity-dialog="onCloseActivityDialog"
+      @activity-error="onActivityError"
     />
 
     <SuspendActivityDialog
@@ -122,7 +122,6 @@ const currentActivity = ref<Activity | null>(null);
 const editActivityDialog = ref(false);
 const suspendActivityDialog = ref(false);
 
-// Vuetify 3 uses 'key' instead of 'value'
 const headers = [
   { title: 'Name', key: 'name' },
   { title: 'Region', key: 'region' },
@@ -198,6 +197,10 @@ async function onSuspendActivity() {
 async function showEnrollments(activity: Activity) {
   store.setActivity(activity);
   await router.push({ name: 'activity-enrollments' });
+}
+
+function onActivityError(message: string) {
+  store.setError(message);
 }
 </script>
 

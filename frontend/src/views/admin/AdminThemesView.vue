@@ -80,6 +80,7 @@
       v-model:dialog="addTheme"
       @theme-created="onCreatedTheme"
       @close-dialog="onCloseDialog"
+      @theme-error="onThemeError"
     />
     <ThemesTreeView
       v-if="treeView"
@@ -180,6 +181,10 @@ function getStateClass(state: string): string {
     default:
       return ''
   }
+}
+
+function onThemeError(message: string) {
+  store.setError(message);
 }
 </script>
 

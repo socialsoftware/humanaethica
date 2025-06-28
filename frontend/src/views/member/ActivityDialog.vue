@@ -120,6 +120,7 @@ const emit = defineEmits<{
   (e: 'close-activity-dialog'): void;
   (e: 'save-activity', result: Activity): void;
   (e: 'update:dialog', val: boolean): void;
+  (e: 'activity-error', message: string): void;
 }>();
 
 const internalDialog = computed({
@@ -131,7 +132,6 @@ const form = ref();
 const formValid = ref(false);
 const editActivity = ref(new Activity(props.activity));
 
-// Date conversion helpers
 function toDatetimeLocal(val: string | null | undefined): string {
   if (!val) return '';
   const d = new Date(val);
@@ -223,7 +223,7 @@ async function updateActivity() {
     const result = a.id !== null ? await RemoteServices.updateActivityAsMember(a.id, a) : await RemoteServices.registerActivity(a);
     emit('save-activity', result);
   } catch (error) {
-    console.error(error);
+    emit('activity-error', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 </script>

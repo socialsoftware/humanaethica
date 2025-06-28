@@ -1,49 +1,51 @@
 <template>
-  <VCard class="container" elevation="11">
-    <h2>Volunteer Registration</h2>
-    <VBtn @click="readFile">Download Document</VBtn>
-    <VForm ref="form" v-model="valid" lazy-validation>
-      <VTextField
-        v-model="volunteerName"
-        label="Name"
-        required
-        :rules="[v => !!v || 'Volunteer name is required']"
-      />
-      <VTextField
-        v-model="volunteerEmail"
-        label="E-mail"
-        required
-        :rules="[v => !!v || 'Volunteer email is required']"
-      />
-      <VTextField
-        v-model="volunteerUsername"
-        label="Username"
-        required
-        :rules="[v => !!v || 'Volunteer username is required']"
-      />
-      <VFileInput
-        counter
-        show-size
-        truncate-length="7"
-        label="Declaration"
-        required
-        :rules="[v => !!v || 'Declaration is required']"
-        dense
-        small-chips
-        accept=".pdf"
-        v-model="volunteerDoc"
-      />
-      <VBtn
-        class="mr-4"
-        color="orange"
-        @click="submit"
-        :disabled="!canSubmit"
-      >
-        Submit
-      </VBtn>
-      <VBtn @click="clear">Clear</VBtn>
-    </VForm>
-  </VCard>
+  <div class="center-parent">
+    <VCard class="container" elevation="11">
+      <h2>Volunteer Registration</h2>
+      <VBtn @click="readFile">Download Document</VBtn>
+      <VForm ref="form" v-model="valid" lazy-validation>
+        <VTextField
+          v-model="volunteerName"
+          label="Name"
+          required
+          :rules="[v => !!v || 'Volunteer name is required']"
+        />
+        <VTextField
+          v-model="volunteerEmail"
+          label="E-mail"
+          required
+          :rules="[v => !!v || 'Volunteer email is required']"
+        />
+        <VTextField
+          v-model="volunteerUsername"
+          label="Username"
+          required
+          :rules="[v => !!v || 'Volunteer username is required']"
+        />
+        <VFileInput
+          counter
+          show-size
+          truncate-length="7"
+          label="Declaration"
+          required
+          :rules="[v => !!v || 'Declaration is required']"
+          dense
+          small-chips
+          accept=".pdf"
+          v-model="volunteerDoc"
+        />
+        <VBtn
+          class="mr-4"
+          color="primary"
+          @click="submit"
+          :disabled="!canSubmit"
+        >
+          Submit
+        </VBtn>
+        <VBtn @click="clear">Clear</VBtn>
+      </VForm>
+    </VCard>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -131,5 +133,12 @@ h2 {
   font-weight: 500;
   line-height: 40px;
   margin: 0 0 16px;
+}
+
+.center-parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>

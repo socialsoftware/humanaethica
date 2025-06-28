@@ -13,7 +13,7 @@
             <VCol cols="12">
               <VTextarea
                 label="*Motivation"
-                :rules="[v => !!v || 'Motivation is required']"
+                :rules="rules"
                 required
                 v-model="editEnrollment.motivation"
                 data-cy="motivationInput"
@@ -64,6 +64,11 @@ const store = useMainStore();
 const dialogModel = ref(props.dialog);
 watch(() => props.dialog, (val) => (dialogModel.value = val));
 watch(dialogModel, (val) => emit('update:dialog', val));
+
+const rules = [
+  (v: string) => !!v || 'Motivation is required',
+  (v: string) => v.length >= 10 || 'Motivation must be at least 10 characters',
+]
 
 const editEnrollment = ref(new Enrollment(props.enrollment));
 const formRef = ref();

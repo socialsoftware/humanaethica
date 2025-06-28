@@ -20,13 +20,7 @@
           required
           :menu-props="{ offsetY: true, class: 'left-text' }"
           class="move-right"
-        >
-          <template #item="{ item }">
-            <div class="left-text">
-              <span class="indentation">{{ item.completeName }}</span>
-            </div>
-          </template>
-        </VSelect>
+        />
         <VCardActions>
           <VSpacer />
           <VBtn
