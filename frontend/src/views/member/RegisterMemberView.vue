@@ -1,59 +1,61 @@
 <template>
-  <v-card class="container" elevation="11">
-    <h2>Member Registration</h2>
-    <v-btn @click="readFile"> Download Document </v-btn>
-    <v-form ref="form" lazy-validation>
-      <v-text-field
-        v-model="memberName"
-        label="Name"
-        required
-        :rules="[(v) => !!v || 'Member name is required']"
-      ></v-text-field>
+  <div class="center-parent">
+    <v-card class="container" elevation="11">
+      <h2>Member Registration</h2>
+      <v-btn class="mb-4" @click="readFile"> Download Document </v-btn>
+      <v-form ref="form" lazy-validation>
+        <v-text-field
+          v-model="memberName"
+          label="Name"
+          required
+          :rules="[(v) => !!v || 'Member name is required']"
+        ></v-text-field>
 
-      <v-text-field
-        v-model="memberEmail"
-        label="E-mail"
-        required
-        :rules="[(v) => !!v || 'Member email is required']"
-      ></v-text-field>
-      <v-text-field
-        v-model="memberUsername"
-        label="Username"
-        required
-        :rules="[(v) => !!v || 'Member username is required']"
-      ></v-text-field>
+        <v-text-field
+          v-model="memberEmail"
+          label="E-mail"
+          required
+          :rules="[(v) => !!v || 'Member email is required']"
+        ></v-text-field>
+        <v-text-field
+          v-model="memberUsername"
+          label="Username"
+          required
+          :rules="[(v) => !!v || 'Member username is required']"
+        ></v-text-field>
 
-      <v-file-input
-        counter
-        show-size
-        truncate-length="7"
-        label="Declaration"
-        required
-        :rules="[(v) => !!v || 'Declaration is required']"
-        dense
-        small-chips
-        accept=".pdf"
-        @change="handleFileUpload($event)"
-      ></v-file-input>
+        <v-file-input
+          counter
+          show-size
+          truncate-length="7"
+          label="Declaration"
+          required
+          :rules="[(v) => !!v || 'Declaration is required']"
+          dense
+          small-chips
+          accept=".pdf"
+          @change="handleFileUpload($event)"
+        ></v-file-input>
 
-      <v-btn
-        class="mr-4"
-        color="orange"
-        @click="submit"
-        :disabled="
-          !(
-            memberUsername !== '' &&
-            memberEmail !== '' &&
-            memberName !== '' &&
-            memberDoc !== null
-          )
-        "
-      >
-        submit
-      </v-btn>
-      <v-btn @click="clear"> clear </v-btn>
-    </v-form>
-  </v-card>
+        <v-btn
+          class="mr-4"
+          color="primary"
+          @click="submit"
+          :disabled="
+            !(
+              memberUsername !== '' &&
+              memberEmail !== '' &&
+              memberName !== '' &&
+              memberDoc !== null
+            )
+          "
+        >
+          submit
+        </v-btn>
+        <v-btn @click="clear"> clear </v-btn>
+      </v-form>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -144,5 +146,12 @@ h2 {
   font-weight: 500;
   line-height: 40px;
   margin: 0 0 16px;
+}
+
+.center-parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>

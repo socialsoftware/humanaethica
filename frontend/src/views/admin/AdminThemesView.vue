@@ -86,6 +86,7 @@
       v-if="treeView"
       v-model:dialog="treeView"
       @close-dialog="onCloseDialog"
+      @tree-error="onTreeError"
     />
   </VCard>
 </template>
@@ -185,6 +186,10 @@ function getStateClass(state: string): string {
 
 function onThemeError(message: string) {
   store.setError(message);
+}
+
+function onTreeError(message: string) {
+  store.setError(message)
 }
 </script>
 

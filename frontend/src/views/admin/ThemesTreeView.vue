@@ -50,7 +50,8 @@ import RemoteServices from '@/services/RemoteServices'
 const props = defineProps<{
   dialog: boolean
 }>()
-const emit = defineEmits(['close-dialog'])
+
+const emit = defineEmits(['close-dialog', 'tree-error'])
 
 const dialogModel = ref(props.dialog)
 const themes = ref<Theme[]>([])
@@ -69,7 +70,12 @@ watch(dialogModel, (val) => {
 })
 
 async function loadThemes() {
-  themes.value = await RemoteServices.getThemes()
+  try {
+    themes.value = await RemoteServices.getThemes()
+  } catch (error: any) {
+    emit('tree-error', error.message || 'Unable to connect to server')
+    dialogModel.value = false
+  }
 }
 
 function getIndentedDisplayName(level?: number): string {

@@ -57,6 +57,7 @@
       v-model:dialog="associateTheme"
       @theme-associated="onAssociateTheme"
       @close-dialog="onCloseDialog"
+      @associate-error="onAssociateError"
     />
   </VCard>
 </template>
@@ -139,6 +140,10 @@ const deleteTheme = async (theme: Theme) => {
 
 function onThemeError(message: string) {
   store.setError(message);
+}
+
+function onAssociateError(message: string) {
+  store.setError(message)
 }
 </script>
 

@@ -2,7 +2,7 @@
   <div class="center-parent">
     <VCard class="container" elevation="11">
       <h2>Volunteer Registration</h2>
-      <VBtn @click="readFile">Download Document</VBtn>
+      <VBtn class="mb-4" @click="readFile">Download Document</VBtn>
       <VForm ref="form" v-model="valid" lazy-validation>
         <VTextField
           v-model="volunteerName"
