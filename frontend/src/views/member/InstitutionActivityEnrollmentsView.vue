@@ -14,7 +14,7 @@
         <VCardTitle>
           <VTextField
             v-model="search"
-            append-icon="search"
+            append-inner-icon="mdi-magnify"
             label="Search"
             class="mx-2"
           />

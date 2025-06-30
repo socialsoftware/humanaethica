@@ -49,13 +49,14 @@ const props = defineProps<{
   dialog: boolean
 }>()
 
-const emit = defineEmits(['update:dialog', 'theme-associated', 'associate-error'])
+const emit = defineEmits(['update:dialog', 'theme-associated'])
 
 const dialogModel = ref(props.dialog)
 const valid = ref(true)
 const themes = ref<Theme[]>([])
 const theme = ref<Theme | null>(null)
 const form = ref()
+const store = useMainStore()
 
 watch(
   () => props.dialog,
@@ -72,9 +73,8 @@ watch(dialogModel, (val) => {
 async function fetchThemes() {
   try {
     themes.value = await RemoteServices.getThemesAvailableforInstitution()
-    emit('theme-associated')
   } catch (error: any) {
-    emit('associate-error', error.message || 'Unable to connect to server')
+    store.setError(error.message)
   }
 }
 
@@ -84,7 +84,6 @@ async function submit() {
     await RemoteServices.addThemetoInstitution(theme.value)
     emit('theme-associated')
   } catch (error: any) {
-    const store = useMainStore()
     store.setError(error.message)
   }
 }

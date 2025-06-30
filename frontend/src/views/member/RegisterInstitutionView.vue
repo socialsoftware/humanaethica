@@ -2,7 +2,7 @@
   <div class="center-parent">
     <v-card class="container" elevation="11">
       <h2>Institution Registration</h2>
-      <v-form ref="form" lazy-validation>
+      <v-form ref="form" v-model="valid" lazy-validation>
         <v-text-field
           v-model="institutionName"
           label="Name"
@@ -33,7 +33,7 @@
           dense
           small-chips
           accept=".pdf"
-          @change="handleInstitutionFileUpload($event)"
+          v-model="institutionDoc"
         ></v-file-input>
 
         <v-divider class="divider"></v-divider>
@@ -73,23 +73,14 @@
           dense
           small-chips
           accept=".pdf"
-          @change="handleMemberFileUpload($event)"
+          v-model="memberDoc"
         ></v-file-input>
 
         <v-btn
           class="mr-4"
           color="primary"
           @click="submit"
-          :disabled="
-            !(institutionName !== '' &&
-              institutionEmail !== '' &&
-              institutionNif !== '' &&
-              institutionDoc !== null &&
-              memberUsername !== '' &&
-              memberEmail !== '' &&
-              memberName !== '',
-            memberDoc !== null)
-          "
+          :disabled="!canSubmit"
         >
           submit
         </v-btn>
@@ -99,83 +90,78 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import RemoteServices from '@/services/RemoteServices';
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useMainStore } from '@/store/useMainStore'
+import RemoteServices from '@/services/RemoteServices'
 
-export default defineComponent({
-  name: 'RegisterInstitutionView',
-  data(this: any) {
-    return {
-      institutionName: '',
-      institutionEmail: '',
-      institutionNif: '',
-      memberUsername: '',
-      memberEmail: '',
-      memberName: '',
-      institutionDoc: null as File | null,
-      memberDoc: null as File | null,
-    };
-  },
-  methods: {
-    async submit() {
-      try {
-        if (
-          this.institutionName.length === 0 ||
-          this.institutionEmail.length === 0 ||
-          this.institutionNif.length === 0 ||
-          this.memberUsername.length === 0 ||
-          this.memberEmail.length === 0 ||
-          this.memberName.length === 0
-        ) {
-          await this.$store.dispatch(
-            'error',
-            'Missing information, please check the form again',
-          );
-          return;
-        } else if (this.institutionDoc && this.memberDoc) {
-          await RemoteServices.registerInstitution(
-            {
-              institutionName: this.institutionName,
-              institutionEmail: this.institutionEmail,
-              institutionNif: this.institutionNif,
-              memberUsername: this.memberUsername,
-              memberEmail: this.memberEmail,
-              memberName: this.memberName,
-            },
-            this.institutionDoc,
-            this.memberDoc,
-          );
-          await this.$router.push({ name: 'home' });
-        }
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-    },
+const store = useMainStore()
+const router = useRouter()
 
-    handleMemberFileUpload(event: File) {
-      this.memberDoc = event;
-    },
+const institutionName = ref('')
+const institutionEmail = ref('')
+const institutionNif = ref('')
+const memberUsername = ref('')
+const memberEmail = ref('')
+const memberName = ref('')
+const institutionDoc = ref<File | null>(null)
+const memberDoc = ref<File | null>(null)
+const form = ref()
+const valid = ref(true)
 
-    handleInstitutionFileUpload(event: File) {
-      this.institutionDoc = event;
-    },
+const canSubmit = computed(() =>
+  institutionName.value !== '' &&
+  institutionEmail.value !== '' &&
+  institutionNif.value !== '' &&
+  institutionDoc.value !== null &&
+  memberUsername.value !== '' &&
+  memberEmail.value !== '' &&
+  memberName.value !== '' &&
+  memberDoc.value !== null
+)
 
-    readFile() {
-      RemoteServices.getForm();
-    },
+async function submit() {
+  if (!canSubmit.value) {
+    store.setError('Missing information, please check the form again')
+    return
+  }
+  store.setLoading()
+  try {
+    await RemoteServices.registerInstitution(
+      {
+        institutionName: institutionName.value,
+        institutionEmail: institutionEmail.value,
+        institutionNif: institutionNif.value,
+        memberUsername: memberUsername.value,
+        memberEmail: memberEmail.value,
+        memberName: memberName.value,
+      },
+      institutionDoc.value,
+      memberDoc.value,
+    )
+    router.push({ name: 'home' })
+  } catch (error: any) {
+    store.setError(error.message || 'Registration failed')
+  }
+  store.clearLoading()
+}
 
-    clear() {
-      this.institutionName = '';
-      this.institutionEmail = '';
-      this.institutionNif = '';
-      this.memberUsername = '';
-      this.memberEmail = '';
-      this.memberName = '';
-    },
-  },
-});
+function readFile() {
+  RemoteServices.getForm()
+}
+
+function clear() {
+  institutionName.value = ''
+  institutionEmail.value = ''
+  institutionNif.value = ''
+  memberUsername.value = ''
+  memberEmail.value = ''
+  memberName.value = ''
+  institutionDoc.value = null
+  memberDoc.value = null
+}
+
 </script>
 
 <style lang="scss" scoped>

@@ -12,7 +12,7 @@
         <VCardTitle class="d-flex align-center">
           <VTextField
             v-model="search"
-            append-icon="search"
+            append-inner-icon="mdi-magnify"
             label="Search"
             class="mx-2"
           />
@@ -57,7 +57,6 @@
       v-model:dialog="associateTheme"
       @theme-associated="onAssociateTheme"
       @close-dialog="onCloseDialog"
-      @associate-error="onAssociateError"
     />
   </VCard>
 </template>
@@ -78,14 +77,8 @@ const associateTheme = ref(false)
 const search = ref('')
 
 const headers = [
-  { text: 'Name', value: 'completeName', align: 'left', width: '15%' },
-  {
-    text: 'Delete',
-    value: 'action',
-    align: 'left',
-    sortable: false,
-    width: '5%',
-  },
+  { title: 'Name', key: 'completeName', align: 'left', width: '15%' },
+  { title: 'Actions', key: 'action', align: 'left', sortable: false, width: '5%'},
 ]
 
 const fetchThemes = async () => {
@@ -141,10 +134,6 @@ const deleteTheme = async (theme: Theme) => {
 function onThemeError(message: string) {
   store.setError(message);
 }
-
-function onAssociateError(message: string) {
-  store.setError(message)
-}
 </script>
 
 <style lang="scss" scoped>
@@ -153,6 +142,7 @@ function onAssociateError(message: string) {
   .action-button {
     cursor: pointer;
   }
+  text-align: left;
 }
 @media (max-width: 600px) {
   .table {
@@ -167,3 +157,4 @@ function onAssociateError(message: string) {
   }
 }
 </style>
+
