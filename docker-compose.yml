@@ -43,7 +43,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "8081:80"
+      - "5173:80"
     restart: unless-stopped
     volumes:
       - ./data/localhost-nginx.conf:/etc/nginx/nginx.conf

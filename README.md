@@ -70,9 +70,9 @@ npx cypress open
 ```
 cd frontend
 npm i
-npm start
+npm run dev
 ```
-* **Access http://localhost:8081**
+* **Access http://localhost:5173**
 
 
 

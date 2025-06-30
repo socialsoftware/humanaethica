@@ -10,9 +10,9 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const isProductionEnvFlag = process.env.NODE_ENV === 'production';
 
 let custompaths = {
-  host: 'http://localhost:8081/',
-  port: 8081,
-  publicdomain: 'localhost:8081',
+  host: 'http://localhost:5173/',
+  port: 5173,
+  publicdomain: 'localhost:5173',
 };
 
 module.exports = {
@@ -151,7 +151,7 @@ module.exports = {
       webSocketURL: {
         hostname: '0.0.0.0',
         pathname: '/',
-        port: 8081,
+        port: 5173,
       },
     },
   },

@@ -7,7 +7,7 @@ RUN npm install
 COPY . .
 ARG NODE_ENV
 RUN if [ "$NODE_ENV" = "dev" ] ; then \
-      npm run build:dev ; \
+      npm run build ; \
     else \
       npm run build ;  \
     fi
