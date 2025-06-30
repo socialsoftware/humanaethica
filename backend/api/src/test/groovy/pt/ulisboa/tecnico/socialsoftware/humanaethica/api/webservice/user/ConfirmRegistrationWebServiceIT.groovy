@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
@@ -35,7 +35,7 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
 
     def "user confirms registration"() {
         given: "one inactive user"
-        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.SUBMITTED)
         user = userRepository.save(user)
         def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authuser.setConfirmationToken(USER_1_TOKEN)
@@ -61,7 +61,7 @@ class ConfirmRegistrationWebServiceIT extends SpockTest {
 
     def "user tries to confirm registration with an expired token"() {
         given: "one inactive user with an expired token"
-        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.SUBMITTED)
         user = userRepository.save(user)
         def authuser = AuthUser.createAuthUser(user.getId(), USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, Role.VOLUNTEER)
         authuser.setConfirmationToken(USER_1_TOKEN)

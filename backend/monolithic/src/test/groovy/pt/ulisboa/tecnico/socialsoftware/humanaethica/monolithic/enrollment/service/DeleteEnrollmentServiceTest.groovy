@@ -7,7 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Unroll
 
 
@@ -32,7 +32,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
         and: "enrollment"
         enrollment = createEnrollment(activity, volunteer, SpockTest.ENROLLMENT_MOTIVATION_1)
     }
@@ -51,7 +51,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
     def 'two enrollments exist and one is removed'() {
         
         given:
-        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, User.State.APPROVED)
+        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, State.APPROVED)
         def enrollment2 = createEnrollment(activity, volunteer2, SpockTest.ENROLLMENT_MOTIVATION_2)
         enrollmentRepository.save(enrollment2)
         firstEnrollment = enrollmentRepository.findAll().get(0)
@@ -75,7 +75,7 @@ class DeleteEnrollmentServiceTest extends SpockTest {
 
     def 'two enrollments exist and are both deleted'() {
         given:
-        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, User.State.APPROVED)
+        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, State.APPROVED)
         def enrollment2 = createEnrollment(activity, volunteer2, SpockTest.ENROLLMENT_MOTIVATION_2)
         enrollmentRepository.save(enrollment2)
         firstEnrollment = enrollmentRepository.findAll().get(0)

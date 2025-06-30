@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.repository.AuthUs
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 
 @Service

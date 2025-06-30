@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
@@ -35,8 +35,8 @@ class GetReportsByActivityWebServiceIT extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
 
-        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
-        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, State.APPROVED)
+        def volunteerTwo = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, State.APPROVED)
         and:
         createReport(activity, volunteerOne, REPORT_JUSTIFICATION_1)
         createReport(activity, volunteerTwo, REPORT_JUSTIFICATION_2)

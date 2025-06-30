@@ -4,6 +4,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 
 @Entity

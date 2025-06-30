@@ -8,7 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Unroll
 import java.time.LocalDateTime
 
@@ -30,7 +30,7 @@ class UpdateEnrollmentServiceTest extends SpockTest {
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
         and: "an enrollment"
         enrollment = createEnrollment(activity, volunteer, SpockTest.ENROLLMENT_MOTIVATION_1)
     }

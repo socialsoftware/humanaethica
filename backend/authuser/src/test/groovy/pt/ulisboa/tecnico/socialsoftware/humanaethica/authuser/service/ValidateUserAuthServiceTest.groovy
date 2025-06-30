@@ -14,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Mem
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
@@ -58,7 +59,7 @@ class ValidateUserAuthServiceTest extends Specification{
         authUser.isActive() >> false
 
         authUserRepository.findById(1) >> Optional.of(authUser)
-        userService.getUserState(1) >> User.State.SUBMITTED
+        userService.getUserState(1) >> State.SUBMITTED
 
         if (role == Role.MEMBER) {
             def institution = Mock(Institution)
@@ -77,7 +78,7 @@ class ValidateUserAuthServiceTest extends Specification{
         def result = authService.validateUser(1)
 
         then:
-        1 * userService.changeState(1, User.State.APPROVED)
+        1 * userService.changeState(1, State.APPROVED)
         result.getRole() == role
         if (role == Role.MEMBER) {
             result.isInstitutionActive() == institutionActive
@@ -118,7 +119,7 @@ class ValidateUserAuthServiceTest extends Specification{
     def "validateUser - user state already active"() {
         given:
         authUser.isActive() >> false
-        userService.getUserState(1) >> User.State.ACTIVE
+        userService.getUserState(1) >> State.ACTIVE
 
         when:
         authService.validateUser(1)

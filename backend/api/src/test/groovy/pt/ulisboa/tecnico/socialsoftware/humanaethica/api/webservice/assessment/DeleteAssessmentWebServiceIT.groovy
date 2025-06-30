@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
@@ -75,7 +75,7 @@ class DeleteAssessmentWebServiceIT extends SpockTest {
         given: 'another volunteer'
         def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, Type.NORMAL, State.APPROVED)
         def auth = authUserRepository.findAuthUserByUserId(otherVolunteer.id)
         auth = auth.get()
         auth.setPassword(passwordEncoder.encode(USER_2_PASSWORD))

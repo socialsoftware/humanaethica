@@ -8,7 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import spock.lang.Unroll
 
@@ -33,7 +33,7 @@ class UpdateAssessmentServiceTest extends SpockTest {
         institution.addActivity(activity)
 
         and: "a volunteer"
-        def volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        def volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
 
         and: "an assessment"
         assessment = createAssessment(institution, volunteer, ASSESSMENT_REVIEW_1)

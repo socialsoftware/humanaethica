@@ -10,7 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dom
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.domain.Participation
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 
 import java.time.LocalDateTime
@@ -44,7 +44,7 @@ class DeleteParticipationMethodTest extends SpockTest {
         activityDto.applicationDeadline = DateHandler.toISOString(LocalDateTime.now().minusDays(3))
         activity = new Activity(activityDto, institution, themes)
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
         and: "a participation"
         participationDto = new ParticipationDto()
         participationDto.memberRating = 4
@@ -67,7 +67,7 @@ class DeleteParticipationMethodTest extends SpockTest {
 
     def "delete one of multiple participations in activity"() {
         given: "another participation for the same activity"
-        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, User.State.APPROVED)
+        def otherVolunteer = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, State.APPROVED)
         otherParticipation = new Participation(activity, otherVolunteer, participationDto)
 
         when: "one participation is deleted"

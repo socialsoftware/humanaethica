@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UpdateMemberParticipationWebServiceIT extends SpockTest {
@@ -137,7 +137,7 @@ class UpdateMemberParticipationWebServiceIT extends SpockTest {
         given: 'a member from another institution'
         def otherInstitution = new Institution(INSTITUTION_1_NAME, INSTITUTION_1_EMAIL, INSTITUTION_1_NIF)
         institutionRepository.save(otherInstitution)
-        def otherMember = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_PASSWORD, USER_1_EMAIL, Type.NORMAL, otherInstitution, User.State.APPROVED)
+        def otherMember = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_PASSWORD, USER_1_EMAIL, Type.NORMAL, otherInstitution, State.APPROVED)
         normalUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
         def participationDtoUpdate = new ParticipationDto()
         participationDtoUpdate.memberRating = 3

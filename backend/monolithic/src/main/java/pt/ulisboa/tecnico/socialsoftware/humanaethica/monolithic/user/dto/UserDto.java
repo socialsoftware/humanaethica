@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto;
 
 
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
@@ -43,7 +44,7 @@ public class UserDto {
         this.hasDocument = user.getDocument() != null;
         this.email = user.getEmail();
 
-        this.active = user.getState() == User.State.ACTIVE;
+        this.active = user.getState() == State.ACTIVE;
 
         if (user.getRole().equals(Role.MEMBER)){
             this.institutionName = ((Member) user).getInstitution().getName();

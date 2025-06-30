@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfigurati
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 
 @DataJpaTest
@@ -14,7 +15,7 @@ class CreateUserTest extends SpockTest {
 
     def "create User: name, username, email, role, state, admin"() {
         when:
-        def result = new Volunteer(USER_1_NAME, User.State.SUBMITTED)
+        def result = new Volunteer(USER_1_NAME, State.SUBMITTED)
 
         then:
         result.getName() == USER_1_NAME
@@ -23,7 +24,7 @@ class CreateUserTest extends SpockTest {
 
     def "create External User: name, username, email, role, state, admin"() {
         when:
-        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.SUBMITTED)
+        def result = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  State.SUBMITTED)
 
         then:
         result.getName() == USER_1_NAME

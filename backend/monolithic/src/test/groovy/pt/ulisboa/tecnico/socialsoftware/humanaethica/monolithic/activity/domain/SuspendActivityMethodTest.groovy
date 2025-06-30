@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEExcept
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import spock.lang.Unroll
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 
 @DataJpaTest
 class SuspendActivityMethodTest extends SpockTest {
@@ -31,7 +31,7 @@ class SuspendActivityMethodTest extends SpockTest {
         activityDto.endingDate = DateHandler.toISOString(IN_THREE_DAYS)
         activityDto.applicationDeadline = DateHandler.toISOString(IN_ONE_DAY)
 
-        member = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, institution, User.State.ACTIVE)
+        member = createMember(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, institution, State.ACTIVE)
     }
 
     @Unroll

@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.dto.Ac
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.dto.EnrollmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import spock.lang.Unroll
@@ -42,7 +42,7 @@ class UpdateEnrollmentMethodTest extends SpockTest {
         activity.getApplicationDeadline() >> SpockTest.IN_TWO_DAYS
 
         and: "volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
 
         and: "enrollment"
         enrollment = new Enrollment(activity, volunteer, EnrollmentDtoOne)

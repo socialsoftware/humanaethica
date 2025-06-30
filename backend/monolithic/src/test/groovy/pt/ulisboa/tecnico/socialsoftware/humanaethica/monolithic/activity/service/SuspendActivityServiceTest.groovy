@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMes
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Unroll
 
 @DataJpaTest
@@ -19,7 +19,7 @@ class SuspendActivityServiceTest extends SpockTest {
 
     def setup() {
         def institution = institutionService.getDemoInstitution()
-        member = new Member("DEMO_MEMBER","DEMO_MEMBER","demo_member@mail.com",institution, User.State.ACTIVE)
+        member = new Member("DEMO_MEMBER","DEMO_MEMBER","demo_member@mail.com",institution, State.ACTIVE)
         userRepository.save(member)
 
         given: "activity info"

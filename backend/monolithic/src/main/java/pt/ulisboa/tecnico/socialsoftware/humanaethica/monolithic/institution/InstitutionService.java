@@ -18,7 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.rep
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.repository.ThemeRepository;

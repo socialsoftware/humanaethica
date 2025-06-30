@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEExcept
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.domain.Enrollment
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import spock.lang.Unroll
@@ -37,7 +37,7 @@ class UpdateAssessmentMethodTest extends SpockTest {
         institution.getAssessments() >> []
 
         and: "volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
 
         and: "an assessment"
         def assessmentDto

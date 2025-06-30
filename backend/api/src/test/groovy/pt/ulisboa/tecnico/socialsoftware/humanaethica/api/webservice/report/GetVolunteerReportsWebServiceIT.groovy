@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GetVolunteerReportsWebServiceIT extends SpockTest {
@@ -41,7 +41,7 @@ class GetVolunteerReportsWebServiceIT extends SpockTest {
         def activityTwo = new Activity(activityDtoTwo, institution, new ArrayList<>())
         activityRepository.save(activityTwo)
 
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, State.APPROVED)
         and:
         createReport(activityOne, volunteer, REPORT_JUSTIFICATION_1)
         createReport(activityTwo, volunteer, REPORT_JUSTIFICATION_2)

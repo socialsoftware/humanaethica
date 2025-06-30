@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
@@ -36,7 +37,7 @@ public class AuthService {
 
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createVolunteerWithAuth(String name, String username, String email, Type type, User.State state) {
+    public AuthUser createVolunteerWithAuth(String name, String username, String email, Type type, State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
@@ -46,7 +47,7 @@ public class AuthService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createMemberWithAuth(String name, String username, String email, Type type, Institution institution, User.State state) {
+    public AuthUser createMemberWithAuth(String name, String username, String email, Type type, Institution institution, State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
@@ -78,7 +79,7 @@ public class AuthService {
             } else throw new HEException(e.getErrorMessage());
         }
 
-        userService.changeState(authUser.getUserID(), User.State.ACTIVE);
+        userService.changeState(authUser.getUserID(), State.ACTIVE);
         User user = userService.getUserById(authUser.getUserID());
 
         return convertToRegisterUserDto(authUser, user);
@@ -89,11 +90,11 @@ public class AuthService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public RegisterUserDto validateUser(Integer userId) {
         AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        if (authUser.isActive() || userService.getUserState(authUser.getUserID()).equals(User.State.ACTIVE)){
+        if (authUser.isActive() || userService.getUserState(authUser.getUserID()).equals(State.ACTIVE)){
             throw new HEException(ErrorMessage.USER_ALREADY_ACTIVE, authUser.getUsername());
         }
 
-        userService.changeState(authUser.getUserID(), User.State.APPROVED);
+        userService.changeState(authUser.getUserID(), State.APPROVED);
         return convertToRegisterUserDto(authUser, userService.getUserById(authUser.getUserID()));
     }
 

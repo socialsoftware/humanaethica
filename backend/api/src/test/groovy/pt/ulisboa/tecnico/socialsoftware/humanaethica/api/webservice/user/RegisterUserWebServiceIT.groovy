@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Admin
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.UserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
@@ -26,7 +26,7 @@ class RegisterUserWebServiceIT extends SpockTest {
         headers = new HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_JSON)
 
-        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL,  User.State.SUBMITTED)
+        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL,  State.SUBMITTED)
         admin = userRepository.save(admin)
         def authUser = AuthUser.createAuthUser(admin.getId(), USER_2_USERNAME, USER_2_EMAIL, Type.DEMO, Role.ADMIN)
         authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))

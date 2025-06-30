@@ -14,8 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.dto.AuthUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoUtils;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
-//import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
 

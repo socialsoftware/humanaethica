@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain;
 
 import jakarta.persistence.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler;
@@ -17,7 +18,7 @@ import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.E
 @DiscriminatorColumn(name = "user_type",
         discriminatorType = DiscriminatorType.STRING)
 public abstract class User {
-    public enum State {SUBMITTED, APPROVED, ACTIVE, DELETED}
+
 
     public static class UserTypes {
         public static final String VOLUNTEER = "VOLUNTEER";

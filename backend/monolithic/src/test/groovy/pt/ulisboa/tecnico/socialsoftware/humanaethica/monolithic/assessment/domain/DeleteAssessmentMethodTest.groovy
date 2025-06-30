@@ -10,7 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.doma
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.AssessmentDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 
@@ -45,7 +45,7 @@ class DeleteAssessmentMethodTest extends SpockTest {
         activityDto.applicationDeadline = DateHandler.toISOString(DateHandler.now().minusDays(3))
         activity = new Activity(activityDto, institution, themes)
         and: "a volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
         and: "an assessment"
         def assessmentDto
         assessmentDto = new AssessmentDto();

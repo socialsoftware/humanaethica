@@ -7,7 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 
 
 @DataJpaTest
@@ -32,7 +32,7 @@ class GetVolunteerReportsServiceTest extends SpockTest {
 
     def "get two reports of the same volunteer"() {
         given: 
-        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  State.APPROVED)
         and:
         createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
         createReport(activityTwo, volunteerOne, REPORT_JUSTIFICATION_2)
@@ -48,7 +48,7 @@ class GetVolunteerReportsServiceTest extends SpockTest {
 
     def "get one report of a volunteer"() {
         given: 
-        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.APPROVED)
+        def volunteerOne = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  State.APPROVED)
         and:
         createReport(activityOne, volunteerOne, REPORT_JUSTIFICATION_1)
 

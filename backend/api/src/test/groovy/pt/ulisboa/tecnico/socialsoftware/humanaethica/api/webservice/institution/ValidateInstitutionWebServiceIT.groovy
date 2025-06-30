@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Admin
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ValidateInstitutionWebserviceIT extends SpockTest {
@@ -25,7 +25,7 @@ class ValidateInstitutionWebserviceIT extends SpockTest {
         headers = new HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_JSON)
 
-        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, User.State.SUBMITTED)
+        def admin = new Admin(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, State.SUBMITTED)
         admin = userRepository.save(admin)
         def authUser = AuthUser.createAuthUser(admin.getId(), USER_2_USERNAME, USER_2_EMAIL, Type.DEMO, Role.ADMIN)
         authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))

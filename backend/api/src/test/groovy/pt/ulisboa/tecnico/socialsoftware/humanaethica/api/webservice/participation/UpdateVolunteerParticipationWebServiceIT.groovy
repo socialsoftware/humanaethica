@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
@@ -124,7 +124,7 @@ class UpdateVolunteerParticipationWebServiceIT extends SpockTest {
 
     def 'log in as another volunteer and try to write a review for a participation by a different volunteer'() {
         given: 'another volunteer'
-        def otherVolunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, User.State.APPROVED)
+        def otherVolunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, Type.NORMAL, State.APPROVED)
         def authuser = authUserRepository.findAuthUserByUserId(otherVolunteer.getId()).get()
         authuser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
         authUserRepository.save(authuser)

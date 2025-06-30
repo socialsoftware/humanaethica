@@ -10,7 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMes
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import spock.mock.DetachedMockFactory
@@ -45,7 +45,7 @@ class ValidateInstitutionTest extends SpockTest {
 
     def "validate institution with success"() {
         when:
-        userService.changeState(member.getId(), User.State.APPROVED)
+        userService.changeState(member.getId(), State.APPROVED)
         institutionService.validateInstitution(institution.getId())
 
         then: "the institution and member are validated"
@@ -68,7 +68,7 @@ class ValidateInstitutionTest extends SpockTest {
     def "the user haven't yet been approved"() {
         when:
         institutionService.validateInstitution(institution.getId())
-        member.setState(User.State.SUBMITTED)
+        member.setState(State.SUBMITTED)
 
         then:
         def error = thrown(HEException)

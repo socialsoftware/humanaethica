@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
@@ -39,8 +40,6 @@ class RegisterUserTest extends SpockTest {
 
         then: "the user is saved in the database"
         userRepository.findAll().size() == 1
-        //def authUser = (AuthNormalUser) authUserRepository.findAll().get(0)
-        //authUser.getConfirmationToken() != null
         and: "checks if user data is correct"
         result.getUsername() == USER_1_USERNAME
         result.getEmail() == USER_1_EMAIL
@@ -51,7 +50,7 @@ class RegisterUserTest extends SpockTest {
 
     def "the user exists"() {
         given:
-        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  User.State.SUBMITTED)
+        def user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL,  State.SUBMITTED)
         userRepository.save(user)
 
         and:

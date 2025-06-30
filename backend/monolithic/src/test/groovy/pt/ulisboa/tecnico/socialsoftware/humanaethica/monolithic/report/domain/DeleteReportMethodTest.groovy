@@ -12,7 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dom
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 
 @DataJpaTest
@@ -43,7 +43,7 @@ class DeleteReportMethodTest extends SpockTest {
         activity = new Activity(activityDtoOne, institution, themes)
 
         and: "volunteer"
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
 
         and: "report"
         def reportDto = new ReportDto()

@@ -16,7 +16,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dom
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.*;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User.State;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserDocumentRepository;
@@ -159,13 +159,13 @@ public class UserService {
 
 
     @Transactional
-    public void changeState(Integer userId, User.State newState) {
+    public void changeState(Integer userId, State newState) {
         User user = userRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND));
         user.setState(newState);
         userRepository.save(user);
     }
 
-    public User.State getUserState(Integer userId) {
+    public State getUserState(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new HEException(ErrorMessage.USER_NOT_FOUND))
                 .getState();

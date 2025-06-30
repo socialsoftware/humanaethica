@@ -10,7 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.dto.
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Unroll
 
 @DataJpaTest
@@ -22,7 +22,7 @@ class CreateAssessmentServiceTest extends SpockTest {
 
     def setup() {
         institution = institutionService.getDemoInstitution()
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
 
         def activityDto = createActivityDto(ACTIVITY_NAME_1,ACTIVITY_REGION_1,1,ACTIVITY_DESCRIPTION_1,
                 TWO_DAYS_AGO,ONE_DAY_AGO,NOW,null)

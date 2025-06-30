@@ -15,7 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Vol
 import spock.lang.Specification
 import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Subject
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import spock.lang.Unroll
 
 @ContextConfiguration(classes = [AuthService, AuthUserRepository, UserService, PasswordEncoder])
@@ -63,7 +63,7 @@ class ConfirmRegistrationAuthServiceTest extends Specification {
         def result = authService.confirmRegistration(externalUserDto)
 
         then:
-        1 * userService.changeState(authUser.getUserID(), User.State.ACTIVE)
+        1 * userService.changeState(authUser.getUserID(), State.ACTIVE)
         1 * userService.getUserById(authUser.getUserID()) >> user
         result.getPassword() == "encoded-password"
         result.isActive()

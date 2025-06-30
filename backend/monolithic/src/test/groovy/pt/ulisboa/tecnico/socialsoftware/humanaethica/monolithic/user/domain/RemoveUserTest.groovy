@@ -6,13 +6,14 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfigurati
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 
 @DataJpaTest
 class RemoveUserTest extends SpockTest {
     def user
 
     def setup() {
-        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.SUBMITTED)
+        user = new Volunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.SUBMITTED)
         userRepository.save(user)
     }
 
@@ -23,7 +24,7 @@ class RemoveUserTest extends SpockTest {
         userService.deleteUser(user.getId())
 
         then:
-        user.getState() == User.State.DELETED
+        user.getState() == State.DELETED
         and:
         userRepository.findAll().size() == 1
     }

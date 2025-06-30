@@ -8,7 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.dto.ParticipationDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Unroll
 
 
@@ -30,7 +30,7 @@ class DeleteParticipationServiceTest extends SpockTest {
                 TWO_DAYS_AGO, ONE_DAY_AGO, NOW, null)
         activity = new Activity(activityDto, institution, new ArrayList<>())
         activityRepository.save(activity)
-        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.State.APPROVED)
+        volunteer = createVolunteer(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, State.APPROVED)
 
 
         def participationDto = new ParticipationDto()
@@ -56,7 +56,7 @@ class DeleteParticipationServiceTest extends SpockTest {
     @Unroll
     def 'two participations exist and one is deleted: participationId=#participationId | deletedRating=#deletedRating | remainingRating=#remainingRating '() {
         given:
-        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, User.State.APPROVED)
+        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL, State.APPROVED)
         def participationDto2 = new ParticipationDto()
         participationDto2.volunteerRating = 2
         participationDto2.volunteerReview = VOLUNTEER_REVIEW
@@ -90,7 +90,7 @@ class DeleteParticipationServiceTest extends SpockTest {
 
     def 'two participation exist and are both deleted'() {
         given:
-        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL,  User.State.APPROVED)
+        def volunteer2 = createVolunteer(USER_2_NAME, USER_2_PASSWORD, USER_2_EMAIL,  State.APPROVED)
         def participationDto2 = new ParticipationDto()
         participationDto2.volunteerRating = 2
         participationDto2.volunteerReview = VOLUNTEER_REVIEW

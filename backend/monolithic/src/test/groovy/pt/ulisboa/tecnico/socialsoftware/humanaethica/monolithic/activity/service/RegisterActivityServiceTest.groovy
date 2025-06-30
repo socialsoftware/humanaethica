@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Th
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.domain.Activity
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State
 import spock.lang.Unroll
 
 @DataJpaTest
@@ -28,7 +28,7 @@ class RegisterActivityServiceTest extends SpockTest {
         institution = institutionService.getDemoInstitution()
 
         //member = authUserService.loginDemoMemberAuth().getUser()
-        member = new Member("DEMO_MEMBER","DEMO_MEMBER","demo_member@mail.com",institution, User.State.ACTIVE)
+        member = new Member("DEMO_MEMBER","DEMO_MEMBER","demo_member@mail.com",institution, State.ACTIVE)
         userRepository.save(member)
 
         theme = new Theme(THEME_NAME_1, Theme.State.APPROVED,null)
