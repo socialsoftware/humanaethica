@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.ActivityService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.AuthUserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.api.config.HEPermissionEvaluator
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.config.HEPermissionEvaluator
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.EnrollmentService

@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,6 +52,8 @@ public abstract class AuthUser implements UserDetails {
 
     @Column(name = "last_access")
     private LocalDateTime lastAccess;
+
+    public static final String MAIL_FORMAT = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
 
     protected AuthUser() {
@@ -105,7 +107,7 @@ public abstract class AuthUser implements UserDetails {
     }
 
     public void setEmail(String email) {
-        if (email == null || !email.matches(UserService.MAIL_FORMAT))
+        if (email == null || !email.matches(MAIL_FORMAT))
             throw new HEException(INVALID_EMAIL, email);
 
         this.email = email.toLowerCase();

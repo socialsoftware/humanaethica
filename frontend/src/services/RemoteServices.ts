@@ -117,7 +117,7 @@ export default class RemoteServices {
   }
 
   static async validateUser(userId: number) {
-    return httpClient.post(`/users/${userId}/validate`).catch(async (error) => {
+    return httpClient.post(`/auth/${userId}/validate`).catch(async (error) => {
       throw Error(await this.errorMessage(error));
     });
   }

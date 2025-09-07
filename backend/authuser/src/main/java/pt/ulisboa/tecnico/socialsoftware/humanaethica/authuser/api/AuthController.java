@@ -59,12 +59,12 @@ public class AuthController {
     }
 
 
-    @PostMapping("/users/register/confirm")
+    @PostMapping("/auth/register/confirm")
     public RegisterUserDto confirmRegistration(@RequestBody RegisterUserDto registerUserDto) {
         return userApplicationalService.confirmRegistration(registerUserDto);
     }
 
-    @PostMapping("/users/{userId}/validate")
+    @PostMapping("/auth/{userId}/validate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void validateUser(@PathVariable int userId) {
         userApplicationalService.validateUser(userId);

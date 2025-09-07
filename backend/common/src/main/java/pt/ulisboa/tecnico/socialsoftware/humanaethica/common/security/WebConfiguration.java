@@ -1,23 +1,24 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.api.config;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.common.security;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@ComponentScan(basePackageClasses = {WebConfiguration.class})
-public class WebConfiguration extends WebMvcConfigurationSupport {
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+public class WebConfiguration implements WebMvcConfigurer {
     private static final long MAX_AGE_SECS = 3600;
 
-    @Value("${figures.dir}")
+    @Value("${figures.dir:${java.io.tmpdir}}")
     private String figuresDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/documents/declarations**").addResourceLocations("file:" + figuresDir);
+        registry.addResourceHandler("/documents/declarations**")
+                .addResourceLocations("file:" + figuresDir);
 
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/5.10.3/");
@@ -36,7 +37,7 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
-                .allowedMethods("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE")
+                .allowedMethods("HEAD","OPTIONS","GET","POST","PUT","PATCH","DELETE")
                 .maxAge(MAX_AGE_SECS);
     }
 }

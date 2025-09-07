@@ -7,15 +7,13 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthNormalUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuxUser;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.repository.AuthUserRepository;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.*;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 
 import static pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage.*;
@@ -25,13 +23,13 @@ public class AuthService {
 
     private final AuthUserRepository authUserRepository;
 
-    private final UserService userService;
+    private final AuthRemoteService authRemoteService;
 
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(AuthUserRepository authUserRepository, UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthService(AuthUserRepository authUserRepository, AuthRemoteService authRemoteService, PasswordEncoder passwordEncoder) {
         this.authUserRepository = authUserRepository;
-        this.userService = userService;
+        this.authRemoteService = authRemoteService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -42,17 +40,18 @@ public class AuthService {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Integer volunteerId = userService.createVolunteer(name, username, email, state);
+        Integer volunteerId = authRemoteService.createVolunteer(name, username, email, state.name());
         return authUserRepository.save(AuthUser.createAuthUser(volunteerId, username, email, type, Role.VOLUNTEER));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public AuthUser createMemberWithAuth(String name, String username, String email, Type type, Institution institution, State state) {
+    public AuthUser createMemberWithAuth(String name, String username, String email, Type type,  State state) {
         if (authUserRepository.findAuthUserByUsername(username).isPresent()) {
             throw new HEException(DUPLICATE_USER, username);
         }
 
-        Integer memberId = userService.createMember(name, username, email, institution, state);
+        Integer memberId = authRemoteService.createMember(name, username, email, state.name());
+
 
         return authUserRepository.save(AuthUser.createAuthUser(memberId, username, email, type, Role.MEMBER));
     }
@@ -79,8 +78,9 @@ public class AuthService {
             } else throw new HEException(e.getErrorMessage());
         }
 
-        userService.changeState(authUser.getUserID(), State.ACTIVE);
-        User user = userService.getUserById(authUser.getUserID());
+        authRemoteService.changeState(authUser.getUserID(), State.ACTIVE.name());
+        AuxUser user = authRemoteService.getUserById(authUser.getUserID());
+
 
         return convertToRegisterUserDto(authUser, user);
     }
@@ -90,17 +90,17 @@ public class AuthService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public RegisterUserDto validateUser(Integer userId) {
         AuthNormalUser authUser = (AuthNormalUser) authUserRepository.findById(userId).orElseThrow(() -> new HEException(ErrorMessage.AUTHUSER_NOT_FOUND));
-        if (authUser.isActive() || userService.getUserState(authUser.getUserID()).equals(State.ACTIVE)){
+        if (authUser.isActive() || authRemoteService.getUserState(authUser.getUserID()).equals("ACTIVE")){
             throw new HEException(ErrorMessage.USER_ALREADY_ACTIVE, authUser.getUsername());
         }
 
-        userService.changeState(authUser.getUserID(), State.APPROVED);
-        return convertToRegisterUserDto(authUser, userService.getUserById(authUser.getUserID()));
+        authRemoteService.changeState(authUser.getUserID(), State.ACTIVE.name());
+        return convertToRegisterUserDto(authUser, authRemoteService.getUserById(authUser.getUserID()));
     }
 
 
 
-    public RegisterUserDto convertToRegisterUserDto(AuthNormalUser authUser, User user) {
+    public RegisterUserDto convertToRegisterUserDto(AuthNormalUser authUser, AuxUser user) {
         RegisterUserDto dto = new RegisterUserDto();
 
         dto.setId(authUser.getId());
@@ -111,12 +111,9 @@ public class AuthService {
         dto.setActive(authUser.isActive());
         dto.setConfirmationToken(authUser.getConfirmationToken());
         if (authUser.getRole() == Role.MEMBER) {
-            dto.setInstitutionId(((Member) user).getInstitution().getId());
+            dto.setInstitutionId(user.getInstitutionId());
+            dto.setInstitutionActive( user.isInstitutionActive());
         }
-        if (user instanceof Member member) {
-            dto.setInstitutionActive( member.getInstitution().isActive());
-        }
-
         return dto;
     }
 

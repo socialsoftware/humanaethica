@@ -2,8 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.subscriptions
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.BeanConfiguration
+import org.springframework.context.annotation.Import
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
@@ -11,11 +10,12 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserReg
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 
 @DataJpaTest
+@Import(AuthUserEventListener)   // importa o bean do listener no slice JPA
 class HandleUserRegistrationEventTest extends SpockTest {
-
 
     @Autowired
     AuthUserEventListener listener
+
     def dto
     def event
 
@@ -25,15 +25,13 @@ class HandleUserRegistrationEventTest extends SpockTest {
         dto.setEmail(USER_1_EMAIL)
         dto.setRole(Role.VOLUNTEER)
         dto.setName(USER_1_NAME)
-        event = new UserRegisteredEvent(dto,1, Type.NORMAL, dto.getRole(), dto.getName())
+
+        event = new UserRegisteredEvent(dto, 1, Type.NORMAL, dto.getRole(), dto.getName())
     }
 
     def "directly creates auth user successfully"() {
-        given: "a valid registration event"
-
-
-        when: "the listener handles the event directly"
-        listener.hanldeUserRegistationEvent(event)
+        when: "the listener handles the event via Consumer"
+        listener.userRegistered().accept(event)
 
         then: "the user is persisted"
         authUserRepository.count() == 1
@@ -43,10 +41,4 @@ class HandleUserRegistrationEventTest extends SpockTest {
         result.role.name() == Role.VOLUNTEER.name()
         result.userId != null
     }
-
-
-
-    @TestConfiguration
-    static class LocalBeanConfiguration extends BeanConfiguration {}
-
 }

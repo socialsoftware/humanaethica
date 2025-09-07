@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user;
 
-import com.google.common.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -12,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserDel
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserRegisteredEvent;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.dto.InstitutionDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository;
@@ -41,7 +41,10 @@ public class UserService {
     private UserDocumentRepository userDocumentRepository;
 
     @Autowired
-    private EventBus eventBus;
+    private UserEventPublisher userEventPublisher;
+
+    @Autowired
+    private InstitutionService institutionService;
 
 
 
@@ -70,8 +73,8 @@ public class UserService {
         if (i != null)
             institutionRepository.save(i);
 
+        userEventPublisher.publishUserDeleted(new UserDeletedEvent(userId));
 
-        eventBus.post(new UserDeletedEvent(userId));
         return getUsers();
     }
 
@@ -132,7 +135,7 @@ public class UserService {
 
 
         UserRegisteredEvent event = new UserRegisteredEvent(registerUserDto, user.getId(), Type.NORMAL, user.getRole(), user.getName());
-        eventBus.post(event);
+        userEventPublisher.publishUserRegistered(event);
 
 
         return new UserDto(user);
@@ -146,8 +149,8 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Integer createMember(String name, String username, String email, Institution institution, State state) {
-        Member member = new Member(name, username, email, institution, state);
+    public Integer createMember(String name, String username, String email, State state) {
+        Member member = new Member(name, username, email, institutionService.getDemoInstitution(), state);
         return userRepository.save(member).getId();
     }
 

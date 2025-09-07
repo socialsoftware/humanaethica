@@ -1,4 +1,4 @@
-<h1 align="center">HumanaEthica</h1>
+<h1 align="center">HumanaEthica-MicroServices</h1>
 
 <p align="center">
   <a href="#about">About</a> •
@@ -24,6 +24,7 @@
   * [Spring-boot](https://spring.io/)
   * [Vue.js](https://vuejs.org/)
 
+<!-- 
 # Bare Metal Installation
 
 * **Install**
@@ -75,12 +76,10 @@ npm start
 * **Access http://localhost:8081**
 
 
-
-
 The [following video](https://youtu.be/D0JABlXCdlo) shows how setup when you install the software in your machine. Requires the software mentioned above.
 
 [![Watch the video](https://img.youtube.com/vi/D0JABlXCdlo/mqdefault.jpg)](https://youtu.be/D0JABlXCdlo)
-
+-->
 # Docker Compose Installation
 
 * Install [Docker](https://docs.docker.com/engine/install/) in you machine.
@@ -100,6 +99,20 @@ cp data/error.log.example data/error.log
 cp frontend/example.env frontend/.env
 ```
 
+* **Generate service jars and Build docker image and run**
+```
+sh generate-service-jars.sh
+```
+
+* **See documentation on http://localhost:[service port]/swagger-ui.html**
+* **Eureka Server with all instances: http://localhost:8761**
+* **Access http://localhost:8081**
+
+
+
+
+
+<!-- 
 * Build HumanaEthica in project top directory, where docker-compose.yml is
 ```
 docker compose build
@@ -182,7 +195,7 @@ An easy way to obtain a working development environment is to use the _developme
 The [following video](https://www.youtube.com/watch?v=ISNCrQ1r-Nw) shows how to setup the dev container using IDE IntelliJ IDEA (Ultimate Edition).
 
 [![How to setup HumanaEthica in IntelliJ using a dev container](https://img.youtube.com/vi/ISNCrQ1r-Nw/mqdefault.jpg)](https://www.youtube.com/embed/ISNCrQ1r-Nw?si=1WeDwCsBdrr5OL5k)
-
+-->
 # Contributing
 
 Your contributions are always welcome!

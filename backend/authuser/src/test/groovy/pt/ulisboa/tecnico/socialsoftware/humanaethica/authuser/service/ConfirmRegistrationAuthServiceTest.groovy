@@ -5,27 +5,27 @@ import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthNormalUser
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuxUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.exceptions.HEException
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
+
 import spock.lang.Specification
 import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Subject
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
 import spock.lang.Unroll
 
-@ContextConfiguration(classes = [AuthService, AuthUserRepository, UserService, PasswordEncoder])
+@ContextConfiguration(classes = [AuthService, AuthUserRepository, AuthRemoteService, PasswordEncoder])
 class ConfirmRegistrationAuthServiceTest extends Specification {
 
     @SpringBean
     AuthUserRepository authUserRepository = Mock()
 
     @SpringBean
-    UserService userService = Mock()
+    AuthRemoteService userService = Mock()
 
     @SpringBean
     PasswordEncoder passwordEncoder = Mock()
@@ -36,7 +36,7 @@ class ConfirmRegistrationAuthServiceTest extends Specification {
 
     def externalUserDto = new RegisterUserDto()
     def authUser = Mock(AuthNormalUser)
-    def user = Mock(Volunteer)
+    def user = Mock(AuxUser)
 
     def setup() {
         externalUserDto.setEmail("USER_1_EMAIL")
@@ -63,7 +63,7 @@ class ConfirmRegistrationAuthServiceTest extends Specification {
         def result = authService.confirmRegistration(externalUserDto)
 
         then:
-        1 * userService.changeState(authUser.getUserID(), State.ACTIVE)
+        1 * userService.changeState(authUser.getUserID(), State.ACTIVE.name())
         1 * userService.getUserById(authUser.getUserID()) >> user
         result.getPassword() == "encoded-password"
         result.isActive()

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package authuser;
+
+option java_multiple_files = true;
+option java_package = "pt.ulisboa.tecnico.socialsoftware.humanaethica.proto";
+option java_outer_classname = "UserProto";
+
+service UserService {
+  rpc CreateVolunteer(CreateUserRequest) returns (CreateUserResponse);
+  rpc CreateMember(CreateUserRequest) returns (CreateUserResponse);
+  rpc CreateAdmin(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUserById(GetUserRequest) returns (UserDto);
+  rpc ChangeState(ChangeStateRequest) returns (Empty);
+  rpc GetUserState(GetUserRequest) returns (UserStateResponse);
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string username = 2;
+  string email = 3;
+  string state = 4;
+
+}
+
+message CreateUserResponse {
+  int32 id = 1;
+}
+
+message GetUserRequest {
+  int32 id = 1;
+}
+
+message ChangeStateRequest {
+  int32 id = 1;
+  string state = 2;
+}
+
+message UserStateResponse {
+  string state = 1;
+}
+
+message UserDto {
+  int32 id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  bool active = 5;
+  int32 institutionId = 6;
+  bool institutionActive = 7;
+}
+
+message Empty {}
+

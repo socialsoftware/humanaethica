@@ -1,119 +1,138 @@
 services:
-  postgres:
+
+  # ---------------------- Data Bases  ----------------------
+  postgres-mono:
     image: postgres:alpine
-    container_name: humanaethica-postgres
+    container_name: humanaethica-postgres-mono
     command: postgres -c 'max_connections=50' -c 'log_statement=all' -c 'log_destination=stderr'
     ports:
       - "5433:5432"
     restart: unless-stopped
-    volumes:
-      - ./data/dumps:/dumps
-    env_file:
-      - ./data/env/database.dev.env
-      
-  backend:
+    environment:
+      POSTGRES_DB: monolithicdb
+      POSTGRES_USER: humanaethica
+      POSTGRES_PASSWORD: humanaethica
+
+  postgres-auth:
+    image: postgres:alpine
+    container_name: humanaethica-postgres-auth
+    command: postgres -c 'max_connections=50' -c 'log_statement=all' -c 'log_destination=stderr'
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: authuserdb
+      POSTGRES_USER: humanaethica
+      POSTGRES_PASSWORD: humanaethica
+
+  # ---------------------- Kafka ----------------------
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: kafka-zookeeper
+    ports:
+      - "2181:2181"
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+
+  # ---------------------- Eureka ----------------------
+  eureka-server:
     build:
-      context: ./backend/
+      context: ./backend/eureka_server/
+    image: humanaethica-eureka
+    container_name: humanaethica-eureka
+    ports:
+      - "8761:8761"
+    restart: unless-stopped
+
+  # ---------------------- Services ----------------------
+  monolithic:
+    build:
+      context: ./backend/monolithic/
       args:
         PROFILE: dev
-    image: humanaethica-backend
-    container_name: humanaethica-backend
+    image: humanaethica-monolithic
+    container_name: humanaethica-monolithic
     depends_on:
-      - postgres
+      - postgres-mono
+      - kafka
+      - eureka-server
+    ports:
+      - "8082:8080"
+    restart: unless-stopped
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-mono:5432/monolithicdb
+      - SPRING_DATASOURCE_USERNAME=humanaethica
+      - SPRING_DATASOURCE_PASSWORD=humanaethica
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+
+  authuser:
+    build:
+      context: ./backend/authuser/
+      args:
+        PROFILE: dev
+    image: humanaethica-authuser
+    container_name: humanaethica-authuser
+    depends_on:
+      - postgres-auth
+      - kafka
+      - eureka-server
+      - monolithic
+    ports:
+      - "8083:8080"
+    restart: unless-stopped
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-auth:5432/authuserdb
+      - SPRING_DATASOURCE_USERNAME=humanaethica
+      - SPRING_DATASOURCE_PASSWORD=humanaethica
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+
+  api:
+    build:
+      context: ./backend/api/
+    image: humanaethica-api
+    container_name: humanaethica-api
+    depends_on:
+      - eureka-server
+      - monolithic
+      - authuser
     ports:
       - "8080:8080"
     restart: unless-stopped
-    volumes:
-      - ./data/images:/images
-      - ./data/load:/load
-      - ./data/export:/export
-    env_file:
-      - ./data/env/backend.dev.env
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hedb
-
+  # ---------------------- Frontend ----------------------
   frontend:
     build:
-      context:  ./frontend/
+      context: ./frontend/
       dockerfile: Dockerfile
       args:
         NODE_ENV: dev
-    image: humanaethica-frontend                                                     
+    image: humanaethica-frontend
     container_name: humanaethica-frontend
     depends_on:
-      - backend
+      - api
     ports:
       - "8081:80"
     restart: unless-stopped
     volumes:
       - ./data/localhost-nginx.conf:/etc/nginx/nginx.conf
-      - ./data/error.log:/var/log/nginx/error.log
-      - ./data/access.log:/var/log/nginx/access.log
-
-  be-unit-tests:
-    image: maven:3.9.6-eclipse-temurin-21
-    stop_signal: SIGKILL
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./backend:/backend
-      - ~/.m2:/root/.m2
-    command: mvn -f /backend/pom.xml clean -Ptest test -Dtest="${UNIT}"
-
-  integration-tests:
-    image: maven:3.9.6-eclipse-temurin-21
-    stop_signal: SIGKILL
-    stdin_open: true
-    tty: true
-    depends_on:
-      - postgres
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hedb
-      - PSQL_INT_TEST_DB_USERNAME=engineer
-      - PSQL_INT_TEST_DB_PASSWORD=password
-    volumes:
-      - ./backend:/backend
-      - ~/.m2:/root/.m2
-    command: mvn -f /backend/pom.xml clean -Ptest-int integration-test -Dit.test="${INTEGRATION}"
-
-  e2e-run:
-    image: cypress/included
-    build:
-      context:  ./frontend/
-      dockerfile: Dockerfile_cy
-    container_name: cypress-run
-    depends_on:
-      - frontend
-      - postgres
-    env_file:
-      - data/env/cypress-run.env
-    working_dir: /app
-    command: npx cypress run
-    volumes:
-      - ./frontend/cypress:/app/cypress
-      - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./frontend/cypress.config.ts:/app/cypress.config.ts
-      - ./frontend/tests:/app/tests
-
-  e2e-open:
-    image: cypress/browsers:node-20.18.0-chrome-130.0.6723.69-1-ff-131.0.3-edge-130.0.2849.52-1
-    build:
-      context:  ./frontend/
-      dockerfile: Dockerfile_cy
-    container_name: cypress-open
-    depends_on:
-      - frontend
-      - postgres
-    env_file:
-      - ./data/env/cypress-open.env
-    environment:
-      - DISPLAY=${DISPLAY}
-    working_dir: /app
-    command: npx cypress open
-    volumes:
-      - ./frontend/cypress:/app/cypress
-      - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./frontend/cypress.config.ts:/app/cypress.config.ts
-      - ./frontend/tests:/app/tests
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    network_mode: host
+      #- ./data/error.log:/var/log/nginx/error.log
+      #- ./data/access.log:/var/log/nginx/access.log

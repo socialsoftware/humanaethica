@@ -1,15 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthDemoUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthNormalUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
 import spock.lang.Unroll
 
@@ -55,6 +51,4 @@ class CreateAuthUserTest extends SpockTest {
         }
     }
 
-    /*@TestConfiguration
-    static class LocalBeanConfiguration extends BeanConfiguration {}*/
 }

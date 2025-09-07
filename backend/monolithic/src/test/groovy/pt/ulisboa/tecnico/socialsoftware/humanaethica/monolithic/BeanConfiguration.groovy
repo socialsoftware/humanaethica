@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.PropertySource
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.assessment.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.enrollment.EnrollmentService
@@ -16,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.participation.P
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.ReportService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.activity.ActivityService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserEventPublisher
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.ThemeService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer

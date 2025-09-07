@@ -1,10 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.events
 
-import com.google.common.eventbus.EventBus
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
@@ -12,15 +9,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserDel
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.events.user.UserRegisteredEvent
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.SpockTest
-import spock.mock.DetachedMockFactory
 
 
 @DataJpaTest
 class EventTest extends SpockTest{
-
-
-    @Autowired
-    EventBus busMock
 
     def dto
 
@@ -45,7 +37,7 @@ class EventTest extends SpockTest{
         result.role.name() == Role.VOLUNTEER.name()
         result.id != null
         and:
-        1 * busMock.post(_ as UserRegisteredEvent) >> { UserRegisteredEvent event ->
+        1 * userEventPublisher.publishUserRegistered(_ as UserRegisteredEvent) >> { UserRegisteredEvent event ->
             assert event.getRegisterUserDto().getUsername() == USER_1_USERNAME
             assert event.getRegisterUserDto().getEmail() == USER_1_EMAIL
             assert event.getRegisterUserDto().getRole() == Role.VOLUNTEER
@@ -64,7 +56,7 @@ class EventTest extends SpockTest{
         def result = userRepository.findUserByUsername(USER_1_USERNAME).get()
         result.state.name() == "DELETED"
         and:
-        1 * busMock.post(_ as UserDeletedEvent) >> { UserDeletedEvent event ->
+        1 * userEventPublisher.publishUserDeleted(_ as UserDeletedEvent) >> { UserDeletedEvent event ->
             assert event.getUserId() == user.getId()
         }
 
@@ -76,12 +68,6 @@ class EventTest extends SpockTest{
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {
-        def mockFactory = new DetachedMockFactory()
-
-        @Bean
-        EventBus eventBus() {
-            return mockFactory.Mock(EventBus)
-        }
     }
 
 

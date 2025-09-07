@@ -1,27 +1,21 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser
 
-import org.springframework.http.HttpHeaders
+import org.spockframework.spring.SpringBean
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.AuthRemoteService
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.AuthService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.AuthUserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.dto.AuthDto
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.AuthPasswordDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.demo.DemoUtils
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.domain.Institution
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.UserApplicationalService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.InstitutionService
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.institution.repository.InstitutionRepository
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer
 import spock.lang.Specification
@@ -29,19 +23,30 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
-class SpockTest extends Specification {
-    // remote requests
+@DataJpaTest
+@Import([
+        TestBeans,  // Beans leves (PasswordEncoder, Mailer)
+        AuthService,          // Serviço principal do authuser
+        AuthUserService,      // Se os testes o usarem, já está disponível
+        DemoService,          // Opcional; remove se não precisares
+        DemoUtils             // Opcional; remove se não precisares
+])
+abstract class SpockTest extends Specification {
 
-    WebClient webClient
-    HttpHeaders headers
 
-    // send email mocking
+    @SpringBean
+    AuthRemoteService authRemoteService = Mock()
 
-    @Value('${spring.mail.username}')
-    public String mailerUsername
+    @SpringBean
+    JavaMailSender javaMailSender = Mock()
 
-    @Autowired
-    Mailer mailer
+    /** Injeções comuns e úteis nos testes */
+    @Autowired AuthUserRepository authUserRepository
+    @Autowired PasswordEncoder passwordEncoder
+    @Autowired(required = false) AuthUserService authUserService
+    @Autowired(required = false) DemoService demoService
+    @Autowired(required = false) DemoUtils demoUtils
+    @Autowired Mailer mailer
 
     // dates
 
@@ -53,23 +58,7 @@ class SpockTest extends Specification {
     public static final LocalDateTime IN_TWO_DAYS = DateHandler.now().plusDays(2)
     public static final LocalDateTime IN_THREE_DAYS = DateHandler.now().plusDays(3)
 
-    // institution
 
-    public static final String INSTITUTION_1_EMAIL = "institution1@mail.com"
-    public static final String INSTITUTION_1_NAME = "institution1"
-    public static final String INSTITUTION_1_NIF = "123456789"
-
-    @Autowired
-    InstitutionService institutionService
-
-    @Autowired
-    InstitutionRepository institutionRepository
-
-    def createInstitution(String name, String email, String nif) {
-        def institution = new Institution(name, email, nif)
-        institutionRepository.save(institution)
-        return institution
-    }
 
     // login and demo
 
@@ -92,59 +81,18 @@ class SpockTest extends Specification {
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
 
-    @Autowired
-    AuthUserService authUserService
-
-    @Autowired
-    UserRepository userRepository
-
-    @Autowired
-    UserService userService
-
-    @Autowired
-    AuthUserRepository authUserRepository
-
-    /*@Autowired
-    UserApplicationalService userServiceApplicational*/
-
-    @Autowired
-    PasswordEncoder passwordEncoder
-
-    @Autowired
-    DemoService demoService;
-
-    @Autowired
-    DemoUtils demoUtils
-
-
-
-    /*def createMember(name, userName, password, email, type, institution, state) {
-        def member = new Member(name, userName, email, institution, state)
-        member = userRepository.save(member)
-        def authUser = AuthUser.createAuthUser(member.getId(), userName, email, type, Role.MEMBER)
-        authUser.setPassword(passwordEncoder.encode(password))
-        authUserRepository.save(authUser)
-        return member
-    }
-
-    def createVolunteer(name, userName, email, type, state) {
-        def volunteer = new Volunteer(name, userName, email, state)
-        volunteer= userRepository.save(volunteer)
-        def authUser = AuthUser.createAuthUser(volunteer.getId(), userName, email, type, Role.VOLUNTEER)
-        authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
-        authUserRepository.save(authUser)
-        return volunteer
-    }*/
-
-
 
     // clean database
 
     def deleteAll() {
         authUserRepository.deleteAll()
-        userRepository.deleteAll()
-        institutionRepository.deleteAll()
+    }
 
+    /** Beans “leves” partilhados por todo o slice JPA */
+    @TestConfiguration
+    static class TestBeans {
+        @Bean PasswordEncoder passwordEncoder() { new BCryptPasswordEncoder() }
+        @Bean Mailer mailer() { new Mailer() }
     }
 
 

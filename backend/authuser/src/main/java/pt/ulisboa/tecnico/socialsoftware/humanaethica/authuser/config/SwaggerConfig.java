@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.humanaethica.api.config;
+package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -27,7 +27,7 @@ public class SwaggerConfig {
                                 )
                 )
                 .info(new Info()
-                        .title("HumanaEthica API")
+                        .title("Auth Service API")
                         .termsOfService("http://swagger.io/terms/")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
     }

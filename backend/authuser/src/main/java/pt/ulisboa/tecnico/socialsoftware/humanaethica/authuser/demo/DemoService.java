@@ -10,11 +10,10 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.dto.AuthUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.repository.AuthUserRepository;
 
 
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service.AuthRemoteService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.State;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.repository.UserRepository;
 
 @Service
 public class DemoService {
@@ -22,19 +21,16 @@ public class DemoService {
     AuthUserRepository authUserRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    UserService userService;
+    AuthRemoteService userService;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public AuthUserDto getDemoAdmin() {
         AuthUser authUser = authUserRepository.findAuthUserByUsername("ars").orElseGet(() -> {
 
-            Integer userId = userService.createAdmin("ars", "ars", "ars_admin@mail.com",  State.ACTIVE);
+            Integer userId = userService.createAdmin("ars", "ars", "ars_admin@mail.com",  State.ACTIVE.name());
             AuthUser authuser = AuthUser.createAuthUser(userId,"ars", "ars_admin@mail.com", Type.DEMO, Role.ADMIN);
             authuser.setPassword(passwordEncoder.encode("ars"));
             authuser = authUserRepository.save(authuser);

@@ -7,7 +7,6 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.RegisterUserDto;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.LinkHandler;
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.utils.Mailer;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService;
 
 @Service
 public class UserApplicationalService {
@@ -16,6 +15,8 @@ public class UserApplicationalService {
     private final AuthService authService;
 
     private final Mailer mailer;
+
+    public static final String PASSWORD_CONFIRMATION_MAIL_SUBJECT = "Password Confirmation"; // from UserService
 
     @Value("${spring.mail.username}")
     private String mailUsername;
@@ -41,7 +42,7 @@ public class UserApplicationalService {
     }
 
     public void sendConfirmationEmailTo(String username, String email, String token) {
-        mailer.sendSimpleMail(mailUsername, email, Mailer.HUMANAETHICA_SUBJECT + UserService.PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
+        mailer.sendSimpleMail(mailUsername, email, Mailer.HUMANAETHICA_SUBJECT + PASSWORD_CONFIRMATION_MAIL_SUBJECT, buildMailBody(username, token));
     }
 
     private String buildMailBody(String username, String token) {

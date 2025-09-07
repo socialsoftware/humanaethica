@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.authuser.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.auth.Type
@@ -47,7 +45,4 @@ class UserAuthTest extends SpockTest {
         USER_1_USERNAME | null            || ErrorMessage.INVALID_PASSWORD
     }
 
-
-    @TestConfiguration
-    static class LocalBeanConfiguration extends BeanConfiguration {}
 }

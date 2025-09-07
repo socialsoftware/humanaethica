@@ -4,18 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Component;
-import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.User;
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.common.dtos.user.Role;
 
 @Component
 public class DemoUtils {
     public static String DEMO = "DEMO";
     public static String INSTITUTION = "INSTITUTION";
 
-    public static String DEMO_VOLUNTEER = DEMO + "-" + User.UserTypes.VOLUNTEER;
+    public static String DEMO_VOLUNTEER = DEMO + "-" + Role.VOLUNTEER;
 
-    public static String DEMO_MEMBER = DEMO + "-" + User.UserTypes.MEMBER;
+    public static String DEMO_MEMBER = DEMO + "-" + Role.MEMBER;
 
-    public static String DEMO_ADMIN = DEMO + "-" + User.UserTypes.ADMIN;
+    public static String DEMO_ADMIN = DEMO + "-" + Role.ADMIN;
 
 
 

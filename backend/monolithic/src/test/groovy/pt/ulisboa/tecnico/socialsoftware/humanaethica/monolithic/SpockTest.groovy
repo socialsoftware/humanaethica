@@ -1,5 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic
 
+import org.spockframework.spring.SpringBean
+import org.springframework.cloud.stream.function.StreamBridge
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +28,7 @@ import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.ReportSe
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.domain.Report
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.report.dto.ReportDto
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.theme.domain.Theme
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserEventPublisher
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Member
 import pt.ulisboa.tecnico.socialsoftware.humanaethica.monolithic.user.domain.Volunteer
@@ -112,6 +116,9 @@ class SpockTest extends Specification {
 
     @Autowired
     UserService userService
+
+    @SpringBean
+    UserEventPublisher userEventPublisher = Mock()
 
 
 
