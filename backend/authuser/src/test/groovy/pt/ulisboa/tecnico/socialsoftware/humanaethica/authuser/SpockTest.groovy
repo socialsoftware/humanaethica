@@ -25,11 +25,11 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 @DataJpaTest
 @Import([
-        TestBeans,  // Beans leves (PasswordEncoder, Mailer)
-        AuthService,          // Serviço principal do authuser
-        AuthUserService,      // Se os testes o usarem, já está disponível
-        DemoService,          // Opcional; remove se não precisares
-        DemoUtils             // Opcional; remove se não precisares
+        TestBeans,
+        AuthService,
+        AuthUserService,
+        DemoService,
+        DemoUtils
 ])
 abstract class SpockTest extends Specification {
 
@@ -88,7 +88,7 @@ abstract class SpockTest extends Specification {
         authUserRepository.deleteAll()
     }
 
-    /** Beans “leves” partilhados por todo o slice JPA */
+
     @TestConfiguration
     static class TestBeans {
         @Bean PasswordEncoder passwordEncoder() { new BCryptPasswordEncoder() }
