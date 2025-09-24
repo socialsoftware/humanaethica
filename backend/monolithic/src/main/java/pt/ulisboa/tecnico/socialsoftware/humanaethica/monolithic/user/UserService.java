@@ -144,18 +144,27 @@ public class UserService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Integer createVolunteer(String name, String username, String email,  State state){
+        if (userRepository.findUserByUsername(username).isPresent()) {
+            throw new HEException(USERNAME_ALREADY_EXIST, username);
+        }
         Volunteer volunteer = new Volunteer(name, username, email, state);
         return userRepository.save(volunteer).getId();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Integer createMember(String name, String username, String email, State state) {
+        if (userRepository.findUserByUsername(username).isPresent()) {
+            throw new HEException(USERNAME_ALREADY_EXIST, username);
+        }
         Member member = new Member(name, username, email, institutionService.getDemoInstitution(), state);
         return userRepository.save(member).getId();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Integer createAdmin(String name, String username, String email, State state) {
+        if (userRepository.findUserByUsername(username).isPresent()) {
+            throw new HEException(USERNAME_ALREADY_EXIST, username);
+        }
         Admin admin = new Admin(name, username, email, state);
         return userRepository.save(admin).getId();
     }
