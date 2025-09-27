@@ -1,0 +1,9 @@
+mvn spring-boot:run -pl api
+
+
+mvn clean -Ptest test
+
+
+$env:SPRING_DATASOURCE_USERNAME = "humanaethica"
+$env:SPRING_DATASOURCE_PASSWORD = "humanaethica"
+mvn clean verify -Ptest-int

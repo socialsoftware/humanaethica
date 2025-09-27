@@ -1,21 +1,34 @@
-# http://whitfin.io/speeding-up-maven-docker-builds/
+#
+FROM maven:3.9.6-eclipse-temurin-21 AS deps
+WORKDIR /build
 
-FROM maven:3.9.6-eclipse-temurin-21 as base
+#
+COPY pom.xml .
+COPY api/pom.xml api/pom.xml
+COPY monolithic/pom.xml monolithic/pom.xml
+COPY user/pom.xml user/pom.xml
+COPY authuser/pom.xml authuser/pom.xml
+COPY theme/pom.xml theme/pom.xml
+COPY institution/pom.xml institution/pom.xml
+COPY activity/pom.xml activity/pom.xml
+COPY assessment/pom.xml assessment/pom.xml
+COPY common/pom.xml common/pom.xml
 
-COPY ./pom.xml ./pom.xml
-RUN mvn dependency:go-offline -B
-COPY ./src ./src
+#
+RUN mvn -B -q -DskipTests -pl api -am dependency:go-offline
 
-FROM base as test
-CMD ["mvn", "-Ptest", "test"]
-
-FROM base as run
+#
+FROM deps AS build
+WORKDIR /build
+#
+COPY . .
 ARG PROFILE=dev
-RUN mvn -P$PROFILE -Dmaven.test.skip=true package
+#
+RUN mvn -B -DskipTests -P${PROFILE} -pl api -am package
 
-# https://stackoverflow.com/questions/53375613/why-is-the-java-11-base-docker-image-so-large-openjdk11-jre-slim
-
+#
 FROM azul/zulu-openjdk-alpine:21
-COPY --from=run target/humanaethica-backend-0.0.1-SNAPSHOT.jar ./
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar", "./humanaethica-backend-0.0.1-SNAPSHOT.jar"]
-
+WORKDIR /app
+#
+COPY --from=build /build/api/target/*.jar /app/app.jar
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
