@@ -1,0 +1,167 @@
+{
+    "metrics": {
+        "http_req_duration": {
+            "max": 803.057,
+            "p(90)": 305.75692000000004,
+            "p(95)": 342.107515,
+            "avg": 146.19572236373565,
+            "min": 6.4871,
+            "med": 148.74984999999998
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "iterations": {
+            "count": 3651,
+            "rate": 20.232997435022295
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 7302,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "vus_max": {
+            "value": 10,
+            "min": 10,
+            "max": 10
+        },
+        "http_req_connecting": {
+            "med": 0,
+            "max": 3.9908,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.013557956724185154,
+            "min": 0
+        },
+        "http_req_sending": {
+            "min": 0,
+            "med": 0,
+            "max": 2.5405,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.024513955080799774
+        },
+        "checks": {
+            "passes": 7302,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 4897321,
+            "rate": 27139.820112703594
+        },
+        "login_time": {
+            "avg": 280.11781470829845,
+            "min": 186.7342,
+            "med": 263.3891,
+            "max": 803.057,
+            "p(90)": 342.1079,
+            "p(95)": 384.3997,
+            "thresholds": {
+                "p(95)<300": true
+            }
+        },
+        "http_req_blocked": {
+            "p(95)": 0,
+            "avg": 0.04254239934264587,
+            "min": 0,
+            "med": 0,
+            "max": 18.8185,
+            "p(90)": 0
+        },
+        "iteration_duration": {
+            "avg": 493.7628668857851,
+            "min": 396.469,
+            "med": 476.2303,
+            "max": 1020.0652,
+            "p(90)": 559.2655,
+            "p(95)": 601.4403
+        },
+        "vus": {
+            "value": 10,
+            "min": 10,
+            "max": 10
+        },
+        "flow_total_time": {
+            "avg": 293.19145439605586,
+            "min": 196,
+            "med": 276,
+            "max": 819,
+            "p(90)": 359,
+            "p(95)": 400.5
+        },
+        "get_themes_time": {
+            "avg": 12.273630019172824,
+            "min": 6.4871,
+            "med": 10.949,
+            "max": 110.7655,
+            "p(90)": 16.421,
+            "p(95)": 21.02765,
+            "thresholds": {
+                "p(95)<300": false
+            }
+        },
+        "http_req_waiting": {
+            "max": 799.2528,
+            "p(90)": 305.63863000000003,
+            "p(95)": 341.904435,
+            "avg": 145.8535485757324,
+            "min": 6.0779,
+            "med": 148.4777
+        },
+        "http_req_receiving": {
+            "avg": 0.31765983292248745,
+            "min": 0,
+            "med": 0,
+            "max": 25.9607,
+            "p(90)": 0.7125900000000001,
+            "p(95)": 1.1383899999999996
+        },
+        "http_reqs": {
+            "count": 7302,
+            "rate": 40.46599487004459
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 6.4871,
+            "med": 148.74984999999998,
+            "max": 803.057,
+            "p(90)": 305.75692000000004,
+            "p(95)": 342.107515,
+            "avg": 146.19572236373565
+        },
+        "data_sent": {
+            "count": 2435217,
+            "rate": 13495.40928915987
+        }
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "login ok": {
+                    "passes": 3651,
+                    "fails": 0,
+                    "name": "login ok",
+                    "path": "::login ok",
+                    "id": "0ddcda49e3a8b9d6d2e015dafbaafe65"
+                },
+                "themes 200": {
+                    "fails": 0,
+                    "name": "themes 200",
+                    "path": "::themes 200",
+                    "id": "932c9aa99cffcc8fc9a0ef52b8fc6080",
+                    "passes": 3651
+                }
+            }
+    }
+}
