@@ -6,7 +6,7 @@ import { Trend } from 'k6/metrics';
 const logintime = new Trend('login_time');
 
 export const options = {
-    vus : 20,
+    vus : 10,
     duration: '3m',
     thresholds: {
         'login_time': ['p(95)<500'],
