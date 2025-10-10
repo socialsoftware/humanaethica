@@ -1,0 +1,98 @@
+services:
+  # ---------------------- Data Bases ----------------------
+  postgres-mono:
+    image: postgres:alpine
+    command: postgres -c 'max_connections=50' -c 'log_statement=all' -c 'log_destination=stderr'
+    environment:
+      POSTGRES_DB: monolithicdb
+      POSTGRES_USER: humanaethica
+      POSTGRES_PASSWORD: humanaethica
+
+  postgres-auth:
+    image: postgres:alpine
+    command: postgres -c 'max_connections=50' -c 'log_statement=all' -c 'log_destination=stderr'
+    environment:
+      POSTGRES_DB: authuserdb
+      POSTGRES_USER: humanaethica
+      POSTGRES_PASSWORD: humanaethica
+
+  # ---------------------- Kafka ----------------------
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  # ---------------------- Eureka ----------------------
+  eureka-server:
+    build:
+      context: ../eureka_server/
+    image: humanaethica-eureka:test
+
+
+  # ---------------------- Services ----------------------
+  monolithic:
+    build:
+      context: ../monolithic/
+      args:
+        PROFILE: dev
+    image: humanaethica-monolithic:test
+    depends_on:
+      - postgres-mono
+      - kafka
+      - eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-mono:5432/monolithicdb
+      SPRING_DATASOURCE_USERNAME: humanaethica
+      SPRING_DATASOURCE_PASSWORD: humanaethica
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+
+
+  authuser:
+    build:
+      context: ../authuser/
+      args:
+        PROFILE: dev
+    image: humanaethica-authuser:test
+    depends_on:
+      - postgres-auth
+      - kafka
+      - eureka-server
+      - monolithic
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/authuserdb
+      SPRING_DATASOURCE_USERNAME: humanaethica
+      SPRING_DATASOURCE_PASSWORD: humanaethica
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      "grpc.client.monolithic-service.address": "discovery:///monolithic"
+      "grpc.client.monolithic-service.negotiation-type": "plaintext"
+
+
+  api:
+    build:
+      context: ../api/
+    image: humanaethica-api:test
+    depends_on:
+      - eureka-server
+      - monolithic
+      - authuser
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    ports:
+      - "18080:8080"
