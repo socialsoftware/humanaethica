@@ -1,7 +1,7 @@
 Write-Output "Maven build (sem testes) dos módulos backend..."
-cd backend
-mvn clean package
-cd ..
+#cd backend
+#mvn clean package
+#cd ..
 
 Write-Output "Build das imagens Docker..."
 docker build -t humanaethica-eureka:test      backend/eureka_server

@@ -237,7 +237,7 @@ export default class RemoteServices {
     registerUser: RegisterUser,
   ): Promise<RegisterUser> {
     return httpClient
-      .post('/users/register/confirm', registerUser)
+      .post('/auth/register/confirm', registerUser)
       .then((response) => {
         return new RegisterUser(response.data);
       })

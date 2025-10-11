@@ -23,7 +23,7 @@ class GetDemoAuthWebServiceIT extends Specification {
         env.start()
 
 
-        Thread.sleep(120_000)
+        Thread.sleep(240_000)
 
         RestAssured.baseURI = "http://localhost:18080"
     }
