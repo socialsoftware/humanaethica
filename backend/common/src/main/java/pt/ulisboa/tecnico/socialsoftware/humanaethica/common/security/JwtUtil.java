@@ -50,9 +50,9 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(token).getBody();
     }
 
-    Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) {
         Claims tokenClaims = getAllClaimsFromToken(token);
         UserInfo userInfo = new UserInfo(tokenClaims.get("userId", Integer.class), tokenClaims.get("username", String.class),tokenClaims.get("role").toString());
-        return new UsernamePasswordAuthenticationToken(userInfo, "", userInfo.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userInfo, token, userInfo.getAuthorities());
     }
 }

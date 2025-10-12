@@ -10,9 +10,15 @@ service UserService {
   rpc CreateVolunteer(CreateUserRequest) returns (CreateUserResponse);
   rpc CreateMember(CreateUserRequest) returns (CreateUserResponse);
   rpc CreateAdmin(CreateUserRequest) returns (CreateUserResponse);
+
+
   rpc GetUserById(GetUserRequest) returns (UserDto);
   rpc ChangeState(ChangeStateRequest) returns (Empty);
   rpc GetUserState(GetUserRequest) returns (UserStateResponse);
+
+  rpc GetUserByIdLogin(GetUserRequest) returns (UserDto);
+
+  rpc ChangeStateLogin(ChangeStateRequest) returns (Empty);
 }
 
 message CreateUserRequest {

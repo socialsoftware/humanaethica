@@ -94,8 +94,8 @@ public class AuthService {
             throw new HEException(ErrorMessage.USER_ALREADY_ACTIVE, authUser.getUsername());
         }
 
-        authRemoteService.changeState(authUser.getUserID(), State.ACTIVE.name());
-        return convertToRegisterUserDto(authUser, authRemoteService.getUserById(authUser.getUserID()));
+        authRemoteService.changeStateLogin(authUser.getUserID(), State.ACTIVE.name());
+        return convertToRegisterUserDto(authUser, authRemoteService.getUserByIdLogin(authUser.getUserID()));
     }
 
 
