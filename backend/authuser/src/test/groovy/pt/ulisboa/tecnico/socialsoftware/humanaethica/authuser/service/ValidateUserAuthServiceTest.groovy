@@ -61,13 +61,13 @@ class ValidateUserAuthServiceTest extends Specification{
             user.isInstitutionActive() >> institutionActive
         }
 
-        userService.getUserById(1) >> user
+        userService.getUserByIdLogin(1) >> user
 
         when:
         def result = authService.validateUser(1)
 
         then:
-        1 * userService.changeState(1, State.ACTIVE.name())
+        1 * userService.changeStateLogin(1, State.ACTIVE.name())
         result.getRole() == role
         if (role == Role.MEMBER) {
             result.isInstitutionActive() == institutionActive
