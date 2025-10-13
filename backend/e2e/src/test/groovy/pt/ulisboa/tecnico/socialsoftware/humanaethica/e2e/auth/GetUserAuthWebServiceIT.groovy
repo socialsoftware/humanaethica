@@ -3,8 +3,9 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.e2e.auth
 import io.restassured.RestAssured
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.client.MultipartBodyBuilder
-import org.testcontainers.containers.DockerComposeContainer
+
 import org.testcontainers.spock.Testcontainers
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.e2e.E2EEnvironment
 import reactor.core.publisher.Mono
 import spock.lang.Shared
 import spock.lang.Specification
@@ -17,61 +18,44 @@ import org.springframework.web.reactive.function.client.WebClient
 
 import java.sql.*
 
-import org.testcontainers.containers.wait.strategy.Wait
-import java.time.Duration
 
 
 @Testcontainers
 class GetUserAuthWebServiceIT extends Specification {
 
 
-    public static final String USER_1_NAME = "User 1 Name"
-    public static final String USER_1_USERNAME = "rfs"
-    public static final String USER_1_EMAIL = "user1@mail.com"
-    public static final String USER_1_PASSWORD = "1234@WS4544"
 
 
-    @Shared
-    DockerComposeContainer<?> env =
-            new DockerComposeContainer<>(new File("docker-compose.test.yml"))
-                    .withLocalCompose(true)
-                    .withBuild(false)
-                    .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
+
 
     @Shared
     WebClient webClient
 
     def setupSpec() {
-        env.start()
-
-
-        Thread.sleep(240_000)
+        E2EEnvironment.startIfNeeded()
 
         RestAssured.baseURI = "http://localhost:18080"
         webClient = WebClient.create(RestAssured.baseURI)
     }
 
-    def cleanupSpec() {
-        env.stop()
-    }
 
     def "volunteer registers, confirms and logs in successfully"() {
 
         when:
-        registerVolunteer(USER_1_NAME ,USER_1_USERNAME, USER_1_EMAIL)
+        registerVolunteer(E2EEnvironment.USER_1_NAME ,E2EEnvironment.USER_1_USERNAME, E2EEnvironment.USER_1_EMAIL)
 
         and:
-        def confirmationToken = getConfirmationTokenFromDb(USER_1_USERNAME)
+        def confirmationToken = getConfirmationTokenFromDb(E2EEnvironment.USER_1_USERNAME)
 
         and:
-        confirmRegistration(USER_1_USERNAME, USER_1_EMAIL, USER_1_PASSWORD, confirmationToken)
+        confirmRegistration(E2EEnvironment.USER_1_USERNAME, E2EEnvironment.USER_1_EMAIL, E2EEnvironment.USER_1_PASSWORD, confirmationToken)
 
         and:
-        def result = loginUser(USER_1_USERNAME, USER_1_PASSWORD)
+        def result = loginUser(E2EEnvironment.USER_1_USERNAME, E2EEnvironment.USER_1_PASSWORD)
 
         then:
         result?.token
-        result.user.username == USER_1_USERNAME
+        result.user.username == E2EEnvironment.USER_1_USERNAME
     }
 
     // ----------------------- Helper methods ---------------------------------------

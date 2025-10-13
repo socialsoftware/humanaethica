@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.humanaethica.e2e.auth
 import io.restassured.RestAssured
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.spock.Testcontainers
+import pt.ulisboa.tecnico.socialsoftware.humanaethica.e2e.E2EEnvironment
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -12,25 +13,15 @@ import static io.restassured.RestAssured.given
 @Testcontainers
 class GetDemoAuthWebServiceIT extends Specification {
 
-    @Shared
-    DockerComposeContainer<?> env =
-            new DockerComposeContainer<>(new File("docker-compose.test.yml"))
-                    .withLocalCompose(true)
-                    .withBuild(false)
-                    .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
 
     def setupSpec() {
-        env.start()
 
+        E2EEnvironment.startIfNeeded()
 
-        Thread.sleep(240_000)
 
         RestAssured.baseURI = "http://localhost:18080"
     }
 
-    def cleanupSpec() {
-        env.stop()
-    }
 
     def "demo volunteer login via Gateway"() {
         when:
