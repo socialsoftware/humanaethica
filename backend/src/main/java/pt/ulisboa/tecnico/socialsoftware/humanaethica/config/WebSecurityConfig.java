@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                     .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests((authorizeHttpRequests) ->
                             authorizeHttpRequests
-                                    .requestMatchers(new AntPathRequestMatcher("/resources/**")).permitAll()
+                                    .requestMatchers("/resources/**").permitAll()
                                     .anyRequest().permitAll());
             http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
             return http.build();
@@ -52,11 +52,11 @@ public class WebSecurityConfig {
                     .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests((authorizeHttpRequests) ->
                             authorizeHttpRequests
-                                    .requestMatchers(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name())).permitAll()
-                                    .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
-                                    .requestMatchers(new AntPathRequestMatcher("/users/register/confirm")).permitAll()
-                                    .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
-                                    .requestMatchers(new AntPathRequestMatcher("/resources/**")).permitAll()
+                                    .requestMatchers("/**", HttpMethod.OPTIONS.name()).permitAll()
+                                    .requestMatchers("/auth/**").permitAll()
+                                    .requestMatchers("/users/register/confirm").permitAll()
+                                    .requestMatchers("/images/**").permitAll()
+                                    .requestMatchers("/resources/**").permitAll()
                                     .anyRequest().authenticated());
             http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
             return http.build();
